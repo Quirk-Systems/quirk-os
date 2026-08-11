@@ -18,11 +18,22 @@
     "risk",
     "reversibility",
     "disposition",
-    "created_at"
+    "created_at",
+    "dependency_class",
+    "blocks_merge",
+    "finding_ref",
+    "hidden_context_dependencies",
+    "resolution_artifacts",
+    "acceptance_checks"
   ],
   "properties": {
-    "id": {"type": "string", "pattern": "^qpm_[A-Za-z0-9_-]+$"},
-    "schema_version": {"const": "proposed-move.v1"},
+    "id": {
+      "type": "string",
+      "pattern": "^qpm_[A-Za-z0-9_-]+$"
+    },
+    "schema_version": {
+      "const": "proposed-move.v1"
+    },
     "lane": {
       "type": "string",
       "enum": [
@@ -41,70 +52,145 @@
         "poison"
       ]
     },
-    "title": {"type": "string", "minLength": 1},
-    "desired_change": {"type": "string", "minLength": 1},
-    "expected_outcome": {"type": "string", "minLength": 1},
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "desired_change": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_outcome": {
+      "type": "string",
+      "minLength": 1
+    },
     "proposer": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["actor_id", "actor_type"],
+      "required": [
+        "actor_id",
+        "actor_type"
+      ],
       "properties": {
-        "actor_id": {"type": "string", "minLength": 1},
-        "actor_type": {"type": "string", "enum": ["human", "agent", "service"]}
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_type": {
+          "type": "string",
+          "enum": [
+            "human",
+            "agent",
+            "service"
+          ]
+        }
       }
     },
     "source_refs": {
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": {"type": "string", "minLength": 1}
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "evidence_refs": {
       "type": "array",
       "uniqueItems": true,
-      "items": {"type": "string", "minLength": 1}
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "contradiction_refs": {
       "type": "array",
       "uniqueItems": true,
-      "items": {"type": "string", "minLength": 1}
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "affected_objects": {
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": {"type": "string", "minLength": 1}
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "dependencies": {
       "type": "array",
       "uniqueItems": true,
-      "items": {"type": "string", "minLength": 1}
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "authority_required": {
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": {"type": "string", "minLength": 1}
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "risk": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["class", "rights_or_safety_impact"],
+      "required": [
+        "class",
+        "rights_or_safety_impact"
+      ],
       "properties": {
-        "class": {"type": "string", "enum": ["L0", "L1", "L2", "L3", "L4", "L5"]},
-        "rights_or_safety_impact": {"type": "string", "minLength": 1},
-        "strange_intact_risk": {"type": "string", "enum": ["none", "low", "medium", "high"]}
+        "class": {
+          "type": "string",
+          "enum": [
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4",
+            "L5"
+          ]
+        },
+        "rights_or_safety_impact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "strange_intact_risk": {
+          "type": "string",
+          "enum": [
+            "none",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
       }
     },
     "reversibility": {
       "type": "string",
-      "enum": ["trivial", "reversible", "compensatable", "irreversible"]
+      "enum": [
+        "trivial",
+        "reversible",
+        "compensatable",
+        "irreversible"
+      ]
     },
-    "implementation_ref": {"type": "string", "minLength": 1},
+    "implementation_ref": {
+      "type": "string",
+      "minLength": 1
+    },
     "eval_refs": {
       "type": "array",
       "uniqueItems": true,
-      "items": {"type": "string", "minLength": 1}
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "disposition": {
       "type": "string",
@@ -123,8 +209,104 @@
         "verified"
       ]
     },
-    "outcome_due_at": {"type": "string", "format": "date-time"},
-    "receipt_ref": {"type": "string", "minLength": 1},
-    "created_at": {"type": "string", "format": "date-time"}
-  }
+    "outcome_due_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receipt_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dependency_class": {
+      "type": "string",
+      "enum": [
+        "hidden_bryan_context",
+        "oral_tradition",
+        "implicit_authority",
+        "undefined_vocabulary",
+        "undocumented_topology",
+        "missing_operator_contract",
+        "missing_personalization_boundary",
+        "missing_execution_contract",
+        "missing_evidence_contract",
+        "missing_security_contract",
+        "undocumented_provider_state",
+        "missing_projection_contract",
+        "missing_release_control",
+        "missing_portability_contract"
+      ]
+    },
+    "blocks_merge": {
+      "type": "boolean"
+    },
+    "finding_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hidden_context_dependencies": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "resolution_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "acceptance_checks": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "resolution_note": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "disposition": {
+            "enum": [
+              "verified",
+              "rejected",
+              "boneyard",
+              "poisoned"
+            ]
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "required": [
+          "receipt_ref",
+          "resolution_note"
+        ],
+        "properties": {
+          "evidence_refs": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
 }
