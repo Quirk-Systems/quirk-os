@@ -1,0 +1,89 @@
+{
+  "id": "qpmq_ship_without_bryan_pr3",
+  "schema_version": "proposed-move-queue.v1",
+  "tribunal_id": "tribunal.ship_without_bryan.pr3",
+  "source_repository": "Quirk-Systems/quirk-os",
+  "source_pull_request": 3,
+  "source_commit": "5256370115d217c576dd403cc0770f34e906d675",
+  "verdict": "block",
+  "generated_at": "2026-08-11T11:30:09Z",
+  "blocking_move_ids": [
+    "qpm_pr3_system_identity_topology",
+    "qpm_pr3_canonical_vocabulary_strange_intact",
+    "qpm_pr3_operator_personalization_boundaries",
+    "qpm_pr3_authority_approval_manifest",
+    "qpm_pr3_executable_vertical_slice_bootstrap",
+    "qpm_pr3_complete_contracts_queue_semantics",
+    "qpm_pr3_eval_threat_model_tribunal_harness",
+    "qpm_pr3_google_drive_workplane_manifest",
+    "qpm_pr3_supabase_projection_contract",
+    "qpm_pr3_vercel_deployment_decision",
+    "qpm_pr3_cloudflare_edge_decision",
+    "qpm_pr3_research_top_minds_evidence",
+    "qpm_pr3_multimedia_rights_accessibility_provenance",
+    "qpm_pr3_release_migrations_supply_chain",
+    "qpm_pr3_merge_blocking_receipt_outcome_gate"
+  ],
+  "move_refs": [
+    {
+      "id": "qpm_pr3_system_identity_topology",
+      "path": "proposed-moves/pr-3/qpm_pr3_system_identity_topology.json"
+    },
+    {
+      "id": "qpm_pr3_canonical_vocabulary_strange_intact",
+      "path": "proposed-moves/pr-3/qpm_pr3_canonical_vocabulary_strange_intact.json"
+    },
+    {
+      "id": "qpm_pr3_operator_personalization_boundaries",
+      "path": "proposed-moves/pr-3/qpm_pr3_operator_personalization_boundaries.json"
+    },
+    {
+      "id": "qpm_pr3_authority_approval_manifest",
+      "path": "proposed-moves/pr-3/qpm_pr3_authority_approval_manifest.json"
+    },
+    {
+      "id": "qpm_pr3_executable_vertical_slice_bootstrap",
+      "path": "proposed-moves/pr-3/qpm_pr3_executable_vertical_slice_bootstrap.json"
+    },
+    {
+      "id": "qpm_pr3_complete_contracts_queue_semantics",
+      "path": "proposed-moves/pr-3/qpm_pr3_complete_contracts_queue_semantics.json"
+    },
+    {
+      "id": "qpm_pr3_eval_threat_model_tribunal_harness",
+      "path": "proposed-moves/pr-3/qpm_pr3_eval_threat_model_tribunal_harness.json"
+    },
+    {
+      "id": "qpm_pr3_google_drive_workplane_manifest",
+      "path": "proposed-moves/pr-3/qpm_pr3_google_drive_workplane_manifest.json"
+    },
+    {
+      "id": "qpm_pr3_supabase_projection_contract",
+      "path": "proposed-moves/pr-3/qpm_pr3_supabase_projection_contract.json"
+    },
+    {
+      "id": "qpm_pr3_vercel_deployment_decision",
+      "path": "proposed-moves/pr-3/qpm_pr3_vercel_deployment_decision.json"
+    },
+    {
+      "id": "qpm_pr3_cloudflare_edge_decision",
+      "path": "proposed-moves/pr-3/qpm_pr3_cloudflare_edge_decision.json"
+    },
+    {
+      "id": "qpm_pr3_research_top_minds_evidence",
+      "path": "proposed-moves/pr-3/qpm_pr3_research_top_minds_evidence.json"
+    },
+    {
+      "id": "qpm_pr3_multimedia_rights_accessibility_provenance",
+      "path": "proposed-moves/pr-3/qpm_pr3_multimedia_rights_accessibility_provenance.json"
+    },
+    {
+      "id": "qpm_pr3_release_migrations_supply_chain",
+      "path": "proposed-moves/pr-3/qpm_pr3_release_migrations_supply_chain.json"
+    },
+    {
+      "id": "qpm_pr3_merge_blocking_receipt_outcome_gate",
+      "path": "proposed-moves/pr-3/qpm_pr3_merge_blocking_receipt_outcome_gate.json"
+    }
+  ]
+}
