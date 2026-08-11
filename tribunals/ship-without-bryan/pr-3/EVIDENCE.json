@@ -1,0 +1,259 @@
+{
+  "id": "tribunal_evidence_pr3",
+  "schema_version": "ship-without-bryan-evidence.v1",
+  "tribunal_id": "tribunal.ship_without_bryan.pr3",
+  "generated_at": "2026-08-11T11:30:09Z",
+  "repository": {
+    "name": "Quirk-Systems/quirk-os",
+    "pull_request": 3,
+    "base": "main",
+    "head": "agent/golden-core-pack",
+    "head_sha": "5256370115d217c576dd403cc0770f34e906d675",
+    "draft": true,
+    "changed_files_before_tribunal": 13,
+    "additions_before_tribunal": 2358,
+    "deletions_before_tribunal": 1
+  },
+  "observations": {
+    "github_actions": {
+      "workflow": "Golden Gates",
+      "run_number": 1,
+      "conclusion": "success",
+      "meaning": "Structural checks passed at the pre-tribunal head. This does not prove implementation, authority, security, migration, or outsider operation."
+    },
+    "structural_validator_checks": [
+      "required file presence",
+      "JSON parseability and four top-level schema metadata keys",
+      "presence of six core-law sentences",
+      "presence of eleven prompt IDs",
+      "absence of four placeholder strings"
+    ],
+    "google_drive": {
+      "project_folder_id": "10bw27MiSyZvfSTCFiE0-cw4_HGG4cWnk",
+      "control_document_id": "1yP9jDbJcjoHciRJRooYCrDfoi2yV9ZdksiiKf0VW-OY",
+      "manifest_in_git": false,
+      "offline_reconstruction_tested": false
+    },
+    "supabase": {
+      "project_id": "gcebodogotmozwbnsflf",
+      "name": "quirk-os-alpha",
+      "region": "us-east-2",
+      "status": "ACTIVE_HEALTHY",
+      "postgres": "17.6.1.084",
+      "existing_migrations": [
+        "20260521204930_quirk_os_schema",
+        "20260729101853_add_created_at_to_quirk_pipeline_runs"
+      ],
+      "projection_contract_in_pr": false
+    },
+    "vercel": {
+      "teams_checked": [
+        "team_bC3MbL2klWfY4LwVgfIgY8G5",
+        "team_7C71SWeOuzWfdActPTVUx3UY"
+      ],
+      "quirk_os_project_found": false
+    },
+    "cloudflare": {
+      "live_account_inspection": "not_available_in_current_connected_tool_surface",
+      "repository_manifest_found": false,
+      "wrangler_available_in_execution_environment": false
+    },
+    "local_cli_environment": {
+      "wrangler": false,
+      "vercel": false,
+      "supabase": false
+    }
+  },
+  "tribunal_attempts": {
+    "orient": "partial",
+    "install": "fail_no_bootstrap",
+    "understand_boundaries": "partial_hidden_topology_and_vocabulary",
+    "execute_examples": "fail_none_present",
+    "run_tests": "partial_ci_structural_only",
+    "trace_decisions": "fail_no_adrs_or_receipts",
+    "inspect_authority": "fail_no_manifest",
+    "challenge_state": "fail_no_runtime_or_contract",
+    "follow_migration": "fail_no_repo_migrations",
+    "recover_failure": "fail_no_runbook",
+    "extend_capability": "fail_no_executable_capability"
+  },
+  "gate_results": [
+    {
+      "gate_id": "gate.canon",
+      "verdict": "fail",
+      "evidence": [
+        "Quirk Core is named as owner inside a quirk-os repository without a canonical identity-stack or repository-topology decision.",
+        "Normative terms such as Strange Intact, Canonball, Quirk Way, Poison, Quirk Mutual, Spanknasty, and Quirk Taxes lack canonical IDs and definitions in this PR."
+      ],
+      "move_ids": [
+        "qpm_pr3_system_identity_topology",
+        "qpm_pr3_canonical_vocabulary_strange_intact"
+      ]
+    },
+    {
+      "gate_id": "gate.schema",
+      "verdict": "fail",
+      "evidence": [
+        "Only LedgerTransition, ProposedMove, ResearchClaim, and MediaDerivative schemas exist.",
+        "Receipt, Authority, Eval, Gate, Outcome, Capability, AgentSkill, Challenge, Comment, Poison, Forgetting, Release, and queue runtime contracts are prose-only.",
+        "No schema instances or fixtures are validated."
+      ],
+      "move_ids": [
+        "qpm_pr3_complete_contracts_queue_semantics",
+        "qpm_pr3_merge_blocking_receipt_outcome_gate"
+      ]
+    },
+    {
+      "gate_id": "gate.authority",
+      "verdict": "fail",
+      "evidence": [
+        "Authority modes are named, but no authority manifest, owner IDs, resolution algorithm, CODEOWNERS, waiver policy, or risk-scoped delegation exists.",
+        "Repository write permission is not distinguished from semantic authority.",
+        "Bryan's founder authority, personal preferences, operator authority, and tenant authority are not partitioned."
+      ],
+      "move_ids": [
+        "qpm_pr3_authority_approval_manifest",
+        "qpm_pr3_operator_personalization_boundaries"
+      ]
+    },
+    {
+      "gate_id": "gate.evidence",
+      "verdict": "fail",
+      "evidence": [
+        "Research and Top Minds are prose inventories without typed source records, preserved primary artifacts, claim-level citations, contradiction packets, or adoption receipts.",
+        "Provider state and selection rationale live outside the repository."
+      ],
+      "move_ids": [
+        "qpm_pr3_research_top_minds_evidence",
+        "qpm_pr3_supabase_projection_contract",
+        "qpm_pr3_vercel_deployment_decision",
+        "qpm_pr3_cloudflare_edge_decision"
+      ]
+    },
+    {
+      "gate_id": "gate.integrity",
+      "verdict": "fail",
+      "evidence": [
+        "The validator checks file existence, JSON parsing, six sentences, eleven prompt IDs, and placeholder strings.",
+        "Known missing release requirements do not currently make CI fail.",
+        "No Ledger Fuckery Detector fixtures, receipt reconstruction, queue concurrency, stale-write, idempotency, projection drift, or poison recurrence tests exist."
+      ],
+      "move_ids": [
+        "qpm_pr3_eval_threat_model_tribunal_harness",
+        "qpm_pr3_merge_blocking_receipt_outcome_gate",
+        "qpm_pr3_complete_contracts_queue_semantics"
+      ]
+    },
+    {
+      "gate_id": "gate.security_privacy",
+      "verdict": "fail",
+      "evidence": [
+        "No threat model, hostile-document tests, secret contract, rights-sensitive forgetting implementation, non-resurrection test, or provider access policy exists.",
+        "Google Drive and Supabase boundaries are described but not versioned or tested."
+      ],
+      "move_ids": [
+        "qpm_pr3_eval_threat_model_tribunal_harness",
+        "qpm_pr3_google_drive_workplane_manifest",
+        "qpm_pr3_supabase_projection_contract"
+      ]
+    },
+    {
+      "gate_id": "gate.interop",
+      "verdict": "fail",
+      "evidence": [
+        "No executable receipt envelope, provider manifest, projection rebuild, or cross-system fixture exists.",
+        "Supabase is live, Vercel has no quirk-os project, and Cloudflare live account state is unverified; the repository encodes none of those facts."
+      ],
+      "move_ids": [
+        "qpm_pr3_supabase_projection_contract",
+        "qpm_pr3_vercel_deployment_decision",
+        "qpm_pr3_cloudflare_edge_decision",
+        "qpm_pr3_google_drive_workplane_manifest"
+      ]
+    },
+    {
+      "gate_id": "gate.eval",
+      "verdict": "fail",
+      "evidence": [
+        "No executable eval definitions, task bank, reference solutions, repeated-trial policy, grader calibration, adversarial cases, or outcome comparison exists.",
+        "The Ship It Without Bryan prompt exists only as prose."
+      ],
+      "move_ids": [
+        "qpm_pr3_eval_threat_model_tribunal_harness",
+        "qpm_pr3_executable_vertical_slice_bootstrap"
+      ]
+    },
+    {
+      "gate_id": "gate.documentation",
+      "verdict": "fail",
+      "evidence": [
+        "Architecture prose is strong, but there is no quickstart, install contract, operator guide, runbook, ADR, migration guide, changelog, license, contributing guide, security policy, or failure-recovery procedure.",
+        "The Drive work plane is not reconstructable from Git alone."
+      ],
+      "move_ids": [
+        "qpm_pr3_executable_vertical_slice_bootstrap",
+        "qpm_pr3_release_migrations_supply_chain",
+        "qpm_pr3_google_drive_workplane_manifest"
+      ]
+    },
+    {
+      "gate_id": "gate.strange_intact",
+      "verdict": "fail",
+      "evidence": [
+        "Distinctive language survives, but no calibrated rubric separates useful Quirk specificity from Bryan-only taste, inaccessible jargon, or ornamental profanity.",
+        "A voice-neutral conformant implementation is not defined."
+      ],
+      "move_ids": [
+        "qpm_pr3_canonical_vocabulary_strange_intact",
+        "qpm_pr3_multimedia_rights_accessibility_provenance"
+      ]
+    },
+    {
+      "gate_id": "gate.ship_without_bryan",
+      "verdict": "fail",
+      "evidence": [
+        "The tribunal could orient conceptually but could not install a runtime, execute an example, trace a real authority decision, challenge state, follow a migration, recover a failure, or extend a capability.",
+        "Target operators are undefined.",
+        "Fifteen hidden-context Proposed Moves remain unresolved."
+      ],
+      "move_ids": [
+        "qpm_pr3_system_identity_topology",
+        "qpm_pr3_canonical_vocabulary_strange_intact",
+        "qpm_pr3_operator_personalization_boundaries",
+        "qpm_pr3_authority_approval_manifest",
+        "qpm_pr3_executable_vertical_slice_bootstrap",
+        "qpm_pr3_complete_contracts_queue_semantics",
+        "qpm_pr3_eval_threat_model_tribunal_harness",
+        "qpm_pr3_google_drive_workplane_manifest",
+        "qpm_pr3_supabase_projection_contract",
+        "qpm_pr3_vercel_deployment_decision",
+        "qpm_pr3_cloudflare_edge_decision",
+        "qpm_pr3_research_top_minds_evidence",
+        "qpm_pr3_multimedia_rights_accessibility_provenance",
+        "qpm_pr3_release_migrations_supply_chain",
+        "qpm_pr3_merge_blocking_receipt_outcome_gate"
+      ]
+    }
+  ],
+  "confirmed_broken_links": [],
+  "link_gate_status": "absent",
+  "overall_verdict": "block",
+  "blocking_move_count": 15,
+  "blocking_move_ids": [
+    "qpm_pr3_system_identity_topology",
+    "qpm_pr3_canonical_vocabulary_strange_intact",
+    "qpm_pr3_operator_personalization_boundaries",
+    "qpm_pr3_authority_approval_manifest",
+    "qpm_pr3_executable_vertical_slice_bootstrap",
+    "qpm_pr3_complete_contracts_queue_semantics",
+    "qpm_pr3_eval_threat_model_tribunal_harness",
+    "qpm_pr3_google_drive_workplane_manifest",
+    "qpm_pr3_supabase_projection_contract",
+    "qpm_pr3_vercel_deployment_decision",
+    "qpm_pr3_cloudflare_edge_decision",
+    "qpm_pr3_research_top_minds_evidence",
+    "qpm_pr3_multimedia_rights_accessibility_provenance",
+    "qpm_pr3_release_migrations_supply_chain",
+    "qpm_pr3_merge_blocking_receipt_outcome_gate"
+  ]
+}
