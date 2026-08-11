@@ -1,0 +1,67 @@
+{
+  "id": "qpm_pr3_canonical_vocabulary_strange_intact",
+  "schema_version": "proposed-move.v1",
+  "lane": "canon",
+  "title": "Replace founder-recognition vocabulary with canonical definitions and executable rubrics",
+  "desired_change": "Create a versioned Quirk language canon for Golden, Strange Intact, Canonball, Quirk Move, Quirk Way, Poison, Quirk Mutual, OH NO THAT IS BETTER, Spanknasty, Quirk Taxes, Ledger Fuckery Detector, Concreteyes, Quirk Control, Governance, Runtime, and Evaluation & Evidence. Separate canonical meaning, memorable surface language, runtime enforcement, and optional voice.",
+  "expected_outcome": "A competent outsider can apply Quirk-specific terms consistently without copying Bryan's taste, flattening wordplay, or treating slogans as schemas.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/docs/golden-project-pack/README.md",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/docs/golden-project-pack/ARCHITECTURE.md",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/prompts/QUIRK-GOLDEN-PROMPTS.md"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "quirk.canon.language",
+    "gate.strange_intact",
+    "modifier.spanknasty",
+    "outcome.oh_no_that_is_better",
+    "quirk.tax",
+    "quirk.poison"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.quirk_core.canon_owner",
+    "authority.quirk_language.steward"
+  ],
+  "risk": {
+    "class": "L3",
+    "rights_or_safety_impact": "Undefined cultural language can silently override product semantics, accessibility, or contributor judgment.",
+    "strange_intact_risk": "high"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "docs/canon/quirk-language.md",
+  "eval_refs": [
+    "eval.strange_intact.calibrated",
+    "eval.ship_without_bryan.vocabulary"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "undefined_vocabulary",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_canonical_vocabulary_strange_intact",
+  "hidden_context_dependencies": [
+    "The PR uses Quirk-specific terms whose definitions live in conversation history rather than the repository.",
+    "Strange Intact is a required gate but has no rubric, fixtures, or falsifiers.",
+    "Humor and profanity appear in normative docs without a declared voice boundary.",
+    "Personal style can be mistaken for system-wide behavior.",
+    "Deprecated or rescinded names cannot be detected from this repository."
+  ],
+  "resolution_artifacts": [
+    "docs/canon/quirk-language.md",
+    "schemas/quirk-term.schema.json",
+    "evals/strange-intact/"
+  ],
+  "acceptance_checks": [
+    "Each term has ID, definition, purpose, owner, interfaces, examples, counterexamples, lifecycle, and enforcement boundary.",
+    "Strange Intact passes calibrated positive and negative fixtures.",
+    "A voice-neutral implementation remains conformant.",
+    "Wordplay is preserved where canonical and not generalized into mandatory profanity."
+  ]
+}
