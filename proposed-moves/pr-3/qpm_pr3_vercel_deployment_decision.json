@@ -1,0 +1,66 @@
+{
+  "id": "qpm_pr3_vercel_deployment_decision",
+  "schema_version": "proposed-move.v1",
+  "lane": "policy",
+  "title": "Decide and document Vercel's role before creating a quirk-os deployment",
+  "desired_change": "Record an explicit adopt/adapt/reject decision for Vercel. If adopted, define the project/team, Git linkage, preview and production branches, environment variables, deployment protection, observability, rollback, source commit receipts, and whether Vercel hosts Quirk Control, docs, or runtime APIs. If rejected, document why and prevent accidental linkage.",
+  "expected_outcome": "No contributor assumes Vercel is the deployment target merely because it is in Bryan's toolchain.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "vercel://team/quirk-it/projects",
+    "vercel://team/bryan-saylers-projects/projects"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "platform.vercel",
+    "quirk.control",
+    "quirk.docs",
+    "quirk.runtime",
+    "quirk.connect"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.platform_owner",
+    "authority.security",
+    "authority.quirk_core.canon_owner"
+  ],
+  "risk": {
+    "class": "L3",
+    "rights_or_safety_impact": "Accidental deployment can leak configuration, create duplicate authority, or establish an unsupported runtime.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "decisions/ADR-vercel-role.md",
+  "eval_refs": [
+    "eval.platform_boundary.vercel",
+    "eval.preview_non_authority"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "undocumented_provider_state",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_vercel_deployment_decision",
+  "hidden_context_dependencies": [
+    "The connected Vercel teams contain no quirk-os project.",
+    "The repository has no .vercel/project.json, vercel.json, deploy contract, environment manifest, or rollback procedure.",
+    "No decision separates documentation/control UI hosting from authoritative runtime responsibilities.",
+    "Provider overlap with Cloudflare is unresolved."
+  ],
+  "resolution_artifacts": [
+    "decisions/ADR-vercel-role.md",
+    "docs/platforms/vercel.md",
+    "platform/vercel.manifest.yaml"
+  ],
+  "acceptance_checks": [
+    "The decision names adopt, adapt, reject, or defer with rationale.",
+    "If adopted, a preview deployment is commit-addressable and non-authoritative.",
+    "Environment ownership and secret boundaries are explicit.",
+    "Rollback and observability are verified.",
+    "Vercel cannot mutate canon."
+  ]
+}
