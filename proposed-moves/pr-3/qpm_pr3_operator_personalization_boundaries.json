@@ -1,0 +1,70 @@
+{
+  "id": "qpm_pr3_operator_personalization_boundaries",
+  "schema_version": "proposed-move.v1",
+  "lane": "policy",
+  "title": "Define target operators, namespace partitions, and the boundary between Bryan authority and user authority",
+  "desired_change": "Declare supported operator roles and end-to-end jobs; add namespace/tenant/person partitions; distinguish founder canon authority from Bryan's personal preferences; require provenance, purpose, validity, and explicit promotion before personal context can become a system default.",
+  "expected_outcome": "Quirk can support Bryan deeply without encoding Bryan as the universal tenant or requiring his intervention for every consequential decision.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/docs/golden-project-pack/README.md",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/docs/golden-project-pack/ARCHITECTURE.md",
+    "conversation://2026-08-11/quirk-preference-language"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "quirk.operator",
+    "quirk.namespace",
+    "quirk.preference",
+    "quirk.memory",
+    "quirk.authority",
+    "quirk.personalization"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.quirk_core.canon_owner",
+    "authority.privacy",
+    "authority.product"
+  ],
+  "risk": {
+    "class": "L4",
+    "rights_or_safety_impact": "Context bleed can create privacy, consent, identity, and authorization failures.",
+    "strange_intact_risk": "medium"
+  },
+  "reversibility": "compensatable",
+  "implementation_ref": "docs/operators/operator-contracts.md",
+  "eval_refs": [
+    "eval.context_partition",
+    "eval.no_personal_default_leak"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "missing_personalization_boundary",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_operator_personalization_boundaries",
+  "hidden_context_dependencies": [
+    "The tribunal prompt requires target operators, but the PR names none.",
+    "The authority model is human-shaped but does not distinguish founder, operator, tenant owner, subject, reviewer, or end user.",
+    "Bryan's personal preferences and Quirk canon are not structurally separated.",
+    "No namespace or multi-tenant partition prevents preference or memory bleed.",
+    "No provenance class distinguishes native, reconstructed, and archaeological personal context."
+  ],
+  "resolution_artifacts": [
+    "docs/operators/operator-contracts.md",
+    "docs/policy/personalization-boundaries.md",
+    "schemas/namespace.schema.json",
+    "schemas/operator.schema.json",
+    "evals/context-partition/"
+  ],
+  "acceptance_checks": [
+    "At least three operator roles complete documented Golden Paths.",
+    "Personal PreferenceEdges cannot validate without purpose, context, authority, validity, and reference or explicit system default.",
+    "Cross-namespace access fails closed in tests.",
+    "Native, reconstructed, and archaeological context remain distinguishable."
+  ]
+}
