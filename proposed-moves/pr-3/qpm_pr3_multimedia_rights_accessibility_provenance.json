@@ -1,0 +1,69 @@
+{
+  "id": "qpm_pr3_multimedia_rights_accessibility_provenance",
+  "schema_version": "proposed-move.v1",
+  "lane": "media-release",
+  "title": "Prove Multimedia Multipliziert with a rights-cleared, accessible, provenance-linked specimen",
+  "desired_change": "Produce one complete media family from a canonical object with source receipt, claim-fidelity matrix, rights ledger, accessibility package, medium-native evals, C2PA use or documented non-applicability, release/withdrawal receipts, and maintenance owner.",
+  "expected_outcome": "The capability is demonstrated as operational machinery rather than a well-written doctrine that depends on Bryan choosing what counts as sufficiently native or distinctive.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/docs/golden-project-pack/MULTIMEDIA-MULTIPLIZIERT.md"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "quirk.media_multiplication",
+    "quirk.media_derivative",
+    "quirk.asset",
+    "quirk.rights",
+    "quirk.accessibility"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.creation",
+    "authority.rights",
+    "authority.accessibility"
+  ],
+  "risk": {
+    "class": "L4",
+    "rights_or_safety_impact": "Media can misstate claims, violate rights, exclude users, or imply provenance that does not exist.",
+    "strange_intact_risk": "high"
+  },
+  "reversibility": "compensatable",
+  "implementation_ref": "examples/multimedia-multipliziert/",
+  "eval_refs": [
+    "eval.media_source_fidelity",
+    "eval.media_native_affordance",
+    "eval.media_rights",
+    "eval.media_accessibility"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "missing_execution_contract",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_multimedia_rights_accessibility_provenance",
+  "hidden_context_dependencies": [
+    "No derivative specimen exists.",
+    "Medium-native value and emotional precision are not calibrated with fixtures.",
+    "Rights ownership, likeness/voice permission, accessibility verification, and C2PA toolchain are unspecified.",
+    "No withdrawal or stale-version drill exists.",
+    "Strange Intact still depends on Bryan's unrecorded judgment."
+  ],
+  "resolution_artifacts": [
+    "examples/multimedia-multipliziert/",
+    "rights/",
+    "accessibility/",
+    "evals/media/"
+  ],
+  "acceptance_checks": [
+    "A stranger can locate canon, identify transformations, verify rights, use accessible alternatives, and withdraw the derivative.",
+    "Claims added or omitted are explicit.",
+    "C2PA is treated as provenance evidence, not truth certification.",
+    "A no-native-affordance derivative fails.",
+    "The specimen does not impersonate Bryan."
+  ]
+}
