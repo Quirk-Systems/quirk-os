@@ -1,0 +1,34 @@
+{
+  "id": "qpm_sync_control_plane_bootstrap",
+  "title": "Bootstrap governed cross-platform Quirk synchronization",
+  "status": "PROPOSED",
+  "requested_right": "execute_reversible",
+  "authority_ceiling": "propose",
+  "depends_on": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "github://Quirk-Systems/quirk-os/pull/4"
+  ],
+  "scope": [
+    "create_candidate_contracts",
+    "apply_private_runtime_registry_migration",
+    "create_human_readable_projections",
+    "seed_platform_bindings"
+  ],
+  "prohibits": [
+    "merge_pull_request",
+    "promote_canon",
+    "deploy_production",
+    "expose_runtime_schema_to_browser_roles",
+    "bulk_mutate_existing_content",
+    "resolve_duplicates_without_review"
+  ],
+  "evidence_required": [
+    "migration_result",
+    "security_advisor_result",
+    "runtime_seed_receipt",
+    "projection_links",
+    "cross_platform_identity_query",
+    "self_promotion_fixture"
+  ],
+  "admission_decision": "human_required"
+}

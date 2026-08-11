@@ -1,0 +1,131 @@
+api_version: quirk.dev/program/v1alpha1
+kind: Program
+metadata:
+  id: program.quirk-sync-control-plane
+  version: 0.1.0
+  status: candidate
+  title: Quirk Sync Control Plane
+  owner_ref: human.bryan
+authority:
+  maximum_right: propose
+  capability_does_not_imply_authority: true
+  protected_actions:
+    - promote_canon
+    - expand_authority
+    - merge_pull_request
+    - deploy_production
+    - delete_history
+dependencies:
+  - ref: github://Quirk-Systems/quirk-os/pull/3
+    role: four_plane_ledger_architecture
+  - ref: github://Quirk-Systems/quirk-os/pull/4
+    role: never_capability_implies_authority
+planes:
+  canonical:
+    platform: github
+    owns:
+      - schemas
+      - policies
+      - migrations
+      - manifests
+      - evals
+      - executable_specs
+  runtime:
+    platform: supabase
+    owns:
+      - object_bindings
+      - cursors
+      - receipts
+      - run_state
+      - projection_outbox
+      - measured_outcomes
+  work:
+    platform: google_drive
+    owns:
+      - source_intake
+      - authored_working_docs
+      - review_packs
+      - archival_context
+  projections:
+    platforms:
+      - airtable
+      - notion
+      - vercel
+    rebuildable: true
+object_kinds:
+  - data_asset
+  - agent
+  - skill
+  - capability
+  - orchestrator
+  - project
+  - decision
+  - document
+  - deployment
+  - proposed_move
+manifest_kinds:
+  - agent
+  - skill
+  - capability
+  - orchestrator
+sync_directions:
+  - pull
+  - push
+  - bidirectional_proposal
+  - projection_only
+  - none
+orchestration:
+  lanes:
+    - discover
+    - fingerprint
+    - normalize
+    - validate
+    - persist_runtime
+    - project
+    - observe
+    - detect_drift
+    - propose
+  default_failure_posture: fail_closed
+  retry_policy:
+    max_attempts: 5
+    exponential_backoff: true
+    dead_letter_after_exhaustion: true
+controllers:
+  - id: controller.canon_projection_drift
+    sensor: content_hash_mismatch
+    actuator: propose_reconciliation
+    authority_ceiling: propose
+  - id: controller.sync_retry
+    sensor: outbox_delivery_failure
+    actuator: retry_bounded
+    authority_ceiling: execute_reversible
+  - id: controller.manifest_version_guard
+    sensor: invocation_version_mismatch
+    actuator: block_invocation
+    authority_ceiling: enforce_invariant
+skills:
+  - quirk-source-authority-resolver
+  - quirk-object-contract-engineer
+  - quirk-data-refinery
+  - quirk-semantic-label-foundry
+  - quirk-research-cartographer
+  - quirk-distillation-synthesizer
+  - quirk-evidence-instrumenter
+  - quirk-control-loop-designer
+  - quirk-probabilistic-forecaster
+  - quirk-roadmap-board-orchestrator
+  - quirk-value-foundry
+acceptance:
+  fixtures_ref: evals/sync-control-plane/fixtures.json
+  required:
+    - schema_valid
+    - isolated_migration_proof
+    - browser_roles_denied
+    - idempotent_replay
+    - cross_platform_identity
+    - drift_produces_proposed_move
+    - authority_ceiling_enforced
+    - bounded_retry
+    - projection_rebuild
+    - historical_receipts_preserved
+    - self_promotion_rejected

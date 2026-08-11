@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.dev/schemas/source-binding.schema.json",
+  "title": "Quirk Source Binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "binding_id",
+    "object_key",
+    "platform",
+    "external_id",
+    "authority_class",
+    "sync_direction",
+    "state"
+  ],
+  "properties": {
+    "binding_id": {
+      "type": "string",
+      "pattern": "^binding\\.[a-z0-9._-]+$"
+    },
+    "object_key": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 255
+    },
+    "platform": {
+      "enum": [
+        "github",
+        "supabase",
+        "google_drive",
+        "airtable",
+        "notion",
+        "vercel"
+      ]
+    },
+    "external_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "external_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "authority_class": {
+      "enum": ["canonical", "runtime", "work", "projection"]
+    },
+    "sync_direction": {
+      "enum": ["pull", "push", "bidirectional_proposal", "projection_only", "none"]
+    },
+    "state": {
+      "enum": ["discovered", "candidate", "active", "drifted", "paused", "error", "retired"]
+    },
+    "canonical_uri": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "content_hash": {
+      "type": ["string", "null"],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "last_seen_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "last_synced_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "cursor": {"type": "object"},
+    "metadata": {"type": "object"}
+  }
+}

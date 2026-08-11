@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.dev/schemas/runtime-manifest.schema.json",
+  "title": "Quirk Runtime Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_key",
+    "manifest_kind",
+    "version",
+    "status",
+    "canonical_uri",
+    "authority_ceiling",
+    "inputs_schema_ref",
+    "outputs_schema_ref"
+  ],
+  "properties": {
+    "manifest_key": {
+      "type": "string",
+      "pattern": "^(agent|skill|capability|orchestrator)\\.[a-z0-9._-]+$"
+    },
+    "manifest_kind": {
+      "enum": ["agent", "skill", "capability", "orchestrator"]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "status": {
+      "enum": ["candidate", "active", "paused", "superseded", "revoked"]
+    },
+    "canonical_uri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "authority_ceiling": {
+      "enum": ["observe", "infer", "propose", "execute_reversible", "enforce_invariant", "execute_protected"],
+      "description": "Independent of tools and model capability."
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ref", "allowed_actions"],
+        "properties": {
+          "ref": {"type": "string"},
+          "allowed_actions": {
+            "type": "array",
+            "items": {"type": "string"},
+            "uniqueItems": true
+          },
+          "object_scope": {
+            "type": "array",
+            "items": {"type": "string"},
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "inputs_schema_ref": {"type": "string"},
+    "outputs_schema_ref": {"type": "string"},
+    "eval_refs": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "skill_refs": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "stop_conditions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1
+    },
+    "metadata": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "active"}}},
+      "then": {"required": ["content_hash", "eval_refs", "stop_conditions"]}
+    }
+  ]
+}
