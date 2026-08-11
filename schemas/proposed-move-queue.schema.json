@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/proposed-move-queue.schema.json",
+  "title": "Quirk Proposed Move Queue",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "schema_version",
+    "tribunal_id",
+    "source_repository",
+    "source_pull_request",
+    "source_commit",
+    "verdict",
+    "generated_at",
+    "blocking_move_ids",
+    "move_refs"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^qpmq_[A-Za-z0-9_-]+$"
+    },
+    "schema_version": {
+      "const": "proposed-move-queue.v1"
+    },
+    "tribunal_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_repository": {
+      "type": "string",
+      "pattern": "^[^/]+/[^/]+$"
+    },
+    "source_pull_request": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "block",
+        "hold",
+        "pass"
+      ]
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "blocking_move_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^qpm_[A-Za-z0-9_-]+$"
+      }
+    },
+    "move_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "path"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^qpm_[A-Za-z0-9_-]+$"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^proposed-moves/pr-3/qpm_[A-Za-z0-9_-]+\\.json$"
+          }
+        }
+      }
+    }
+  }
+}
