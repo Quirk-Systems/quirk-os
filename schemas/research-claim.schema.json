@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/research-claim.schema.json",
+  "title": "Quirk Research Claim",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "schema_version",
+    "statement",
+    "as_of",
+    "source_refs",
+    "source_quality",
+    "evidence_strength",
+    "confidence",
+    "adoption",
+    "affected_objects",
+    "review_after"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^qrc_[A-Za-z0-9_-]+$"},
+    "schema_version": {"const": "research-claim.v1"},
+    "statement": {"type": "string", "minLength": 1},
+    "as_of": {"type": "string", "format": "date"},
+    "temporal_scope": {"type": "string", "minLength": 1},
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "source_quality": {
+      "type": "string",
+      "enum": [
+        "normative_standard",
+        "peer_reviewed_primary",
+        "official_primary",
+        "direct_practitioner",
+        "strong_secondary",
+        "community_signal",
+        "unknown"
+      ]
+    },
+    "evidence_strength": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "reproduced",
+        "corroborated",
+        "derived",
+        "expert_judgment",
+        "model_inference",
+        "anecdotal",
+        "unknown"
+      ]
+    },
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "contradiction_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "vendor_or_institution_context": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "adoption": {
+      "type": "string",
+      "enum": ["adopt", "adapt", "reject", "monitor", "experiment", "boneyard"]
+    },
+    "affected_objects": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "proposed_move_ref": {"type": "string", "minLength": 1},
+    "review_after": {"type": "string", "format": "date"},
+    "supersedes": {"type": "string", "minLength": 1}
+  }
+}
