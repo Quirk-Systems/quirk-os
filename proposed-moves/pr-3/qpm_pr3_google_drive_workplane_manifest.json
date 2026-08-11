@@ -1,0 +1,69 @@
+{
+  "id": "qpm_pr3_google_drive_workplane_manifest",
+  "schema_version": "proposed-move.v1",
+  "lane": "policy",
+  "title": "Make the Google Drive work plane portable, permissioned, and reconstructable",
+  "desired_change": "Add a Drive manifest containing canonical folder/file IDs, owners, access expectations, content classes, comment-to-Proposed-Move routing, export/offline fallback, source hashes, supersession rules, retention/forgetting behavior, and broken-link recovery. Mirror critical instructions in Git.",
+  "expected_outcome": "A contributor can use or reconstruct the work plane without Bryan granting ad hoc access or explaining which Drive artifact is current.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/docs/golden-project-pack/README.md",
+    "drive://folder/10bw27MiSyZvfSTCFiE0-cw4_HGG4cWnk",
+    "drive://document/1yP9jDbJcjoHciRJRooYCrDfoi2yV9ZdksiiKf0VW-OY"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "quirk.work_plane",
+    "connector.google_drive",
+    "quirk.resource_registry",
+    "quirk.forgetting"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.collaboration_owner",
+    "authority.privacy",
+    "authority.quirk_core.canon_owner"
+  ],
+  "risk": {
+    "class": "L4",
+    "rights_or_safety_impact": "Private collaboration artifacts can leak data, disappear, or silently outrank canon.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "compensatable",
+  "implementation_ref": "workplanes/google-drive.manifest.yaml",
+  "eval_refs": [
+    "eval.workplane_portability",
+    "eval.comment_not_command",
+    "eval.drive_denied_access"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "missing_portability_contract",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_google_drive_workplane_manifest",
+  "hidden_context_dependencies": [
+    "The PR names Google Drive as the collaborative surface but contains no machine-readable Drive manifest.",
+    "Folder IDs, document IDs, permissions, and ownership live outside the repository.",
+    "The START HERE document and work-plane hierarchy are not discoverable offline.",
+    "No sync, conflict, supersession, export, retention, or forgetting procedure is executable.",
+    "A private Drive link could become critical truth despite the local-first claim."
+  ],
+  "resolution_artifacts": [
+    "workplanes/google-drive.manifest.yaml",
+    "docs/runbooks/drive-reconstruction.md",
+    "exports/drive-control-index.md",
+    "evals/workplane-portability/"
+  ],
+  "acceptance_checks": [
+    "Every critical Drive resource has an ID, owner, content class, hash/version, and Git fallback.",
+    "A denied-Drive-access test still allows repository orientation and release review.",
+    "Drive comments can only create Proposed Moves.",
+    "Superseded Drive projections are visibly marked.",
+    "Forgetting propagates to exports and indexes under Quirk control."
+  ]
+}
