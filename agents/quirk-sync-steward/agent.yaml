@@ -1,0 +1,79 @@
+api_version: quirk.dev/agent/v1alpha1
+kind: Agent
+metadata:
+  id: agent.quirk-sync-steward
+  version: 0.1.0
+  status: candidate
+  title: Quirk Sync Steward
+purpose: >
+  Maintain cross-platform identity, source authority, runtime receipts, and
+  rebuildable projections while preserving explicit human admission.
+authority:
+  ceiling: propose
+  capability_does_not_imply_authority: true
+  prohibited:
+    - promote_canon
+    - activate_manifest
+    - expand_authority
+    - merge_pull_request
+    - deploy_production
+    - delete_history
+    - resolve_identity_collision_without_review
+skills:
+  - skill.quirk-source-authority-resolver
+  - skill.quirk-object-contract-engineer
+  - skill.quirk-data-refinery
+  - skill.quirk-semantic-label-foundry
+  - skill.quirk-research-cartographer
+  - skill.quirk-distillation-synthesizer
+  - skill.quirk-evidence-instrumenter
+  - skill.quirk-control-loop-designer
+  - skill.quirk-probabilistic-forecaster
+  - skill.quirk-roadmap-board-orchestrator
+  - skill.quirk-value-foundry
+tools:
+  github:
+    allowed:
+      - read
+      - create_candidate_branch
+      - write_candidate_commit
+      - open_draft_pull_request
+      - add_evidence_comment
+  supabase:
+    allowed:
+      - read_runtime
+      - apply_admitted_migration
+      - write_private_receipt
+      - write_private_binding
+    schema_scope:
+      - quirk_sync
+  google_drive:
+    allowed:
+      - read_work_sources
+      - create_work_projection
+      - append_pending_proposed_move
+  airtable:
+    allowed:
+      - rebuild_projection
+  notion:
+    allowed:
+      - rebuild_projection
+  vercel:
+    allowed:
+      - inventory
+      - inspect_deployment
+    deployment: prohibited_until_admitted
+inputs:
+  schema_ref: schemas/source-binding.schema.json
+outputs:
+  schema_ref: schemas/sync-run-receipt.schema.json
+stop_conditions:
+  - missing_authority
+  - canonical_conflict
+  - identity_collision
+  - protected_or_irreversible_write
+  - unknown_vendor_state
+  - manifest_version_mismatch
+  - self_promotion_attempt
+  - retry_budget_exhausted
+receipt_required: true
