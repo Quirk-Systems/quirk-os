@@ -1,0 +1,297 @@
+{
+  "plan_id": "personalization.plan.generated-ui-reconstruction",
+  "version": "0.1.0",
+  "status": "candidate",
+  "intent": {
+    "summary": "Reconstruct a generated intake UI from pinned candidate inputs",
+    "desired_change": "Prove that identical pinned inputs rebuild identical UI semantics in a cold process",
+    "task_class": "build",
+    "stakes": "high",
+    "destination": "web",
+    "audience": "Quirk maintainers",
+    "constraints": [
+      "candidate only",
+      "no memory mutation",
+      "no hidden runtime state"
+    ],
+    "non_goals": [
+      "live deployment",
+      "side-effectful execution"
+    ],
+    "completion_evidence": [
+      "two cold reconstructions match",
+      "mutation suite isolates semantic subhash changes"
+    ]
+  },
+  "purpose_partition": {
+    "purpose": "generated-ui reconstruction proof",
+    "domain": "quirk.systems",
+    "scope_key": "quirk.personalization.generated-ui",
+    "excluded_scopes": [
+      "music.performance"
+    ]
+  },
+  "persona_hand": {
+    "primary": {
+      "ref": "persona.brayn",
+      "role": "systems_rigor",
+      "weight": 0.7
+    },
+    "supporting": [
+      {
+        "ref": "persona.bryan",
+        "role": "admission_boundary",
+        "weight": 0.3
+      }
+    ],
+    "selection_reason": "The proof needs deterministic systems framing plus explicit admission boundaries",
+    "user_confirmed": false
+  },
+  "voice": {
+    "profile_ref": "voice.quirk.default",
+    "tone_axes": {
+      "directness": 0.9,
+      "formality": 0.3
+    },
+    "required_traits": [
+      "specific",
+      "evidence-aware"
+    ],
+    "lexical_rules": [
+      "name pinned inputs explicitly"
+    ],
+    "no_fill": [
+      "ambient defaults",
+      "authority drift"
+    ]
+  },
+  "aesthetic": {
+    "profile_ref": "aesthetic.inspectable-state",
+    "principles": [
+      "operational hierarchy",
+      "plain fallback",
+      "inspectable semantics"
+    ],
+    "avoided_patterns": [
+      "mutable dashboard chrome"
+    ],
+    "modality": "interactive"
+  },
+  "preferences": [
+    {
+      "ref": "pref.current.inspectable.generated-ui",
+      "source": "explicit_current",
+      "confidence": 1.0,
+      "scope": "quirk.personalization.generated-ui",
+      "valid_from": "2026-08-12T08:30:52Z",
+      "valid_until": null,
+      "reversible": true,
+      "decision": "use"
+    }
+  ],
+  "platform_affects": [
+    {
+      "platform": "web",
+      "effects": [
+        "structured intake",
+        "plain fallback"
+      ],
+      "constraints": [
+        "candidate only"
+      ],
+      "affordance_bias": [
+        "generated_ui",
+        "checklist"
+      ]
+    }
+  ],
+  "task_affordances": [
+    {
+      "type": "generated_ui",
+      "priority": 100,
+      "rationale": "The proof requires a generated UI whose semantics can be reconstructed exactly",
+      "reversible": true,
+      "fallback": "plain checklist",
+      "generated_ui_contract": {
+        "contract_version": "generated-ui.v1",
+        "runtime_manifest_ref": "schemas/runtime-manifest.schema.json",
+        "semantic_projection": {
+          "view_id": "assessment.intake",
+          "platform": "web",
+          "decision_semantics": "groundtruth_assessment_request",
+          "components": [
+            {
+              "component_id": "hero.intent",
+              "registry_ref": "component.hero.intent",
+              "state_slot": "intent_summary",
+              "binding": "intent.summary",
+              "label": "What operational outcome do you need?"
+            },
+            {
+              "component_id": "choice.focus",
+              "registry_ref": "component.choice.focus",
+              "state_slot": "focus_area",
+              "binding": "intent.desired_change",
+              "label": "Choose the pain lane",
+              "options": [
+                "latency",
+                "defects",
+                "handoffs"
+              ]
+            },
+            {
+              "component_id": "cta.submit",
+              "registry_ref": "component.cta.submit",
+              "state_slot": "submit",
+              "binding": "intent.completion_evidence",
+              "label": "Start assessment"
+            }
+          ]
+        },
+        "reconstruction_inputs": {
+          "schema_ref": "schemas/personalization-plan.schema.json",
+          "locale": "en-US",
+          "timezone": "UTC",
+          "clock": {
+            "mode": "pinned",
+            "timestamp": "2026-08-12T08:30:52Z"
+          },
+          "randomness": {
+            "mode": "pinned",
+            "seed": 0
+          },
+          "environment": {
+            "pythonhashseed": "0"
+          },
+          "network_access": false,
+          "model_calls": false,
+          "profile_retrieval": false,
+          "mutable_registries": false,
+          "locale_defaults": false,
+          "time_defaults": false,
+          "component_registry": {
+            "registry_id": "registry.generated-ui.assessment",
+            "version": "2026-08-12",
+            "entries": [
+              {
+                "component_ref": "component.hero.intent",
+                "component_kind": "heading",
+                "semantic_role": "collect_intent",
+                "state_slots": [
+                  "intent_summary"
+                ],
+                "supported_actions": []
+              },
+              {
+                "component_ref": "component.choice.focus",
+                "component_kind": "choice_group",
+                "semantic_role": "capture_focus_area",
+                "state_slots": [
+                  "focus_area"
+                ],
+                "supported_actions": [
+                  "choose_option"
+                ]
+              },
+              {
+                "component_ref": "component.cta.submit",
+                "component_kind": "button",
+                "semantic_role": "submit_assessment_request",
+                "state_slots": [
+                  "submit"
+                ],
+                "supported_actions": [
+                  "submit_intent"
+                ]
+              }
+            ],
+            "registry_hash": "24e32174d548552dba26f4a38ad736b42ade4e0eea460a5ea354a680be32fdda"
+          }
+        },
+        "declarative_actions": [
+          {
+            "action_id": "act.choose-focus",
+            "type": "choose_option",
+            "target": "focus_area",
+            "value": "latency"
+          },
+          {
+            "action_id": "act.submit",
+            "type": "submit_intent",
+            "target": "assessment_request",
+            "value": "groundtruth_assessment_request"
+          }
+        ],
+        "plain_fallback": {
+          "type": "checklist",
+          "steps": [
+            "State the operational outcome clearly",
+            "Choose one pain lane",
+            "Submit the assessment request"
+          ]
+        },
+        "evidence_refs": [
+          "eval.QIS-015",
+          "fixture.personalization-plan.generated-ui.valid"
+        ],
+        "metadata": {
+          "description": "Candidate-only deterministic reconstruction fixture",
+          "ticket": "QIS-015",
+          "reviewed_by": "human.bryan"
+        }
+      }
+    }
+  ],
+  "settings": {
+    "personalization_enabled": true,
+    "adaptation_mode": "propose_only",
+    "verbosity": 6,
+    "challenge_level": 8,
+    "creativity": 4,
+    "evidence_mode": "strict",
+    "generated_ui": "task_gated",
+    "implicit_signal_use": "off"
+  },
+  "authority": {
+    "ceiling": "propose",
+    "human_required": [
+      "update_memory",
+      "change_settings",
+      "activate_skill"
+    ],
+    "prohibited": [
+      "self_promote",
+      "deploy_generated_ui",
+      "write_canon"
+    ]
+  },
+  "uncertainty": {
+    "confidence": 0.83,
+    "unknowns": [
+      "admission outcome"
+    ],
+    "conflicts": []
+  },
+  "evaluation": {
+    "criteria": [
+      "semantic hash determinism",
+      "authority compliance",
+      "plain fallback equivalence"
+    ],
+    "counterfactuals_required": [
+      "registry drift",
+      "missing pinned input",
+      "authority drift"
+    ],
+    "pass_threshold": 1.0,
+    "candidate_count": 1
+  },
+  "learning": {
+    "feedback_receipt_required": true,
+    "auto_apply": false,
+    "allowed_updates": [
+      "propose_generated_ui_adjustment"
+    ]
+  },
+  "created_at": "2026-08-12T08:30:52Z"
+}

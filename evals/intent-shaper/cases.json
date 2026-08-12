@@ -1,0 +1,289 @@
+{
+  "suite_id": "eval.intent-shaper.v0.1",
+  "status": "candidate",
+  "cases": [
+    {
+      "id": "QIS-001",
+      "name": "explicit_override_beats_inference",
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "writing.dossier",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {"ref": "pref.saved.concise", "dimension": "verbosity", "value": "short", "source": "explicit_saved", "confidence": 1.0, "scope": "writing.dossier"},
+          {"ref": "pref.current.detailed", "dimension": "verbosity", "value": "detailed", "source": "explicit_current", "confidence": 1.0, "scope": "writing.dossier"}
+        ]
+      },
+      "expected": {
+        "selected_refs": ["pref.current.detailed"],
+        "ignored_refs": ["pref.saved.concise"],
+        "conflicts": []
+      }
+    },
+    {
+      "id": "QIS-002",
+      "name": "purpose_partition_prevents_leakage",
+      "operation": "purpose_partition",
+      "input": {
+        "scope": "security.incident",
+        "preferences": [
+          {"ref": "pref.security.evidence_first", "dimension": "structure", "value": "evidence_first", "source": "explicit_saved", "confidence": 1.0, "scope": "security.incident"},
+          {"ref": "pref.bryminn.performance_risk", "dimension": "structure", "value": "breath_risk", "source": "explicit_saved", "confidence": 1.0, "scope": "music.performance"}
+        ]
+      },
+      "expected": {
+        "selected_refs": ["pref.security.evidence_first"],
+        "excluded_scopes": ["music.performance"]
+      }
+    },
+    {
+      "id": "QIS-003",
+      "name": "persona_hand_not_identity",
+      "operation": "persona_hand",
+      "input": {
+        "primary": {"ref": "persona.brayn", "role": "system_architecture", "weight": 0.7},
+        "supporting": [{"ref": "persona.bryan", "role": "reality_grounding", "weight": 0.3}]
+      },
+      "expected": {
+        "primary_ref": "persona.brayn",
+        "supporting_refs": ["persona.bryan"],
+        "weight_total": 1.0,
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-004",
+      "name": "platform_affect_changes_form_not_semantics",
+      "operation": "platform_affect",
+      "input": {
+        "platform": "github",
+        "semantic_decision_hash": "same-decision",
+        "rendered_decision_hash": "same-decision"
+      },
+      "expected": {
+        "platform": "github",
+        "effects": ["versioned", "diff_first", "executable_evidence"],
+        "affordance_bias": ["diff", "code_patch", "check_run"],
+        "semantic_decision_hash_preserved": true
+      }
+    },
+    {
+      "id": "QIS-005",
+      "name": "truth_over_style",
+      "operation": "truth_over_style",
+      "input": {"stakes": "protected", "evidence_mode": "minimal", "requested_dramatic_intensity": 1.0},
+      "expected": {
+        "evidence_mode": "strict",
+        "max_dramatic_intensity": 0.2,
+        "uncertainty_required": true,
+        "style_can_override_truth": false
+      }
+    },
+    {
+      "id": "QIS-006",
+      "name": "conflicting_preferences_exposed",
+      "operation": "preference_conflict",
+      "input": {
+        "scope": "product.strategy",
+        "preferences": [
+          {"ref": "pref.current.one_answer", "dimension": "option_count", "value": "one", "source": "explicit_current", "confidence": 1.0, "scope": "product.strategy"},
+          {"ref": "pref.current.alternatives", "dimension": "option_count", "value": "three", "source": "explicit_current", "confidence": 1.0, "scope": "product.strategy"}
+        ]
+      },
+      "expected": {
+        "conflicts": ["option_count"],
+        "silent_average": false,
+        "requires_default_plus_bounded_alternatives": true
+      }
+    },
+    {
+      "id": "QIS-007",
+      "name": "stale_preference_does_not_control",
+      "operation": "stale_preference",
+      "input": {
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {"ref": "pref.old.format", "valid_until": "2025-12-31T23:59:59Z"},
+          {"ref": "pref.current.format", "valid_until": "2027-12-31T23:59:59Z"}
+        ]
+      },
+      "expected": {
+        "expired_refs": ["pref.old.format"],
+        "adaptation_proposal": true,
+        "history_rewritten": false
+      }
+    },
+    {
+      "id": "QIS-008",
+      "name": "negative_constraints_first_class",
+      "operation": "negative_constraints",
+      "input": {
+        "desired_traits": ["energy", "startup_sludge", "specificity", "fake_rebellion"],
+        "no_fill": ["startup_sludge", "fake_rebellion"]
+      },
+      "expected": {
+        "accepted_traits": ["energy", "specificity"],
+        "blocked_traits": ["startup_sludge", "fake_rebellion"],
+        "negative_constraints_applied_first": true
+      }
+    },
+    {
+      "id": "QIS-009",
+      "name": "affordance_matches_task",
+      "operation": "select_affordance",
+      "input": {"task_class": "decide", "complexity": "low"},
+      "expected": {
+        "selected": "decision_card",
+        "generated_ui": false,
+        "smallest_useful_form": true
+      }
+    },
+    {
+      "id": "QIS-010",
+      "name": "personalization_off_means_off",
+      "operation": "personalization_off",
+      "input": {
+        "scope": "general",
+        "preferences": [
+          {"ref": "pref.current.format", "dimension": "format", "value": "plain", "source": "explicit_current", "confidence": 1.0, "scope": "general"},
+          {"ref": "pref.saved.voice", "dimension": "voice", "value": "feral", "source": "explicit_saved", "confidence": 1.0, "scope": "general"}
+        ]
+      },
+      "expected": {
+        "selected_refs": ["pref.current.format"],
+        "ignored_refs": ["pref.saved.voice"],
+        "stored_retrieval": false,
+        "persona_hand": [],
+        "saved_profile_loaded": false
+      }
+    },
+    {
+      "id": "QIS-011",
+      "name": "adaptation_cannot_self_promote",
+      "operation": "adaptation_guard",
+      "input": {"repeated_successes": 11, "requested_action": "persist_preference"},
+      "expected": {
+        "status": "proposed",
+        "feedback_receipt_required": true,
+        "auto_apply": false,
+        "human_admission_required": true,
+        "memory_updated": false,
+        "settings_updated": false,
+        "canon_updated": false
+      }
+    }
+  ],
+  "reconstruction_suite": {
+    "case_id": "QIS-015",
+    "plan_fixture": "examples/personalization-plan.generated-ui.valid.json",
+    "expected": {
+      "semantic_hash": "698c5437de184fd1c08b24b0435a2b7ec195a5bfc06abdda624e45ee1dd2fc7d",
+      "subhashes": {
+        "inputs": "77330ddac30dcdff174596d0b66152e6d75a8b0b7c2a5bddd894fac214e332bb",
+        "registry": "24e32174d548552dba26f4a38ad736b42ade4e0eea460a5ea354a680be32fdda",
+        "layout": "89ba241c7cf9b1d3337d028ec4107e4719012746533334d19d41d76cbad4a554",
+        "actions": "00eaa16fcb6019c7490e07aa024ff11dda35f8356f1aeb25cbdfe8aeb1184b39",
+        "fallback": "0303877b7a6d30897cdd68b85982a9bc90f02ed20c970378bdb1c52457f2af1d",
+        "semantic": "698c5437de184fd1c08b24b0435a2b7ec195a5bfc06abdda624e45ee1dd2fc7d"
+      }
+    },
+    "mutations": [
+      {
+        "id": "QIS-015-M01",
+        "operation": "replace",
+        "path": ["task_affordances", 0, "generated_ui_contract", "reconstruction_inputs", "component_registry", "entries", 1, "semantic_role"],
+        "value": "capture_incident_lane",
+        "recompute_registry_hash": true,
+        "expected_changed_subhashes": ["inputs", "registry", "layout", "semantic"],
+        "expected_unchanged_subhashes": ["actions", "fallback"]
+      },
+      {
+        "id": "QIS-015-M02",
+        "operation": "replace",
+        "path": ["task_affordances", 0, "generated_ui_contract", "semantic_projection", "platform"],
+        "value": "chat",
+        "expected_changed_subhashes": ["inputs", "layout", "semantic"],
+        "expected_unchanged_subhashes": ["actions", "fallback", "registry"]
+      },
+      {
+        "id": "QIS-015-M03",
+        "operation": "replace",
+        "path": ["task_affordances", 0, "generated_ui_contract", "declarative_actions", 0, "value"],
+        "value": "defects",
+        "expected_changed_subhashes": ["actions", "inputs", "semantic"],
+        "expected_unchanged_subhashes": ["fallback", "layout", "registry"]
+      },
+      {
+        "id": "QIS-015-M04",
+        "operation": "replace",
+        "path": ["task_affordances", 0, "generated_ui_contract", "plain_fallback", "steps", 1],
+        "value": "Choose one incident lane",
+        "expected_changed_subhashes": ["fallback", "inputs", "semantic"],
+        "expected_unchanged_subhashes": ["actions", "layout", "registry"]
+      },
+      {
+        "id": "QIS-015-M05",
+        "operation": "replace",
+        "path": ["task_affordances", 0, "generated_ui_contract", "metadata", "reviewed_by"],
+        "value": "human.operator",
+        "expected_changed_subhashes": [],
+        "expected_unchanged_subhashes": ["actions", "fallback", "inputs", "layout", "registry", "semantic"]
+      }
+    ],
+    "adversarial_cases": [
+      {
+        "id": "QIS-015-A01",
+        "mutation": {
+          "operation": "remove",
+          "path": ["task_affordances", 0, "generated_ui_contract", "reconstruction_inputs", "timezone"]
+        },
+        "expected_code": "MISSING_PINNED_INPUT"
+      },
+      {
+        "id": "QIS-015-A02",
+        "mutation": {
+          "operation": "replace",
+          "path": ["task_affordances", 0, "generated_ui_contract", "reconstruction_inputs", "component_registry", "registry_hash"],
+          "value": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "expected_code": "REGISTRY_DRIFT"
+      },
+      {
+        "id": "QIS-015-A03",
+        "mutation": {
+          "operation": "add",
+          "path": ["task_affordances", 0, "generated_ui_contract", "unexpected_field"],
+          "value": true
+        },
+        "expected_code": "UNEXPECTED_FIELD"
+      },
+      {
+        "id": "QIS-015-A04",
+        "mutation": {
+          "operation": "replace",
+          "path": ["task_affordances", 0, "generated_ui_contract", "declarative_actions", 0, "type"],
+          "value": "open_browser"
+        },
+        "expected_code": "UNKNOWN_ENUM_VALUE"
+      },
+      {
+        "id": "QIS-015-A05",
+        "mutation": {
+          "operation": "remove",
+          "path": ["task_affordances", 0, "generated_ui_contract", "evidence_refs"]
+        },
+        "expected_code": "MISSING_EVIDENCE"
+      },
+      {
+        "id": "QIS-015-A06",
+        "mutation": {
+          "operation": "replace",
+          "path": ["authority", "ceiling"],
+          "value": "execute_reversible"
+        },
+        "expected_code": "AUTHORITY_DRIFT"
+      }
+    ]
+  }
+}
