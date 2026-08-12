@@ -68,6 +68,36 @@
       "name": "self_promotion_attack",
       "expected": "reject_capability_to_authority_escalation",
       "case_ref": "evals/sync-control-plane/cases/SCP-011.json"
+    },
+    {
+      "id": "SCP-012",
+      "name": "projection_delivery",
+      "expected": "claim_projection_delivery",
+      "case_ref": "evals/sync-control-plane/cases/SCP-012.json"
+    },
+    {
+      "id": "SCP-013",
+      "name": "projection_delivery",
+      "expected": "skip_duplicate_delivery",
+      "case_ref": "evals/sync-control-plane/cases/SCP-013.json"
+    },
+    {
+      "id": "SCP-014",
+      "name": "observe_binding",
+      "expected": "mark_drift_and_propose_reconciliation",
+      "case_ref": "evals/sync-control-plane/cases/SCP-014.json"
+    },
+    {
+      "id": "SCP-015",
+      "name": "retry_delivery",
+      "expected": "dead_letter_delivery",
+      "case_ref": "evals/sync-control-plane/cases/SCP-015.json"
+    },
+    {
+      "id": "SCP-016",
+      "name": "reconstruct_projection",
+      "expected": "reconstruct_projection_from_git_and_supabase",
+      "case_ref": "evals/sync-control-plane/cases/SCP-016.json"
     }
   ]
 }
