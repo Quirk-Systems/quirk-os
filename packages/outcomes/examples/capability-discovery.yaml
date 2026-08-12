@@ -1,0 +1,50 @@
+id: out_capability_discovery_v1
+version: 1.0.0
+title: Permissioned capabilities are discoverable across Quirk agents
+primaryClass: interoperability
+secondaryClasses:
+  - capability
+  - governance
+  - continuity
+beneficiary:
+  kind: system
+  id: quirk-agent-runtime
+scope:
+  systems:
+    - quirk-agent
+    - quirk-capability
+    - quirk-governance
+baseline: >
+  Each agent requires repository-specific adapters and interprets capability permissions differently.
+targetState: >
+  Any conforming Quirk agent can discover and invoke an authorized capability through the same versioned manifest and permission contract.
+mechanism: >
+  A shared capability manifest, discovery protocol, consent envelope, and conformance suite.
+assumptions:
+  - Capability providers implement the shared protocol.
+  - Runtime permissions remain fail-closed.
+  - Manifest versions are machine-readable.
+indicators:
+  - id: conformance-pass-rate
+    description: Capability conformance scenarios passing
+    baseline: 0
+    target: 11
+    evidenceRefs: []
+  - id: unauthorized-invocation
+    description: Unauthorized invocation attempts successfully blocked
+    baseline: unknown
+    target: 100%
+    evidenceRefs: []
+guardrails:
+  - description: No provider-specific permission bypasses
+  - description: No silent fallback to broader access
+owner: quirk-runtime
+targetBy: 2026-10-01
+retentionWindow: P30D
+evidenceLevel: asserted
+confidence:
+  score: 0.72
+  rationale: >
+    Contracts and test strategy are understood, but no cross-provider implementation has yet been reproduced.
+reversibility: moderate
+status: instrumented
