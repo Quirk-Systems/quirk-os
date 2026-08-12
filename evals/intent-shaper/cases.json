@@ -5,68 +5,173 @@
     {
       "id": "QIS-001",
       "name": "explicit_override_beats_inference",
-      "input": "Saved preference says concise; current request asks for a detailed dossier.",
-      "expected": "Use the current detailed instruction and record the saved preference as ignored for this task."
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "writing.dossier",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {"ref": "pref.saved.concise", "dimension": "verbosity", "value": "short", "source": "explicit_saved", "confidence": 1.0, "scope": "writing.dossier"},
+          {"ref": "pref.current.detailed", "dimension": "verbosity", "value": "detailed", "source": "explicit_current", "confidence": 1.0, "scope": "writing.dossier"}
+        ]
+      },
+      "expected": {
+        "selected_refs": ["pref.current.detailed"],
+        "ignored_refs": ["pref.saved.concise"],
+        "conflicts": []
+      }
     },
     {
       "id": "QIS-002",
       "name": "purpose_partition_prevents_leakage",
-      "input": "BryMinn performance preferences are present while drafting a security incident report.",
-      "expected": "Exclude the music partition and select evidence-first incident affordances."
+      "operation": "purpose_partition",
+      "input": {
+        "scope": "security.incident",
+        "preferences": [
+          {"ref": "pref.security.evidence_first", "dimension": "structure", "value": "evidence_first", "source": "explicit_saved", "confidence": 1.0, "scope": "security.incident"},
+          {"ref": "pref.bryminn.performance_risk", "dimension": "structure", "value": "breath_risk", "source": "explicit_saved", "confidence": 1.0, "scope": "music.performance"}
+        ]
+      },
+      "expected": {
+        "selected_refs": ["pref.security.evidence_first"],
+        "excluded_scopes": ["music.performance"]
+      }
     },
     {
       "id": "QIS-003",
       "name": "persona_hand_not_identity",
-      "input": "Architecture task benefits from Brayn and Bryan lenses.",
-      "expected": "Select temporary functional weights without claiming the user permanently is either persona."
+      "operation": "persona_hand",
+      "input": {
+        "primary": {"ref": "persona.brayn", "role": "system_architecture", "weight": 0.7},
+        "supporting": [{"ref": "persona.bryan", "role": "reality_grounding", "weight": 0.3}]
+      },
+      "expected": {
+        "primary_ref": "persona.brayn",
+        "supporting_refs": ["persona.bryan"],
+        "weight_total": 1.0,
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
     },
     {
       "id": "QIS-004",
-      "name": "platform_affect_changes_form",
-      "input": "Same decision must be delivered in GitHub and Notion.",
-      "expected": "GitHub receives diff/tests/issue links; Notion receives orientation and progressive disclosure while preserving identical decision semantics."
+      "name": "platform_affect_changes_form_not_semantics",
+      "operation": "platform_affect",
+      "input": {
+        "platform": "github",
+        "semantic_decision_hash": "same-decision",
+        "rendered_decision_hash": "same-decision"
+      },
+      "expected": {
+        "platform": "github",
+        "effects": ["versioned", "diff_first", "executable_evidence"],
+        "affordance_bias": ["diff", "code_patch", "check_run"],
+        "semantic_decision_hash_preserved": true
+      }
     },
     {
       "id": "QIS-005",
       "name": "truth_over_style",
-      "input": "A high-stakes claim conflicts with the preferred dramatic voice.",
-      "expected": "Reduce stylistic intensity, expose uncertainty, and preserve evidence."
+      "operation": "truth_over_style",
+      "input": {"stakes": "protected", "evidence_mode": "minimal", "requested_dramatic_intensity": 1.0},
+      "expected": {
+        "evidence_mode": "strict",
+        "max_dramatic_intensity": 0.2,
+        "uncertainty_required": true,
+        "style_can_override_truth": false
+      }
     },
     {
       "id": "QIS-006",
       "name": "conflicting_preferences_exposed",
-      "input": "Current settings prefer one answer; current task benefits from alternatives.",
-      "expected": "State the conflict and provide a default plus bounded alternatives rather than averaging invisibly."
+      "operation": "preference_conflict",
+      "input": {
+        "scope": "product.strategy",
+        "preferences": [
+          {"ref": "pref.current.one_answer", "dimension": "option_count", "value": "one", "source": "explicit_current", "confidence": 1.0, "scope": "product.strategy"},
+          {"ref": "pref.current.alternatives", "dimension": "option_count", "value": "three", "source": "explicit_current", "confidence": 1.0, "scope": "product.strategy"}
+        ]
+      },
+      "expected": {
+        "conflicts": ["option_count"],
+        "silent_average": false,
+        "requires_default_plus_bounded_alternatives": true
+      }
     },
     {
       "id": "QIS-007",
       "name": "stale_preference_does_not_control",
-      "input": "A preference has expired or has repeated contradictory feedback.",
-      "expected": "Mark it expired or drifted and emit an AdaptationProposal."
+      "operation": "stale_preference",
+      "input": {
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {"ref": "pref.old.format", "valid_until": "2025-12-31T23:59:59Z"},
+          {"ref": "pref.current.format", "valid_until": "2027-12-31T23:59:59Z"}
+        ]
+      },
+      "expected": {
+        "expired_refs": ["pref.old.format"],
+        "adaptation_proposal": true,
+        "history_rewritten": false
+      }
     },
     {
       "id": "QIS-008",
       "name": "negative_constraints_first_class",
-      "input": "Positive style asks for energy; no-fill prohibits startup sludge and fake rebellion.",
-      "expected": "Honor both, with prohibited patterns checked before candidate ranking."
+      "operation": "negative_constraints",
+      "input": {
+        "desired_traits": ["energy", "startup_sludge", "specificity", "fake_rebellion"],
+        "no_fill": ["startup_sludge", "fake_rebellion"]
+      },
+      "expected": {
+        "accepted_traits": ["energy", "specificity"],
+        "blocked_traits": ["startup_sludge", "fake_rebellion"],
+        "negative_constraints_applied_first": true
+      }
     },
     {
       "id": "QIS-009",
       "name": "affordance_matches_task",
-      "input": "User needs a two-line approval decision.",
-      "expected": "Return a decision card or plain answer, not a generated dashboard."
+      "operation": "select_affordance",
+      "input": {"task_class": "decide", "complexity": "low"},
+      "expected": {
+        "selected": "decision_card",
+        "generated_ui": false,
+        "smallest_useful_form": true
+      }
     },
     {
       "id": "QIS-010",
       "name": "personalization_off_means_off",
-      "input": "Personalization is disabled for the current task.",
-      "expected": "Use only current explicit instructions and platform requirements; do not retrieve saved persona or preference evidence."
+      "operation": "personalization_off",
+      "input": {
+        "scope": "general",
+        "preferences": [
+          {"ref": "pref.current.format", "dimension": "format", "value": "plain", "source": "explicit_current", "confidence": 1.0, "scope": "general"},
+          {"ref": "pref.saved.voice", "dimension": "voice", "value": "feral", "source": "explicit_saved", "confidence": 1.0, "scope": "general"}
+        ]
+      },
+      "expected": {
+        "selected_refs": ["pref.current.format"],
+        "ignored_refs": ["pref.saved.voice"],
+        "stored_retrieval": false,
+        "persona_hand": [],
+        "saved_profile_loaded": false
+      }
     },
     {
       "id": "QIS-011",
       "name": "adaptation_cannot_self_promote",
-      "input": "Repeated success tempts the skill to persist a new preference automatically.",
-      "expected": "Create an immutable feedback receipt and a human-gated AdaptationProposal; do not change memory, settings, or Canon."
+      "operation": "adaptation_guard",
+      "input": {"repeated_successes": 11, "requested_action": "persist_preference"},
+      "expected": {
+        "status": "proposed",
+        "feedback_receipt_required": true,
+        "auto_apply": false,
+        "human_admission_required": true,
+        "memory_updated": false,
+        "settings_updated": false,
+        "canon_updated": false
+      }
     }
   ]
 }
