@@ -1,0 +1,126 @@
+{
+  "schema_version": "qis-evidence-envelope.v1",
+  "receipt_id": "receipt.qis-agent-harness.fixture-ancestry-mismatch",
+  "issue_ref": "Quirk-Systems/quirk-os#27",
+  "admission_scope": "candidate_evidence_only",
+  "authority": {
+    "admission_authority": "human.bryan",
+    "candidate_runtime_authority": "none",
+    "candidate_can_self_promote": false,
+    "gate_satisfaction_allowed": false
+  },
+  "repository": {
+    "owner": "Quirk-Systems",
+    "repo": "quirk-os",
+    "candidate_branch": "agent/quirk-intent-shaper",
+    "candidate_sha": "f5effa3d6da3e5879e10007492aeff39a1c643be",
+    "base_sha": "f5effa3d6da3e5879e10007492aeff39a1c643be",
+    "head_sha": "f591968deb2facf5722c3176f5f3b63fa22deb43",
+    "merge_base_sha": "24b25e0f56a28b8595b77b63e0c5ef5a69771b3e",
+    "is_traceable_descendant": false
+  },
+  "materials": [
+    {
+      "role": "instruction",
+      "path": ".github/copilot-instructions.md",
+      "sha256": "d2ee9e70d00c3010ec85a9573e1834e81cdd4f5f8aff5accf247366a873c2d77"
+    },
+    {
+      "role": "instruction",
+      "path": ".github/instructions/intent-shaper.instructions.md",
+      "sha256": "34b3a0dbc6de40ae260be6f9fcf41b308aef95de56c5812850b3a101270b1bde"
+    },
+    {
+      "role": "skill",
+      "path": ".github/skills/intent-shaper-admission/SKILL.md",
+      "sha256": "ee7d285cc440d3e02927d668a454f338447bd4e5928e585b745ec153b8adf37b"
+    },
+    {
+      "role": "workflow",
+      "path": ".github/workflows/qis-agent-harness.yml",
+      "sha256": "50a5e83f11c5a3f38e190a71909c986941b3a5fb26c53940f158130f71850a8e"
+    },
+    {
+      "role": "schema",
+      "path": "schemas/personalization-plan.schema.json",
+      "sha256": "4014f8584357ff018686a0b3a2f364fff86bd22b53afe5a27ad67451e74f3e46"
+    },
+    {
+      "role": "schema",
+      "path": "schemas/qis-evidence-envelope.schema.json",
+      "sha256": "d99b59209c875787c2609545ac4321ec3edf6d87b6ad8923faec737217e1fc6a"
+    },
+    {
+      "role": "fixture",
+      "path": "evals/intent-shaper/cases.json",
+      "sha256": "4553a06d3b8ea7c8d3e8d6f7e27317c891119c5adf93e9c1d14fcf8a2a5e9453"
+    },
+    {
+      "role": "evaluator",
+      "path": "scripts/validate_intent_shaper.py",
+      "sha256": "d24ddd0899115009441efe72fcfaaa7ee0b0ff8c5344b53d2a50420f61ab5ed4"
+    },
+    {
+      "role": "evaluator",
+      "path": "scripts/validate_qis_harness.py",
+      "sha256": "d4596e6ed57ef1aee3d755e691901b43f3ba4f5e83cccbbf49d4b084dc1a40e3"
+    },
+    {
+      "role": "test",
+      "path": "tests/test_intent_shaper.py",
+      "sha256": "00ecf4d925027024bf53e82a4730a51d434240c8e96ab17112041acdc78e3d75"
+    },
+    {
+      "role": "test",
+      "path": "tests/test_qis_harness.py",
+      "sha256": "44dcc5d0134a3d1408b3f66e13ef6a989bf03a6626a4cb4f45a5e6dcb0465c98"
+    }
+  ],
+  "commands": [
+    {
+      "name": "focused_tests",
+      "kind": "unit_tests",
+      "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+      "status": "passed",
+      "exit_code": 0,
+      "counts": {
+        "passed": 15,
+        "failed": 0,
+        "total": 15
+      }
+    },
+    {
+      "name": "intent_shaper_conformance",
+      "kind": "conformance",
+      "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json",
+      "status": "passed",
+      "exit_code": 0,
+      "counts": {
+        "passed": 11,
+        "failed": 0,
+        "total": 11
+      }
+    }
+  ],
+  "evidence_refs": [
+    "evals/intent-shaper/cases.json",
+    "tests/test_intent_shaper.py",
+    "tests/test_qis_harness.py"
+  ],
+  "critical_failures": [
+    "branch ancestry drifted"
+  ],
+  "limitations": [
+    "Candidate-only harness evidence; no admission, merge, deployment, schedule, or persistence authority.",
+    "This workflow validates the harness and Intent Shaper candidate paths only; numbered admission gates still require separate evidence."
+  ],
+  "environment": {
+    "runner_os": "Linux",
+    "python": "3.13.0",
+    "pip": "24.2",
+    "jsonschema": "4.26.0"
+  },
+  "verdict": "REVISE",
+  "generated_at": "2026-08-12T08:30:31Z",
+  "receipt_hash": "e15dec882812c234bc301fefbc4938ecc0e7eb421f0b83c8bd982adc43139bda"
+}
