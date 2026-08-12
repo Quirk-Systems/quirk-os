@@ -1,0 +1,715 @@
+{
+  "suite_id": "eval.intent-shaper.v0.1",
+  "status": "passed",
+  "schema_valid": true,
+  "generated_ui_receipt_schema_valid": true,
+  "sample_valid": true,
+  "fixtures_passed": 22,
+  "fixtures_total": 22,
+  "fixture_ids": [
+    "QIS-001",
+    "QIS-002",
+    "QIS-003",
+    "QIS-004",
+    "QIS-005",
+    "QIS-006",
+    "QIS-007",
+    "QIS-008",
+    "QIS-009",
+    "QIS-010",
+    "QIS-011",
+    "QIS-012",
+    "QIS-013",
+    "QIS-014",
+    "QIS-015",
+    "QIS-016",
+    "QIS-017",
+    "QIS-018",
+    "QIS-019",
+    "QIS-020",
+    "QIS-021",
+    "QIS-022"
+  ],
+  "results": [
+    {
+      "id": "QIS-001",
+      "operation": "resolve_preference",
+      "passed": true,
+      "expected": {
+        "selected_refs": [
+          "pref.current.detailed"
+        ],
+        "ignored_refs": [
+          "pref.saved.concise"
+        ],
+        "conflicts": []
+      },
+      "actual": {
+        "selected_refs": [
+          "pref.current.detailed"
+        ],
+        "ignored_refs": [
+          "pref.saved.concise"
+        ],
+        "stored_retrieval": true,
+        "conflicts": []
+      }
+    },
+    {
+      "id": "QIS-002",
+      "operation": "purpose_partition",
+      "passed": true,
+      "expected": {
+        "selected_refs": [
+          "pref.security.evidence_first"
+        ],
+        "excluded_scopes": [
+          "music.performance"
+        ]
+      },
+      "actual": {
+        "selected_refs": [
+          "pref.security.evidence_first"
+        ],
+        "excluded_scopes": [
+          "music.performance"
+        ]
+      }
+    },
+    {
+      "id": "QIS-003",
+      "operation": "persona_hand",
+      "passed": true,
+      "expected": {
+        "primary_ref": "persona.brayn",
+        "supporting_refs": [
+          "persona.bryan"
+        ],
+        "weight_total": 1.0,
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      },
+      "actual": {
+        "primary_ref": "persona.brayn",
+        "supporting_refs": [
+          "persona.bryan"
+        ],
+        "weight_total": 1.0,
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-004",
+      "operation": "platform_affect",
+      "passed": true,
+      "expected": {
+        "platform": "github",
+        "effects": [
+          "versioned",
+          "diff_first",
+          "executable_evidence"
+        ],
+        "affordance_bias": [
+          "diff",
+          "code_patch",
+          "check_run"
+        ],
+        "semantic_decision_hash_preserved": true
+      },
+      "actual": {
+        "platform": "github",
+        "effects": [
+          "versioned",
+          "collaborative_review",
+          "diff_first",
+          "executable_evidence"
+        ],
+        "affordance_bias": [
+          "diff",
+          "code_patch",
+          "check_run",
+          "issue",
+          "review_comment"
+        ],
+        "semantic_decision_hash_preserved": true
+      }
+    },
+    {
+      "id": "QIS-005",
+      "operation": "truth_over_style",
+      "passed": true,
+      "expected": {
+        "evidence_mode": "strict",
+        "max_dramatic_intensity": 0.2,
+        "uncertainty_required": true,
+        "style_can_override_truth": false
+      },
+      "actual": {
+        "evidence_mode": "strict",
+        "max_dramatic_intensity": 0.2,
+        "uncertainty_required": true,
+        "style_can_override_truth": false
+      }
+    },
+    {
+      "id": "QIS-006",
+      "operation": "preference_conflict",
+      "passed": true,
+      "expected": {
+        "conflicts": [
+          "option_count"
+        ],
+        "silent_average": false,
+        "requires_default_plus_bounded_alternatives": true
+      },
+      "actual": {
+        "conflicts": [
+          "option_count"
+        ],
+        "silent_average": false,
+        "requires_default_plus_bounded_alternatives": true
+      }
+    },
+    {
+      "id": "QIS-007",
+      "operation": "stale_preference",
+      "passed": true,
+      "expected": {
+        "expired_refs": [
+          "pref.old.format"
+        ],
+        "adaptation_proposal": true,
+        "history_rewritten": false
+      },
+      "actual": {
+        "expired_refs": [
+          "pref.old.format"
+        ],
+        "adaptation_proposal": true,
+        "history_rewritten": false
+      }
+    },
+    {
+      "id": "QIS-008",
+      "operation": "negative_constraints",
+      "passed": true,
+      "expected": {
+        "accepted_traits": [
+          "energy",
+          "specificity"
+        ],
+        "blocked_traits": [
+          "startup_sludge",
+          "fake_rebellion"
+        ],
+        "negative_constraints_applied_first": true
+      },
+      "actual": {
+        "accepted_traits": [
+          "energy",
+          "specificity"
+        ],
+        "blocked_traits": [
+          "startup_sludge",
+          "fake_rebellion"
+        ],
+        "negative_constraints_applied_first": true
+      }
+    },
+    {
+      "id": "QIS-009",
+      "operation": "select_affordance",
+      "passed": true,
+      "expected": {
+        "selected": "decision_card",
+        "generated_ui": false,
+        "smallest_useful_form": true
+      },
+      "actual": {
+        "selected": "decision_card",
+        "generated_ui": false,
+        "smallest_useful_form": true
+      }
+    },
+    {
+      "id": "QIS-010",
+      "operation": "personalization_off",
+      "passed": true,
+      "expected": {
+        "selected_refs": [
+          "pref.current.format"
+        ],
+        "ignored_refs": [
+          "pref.saved.voice"
+        ],
+        "stored_retrieval": false,
+        "persona_hand": [],
+        "saved_profile_loaded": false
+      },
+      "actual": {
+        "selected_refs": [
+          "pref.current.format"
+        ],
+        "ignored_refs": [
+          "pref.saved.voice"
+        ],
+        "stored_retrieval": false,
+        "conflicts": [],
+        "persona_hand": [],
+        "saved_profile_loaded": false
+      }
+    },
+    {
+      "id": "QIS-011",
+      "operation": "adaptation_guard",
+      "passed": true,
+      "expected": {
+        "status": "proposed",
+        "feedback_receipt_required": true,
+        "auto_apply": false,
+        "human_admission_required": true,
+        "memory_updated": false,
+        "settings_updated": false,
+        "canon_updated": false
+      },
+      "actual": {
+        "status": "proposed",
+        "feedback_receipt_required": true,
+        "auto_apply": false,
+        "human_admission_required": true,
+        "memory_updated": false,
+        "settings_updated": false,
+        "canon_updated": false
+      }
+    },
+    {
+      "id": "QIS-012",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "candidate_evidence_complete",
+        "reason_codes": [
+          "CANDIDATE_EVIDENCE_COMPLETE"
+        ],
+        "runtime_authorized": false,
+        "deployment_authorized": false
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "candidate_evidence_complete",
+        "reason_codes": [
+          "CANDIDATE_EVIDENCE_COMPLETE"
+        ],
+        "component_refs": [
+          "component.generated-ui.issue-intake-form"
+        ],
+        "semantic_fallback_ref": "affordance.plain_answer",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "provided",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    },
+    {
+      "id": "QIS-013",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_MISSING"
+        ]
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_MISSING"
+        ],
+        "component_refs": [],
+        "semantic_fallback_ref": "affordance.plain_answer",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "provided",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    },
+    {
+      "id": "QIS-014",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_VERSION_INVALID"
+        ]
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_VERSION_INVALID"
+        ],
+        "component_refs": [
+          "component.generated-ui.issue-intake-form"
+        ],
+        "semantic_fallback_ref": "affordance.plain_answer",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "provided",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    },
+    {
+      "id": "QIS-015",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_STALE"
+        ]
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_STALE"
+        ],
+        "component_refs": [
+          "component.generated-ui.issue-intake-form"
+        ],
+        "semantic_fallback_ref": "affordance.plain_answer",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "provided",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    },
+    {
+      "id": "QIS-016",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_INACCESSIBLE"
+        ]
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_INACCESSIBLE"
+        ],
+        "component_refs": [
+          "component.generated-ui.issue-intake-form"
+        ],
+        "semantic_fallback_ref": "affordance.plain_answer",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "provided",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    },
+    {
+      "id": "QIS-017",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED"
+        ]
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "rejected",
+        "reason_codes": [
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED"
+        ],
+        "component_refs": [
+          "component.generated-ui.issue-intake-form"
+        ],
+        "semantic_fallback_ref": "affordance.plain_answer",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "provided",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    },
+    {
+      "id": "QIS-018",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "AUTHORITY_EXPANSION_REQUESTED"
+        ]
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "rejected",
+        "reason_codes": [
+          "AUTHORITY_EXPANSION_REQUESTED"
+        ],
+        "component_refs": [
+          "component.generated-ui.issue-intake-form"
+        ],
+        "semantic_fallback_ref": "affordance.plain_answer",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "provided",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    },
+    {
+      "id": "QIS-019",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "blocked_manual",
+        "reason_codes": [
+          "MANUAL_EVIDENCE_MISSING"
+        ]
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "blocked_manual",
+        "reason_codes": [
+          "MANUAL_EVIDENCE_MISSING"
+        ],
+        "component_refs": [
+          "component.generated-ui.issue-intake-form"
+        ],
+        "semantic_fallback_ref": "affordance.plain_answer",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "missing",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    },
+    {
+      "id": "QIS-020",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_HASH_UNVERIFIABLE"
+        ]
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_HASH_UNVERIFIABLE"
+        ],
+        "component_refs": [
+          "component.generated-ui.issue-intake-form"
+        ],
+        "semantic_fallback_ref": "affordance.plain_answer",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "provided",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    },
+    {
+      "id": "QIS-021",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "SEMANTIC_FALLBACK_MISSING"
+        ]
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "rejected",
+        "reason_codes": [
+          "SEMANTIC_FALLBACK_MISSING"
+        ],
+        "component_refs": [
+          "component.generated-ui.issue-intake-form"
+        ],
+        "semantic_fallback_ref": "missing://semantic-fallback",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "provided",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    },
+    {
+      "id": "QIS-022",
+      "operation": "generated_ui_gate",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "RECONSTRUCTION_INPUTS_MISSING"
+        ]
+      },
+      "actual": {
+        "receipt_id": "receipt.generated-ui.issue-intake",
+        "plan_id": "generated-ui.plan.issue-intake",
+        "status": "rejected",
+        "reason_codes": [
+          "RECONSTRUCTION_INPUTS_MISSING"
+        ],
+        "component_refs": [
+          "component.generated-ui.issue-intake-form"
+        ],
+        "semantic_fallback_ref": "affordance.plain_answer",
+        "runtime_authorized": false,
+        "deployment_authorized": false,
+        "manual_evidence_summary": {
+          "keyboard": "provided",
+          "focus_order_visibility": "provided",
+          "screen_reader_semantics": "provided",
+          "reflow_zoom": "provided",
+          "contrast": "provided",
+          "reduced_motion": "provided",
+          "errors": "provided",
+          "status_announcements": "provided"
+        },
+        "evaluated_at": "2026-08-12T12:00:00Z"
+      }
+    }
+  ],
+  "errors": [],
+  "git": {
+    "candidate_sha": "f5effa3d6da3e5879e10007492aeff39a1c643be",
+    "base_sha": "b5c1e2a354249666b76d2d50b9398ac023fecece",
+    "head_sha": "c50748417b7a3208031e2ddaa18b04a62ebb38c8",
+    "merge_base_sha": "f5effa3d6da3e5879e10007492aeff39a1c643be",
+    "candidate_ancestor_of_head": true
+  },
+  "relevant_inputs": {
+    "schema": "schemas/personalization-plan.schema.json",
+    "receipt_schema": "schemas/generated-ui-gate-receipt.schema.json",
+    "fixtures": "evals/intent-shaper/cases.json",
+    "tests": [
+      "tests/test_intent_shaper.py"
+    ],
+    "component_manifests": [
+      "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-1020-azure-x86_64-with-glibc2.39",
+    "jsonschema": "4.10.3",
+    "git": "git version 2.54.0"
+  },
+  "verdict": "candidate_evidence_complete",
+  "runtime_authorized": false,
+  "deployment_authorized": false,
+  "limitations": [
+    "Manual accessibility evidence is recorded by reference only; this harness does not invent human observations."
+  ],
+  "content_hash": "c63b2d6c8d1c936067f6d248acb419f43fbc4b6bc929b53e7af5d2dfaef1fd2f"
+}

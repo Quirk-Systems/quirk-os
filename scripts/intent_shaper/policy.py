@@ -9,6 +9,10 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import re
 from typing import Any, Iterable, Mapping
 
 SOURCE_RANK: dict[str, int] = {
@@ -41,6 +45,31 @@ PLATFORM_AFFECTS: dict[str, dict[str, list[str]]] = {
         "affordance_bias": ["plain_answer", "decision_card"],
     },
 }
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SEMVER_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?$")
+SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
+ALLOWED_AUTHORITY_EFFECTS = {"none", "read_candidate", "propose_reversible"}
+MANUAL_REQUIREMENTS = (
+    "keyboard",
+    "focus_order_visibility",
+    "screen_reader_semantics",
+    "reflow_zoom",
+    "contrast",
+    "reduced_motion",
+    "errors",
+    "status_announcements",
+)
+MACHINE_CHECK_FIELDS = (
+    "focus_order_declared",
+    "focus_visible_tokens",
+    "screen_reader_semantics_declared",
+    "reflow_zoom_support_declared",
+    "contrast_tokens_verified",
+    "reduced_motion_support_declared",
+    "errors_identifiable",
+    "status_announcements_mapped",
+)
 
 
 def _parse_time(value: str | None) -> datetime | None:
@@ -125,6 +154,144 @@ def _contains_subset(actual: Any, expected: Any) -> bool:
     if isinstance(expected, list):
         return isinstance(actual, list) and all(item in actual for item in expected)
     return actual == expected
+
+
+def _canonical_json_sha256(path: Path) -> str:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
+
+
+def _isoformat(value: datetime) -> str:
+    return value.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _manual_evidence_summary(entries: Any) -> dict[str, str]:
+    summary = {requirement: "missing" for requirement in MANUAL_REQUIREMENTS}
+    if not isinstance(entries, list):
+        return summary
+    for entry in entries:
+        if not isinstance(entry, Mapping):
+            continue
+        requirement = str(entry.get("requirement", ""))
+        if requirement in summary and entry.get("status") == "provided":
+            summary[requirement] = "provided"
+    return summary
+
+
+def _evaluate_generated_ui_gate(plan: Mapping[str, Any] | None, *, as_of: datetime) -> dict[str, Any]:
+    candidate = dict(plan or {})
+    plan_id = str(candidate.get("plan_id") or "generated-ui.plan.missing")
+    semantic_fallback_ref = str(candidate.get("semantic_fallback_ref") or "missing://semantic-fallback")
+    component_refs: list[str] = []
+    reject_reasons: set[str] = set()
+
+    if not candidate:
+        reject_reasons.add("GENERATED_UI_PLAN_MISSING")
+
+    components = candidate.get("component_manifests")
+    if not isinstance(components, list) or not components:
+        reject_reasons.add("COMPONENT_MANIFEST_MISSING")
+        components = []
+
+    for component in components:
+        if not isinstance(component, Mapping):
+            reject_reasons.add("COMPONENT_MANIFEST_MISSING")
+            continue
+        component_id = str(component.get("component_id", ""))
+        if component_id:
+            component_refs.append(component_id)
+
+        version = str(component.get("version", ""))
+        if not SEMVER_RE.fullmatch(version):
+            reject_reasons.add("COMPONENT_VERSION_INVALID")
+
+        manifest_ref = str(component.get("manifest_ref", ""))
+        expected_hash = str(component.get("content_hash_sha256", ""))
+        if not manifest_ref:
+            reject_reasons.add("COMPONENT_MANIFEST_MISSING")
+        else:
+            manifest_path = (REPO_ROOT / manifest_ref).resolve()
+            if not manifest_path.is_file():
+                reject_reasons.add("COMPONENT_MANIFEST_INACCESSIBLE")
+            else:
+                if not SHA256_RE.fullmatch(expected_hash):
+                    reject_reasons.add("COMPONENT_HASH_UNVERIFIABLE")
+                elif _canonical_json_sha256(manifest_path) != expected_hash:
+                    reject_reasons.add("COMPONENT_HASH_UNVERIFIABLE")
+
+        for action in component.get("user_actions", []):
+            if not isinstance(action, Mapping):
+                reject_reasons.add("AUTHORITY_EXPANSION_REQUESTED")
+                continue
+            if str(action.get("authority_effect")) not in ALLOWED_AUTHORITY_EFFECTS:
+                reject_reasons.add("AUTHORITY_EXPANSION_REQUESTED")
+
+    authority_effects = candidate.get("authority_effects")
+    if not isinstance(authority_effects, list) or not authority_effects:
+        reject_reasons.add("AUTHORITY_EXPANSION_REQUESTED")
+    else:
+        for effect in authority_effects:
+            if str(effect) not in ALLOWED_AUTHORITY_EFFECTS:
+                reject_reasons.add("AUTHORITY_EXPANSION_REQUESTED")
+
+    if not semantic_fallback_ref or semantic_fallback_ref == "missing://semantic-fallback":
+        reject_reasons.add("SEMANTIC_FALLBACK_MISSING")
+
+    reconstruction = candidate.get("reconstruction_contract")
+    if not isinstance(reconstruction, Mapping):
+        reject_reasons.add("RECONSTRUCTION_INPUTS_MISSING")
+    else:
+        input_refs = reconstruction.get("input_refs")
+        replay_hash = str(reconstruction.get("replay_hash_sha256", ""))
+        deterministic_renderer_ref = str(reconstruction.get("deterministic_renderer_ref", ""))
+        if not isinstance(input_refs, list) or not input_refs or not deterministic_renderer_ref or not SHA256_RE.fullmatch(
+            replay_hash
+        ):
+            reject_reasons.add("RECONSTRUCTION_INPUTS_MISSING")
+
+    freshness = candidate.get("freshness")
+    valid_until = None
+    if isinstance(freshness, Mapping):
+        valid_until = _parse_time(str(freshness.get("valid_until"))) if freshness.get("valid_until") else None
+    if valid_until is None or valid_until < as_of:
+        reject_reasons.add("COMPONENT_MANIFEST_STALE")
+
+    accessibility = candidate.get("accessibility")
+    machine_checks: Mapping[str, Any] = {}
+    manual_evidence: Any = []
+    if isinstance(accessibility, Mapping):
+        if isinstance(accessibility.get("machine_checks"), Mapping):
+            machine_checks = accessibility["machine_checks"]
+        manual_evidence = accessibility.get("manual_evidence", [])
+    if any(machine_checks.get(field) is not True for field in MACHINE_CHECK_FIELDS):
+        reject_reasons.add("ACCESSIBILITY_MACHINE_CHECK_FAILED")
+
+    manual_summary = _manual_evidence_summary(manual_evidence)
+    manual_missing = any(status != "provided" for status in manual_summary.values())
+
+    if reject_reasons:
+        status = "rejected"
+        reason_codes = sorted(reject_reasons)
+    elif manual_missing:
+        status = "blocked_manual"
+        reason_codes = ["MANUAL_EVIDENCE_MISSING"]
+    else:
+        status = "candidate_evidence_complete"
+        reason_codes = ["CANDIDATE_EVIDENCE_COMPLETE"]
+
+    return {
+        "receipt_id": f"receipt.generated-ui.{plan_id.removeprefix('generated-ui.plan.')}",
+        "plan_id": plan_id,
+        "status": status,
+        "reason_codes": reason_codes,
+        "component_refs": sorted(set(component_refs)),
+        "semantic_fallback_ref": semantic_fallback_ref,
+        "runtime_authorized": False,
+        "deployment_authorized": False,
+        "manual_evidence_summary": manual_summary,
+        "evaluated_at": _isoformat(as_of),
+    }
 
 
 def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:
@@ -267,6 +434,9 @@ def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:
             "settings_updated": False,
             "canon_updated": False,
         }
+
+    elif operation == "generated_ui_gate":
+        result = _evaluate_generated_ui_gate(payload.get("generated_ui_plan"), as_of=as_of)
 
     else:
         raise ValueError(f"Unsupported QIS operation: {operation}")
