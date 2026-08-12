@@ -10,9 +10,9 @@
 - A positive loader control accepts only an ephemeral admitted copy with a separate approval record and scoped grant.
 - Run receipts validate independently from admission and remain explicitly immutable.
 - Source and runtime mappings forbid silent loss and reverse mutation of Canon.
-- Skill-scope markers such as `TODO`, `FIXME`, `TBD`, and `XXX` are rejected by conformance.
+- Bounded skill-package placeholder markers are rejected by conformance.
 - Local proof: 14/14 runtime tests and 44/44 skill cases pass.
-- GitHub proof on the hardened commit: Skills validation passed for both push and pull-request events; Sync Control Plane Conformance passed.
+- GitHub proof: Skills validation and Sync Control Plane Conformance pass on the reconciled stack.
 
 ## Gate matrix
 
@@ -30,8 +30,8 @@
 
 ## Inherited gate state
 
-Golden Gates still fails at `structural-integrity → Validate Golden Project Pack`. The same validator step failed on PR #5 before this skills commit existed. It remains an inherited PR #3 / Golden Project Pack blocker, not skill-conformance evidence and not something this child PR may silently waive.
+The inherited Golden Project Pack gate distinguishes candidate merge from Golden admission. PR #3 remains `PROPOSED`; its Ship It Without Bryan findings remain explicit admission holds, but they do not make structurally valid descendant candidates unmergeable. This child does not resolve, waive, or rewrite those admission findings.
 
 ## Decision ceiling
 
-This evidence can justify **candidate completeness** only. It cannot by itself mark a package admitted, active, current, chooseable, useable, canonical, merged, or deployed.
+This evidence can justify **candidate completeness and candidate merge-readiness** only. It cannot by itself mark a package admitted, active, current, chooseable, useable, canonical, or deployed.
