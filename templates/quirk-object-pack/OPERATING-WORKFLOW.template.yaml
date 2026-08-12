@@ -1,0 +1,33 @@
+api_version: quirk.dev/workflow/v1alpha1
+kind: Workflow
+metadata:
+  id: workflow.{{OBJECT_ID}}
+  version: 0.1.0
+  status: {{STATUS}}
+
+trigger:
+  allowed:
+    - manual
+    - admitted_proposed_move
+  scheduled: false
+
+authority_ceiling: {{AUTHORITY_CEILING}}
+default_failure_posture: fail_closed
+
+steps:
+  - id: resolve_intent
+    action: resolve_current_intent
+  - id: resolve_authority
+    action: resolve_external_authority
+  - id: validate_inputs
+    action: validate_contracts
+  - id: execute_candidate
+    action: run_bounded_work
+  - id: evaluate
+    action: run_positive_and_adversarial_evals
+  - id: emit_receipt
+    action: persist_immutable_evidence
+  - id: propose_next_move
+    action: create_proposed_move
+
+protected_actions_require_human: true

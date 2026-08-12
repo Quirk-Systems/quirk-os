@@ -1,0 +1,13 @@
+{
+  "aesthetic_id": "aesthetic.premium-chaos",
+  "title": "Premium Chaos",
+  "version": "0.1.0",
+  "status": "candidate",
+  "principles": ["dense but navigable", "surprising specificity", "operational truth remains visible", "sharp edges survive formatting"],
+  "preferences": {"hierarchy": "strong", "density": "high", "contrast": "controlled", "motion": "purposeful", "humor": "dry"},
+  "prohibit": ["neon_glitch_default", "fake_rebellion", "decorative_dashboard", "mystery_meat_control", "generic_ai_gradient"],
+  "applies_to": ["writing", "ui", "diagram", "music", "image", "motion", "product_behavior"],
+  "authority_guardrails": {"must_not_hide": ["status", "evidence", "cost", "uncertainty", "authority", "risk", "price", "accessibility"]},
+  "evidence_refs": ["conversation://premium-chaos-definition"],
+  "metadata": {"candidate": true}
+}

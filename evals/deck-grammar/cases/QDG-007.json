@@ -1,0 +1,11 @@
+{
+  "case_id": "QDG-007",
+  "name": "artifact_promoted_without_rights",
+  "attack": "artifact_promoted_without_rights",
+  "input": {
+    "promotion_requested": true,
+    "rights_status": "unclear",
+    "provenance_complete": false
+  },
+  "expected": "reject"
+}

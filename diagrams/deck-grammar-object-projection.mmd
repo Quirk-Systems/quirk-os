@@ -1,0 +1,14 @@
+flowchart LR
+  O["Quirk Object<br/>identity · semantics · authority · lifecycle"] --> P{"Cardification useful?"}
+  P -->|"No"| N["Use object directly"]
+  P -->|"Yes"| C["Card Definition<br/>display · compatibility · payload ref"]
+  C --> I["Card Instance<br/>holder · access · ownership claim"]
+  I --> H["Hand projection"]
+  H --> M["Moves / Affordances"]
+  M --> A["Artifact"]
+  A -->|"rights + quality + reuse"| S["Asset"]
+  A -->|"expressive primary purpose"| R["Art"]
+
+  O -. "never replaced by" .-> C
+  C -. "rarity ≠ quality" .-> I
+  I -. "access ≠ authority" .-> H

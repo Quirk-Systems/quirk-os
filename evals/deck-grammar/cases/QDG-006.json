@@ -1,0 +1,11 @@
+{
+  "case_id": "QDG-006",
+  "name": "area_preference_leaks_into_unrelated_area",
+  "attack": "area_preference_leak",
+  "input": {
+    "card_area_ref": "area.music",
+    "current_area_ref": "area.security",
+    "included": true
+  },
+  "expected": "exclude"
+}

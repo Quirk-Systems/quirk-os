@@ -1,0 +1,12 @@
+{
+  "case_id": "QDG-005",
+  "name": "aesthetic_hides_evidence",
+  "attack": "aesthetic_hides_evidence",
+  "input": {
+    "must_hide": [
+      "evidence",
+      "uncertainty"
+    ]
+  },
+  "expected": "reject"
+}
