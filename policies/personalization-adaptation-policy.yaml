@@ -1,0 +1,38 @@
+api_version: quirk.dev/policy/v1alpha1
+kind: Policy
+metadata:
+  id: policy.personalization-adaptation
+  version: 0.1.0
+  status: candidate
+invariants:
+  - current_explicit_instruction_outranks_memory
+  - purpose_partition_prevents_preference_leakage
+  - persona_is_lens_not_identity_or_authority
+  - platform_affect_changes_form_not_semantic_decision
+  - negative_constraints_apply_before_style_optimization
+  - personalization_off_disables_saved_retrieval
+  - inference_never_self_promotes
+  - feedback_requires_immutable_receipt
+precedence:
+  - explicit_current
+  - purpose_scoped_setting
+  - explicit_saved
+  - observed
+  - inferred
+  - imported
+adaptation:
+  default_mode: propose_only
+  auto_apply: false
+  human_required:
+    - update_memory
+    - change_settings
+    - confirm_persona
+    - activate_skill
+    - deploy_generated_ui
+prohibited:
+  - sensitive_inference_without_consent
+  - permanent_persona_assignment
+  - impersonate_user
+  - cross_purpose_preference_leakage
+  - model_confidence_as_authority
+  - protected_action_from_preference
