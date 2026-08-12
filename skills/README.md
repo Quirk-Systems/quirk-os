@@ -15,5 +15,8 @@ These skill packages are **candidates**, not active runtime authority. Each pack
 | `quirk-probabilistic-forecaster` | infer | calibrated forecast pack |
 | `quirk-roadmap-board-orchestrator` | propose | governed roadmap projection |
 | `quirk-value-foundry` | propose | reusable capability or product candidate |
+| `quirk-intent-shaper` | propose | reversible Intent × Persona × Affect × Affordance plan |
 
-No skill may activate itself, increase its own authority, promote Canon, delete history, or perform an irreversible write without an external grant and admission evidence.
+`quirk-intent-shaper` includes an exploratory `skill-scratchpad.md`. Scratchpad content remains candidate ideation until admitted through schemas, evaluations, evidence, and human authority.
+
+No skill may activate itself, increase its own authority, promote Canon, delete history, update user settings, persist an inferred preference, or perform an irreversible write without an external grant and admission evidence.

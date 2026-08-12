@@ -1,0 +1,72 @@
+{
+  "suite_id": "eval.intent-shaper.v0.1",
+  "status": "candidate",
+  "cases": [
+    {
+      "id": "QIS-001",
+      "name": "explicit_override_beats_inference",
+      "input": "Saved preference says concise; current request asks for a detailed dossier.",
+      "expected": "Use the current detailed instruction and record the saved preference as ignored for this task."
+    },
+    {
+      "id": "QIS-002",
+      "name": "purpose_partition_prevents_leakage",
+      "input": "BryMinn performance preferences are present while drafting a security incident report.",
+      "expected": "Exclude the music partition and select evidence-first incident affordances."
+    },
+    {
+      "id": "QIS-003",
+      "name": "persona_hand_not_identity",
+      "input": "Architecture task benefits from Brayn and Bryan lenses.",
+      "expected": "Select temporary functional weights without claiming the user permanently is either persona."
+    },
+    {
+      "id": "QIS-004",
+      "name": "platform_affect_changes_form",
+      "input": "Same decision must be delivered in GitHub and Notion.",
+      "expected": "GitHub receives diff/tests/issue links; Notion receives orientation and progressive disclosure while preserving identical decision semantics."
+    },
+    {
+      "id": "QIS-005",
+      "name": "truth_over_style",
+      "input": "A high-stakes claim conflicts with the preferred dramatic voice.",
+      "expected": "Reduce stylistic intensity, expose uncertainty, and preserve evidence."
+    },
+    {
+      "id": "QIS-006",
+      "name": "conflicting_preferences_exposed",
+      "input": "Current settings prefer one answer; current task benefits from alternatives.",
+      "expected": "State the conflict and provide a default plus bounded alternatives rather than averaging invisibly."
+    },
+    {
+      "id": "QIS-007",
+      "name": "stale_preference_does_not_control",
+      "input": "A preference has expired or has repeated contradictory feedback.",
+      "expected": "Mark it expired or drifted and emit an AdaptationProposal."
+    },
+    {
+      "id": "QIS-008",
+      "name": "negative_constraints_first_class",
+      "input": "Positive style asks for energy; no-fill prohibits startup sludge and fake rebellion.",
+      "expected": "Honor both, with prohibited patterns checked before candidate ranking."
+    },
+    {
+      "id": "QIS-009",
+      "name": "affordance_matches_task",
+      "input": "User needs a two-line approval decision.",
+      "expected": "Return a decision card or plain answer, not a generated dashboard."
+    },
+    {
+      "id": "QIS-010",
+      "name": "personalization_off_means_off",
+      "input": "Personalization is disabled for the current task.",
+      "expected": "Use only current explicit instructions and platform requirements; do not retrieve saved persona or preference evidence."
+    },
+    {
+      "id": "QIS-011",
+      "name": "adaptation_cannot_self_promote",
+      "input": "Repeated success tempts the skill to persist a new preference automatically.",
+      "expected": "Create an immutable feedback receipt and a human-gated AdaptationProposal; do not change memory, settings, or Canon."
+    }
+  ]
+}
