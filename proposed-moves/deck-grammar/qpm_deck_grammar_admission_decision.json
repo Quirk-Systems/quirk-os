@@ -1,0 +1,75 @@
+{
+  "id": "qpm_deck_grammar_admission_decision",
+  "schema_version": "proposed-move.v1",
+  "lane": "gate",
+  "title": "Record Deck Grammar admission evaluation decision for issue #26",
+  "desired_change": "Evaluate PR #25 / move.deck-grammar.create-candidate-pack against the issue #26 checklist and grammar separations, emit live-trial and object-pack reviews, and record approve/revise/reject/supersede without expanding runtime authority.",
+  "expected_outcome": "The repository contains an inspectable admission dossier recommending revise, with Bryan still required to record permitted runtime scope and the terminal human decision.",
+  "proposer": {
+    "actor_id": "agent.copilot.deck-grammar-admission",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/issues/26",
+    "github://Quirk-Systems/quirk-os/pull/25",
+    "github://Quirk-Systems/quirk-os/pull/43",
+    "commit://22072fc605392f38b34f0035a0621e62117f9e2f"
+  ],
+  "evidence_refs": [
+    "docs/deck-grammar/ADMISSION-EVALUATION.md",
+    "docs/deck-grammar/LIVE-TRIAL.md",
+    "docs/deck-grammar/OBJECT-PACK-REVIEW.md",
+    "docs/deck-grammar/LIVE-PROOF.md",
+    "evals/deck-grammar/fixtures.json"
+  ],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "move.deck-grammar.create-candidate-pack",
+    "skill.quirk-deck-compiler",
+    "grammar.deck",
+    "registry.quirk-object-pack-types"
+  ],
+  "dependencies": [
+    "qpm_deck_grammar_create_candidate_pack"
+  ],
+  "authority_required": [
+    "authority.human.deck-grammar-admission",
+    "authority.repository.candidate-write"
+  ],
+  "risk": {
+    "class": "L2",
+    "rights_or_safety_impact": "An over-broad approve could be misread as Canon or runtime admission; a silent reject could discard reproducible candidate evidence.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "docs/deck-grammar/ADMISSION-EVALUATION.md",
+  "eval_refs": [
+    "eval.deck-grammar.v0.1",
+    "proof.deck-grammar.same-goal-two-presets.v0.1"
+  ],
+  "disposition": "awaiting_authority",
+  "created_at": "2026-08-12T10:00:00Z",
+  "dependency_class": "implicit_authority",
+  "blocks_merge": true,
+  "finding_ref": "issue.26#deck-grammar-admission",
+  "hidden_context_dependencies": [
+    "Only Bryan can record the terminal human decision and permitted runtime scope.",
+    "Candidate CI success is evidence, not admission."
+  ],
+  "resolution_artifacts": [
+    "docs/deck-grammar/ADMISSION-EVALUATION.md",
+    "docs/deck-grammar/LIVE-TRIAL.md",
+    "docs/deck-grammar/OBJECT-PACK-REVIEW.md",
+    "proposed-moves/deck-grammar/qpm_deck_grammar_create_candidate_pack.json",
+    "proposed-moves/deck-grammar/qpm_deck_grammar_aesthetic_guard_hardening.json",
+    "proposed-moves/deck-grammar/qpm_deck_grammar_object_pack_scaffolder_id_fix.json"
+  ],
+  "acceptance_checks": [
+    "Checklist items 1-16 are evidenced as pass, pass-after-revise, or open only for Bryan.",
+    "Recommendation is revise rather than approve, reject, or supersede.",
+    "No Hand, ownership, settings, memory, Canon, or production state is mutated by the evaluation.",
+    "Recommended runtime ceiling remains propose-only offline validation/compilation/scaffolding.",
+    "Bryan records the final decision."
+  ],
+  "resolution_note": "Agent recommendation: revise. Retain PR #25 candidate substance, apply evaluation hardenings, do not activate. Awaiting Bryan."
+}

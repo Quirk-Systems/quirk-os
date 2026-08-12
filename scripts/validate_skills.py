@@ -25,6 +25,12 @@ EXPECTED_SKILLS = {
     "quirk-roadmap-board-orchestrator",
     "quirk-value-foundry",
 }
+# Draft skills evaluated by other candidate packs. They may live under skills/
+# with SKILL.md only, but they are not part of the Skills v0.2 registry set and
+# must not receive runtime admission through this validator.
+DRAFT_CANDIDATE_SKILLS = {
+    "quirk-deck-compiler",
+}
 REQUIRED_KINDS = {"positive", "adversarial", "regression", "authority"}
 PLACEHOLDER_MARKERS = ("TO" + "DO", "FIX" + "ME", "T" + "BD", "X" + "XX")
 
@@ -94,11 +100,42 @@ def main() -> int:
             fail("SCHEMA_INVALID", f"{path.relative_to(root)}: {exc}")
 
     skill_dirs = {path.parent.name for path in (root / "skills").glob("*/SKILL.md")}
-    if skill_dirs != EXPECTED_SKILLS:
+    draft_dirs = skill_dirs & DRAFT_CANDIDATE_SKILLS
+    manifested_dirs = skill_dirs - DRAFT_CANDIDATE_SKILLS
+    if manifested_dirs != EXPECTED_SKILLS:
         fail(
             "SKILL_SET_DRIFT",
-            f"expected {sorted(EXPECTED_SKILLS)}, found {sorted(skill_dirs)}",
+            f"expected {sorted(EXPECTED_SKILLS)}, found {sorted(manifested_dirs)}",
         )
+    unexpected_drafts = draft_dirs - DRAFT_CANDIDATE_SKILLS
+    if unexpected_drafts:
+        fail(
+            "SKILL_SET_DRIFT",
+            f"unknown draft candidate skills: {sorted(unexpected_drafts)}",
+        )
+    for skill_id in sorted(draft_dirs):
+        source_path = root / "skills" / skill_id / "SKILL.md"
+        source_text = source_path.read_text(encoding="utf-8")
+        try:
+            frontmatter = parse_frontmatter(source_text, source_path.relative_to(root))
+        except ValueError as exc:
+            fail("DRAFT_SKILL_INVALID", str(exc))
+            continue
+        if frontmatter.get("name") != skill_id:
+            fail(
+                "DRAFT_SKILL_NAME_MISMATCH",
+                f"{source_path.relative_to(root)}: frontmatter name must equal directory",
+            )
+        if "Status: `candidate`" not in source_text and "status: candidate" not in source_text.lower():
+            fail(
+                "DRAFT_SKILL_STATUS",
+                f"{source_path.relative_to(root)}: draft skills must remain candidate",
+            )
+        if (root / "skills" / skill_id / "manifest.json").exists():
+            fail(
+                "DRAFT_SKILL_MANIFEST_PRESENT",
+                f"{skill_id}: draft candidate skills must not join the v0.2 manifest registry until separately admitted",
+            )
 
     manifests: dict[str, dict[str, Any]] = {}
     for skill_id in sorted(EXPECTED_SKILLS):
