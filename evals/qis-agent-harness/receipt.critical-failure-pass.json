@@ -15,7 +15,7 @@
     "candidate_branch": "agent/quirk-intent-shaper",
     "candidate_sha": "f5effa3d6da3e5879e10007492aeff39a1c643be",
     "base_sha": "f5effa3d6da3e5879e10007492aeff39a1c643be",
-    "head_sha": "f591968deb2facf5722c3176f5f3b63fa22deb43",
+    "head_sha": "d268adf17524332ad101c45351c96cb3420eb3b6",
     "merge_base_sha": "f5effa3d6da3e5879e10007492aeff39a1c643be",
     "is_traceable_descendant": true
   },
@@ -84,9 +84,9 @@
       "status": "passed",
       "exit_code": 0,
       "counts": {
-        "passed": 15,
+        "passed": 18,
         "failed": 0,
-        "total": 15
+        "total": 18
       }
     },
     {
@@ -122,5 +122,5 @@
   },
   "verdict": "PASS",
   "generated_at": "2026-08-12T08:30:31Z",
-  "receipt_hash": "8570c3eeaad63b1b2335268150cab00b2c99e3ca7ab90a12c429c3fa69d72649"
+  "receipt_hash": "c7c381b8b0d064ee67a49b5494f8e0eb7777092d62a4bca840d5a90e63efac35"
 }
