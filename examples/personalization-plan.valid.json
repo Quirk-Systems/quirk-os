@@ -1,0 +1,102 @@
+{
+  "plan_id": "personalization.plan.intent-shaper-example",
+  "version": "0.1.0",
+  "status": "candidate",
+  "intent": {
+    "summary": "Design a governed personalization compiler",
+    "desired_change": "Improve task fit without invisible identity or authority changes",
+    "task_class": "build",
+    "stakes": "high",
+    "destination": "github",
+    "audience": "Quirk maintainers",
+    "constraints": ["candidate only", "no memory mutation"],
+    "non_goals": ["permanent persona assignment"],
+    "completion_evidence": ["schema valid", "eleven cases pass"]
+  },
+  "purpose_partition": {
+    "purpose": "personalization architecture",
+    "domain": "quirk.systems",
+    "scope_key": "quirk.personalization.architecture",
+    "excluded_scopes": ["music.performance"]
+  },
+  "persona_hand": {
+    "primary": {"ref": "persona.brayn", "role": "system_architecture", "weight": 0.7},
+    "supporting": [{"ref": "persona.bryan", "role": "reality_grounding", "weight": 0.3}],
+    "selection_reason": "Architecture needs structure with reality grounding",
+    "user_confirmed": false
+  },
+  "voice": {
+    "profile_ref": "voice.quirk.default",
+    "tone_axes": {"directness": 0.9, "ferality": 0.4, "formality": 0.2},
+    "required_traits": ["specific", "evidence-aware", "memorable"],
+    "lexical_rules": ["name authority explicitly"],
+    "no_fill": ["startup sludge", "fake rebellion"]
+  },
+  "aesthetic": {
+    "profile_ref": "aesthetic.premium-chaos",
+    "principles": ["operational hierarchy", "sharp contrast", "inspectable state"],
+    "avoided_patterns": ["generic neon AI", "decorative dashboard"],
+    "modality": "multimodal"
+  },
+  "preferences": [
+    {
+      "ref": "pref.current.make-it-real",
+      "source": "explicit_current",
+      "confidence": 1.0,
+      "scope": "quirk.personalization.architecture",
+      "valid_from": "2026-08-11T23:30:00-05:00",
+      "valid_until": null,
+      "reversible": true,
+      "decision": "use"
+    }
+  ],
+  "platform_affects": [
+    {
+      "platform": "github",
+      "effects": ["versioned", "diff_first", "reviewable"],
+      "constraints": ["no merge authority"],
+      "affordance_bias": ["code_patch", "tests", "issue"]
+    }
+  ],
+  "task_affordances": [
+    {
+      "type": "code_patch",
+      "priority": 100,
+      "rationale": "The task requires executable repository evidence",
+      "reversible": true,
+      "fallback": "documented patch"
+    }
+  ],
+  "settings": {
+    "personalization_enabled": true,
+    "adaptation_mode": "propose_only",
+    "verbosity": 7,
+    "challenge_level": 8,
+    "creativity": 8,
+    "evidence_mode": "strict",
+    "generated_ui": "task_gated",
+    "implicit_signal_use": "limited"
+  },
+  "authority": {
+    "ceiling": "propose",
+    "human_required": ["update_memory", "change_settings", "activate_skill"],
+    "prohibited": ["self_promote", "impersonate_user", "write_canon"]
+  },
+  "uncertainty": {
+    "confidence": 0.82,
+    "unknowns": ["live preference graph interface"],
+    "conflicts": []
+  },
+  "evaluation": {
+    "criteria": ["intent_fit", "authority_compliance", "platform_fit", "task_affordance_fit"],
+    "counterfactuals_required": ["no_personalization", "wrong_persona", "wrong_platform"],
+    "pass_threshold": 0.85,
+    "candidate_count": 3
+  },
+  "learning": {
+    "feedback_receipt_required": true,
+    "auto_apply": false,
+    "allowed_updates": ["propose_preference_edge", "propose_setting_change"]
+  },
+  "created_at": "2026-08-11T23:30:00-05:00"
+}
