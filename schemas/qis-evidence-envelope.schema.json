@@ -1,0 +1,277 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.dev/schemas/qis-evidence-envelope.schema.json",
+  "title": "QIS Candidate Evidence Envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "issue_ref",
+    "admission_scope",
+    "authority",
+    "repository",
+    "materials",
+    "commands",
+    "evidence_refs",
+    "critical_failures",
+    "limitations",
+    "environment",
+    "verdict",
+    "generated_at",
+    "receipt_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "qis-evidence-envelope.v1"
+    },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^receipt\\.qis-agent-harness\\.[a-z0-9._-]+$"
+    },
+    "issue_ref": {
+      "type": "string",
+      "pattern": "^Quirk-Systems/quirk-os#\\d+$"
+    },
+    "admission_scope": {
+      "const": "candidate_evidence_only"
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "admission_authority",
+        "candidate_runtime_authority",
+        "candidate_can_self_promote",
+        "gate_satisfaction_allowed"
+      ],
+      "properties": {
+        "admission_authority": {
+          "const": "human.bryan"
+        },
+        "candidate_runtime_authority": {
+          "const": "none"
+        },
+        "candidate_can_self_promote": {
+          "const": false
+        },
+        "gate_satisfaction_allowed": {
+          "const": false
+        }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "repo",
+        "candidate_branch",
+        "candidate_sha",
+        "base_sha",
+        "head_sha",
+        "merge_base_sha",
+        "is_traceable_descendant"
+      ],
+      "properties": {
+        "owner": {
+          "const": "Quirk-Systems"
+        },
+        "repo": {
+          "const": "quirk-os"
+        },
+        "candidate_branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "candidate_sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "base_sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "head_sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "merge_base_sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "is_traceable_descendant": {
+          "const": true
+        }
+      }
+    },
+    "materials": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "role": {
+            "enum": [
+              "schema",
+              "evaluator",
+              "fixture",
+              "test",
+              "workflow",
+              "instruction",
+              "skill"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "kind",
+          "command",
+          "status",
+          "exit_code",
+          "counts"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9._-]+$"
+          },
+          "kind": {
+            "enum": [
+              "unit_tests",
+              "conformance",
+              "validator"
+            ]
+          },
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed"
+            ]
+          },
+          "exit_code": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "counts": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "passed",
+              "failed",
+              "total"
+            ],
+            "properties": {
+              "passed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "critical_failures": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runner_os",
+        "python",
+        "pip",
+        "jsonschema"
+      ],
+      "properties": {
+        "runner_os": {
+          "type": "string",
+          "minLength": 1
+        },
+        "python": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pip": {
+          "type": "string",
+          "minLength": 1
+        },
+        "jsonschema": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "REVISE",
+        "FAIL"
+      ]
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receipt_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

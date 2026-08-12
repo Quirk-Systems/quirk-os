@@ -1,0 +1,270 @@
+name: QIS Agent Harness
+
+on:
+  pull_request:
+    paths:
+      - '.github/copilot-instructions.md'
+      - '.github/instructions/intent-shaper.instructions.md'
+      - '.github/skills/intent-shaper-admission/SKILL.md'
+      - '.github/workflows/qis-agent-harness.yml'
+      - 'evals/intent-shaper/**'
+      - 'evals/qis-agent-harness/**'
+      - 'requirements-evals.txt'
+      - 'schemas/personalization-plan.schema.json'
+      - 'schemas/qis-evidence-envelope.schema.json'
+      - 'scripts/intent_shaper/**'
+      - 'scripts/validate_intent_shaper.py'
+      - 'scripts/validate_qis_harness.py'
+      - 'skills/quirk-intent-shaper/**'
+      - 'tests/test_intent_shaper.py'
+      - 'tests/test_qis_harness.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qis-agent-harness-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  harness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      CANDIDATE_BRANCH: agent/quirk-intent-shaper
+      CANDIDATE_SHA: f5effa3d6da3e5879e10007492aeff39a1c643be
+      RECEIPT_PATH: evals/qis-agent-harness/qis-agent-harness-${{ github.sha }}.json
+      TEST_LOG: /tmp/qis-agent-harness-tests.txt
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Install evaluation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run focused tests
+        run: |
+          set -o pipefail
+          python -m unittest tests.test_intent_shaper tests.test_qis_harness -v 2>&1 | tee "$TEST_LOG"
+
+      - name: Run Intent Shaper conformance
+        run: |
+          python scripts/validate_intent_shaper.py \
+            --repo . \
+            --output evals/intent-shaper/conformance-results.json
+
+      - name: Build harness receipt
+        if: always()
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.sha }}
+          RUNNER_OS: ${{ runner.os }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import importlib.metadata
+          import json
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
+
+          repo = Path(".")
+          receipt_path = repo / os.environ["RECEIPT_PATH"]
+          test_log_path = Path(os.environ["TEST_LOG"])
+          conformance_path = repo / "evals/intent-shaper/conformance-results.json"
+
+          def sha256(relative_path: str) -> str:
+              return hashlib.sha256((repo / relative_path).read_bytes()).hexdigest()
+
+          def maybe_read(path: Path) -> str:
+              return path.read_text(encoding="utf-8") if path.is_file() else ""
+
+          def command_result(name: str, kind: str, command: str, status: str, exit_code: int, passed: int, failed: int, total: int) -> dict:
+              return {
+                  "name": name,
+                  "kind": kind,
+                  "command": command,
+                  "status": status,
+                  "exit_code": exit_code,
+                  "counts": {
+                      "passed": passed,
+                      "failed": failed,
+                      "total": total,
+                  },
+              }
+
+          test_log = maybe_read(test_log_path)
+          test_total_match = re.search(r"Ran (\\d+) tests? in", test_log)
+          tests_total = int(test_total_match.group(1)) if test_total_match else 1
+          failure_match = re.search(r"failures=(\\d+)", test_log)
+          error_match = re.search(r"errors=(\\d+)", test_log)
+          failed_tests = int(failure_match.group(1)) if failure_match else 0
+          failed_tests += int(error_match.group(1)) if error_match else 0
+          tests_passed = max(tests_total - failed_tests, 0)
+          tests_status = "passed" if test_log and failed_tests == 0 and "OK" in test_log else "failed"
+          tests_exit = 0 if tests_status == "passed" else 1
+
+          conformance = {}
+          conformance_failures = 1
+          conformance_passed = 0
+          conformance_total = 1
+          conformance_status = "failed"
+          conformance_exit = 1
+          if conformance_path.is_file():
+              conformance = json.loads(conformance_path.read_text(encoding="utf-8"))
+              conformance_total = int(conformance.get("fixtures_total", 0)) or 1
+              conformance_passed = int(conformance.get("fixtures_passed", 0))
+              conformance_failures = max(conformance_total - conformance_passed, 0)
+              conformance_status = "passed" if conformance.get("status") == "passed" else "failed"
+              conformance_exit = 0 if conformance_status == "passed" else 1
+
+          merge_base_sha = subprocess.check_output(
+              ["git", "merge-base", os.environ["CANDIDATE_SHA"], os.environ["HEAD_SHA"]],
+              text=True,
+          ).strip()
+          is_traceable_descendant = merge_base_sha == os.environ["CANDIDATE_SHA"]
+
+          critical_failures = []
+          if not is_traceable_descendant:
+              critical_failures.append(
+                  f"head {os.environ['HEAD_SHA']} is not a traceable descendant of candidate {os.environ['CANDIDATE_SHA']}"
+              )
+          if tests_status != "passed":
+              critical_failures.append("focused tests did not pass cleanly")
+          if conformance_status != "passed":
+              critical_failures.append("Intent Shaper conformance evidence is missing or failed")
+
+          evidence_refs = [
+              path
+              for path in (
+                  "evals/intent-shaper/cases.json",
+                  "evals/intent-shaper/conformance-results.json",
+                  "tests/test_intent_shaper.py",
+                  "tests/test_qis_harness.py",
+              )
+              if (repo / path).is_file()
+          ]
+
+          receipt = {
+              "schema_version": "qis-evidence-envelope.v1",
+              "receipt_id": f"receipt.qis-agent-harness.{os.environ['HEAD_SHA'][:12]}",
+              "issue_ref": "Quirk-Systems/quirk-os#27",
+              "admission_scope": "candidate_evidence_only",
+              "authority": {
+                  "admission_authority": "human.bryan",
+                  "candidate_runtime_authority": "none",
+                  "candidate_can_self_promote": False,
+                  "gate_satisfaction_allowed": False,
+              },
+              "repository": {
+                  "owner": "Quirk-Systems",
+                  "repo": "quirk-os",
+                  "candidate_branch": os.environ["CANDIDATE_BRANCH"],
+                  "candidate_sha": os.environ["CANDIDATE_SHA"],
+                  "base_sha": os.environ["BASE_SHA"],
+                  "head_sha": os.environ["HEAD_SHA"],
+                  "merge_base_sha": merge_base_sha,
+                  "is_traceable_descendant": is_traceable_descendant,
+              },
+              "materials": [
+                  {"role": "instruction", "path": ".github/copilot-instructions.md", "sha256": sha256(".github/copilot-instructions.md")},
+                  {"role": "instruction", "path": ".github/instructions/intent-shaper.instructions.md", "sha256": sha256(".github/instructions/intent-shaper.instructions.md")},
+                  {"role": "skill", "path": ".github/skills/intent-shaper-admission/SKILL.md", "sha256": sha256(".github/skills/intent-shaper-admission/SKILL.md")},
+                  {"role": "workflow", "path": ".github/workflows/qis-agent-harness.yml", "sha256": sha256(".github/workflows/qis-agent-harness.yml")},
+                  {"role": "schema", "path": "schemas/personalization-plan.schema.json", "sha256": sha256("schemas/personalization-plan.schema.json")},
+                  {"role": "schema", "path": "schemas/qis-evidence-envelope.schema.json", "sha256": sha256("schemas/qis-evidence-envelope.schema.json")},
+                  {"role": "fixture", "path": "evals/intent-shaper/cases.json", "sha256": sha256("evals/intent-shaper/cases.json")},
+                  {"role": "evaluator", "path": "scripts/validate_intent_shaper.py", "sha256": sha256("scripts/validate_intent_shaper.py")},
+                  {"role": "evaluator", "path": "scripts/validate_qis_harness.py", "sha256": sha256("scripts/validate_qis_harness.py")},
+                  {"role": "test", "path": "tests/test_intent_shaper.py", "sha256": sha256("tests/test_intent_shaper.py")},
+                  {"role": "test", "path": "tests/test_qis_harness.py", "sha256": sha256("tests/test_qis_harness.py")},
+                ],
+              "commands": [
+                  command_result(
+                      "focused_tests",
+                      "unit_tests",
+                      "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+                      tests_status,
+                      tests_exit,
+                      tests_passed,
+                      failed_tests,
+                      tests_total,
+                  ),
+                  command_result(
+                      "intent_shaper_conformance",
+                      "conformance",
+                      "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json",
+                      conformance_status,
+                      conformance_exit,
+                      conformance_passed,
+                      conformance_failures,
+                      conformance_total,
+                  ),
+              ],
+              "evidence_refs": evidence_refs,
+              "critical_failures": critical_failures,
+              "limitations": [
+                  "Candidate-only harness evidence; no admission, merge, deployment, schedule, or persistence authority.",
+                  "This workflow validates the harness and Intent Shaper candidate paths only; numbered admission gates still require separate evidence.",
+              ],
+              "environment": {
+                  "runner_os": os.environ["RUNNER_OS"],
+                  "python": subprocess.check_output(["python", "--version"], text=True).strip().split()[-1],
+                  "pip": subprocess.check_output(["python", "-m", "pip", "--version"], text=True).split()[1],
+                  "jsonschema": importlib.metadata.version("jsonschema"),
+              },
+              "verdict": "PASS" if not critical_failures else "REVISE",
+              "generated_at": subprocess.check_output(["git", "show", "-s", "--format=%cI", os.environ["HEAD_SHA"]], text=True).strip(),
+          }
+
+          canonical = json.dumps(
+              {key: value for key, value in receipt.items() if key != "receipt_hash"},
+              sort_keys=True,
+              separators=(",", ":"),
+              ensure_ascii=False,
+          ).encode("utf-8")
+          receipt["receipt_hash"] = hashlib.sha256(canonical).hexdigest()
+
+          receipt_path.parent.mkdir(parents=True, exist_ok=True)
+          receipt_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+          print(receipt_path)
+          PY
+
+      - name: Validate harness receipt
+        if: always()
+        run: python scripts/validate_qis_harness.py --repo . --receipt "$RECEIPT_PATH"
+
+      - name: Require expected receipt
+        if: always()
+        run: test -f "$RECEIPT_PATH"
+
+      - name: Upload harness evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: qis-agent-harness-${{ github.sha }}
+          path: ${{ env.RECEIPT_PATH }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce harness verdict
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          receipt = json.loads(Path(os.environ["RECEIPT_PATH"]).read_text(encoding="utf-8"))
+          raise SystemExit(0 if receipt["verdict"] == "PASS" else 1)
+          PY

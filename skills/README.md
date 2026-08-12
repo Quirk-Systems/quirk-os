@@ -24,9 +24,12 @@ The central `registry.json` is a rebuildable inventory. It is not Canon and cann
 | `quirk-probabilistic-forecaster` | decide | infer | forecast pack |
 | `quirk-roadmap-board-orchestrator` | connect | propose | roadmap projection |
 | `quirk-value-foundry` | productize | propose | reusable value candidate |
+| `quirk-intent-shaper` | relate | propose | reversible Intent × Persona × Affect × Affordance plan |
 
 ## Runtime rule
 
 The loader rejects candidate or unadmitted versions, over-ceiling grants, self-approved grants, expired grants, undeclared actions, manifest tampering, and source tampering. Passing evals remain evidence—not admission.
 
-No skill may self-activate, increase its own authority, promote Canon, rewrite history, or perform an irreversible write merely because the capability or credentials exist.
+`quirk-intent-shaper` includes an exploratory `skill-scratchpad.md`. Scratchpad content remains candidate ideation until admitted through schemas, evaluations, evidence, and human authority.
+
+No skill may self-activate, increase its own authority, promote Canon, delete history, update user settings, persist an inferred preference, or perform an irreversible write merely because the capability or credentials exist.
