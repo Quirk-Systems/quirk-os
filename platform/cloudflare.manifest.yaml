@@ -2,12 +2,36 @@ api_version: quirk.dev/platform/v1alpha1
 kind: PlatformBindingCandidate
 metadata:
   id: platform.cloudflare
-  version: 0.1.0
-  status: deferred_unbound
+  version: 0.2.0
+  status: inventory_complete_defer_selective
+  status_previous: deferred_unbound
+  status_changed: "2026-08-12"
+  decision_ref: decisions/ADR-0002-cloudflare-capability-inventory.md
+  decision_ref_previous: decisions/ADR-0001-cloudflare-boundary.md
 plane: projection
 sync_direction: none
 external_id: unverified
 allowed_roles: [inventory_candidate]
 prohibited_roles: [canon, primary_runtime, unadmitted_deployment, authority_source]
-decision_ref: decisions/ADR-0001-cloudflare-boundary.md
 admission_required: true
+inventory:
+  completed: true
+  completed_at: "2026-08-12"
+  method: manual_console_inspection
+  zones: 0
+  pages_projects: 0
+  workers: 0
+  r2_buckets: 0
+  queues: 0
+  ai_gateway_endpoints: 0
+  secrets: 0
+  api_token_issued: false
+capabilities:
+  dns_and_routing: defer
+  waf_ddos_api_shield: defer
+  turnstile: defer
+  workers_or_pages: defer
+  r2: defer
+  queues_workflows: defer
+  ai_gateway_workers_ai: defer
+  observability_log_export: defer
