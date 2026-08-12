@@ -1,0 +1,95 @@
+{
+  "$schema": "../../schemas/skill-package.schema.json",
+  "api_version": "quirk.dev/skill/v1alpha1",
+  "kind": "SkillPackage",
+  "id": "quirk-control-loop-designer",
+  "title": "Quirk Control Loop Designer",
+  "version": "0.2.0",
+  "status": "candidate",
+  "family": "evolve",
+  "purpose": "Design bounded feedback control with trustworthy sensors, explicit targets, reversible actuators, constraints, recovery, simulation, and human authority.",
+  "authority": {
+    "ceiling": "propose",
+    "capability_does_not_imply_authority": true,
+    "requires_external_grant": true,
+    "requires_independent_approval_for_active": true,
+    "self_activation": false,
+    "self_escalation": false,
+    "canon_promotion": false,
+    "irreversible_write": false
+  },
+  "triggers": {
+    "when_to_use": [
+      "Use when the task requires design bounded feedback control with trustworthy sensors, explicit targets, reversible actuators, constraints, recovery, simulation, and human authority."
+    ],
+    "when_not_to_use": [
+      "Do not use when source authority, purpose, or the external authority grant cannot be established.",
+      "Do not use when a trigger collision with another skill remains unresolved."
+    ],
+    "routing_signals": [
+      "feedback control",
+      "threshold",
+      "hysteresis",
+      "actuator",
+      "circuit breaker"
+    ],
+    "collision_behavior": "block"
+  },
+  "contract": {
+    "inputs": [
+      {"name": "controlled_object", "type": "string", "required": true},
+      {"name": "signal_contract", "type": "object", "required": true},
+      {"name": "authority_scope", "type": "object", "required": true}
+    ],
+    "outputs": [
+      {"name": "control_policy", "type": "object", "required": true},
+      {"name": "simulation_report", "type": "object", "required": true}
+    ],
+    "invariants": ["controller_cannot_rewrite_limits", "actuator_authority_independent", "safe_degraded_state_defined"],
+    "failure_conditions": ["untrusted_sensor", "irreversible_actuator", "production_actuation_without_grant"],
+    "stop_conditions": ["untrusted_sensor", "irreversible_actuator", "production_actuation_without_grant", "authority_grant_missing", "self_promotion_attempt"]
+  },
+  "method": {
+    "moves": ["read_signals", "model_controller", "simulate_policy", "emit_control_policy", "emit_admission_blockers"],
+    "sequence": [
+      "Resolve purpose, source authority, scope, and external grant before work begins.",
+      "Inventory required inputs and preserve provenance or source references.",
+      "Execute the smallest deterministic procedure that can satisfy the declared output.",
+      "Evaluate positive, adversarial, regression, and authority conditions.",
+      "Emit an attributable receipt and route improvements as Proposed Moves."
+    ],
+    "decision_points": [
+      "Is the source and decision authority sufficient for this procedure?",
+      "Would the next action exceed the declared authority ceiling or become irreversible?",
+      "Is the evidence strong enough to emit the declared output rather than abstain?"
+    ],
+    "approval_gates": [
+      "External admission is required before runtime loading.",
+      "A separate scoped grant is required for every consequential execution."
+    ]
+  },
+  "resources": [
+    {"resource_type": "source_pack", "access": "read", "required": true, "constraints": ["bounded_scope", "provenance_required"]},
+    {"resource_type": "evidence_ledger", "access": "reference", "required": true, "constraints": ["host_owned_append_only_write", "receipt_required", "no_status_promotion"]}
+  ],
+  "tools": [
+    {"name": "quirk_runtime", "actions": ["read_signals", "model_controller", "simulate_policy", "emit_control_policy", "emit_admission_blockers"], "required": true},
+    {"name": "human_review", "actions": ["request_review", "attach_review_evidence"], "required": false}
+  ],
+  "quality": {
+    "eval_suite_ref": "evals/skills/conformance.json",
+    "required_case_kinds": ["positive", "adversarial", "regression", "authority"],
+    "minimum_score": 1.0,
+    "regression_required": true,
+    "anti_patterns": ["self_modifying_limits", "no_cooldown", "model_capability_as_actuation_permission"]
+  },
+  "learning": {"mutation_mode": "propose_only", "historical_rewrite": false, "promotion_requires_external_admission": true, "feedback_capture": "append_only_receipt"},
+  "compatibility": {"mapping_ref": "mappings/skill-package.v1.yaml", "runtime_manifest_ref": "schemas/runtime-manifest.schema.json", "minimum_runtime_contract": "0.2.0"},
+  "provenance": {
+    "source_path": "skills/quirk-control-loop-designer/SKILL.md",
+    "derived_from": ["Quirk-Systems/quirk-os PR #5 candidate skill source", "Quirk procedural-intelligence hardening v0.2"],
+    "steward": "Bryan",
+    "created_at": "2026-08-12T04:00:00Z"
+  },
+  "integrity": {"source_algorithm": "git-blob-sha1", "source_blob_sha": "162698f1f4e529bf9da706d203427b57d62b180f", "manifest_algorithm": "sha256-canonical-json-v1", "manifest_sha256": "e3239ac6afd67158c3c56d57b6ee44d740f17830aa33d486d1e4a472511045b1"}
+}

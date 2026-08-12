@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "api_version": "quirk.dev/skill-registry/v1alpha1",
+  "kind": "SkillRegistry",
+  "status": "candidate",
+  "version": "0.2.0",
+  "authority": {
+    "semantic_authority": false,
+    "runtime_authority": false,
+    "projection_only": true
+  },
+  "skills": [
+    {
+      "id": "quirk-control-loop-designer",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "evolve",
+      "authority_ceiling": "propose",
+      "source_path": "skills/quirk-control-loop-designer/SKILL.md",
+      "manifest_path": "skills/quirk-control-loop-designer/manifest.json",
+      "source_blob_sha": "162698f1f4e529bf9da706d203427b57d62b180f",
+      "manifest_sha256": "e3239ac6afd67158c3c56d57b6ee44d740f17830aa33d486d1e4a472511045b1",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    },
+    {
+      "id": "quirk-data-refinery",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "structure",
+      "authority_ceiling": "propose",
+      "source_path": "skills/quirk-data-refinery/SKILL.md",
+      "manifest_path": "skills/quirk-data-refinery/manifest.json",
+      "source_blob_sha": "cde0097da6176533f178687b8c104f1940c13008",
+      "manifest_sha256": "a2a399e656a97b4e5c9d97245bcc98b2bbb5ea9d44b9ef536c71885021f17995",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    },
+    {
+      "id": "quirk-distillation-synthesizer",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "distill",
+      "authority_ceiling": "infer",
+      "source_path": "skills/quirk-distillation-synthesizer/SKILL.md",
+      "manifest_path": "skills/quirk-distillation-synthesizer/manifest.json",
+      "source_blob_sha": "d44cf6bb39671a9ddcebe14b45bdc7c361d34bdc",
+      "manifest_sha256": "eb3b41048844dba81b0dbed6cd4647fd7bab64332ad8fce9274e475e49ffab48",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    },
+    {
+      "id": "quirk-evidence-instrumenter",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "preserve",
+      "authority_ceiling": "propose",
+      "source_path": "skills/quirk-evidence-instrumenter/SKILL.md",
+      "manifest_path": "skills/quirk-evidence-instrumenter/manifest.json",
+      "source_blob_sha": "a62d16902b617a034035a690373a18741b33034e",
+      "manifest_sha256": "749deef743a576353cb91bc9ba1e7e553192560d7963b48d0beea61a174705e2",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    },
+    {
+      "id": "quirk-object-contract-engineer",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "structure",
+      "authority_ceiling": "propose",
+      "source_path": "skills/quirk-object-contract-engineer/SKILL.md",
+      "manifest_path": "skills/quirk-object-contract-engineer/manifest.json",
+      "source_blob_sha": "de2fe5238d5923f47db0fca6fad50707dba54939",
+      "manifest_sha256": "56cd142323cb40a8c32536050e2e79c21b73a945f925567e8e104d964478a275",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    },
+    {
+      "id": "quirk-probabilistic-forecaster",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "decide",
+      "authority_ceiling": "infer",
+      "source_path": "skills/quirk-probabilistic-forecaster/SKILL.md",
+      "manifest_path": "skills/quirk-probabilistic-forecaster/manifest.json",
+      "source_blob_sha": "811b11ee34a5d38f555a7274a688a05a4964c793",
+      "manifest_sha256": "da030abbf81c0f1da8bb364fa294b949aa7b415349cdc02fb13f1957446dcbd6",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    },
+    {
+      "id": "quirk-research-cartographer",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "research",
+      "authority_ceiling": "infer",
+      "source_path": "skills/quirk-research-cartographer/SKILL.md",
+      "manifest_path": "skills/quirk-research-cartographer/manifest.json",
+      "source_blob_sha": "e9206c760f3829a2db07bd1b5cca16b6d5d44a87",
+      "manifest_sha256": "29c45645cc58b004ffe69830c60c364542391a4d405461d20670d84e103c1bf7",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    },
+    {
+      "id": "quirk-roadmap-board-orchestrator",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "connect",
+      "authority_ceiling": "propose",
+      "source_path": "skills/quirk-roadmap-board-orchestrator/SKILL.md",
+      "manifest_path": "skills/quirk-roadmap-board-orchestrator/manifest.json",
+      "source_blob_sha": "562512f15cc36da2933585d06e2916aa57aabaef",
+      "manifest_sha256": "29ab91580d197c0e30ff43dfb523a6c5fd8484174c2aaaea13453287111d0a34",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    },
+    {
+      "id": "quirk-semantic-label-foundry",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "perceive",
+      "authority_ceiling": "propose",
+      "source_path": "skills/quirk-semantic-label-foundry/SKILL.md",
+      "manifest_path": "skills/quirk-semantic-label-foundry/manifest.json",
+      "source_blob_sha": "87600b577454b2f7bdd455dfdedbca323774f30f",
+      "manifest_sha256": "3ecaae7b95e6f287e4438267eecd19720871d73dd898eb26eb648917d848c7d8",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    },
+    {
+      "id": "quirk-source-authority-resolver",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "research",
+      "authority_ceiling": "infer",
+      "source_path": "skills/quirk-source-authority-resolver/SKILL.md",
+      "manifest_path": "skills/quirk-source-authority-resolver/manifest.json",
+      "source_blob_sha": "ec231214bf5277aa08db46585b2333dad367b56b",
+      "manifest_sha256": "e0da08afdd0bcc94262521eec3f457b6f6176e91813c6f3ebdf0fa8cb5f8d562",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    },
+    {
+      "id": "quirk-value-foundry",
+      "version": "0.2.0",
+      "status": "candidate",
+      "family": "productize",
+      "authority_ceiling": "propose",
+      "source_path": "skills/quirk-value-foundry/SKILL.md",
+      "manifest_path": "skills/quirk-value-foundry/manifest.json",
+      "source_blob_sha": "47eaa72673696b847125b517d28b7ae0fa72549f",
+      "manifest_sha256": "16043c2577b62ab48c980738c71287a737ff82ecaed57e026576e0826aa4ecb8",
+      "eval_suite_ref": "evals/skills/conformance.json"
+    }
+  ],
+  "registry_sha256": "e603d1ece57cc1d64c70e2e6af277ca3d85b50ba038fc379fe6b9f1a79e52231"
+}

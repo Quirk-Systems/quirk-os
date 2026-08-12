@@ -1,19 +1,32 @@
 # Quirk Systems Compounder Skills
 
-These skill packages are **candidates**, not active runtime authority. Each package is portable `SKILL.md` source; runtime registration lives in the private Supabase `quirk_sync.manifest_registry`, and Airtable is a rebuildable inspection projection.
+Status: **candidate / non-operative**.
 
-| Skill | Authority ceiling | Primary product |
-| --- | --- | --- |
-| `quirk-source-authority-resolver` | infer | authority and provenance map |
-| `quirk-object-contract-engineer` | propose | interoperable contract pack |
-| `quirk-data-refinery` | propose | bounded cleanup plan and receipts |
-| `quirk-semantic-label-foundry` | propose | reviewed label assignments |
-| `quirk-research-cartographer` | infer | research route and evidence map |
-| `quirk-distillation-synthesizer` | infer | traceable synthesis package |
-| `quirk-evidence-instrumenter` | propose | receipt and observability contract |
-| `quirk-control-loop-designer` | propose | bounded control policy |
-| `quirk-probabilistic-forecaster` | infer | calibrated forecast pack |
-| `quirk-roadmap-board-orchestrator` | propose | governed roadmap projection |
-| `quirk-value-foundry` | propose | reusable capability or product candidate |
+These 11 packages are portable procedural-intelligence candidates. Each package now contains:
 
-No skill may activate itself, increase its own authority, promote Canon, delete history, or perform an irreversible write without an external grant and admission evidence.
+- `SKILL.md` — human/agent procedure;
+- `manifest.json` — strict machine contract, source blob SHA, and canonical manifest digest;
+- four mandatory eval classes in `evals/skills/conformance.json`;
+- explicit trigger, tool, resource, authority, learning, compatibility, and stop contracts.
+
+The central `registry.json` is a rebuildable inventory. It is not Canon and cannot activate anything.
+
+| Skill | Family | Ceiling | Primary output |
+| --- | --- | --- | --- |
+| `quirk-source-authority-resolver` | research | infer | authority census |
+| `quirk-object-contract-engineer` | structure | propose | contract pack |
+| `quirk-data-refinery` | structure | propose | refinery plan |
+| `quirk-semantic-label-foundry` | perceive | propose | label review pack |
+| `quirk-research-cartographer` | research | infer | research map |
+| `quirk-distillation-synthesizer` | distill | infer | synthesis pack |
+| `quirk-evidence-instrumenter` | preserve | propose | evidence contract |
+| `quirk-control-loop-designer` | evolve | propose | control policy |
+| `quirk-probabilistic-forecaster` | decide | infer | forecast pack |
+| `quirk-roadmap-board-orchestrator` | connect | propose | roadmap projection |
+| `quirk-value-foundry` | productize | propose | reusable value candidate |
+
+## Runtime rule
+
+The loader rejects candidate or unadmitted versions, over-ceiling grants, self-approved grants, expired grants, undeclared actions, manifest tampering, and source tampering. Passing evals remain evidence—not admission.
+
+No skill may self-activate, increase its own authority, promote Canon, rewrite history, or perform an irreversible write merely because the capability or credentials exist.
