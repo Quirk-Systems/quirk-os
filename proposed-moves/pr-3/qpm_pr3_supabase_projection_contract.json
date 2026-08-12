@@ -1,0 +1,69 @@
+{
+  "id": "qpm_pr3_supabase_projection_contract",
+  "schema_version": "proposed-move.v1",
+  "lane": "migration",
+  "title": "Canonicalize the Supabase projection contract for quirk-os-alpha",
+  "desired_change": "Add version-controlled Supabase migrations and projection contracts for tribunal runs and Proposed Moves; record source repository, PR, commit, content hash, canonical state, and rebuild cursor; keep tables in a private schema, revoke public roles, enable RLS as defense in depth, run advisors, and document rebuild/drift/forgetting procedures.",
+  "expected_outcome": "The existing Supabase runtime becomes an inspectable projection of Git-backed proposed state rather than hidden infrastructure or silent canon.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "supabase://project/gcebodogotmozwbnsflf",
+    "supabase://project/gcebodogotmozwbnsflf/migrations"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "projection.supabase",
+    "quirk.proposed_move_queue",
+    "quirk.tribunal_run",
+    "quirk.data",
+    "quirk.forgetting"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.data",
+    "authority.privacy",
+    "authority.quirk_core.canon_owner"
+  ],
+  "risk": {
+    "class": "L4",
+    "rights_or_safety_impact": "A database projection can expose sensitive move content or silently become authoritative.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "compensatable",
+  "implementation_ref": "supabase/migrations/20260811113009_ship_without_bryan_projection.sql",
+  "eval_refs": [
+    "eval.projection_source_hash",
+    "eval.projection_rebuild",
+    "eval.supabase_access_boundary"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "undocumented_provider_state",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_supabase_projection_contract",
+  "hidden_context_dependencies": [
+    "An active quirk-os-alpha Supabase project exists but the PR does not mention its project ref, current migrations, schemas, or tables.",
+    "The repository has no Supabase migration directory or projection schema.",
+    "No source commit/hash fields prove which Git state a row projects.",
+    "No RLS/grant/exposure policy is documented for new queue tables.",
+    "No rebuild, drift, backup, retention, or forgetting procedure exists.",
+    "Existing remote schema changes and repository migration history are not reconciled."
+  ],
+  "resolution_artifacts": [
+    "supabase/migrations/20260811113009_ship_without_bryan_projection.sql",
+    "docs/platforms/supabase.md",
+    "evals/projection/supabase/"
+  ],
+  "acceptance_checks": [
+    "Migration is present in Git and applied once to quirk-os-alpha.",
+    "Tables live in a non-exposed schema with no anon/authenticated grants and RLS enabled.",
+    "Every projected row carries source commit, content hash, canonical state, and source path.",
+    "Security and performance advisors show no unresolved tribunal-created finding.",
+    "Projection rebuild and deletion/forgetting are tested."
+  ]
+}

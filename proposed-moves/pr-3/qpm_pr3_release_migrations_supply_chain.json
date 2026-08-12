@@ -1,0 +1,75 @@
+{
+  "id": "qpm_pr3_release_migrations_supply_chain",
+  "schema_version": "proposed-move.v1",
+  "lane": "gate",
+  "title": "Make release, migration, contribution, and supply-chain expectations explicit",
+  "desired_change": "Add versioning and compatibility policy, ADRs, changelog, release manifest, rollback/compensation plan, migration ledger, license, contributing guide, security policy, code of conduct or explicit alternative, dependency pinning, action SHA pinning, artifact attestations, and contributor verification steps.",
+  "expected_outcome": "A contributor can legally use the repository, understand change history, review migration impact, verify build inputs, and release without asking Bryan what 'done' means.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/docs/golden-project-pack/README.md",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/.github/workflows/golden-gates.yml"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "quirk.release",
+    "quirk.migration",
+    "repository.contribution",
+    "repository.security",
+    "supply_chain"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.release",
+    "authority.security",
+    "authority.legal",
+    "authority.quirk_core.canon_owner"
+  ],
+  "risk": {
+    "class": "L3",
+    "rights_or_safety_impact": "Ambiguous licensing, mutable dependencies, and undocumented migrations increase legal, security, and operational risk.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "LICENSE",
+  "eval_refs": [
+    "eval.release_manifest",
+    "eval.migration_compatibility",
+    "eval.supply_chain"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "missing_release_control",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_release_migrations_supply_chain",
+  "hidden_context_dependencies": [
+    "The public repository has no license, contributing guide, security policy, changelog, release manifest, or ADR directory.",
+    "No compatibility or deprecation policy exists for protocol and schema versions.",
+    "No migration file accompanies planned database projection.",
+    "GitHub Actions use mutable major tags.",
+    "No artifact attestation or release receipt implementation exists.",
+    "No documented reviewer or branch-protection requirements exist."
+  ],
+  "resolution_artifacts": [
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "RELEASE.md",
+    "decisions/",
+    "supabase/migrations/",
+    ".github/workflows/"
+  ],
+  "acceptance_checks": [
+    "A release candidate resolves version, migration, rollback, authority, eval, and receipt references.",
+    "Actions and dependencies are pinned according to documented policy.",
+    "A security reporter has a documented channel.",
+    "License and contribution terms are explicit.",
+    "Protocol and schema compatibility rules are tested."
+  ]
+}

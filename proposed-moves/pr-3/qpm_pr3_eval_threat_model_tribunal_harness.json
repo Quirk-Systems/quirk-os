@@ -1,0 +1,73 @@
+{
+  "id": "qpm_pr3_eval_threat_model_tribunal_harness",
+  "schema_version": "proposed-move.v1",
+  "lane": "eval",
+  "title": "Replace structural greenness with executable integrity, security, privacy, and outsider-operation evidence",
+  "desired_change": "Build the Ledger Fuckery Detector and Ship It Without Bryan harness with reference tasks, balanced positive/negative fixtures, repeated trials, deterministic graders where possible, calibrated model/human graders, threat model, hostile-document tests, forgetting tests, link checks, schema-instance validation, supply-chain checks, and failure-recovery simulations.",
+  "expected_outcome": "CI proves behavior and integrity rather than merely the presence of persuasive files.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/scripts/validate_golden_pack.py",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/.github/workflows/golden-gates.yml"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "eval.ledger_integrity",
+    "eval.ship_without_bryan",
+    "security.threat_model",
+    "privacy.forgetting",
+    "ci.golden_gates"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.security",
+    "authority.privacy",
+    "authority.quirk_core.canon_owner"
+  ],
+  "risk": {
+    "class": "L4",
+    "rights_or_safety_impact": "Weak tests can certify unsafe authority, privacy, or release behavior.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "THREAT-MODEL.md",
+  "eval_refs": [
+    "eval.ledger_fuckery_detector",
+    "eval.forgetting_nonresurrection",
+    "eval.hostile_document",
+    "eval.ship_without_bryan"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "missing_evidence_contract",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_eval_threat_model_tribunal_harness",
+  "hidden_context_dependencies": [
+    "The current validator checks file existence, JSON parsing, slogans, prompt IDs, and placeholders only.",
+    "JSON instances are not validated against schemas.",
+    "No adversarial or regression fixtures exist.",
+    "No threat model, prompt-injection tests, rights-sensitive forgetting tests, or non-resurrection tests exist.",
+    "External and relative links are not checked.",
+    "GitHub Actions are tag-pinned rather than commit-SHA pinned.",
+    "One successful run is treated as sufficient for non-deterministic future agent behavior."
+  ],
+  "resolution_artifacts": [
+    "THREAT-MODEL.md",
+    "evals/ledger-fuckery-detector/",
+    "evals/ship-without-bryan/",
+    "scripts/validate_schema_instances.py",
+    ".github/workflows/golden-gates.yml"
+  ],
+  "acceptance_checks": [
+    "Known silent mutation, zombie truth, authority laundering, receipt fiction, consent creep, poison resurrection, and comment-as-command cases fail.",
+    "Forgetting tests cover primary storage, projections, indexes, vectors, caches, exports, and receipts.",
+    "Link and schema-instance checks run in CI.",
+    "Reliability-sensitive evals declare k, pass metric, grader mix, and variance.",
+    "The tribunal can be rerun by a contributor with no private context."
+  ]
+}

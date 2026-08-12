@@ -1,0 +1,62 @@
+{
+  "id": "qpm_pr3_system_identity_topology",
+  "schema_version": "proposed-move.v1",
+  "lane": "canon",
+  "title": "Make the Quirk identity stack and repository topology independently reconstructable",
+  "desired_change": "Define the canonical distinctions and dependency direction among Quirk Core, Quirk OS, Quirk Systems, and Quirkverse; declare why Quirk Core infrastructure lives in the quirk-os repository; map repository responsibilities, dependency direction, extraction criteria, and non-goals.",
+  "expected_outcome": "An outsider can locate each concept, explain which layer owns which authority, and predict where a new object belongs without asking Bryan.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/docs/golden-project-pack/README.md",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/docs/golden-project-pack/ARCHITECTURE.md"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "quirk.core",
+    "quirk.os",
+    "quirk.systems",
+    "quirkverse",
+    "repository.quirk-os",
+    "quirk.control"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.quirk_core.canon_owner"
+  ],
+  "risk": {
+    "class": "L3",
+    "rights_or_safety_impact": "Ambiguous ownership can cause authoritative definitions to be written into the wrong layer and later treated as canon.",
+    "strange_intact_risk": "medium"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "docs/canon/identity-stack.md",
+  "eval_refs": [
+    "eval.ship_without_bryan.system_placement"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "undocumented_topology",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_system_identity_topology",
+  "hidden_context_dependencies": [
+    "The pack calls Quirk Core the owner while the repository is named quirk-os.",
+    "The durable identity stack Core → OS → Systems → Quirkverse exists outside this PR but is not defined inside it.",
+    "Repository dependency direction and extraction criteria are oral tradition.",
+    "Quirk Control is described as an inspection surface but its relation to Quirk OS is not canonicalized here."
+  ],
+  "resolution_artifacts": [
+    "docs/canon/identity-stack.md",
+    "docs/architecture/repository-topology.md",
+    "decisions/ADR-0001-core-inside-quirk-os.md"
+  ],
+  "acceptance_checks": [
+    "A new contributor correctly places five representative objects with no oral guidance.",
+    "Every primary layer has owner, inputs, outputs, prohibited responsibilities, dependency direction, and extraction criteria.",
+    "All references to Core, OS, Systems, Quirkverse, and Control resolve to canonical IDs."
+  ]
+}

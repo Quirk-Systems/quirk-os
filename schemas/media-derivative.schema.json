@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/media-derivative.schema.json",
+  "title": "Quirk Media Derivative",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "schema_version",
+    "canonical_source",
+    "medium",
+    "audience",
+    "job",
+    "transformation_type",
+    "medium_native_affordance",
+    "claims",
+    "accessibility",
+    "rights",
+    "provenance",
+    "status"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^qmd_[A-Za-z0-9_-]+$"},
+    "schema_version": {"const": "media-derivative.v1"},
+    "canonical_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_ref", "version", "receipt_ref"],
+      "properties": {
+        "object_ref": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "receipt_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "medium": {
+      "type": "string",
+      "enum": [
+        "specification",
+        "readme",
+        "diagram",
+        "interactive",
+        "slides",
+        "walkthrough",
+        "video",
+        "short-form",
+        "audio",
+        "prompt-card",
+        "dataset",
+        "other"
+      ]
+    },
+    "audience": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "job": {"type": "string", "minLength": 1},
+    "transformation_type": {"type": "string", "minLength": 1},
+    "medium_native_affordance": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "interactivity",
+          "spatial-understanding",
+          "temporal-demonstration",
+          "comparison",
+          "performance",
+          "accessibility",
+          "searchability",
+          "executable-behavior",
+          "participatory-review",
+          "compression",
+          "emotional-precision",
+          "distribution-context"
+        ]
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preserved", "added", "omitted"],
+      "properties": {
+        "preserved": {"type": "array", "items": {"type": "string"}},
+        "added": {"type": "array", "items": {"type": "string"}},
+        "omitted": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {"type": "string", "enum": ["not_started", "in_progress", "passed", "waived"]},
+        "transcript_ref": {"type": "string", "minLength": 1},
+        "captions_ref": {"type": "string", "minLength": 1},
+        "alt_text_ref": {"type": "string", "minLength": 1},
+        "waiver_receipt_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "licenses", "source_permissions_verified"],
+      "properties": {
+        "owner": {"type": "string", "minLength": 1},
+        "licenses": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "source_permissions_verified": {"type": "boolean"}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["quirk_receipt_ref"],
+      "properties": {
+        "quirk_receipt_ref": {"type": "string", "minLength": 1},
+        "c2pa_manifest_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "eval_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "review", "approved", "released", "superseded", "withdrawn"]
+    },
+    "release_receipt_ref": {"type": "string", "minLength": 1}
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "id": "qpm_pr3_cloudflare_edge_decision",
+  "schema_version": "proposed-move.v1",
+  "lane": "policy",
+  "title": "Decide and document Cloudflare's edge, security, storage, and deployment boundary",
+  "desired_change": "Record an explicit adopt/adapt/reject decision for Cloudflare products. If adopted, name account/project, Workers versus Pages role, DNS/WAF/Turnstile/R2/Queues use, Git or Wrangler deployment, preview branches, secrets, observability, rollback, source receipts, and overlap rules with Vercel and Supabase. If rejected, make non-use explicit.",
+  "expected_outcome": "Cloudflare becomes a deliberate bounded dependency rather than a hidden account configuration or duplicate runtime.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "tooling://cloudflare/live-account-unverified",
+    "https://developers.cloudflare.com/pages/configuration/git-integration/"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "platform.cloudflare",
+    "quirk.connect",
+    "quirk.runtime",
+    "quirk.security",
+    "quirk.asset"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.platform_owner",
+    "authority.security",
+    "authority.quirk_core.canon_owner"
+  ],
+  "risk": {
+    "class": "L3",
+    "rights_or_safety_impact": "Undocumented edge configuration can create deployment drift, secret exposure, duplicate routing, or provider lock-in.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "decisions/ADR-cloudflare-role.md",
+  "eval_refs": [
+    "eval.platform_boundary.cloudflare",
+    "eval.provider_overlap"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "undocumented_provider_state",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_cloudflare_edge_decision",
+  "hidden_context_dependencies": [
+    "The PR contains no Cloudflare manifest, Wrangler configuration, account/project identifier, or role decision.",
+    "Live Cloudflare account state could not be inspected from the current connected tool surface.",
+    "Potential overlap among Cloudflare Pages/Workers, Vercel, and Supabase is unresolved.",
+    "No deployment, security, observability, rollback, or environment contract exists."
+  ],
+  "resolution_artifacts": [
+    "decisions/ADR-cloudflare-role.md",
+    "docs/platforms/cloudflare.md",
+    "platform/cloudflare.manifest.yaml",
+    "wrangler.toml"
+  ],
+  "acceptance_checks": [
+    "The decision names adopt, adapt, reject, or defer with rationale.",
+    "If adopted, preview and production deployment paths are distinct and commit-addressable.",
+    "Vercel/Cloudflare/Supabase responsibility overlap is prohibited or explicitly resolved.",
+    "Secrets and outbound access are bounded.",
+    "Cloudflare cannot mutate canon."
+  ]
+}

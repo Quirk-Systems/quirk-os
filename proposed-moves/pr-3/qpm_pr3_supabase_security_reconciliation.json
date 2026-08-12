@@ -1,0 +1,81 @@
+{
+  "id": "qpm_pr3_supabase_security_reconciliation",
+  "schema_version": "proposed-move.v1",
+  "lane": "policy",
+  "title": "Reconcile live Supabase security state before treating projections as safe",
+  "desired_change": "Document and remediate live Supabase security findings that are currently invisible to PR #3: RLS-enabled tables without policies, the vector extension installed in public, and public.rls_auto_enable() exposed as a SECURITY DEFINER function callable by anon and authenticated roles. Define which tables are API-exposed, which are private projections, explicit grants and policies, extension placement, privileged-function boundaries, and advisor-based release checks.",
+  "expected_outcome": "The Quirk Supabase projection layer has an explicit, reviewable security contract and cannot inherit unsafe or ambiguous access behavior from historical database state.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "supabase://project/gcebodogotmozwbnsflf",
+    "supabase://project/gcebodogotmozwbnsflf/security-advisors"
+  ],
+  "evidence_refs": [
+    "supabase-advisor:rls_enabled_no_policy:public.preference_edges",
+    "supabase-advisor:rls_enabled_no_policy:public.preference_references",
+    "supabase-advisor:extension_in_public:vector",
+    "supabase-advisor:anon_security_definer_function_executable:public.rls_auto_enable",
+    "supabase-advisor:authenticated_security_definer_function_executable:public.rls_auto_enable"
+  ],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "platform.supabase",
+    "projection.supabase",
+    "quirk.security",
+    "quirk.preference",
+    "quirk.data",
+    "quirk.forgetting"
+  ],
+  "dependencies": [
+    "qpm_pr3_supabase_projection_contract",
+    "qpm_pr3_authority_approval_manifest"
+  ],
+  "authority_required": [
+    "authority.security",
+    "authority.data",
+    "authority.privacy",
+    "authority.quirk_core.canon_owner"
+  ],
+  "risk": {
+    "class": "L4",
+    "rights_or_safety_impact": "Ambiguous Data API exposure and privileged database functions can create unauthorized access or mutation paths, while RLS-without-policy can make intended access assumptions false in either direction.",
+    "strange_intact_risk": "none"
+  },
+  "reversibility": "compensatable",
+  "implementation_ref": "docs/platforms/supabase-security.md",
+  "eval_refs": [
+    "eval.supabase_api_exposure_contract",
+    "eval.supabase_rls_policy_coverage",
+    "eval.supabase_privileged_function_boundary",
+    "eval.supabase_advisors_clean_for_quirk_changes"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T13:36:00Z",
+  "dependency_class": "missing_security_contract",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_supabase_security_reconciliation",
+  "hidden_context_dependencies": [
+    "A competent outsider cannot infer which RLS-enabled public tables are intentionally inaccessible versus accidentally missing policies.",
+    "The live project exposes a SECURITY DEFINER function public.rls_auto_enable() to anon and authenticated roles, but no repository policy explains or justifies that authority.",
+    "The vector extension is installed in the public schema despite the current security advisor warning, with no documented exception.",
+    "The PR does not define Data API exposure, grants, policy ownership, or security-advisor acceptance criteria for its proposed projection tables."
+  ],
+  "resolution_artifacts": [
+    "docs/platforms/supabase-security.md",
+    "supabase/migrations/<generated>_supabase_security_reconciliation.sql",
+    "evals/security/supabase/",
+    "receipts/supabase-security-reconciliation.json"
+  ],
+  "acceptance_checks": [
+    "Every API-exposed table has an explicit access decision, grants, and RLS policy set appropriate to its ownership model.",
+    "Every intentionally private table is demonstrably inaccessible to anon and authenticated roles.",
+    "public.rls_auto_enable() is removed, converted to an appropriate invoker model, or moved/revoked with explicit justification and tests.",
+    "The vector extension warning is remediated or accepted through an explicit documented waiver with evidence.",
+    "Supabase security advisors show no unresolved tribunal-created WARN finding before release.",
+    "A clean-environment operator can explain and reproduce the Supabase access model without Bryan."
+  ]
+}

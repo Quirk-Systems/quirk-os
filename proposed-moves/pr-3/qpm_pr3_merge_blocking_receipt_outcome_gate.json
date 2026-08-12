@@ -1,0 +1,73 @@
+{
+  "id": "qpm_pr3_merge_blocking_receipt_outcome_gate",
+  "schema_version": "proposed-move.v1",
+  "lane": "gate",
+  "title": "Make unresolved tribunal findings mechanically block merge and require verified closure",
+  "desired_change": "Extend Proposed Move typing with hidden-context fields and merge-blocking semantics; add a queue manifest; update CI to validate move instances and fail while any blocking move is not verified with acceptance evidence and a receipt; document GitHub ruleset requirements and prohibit auto-merge or waiver without an authorized receipt.",
+  "expected_outcome": "The PR cannot merge merely because structural CI is green, a reviewer is tired, or Bryan remembers how the missing parts should work.",
+  "proposer": {
+    "actor_id": "agent.ship_it_without_bryan_tribunal",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/scripts/validate_golden_pack.py",
+    "github://Quirk-Systems/quirk-os/blob/agent/golden-core-pack/schemas/proposed-move.schema.json"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "gate.ship_without_bryan",
+    "quirk.proposed_move",
+    "quirk.proposed_move_queue",
+    "ci.golden_gates",
+    "quirk.release_receipt"
+  ],
+  "dependencies": [
+    "qpm_pr3_authority_approval_manifest",
+    "qpm_pr3_eval_threat_model_tribunal_harness"
+  ],
+  "authority_required": [
+    "authority.release",
+    "authority.quirk_core.canon_owner"
+  ],
+  "risk": {
+    "class": "L3",
+    "rights_or_safety_impact": "Known defects can be merged and become canonical through process drift.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "schemas/proposed-move.schema.json",
+  "eval_refs": [
+    "eval.unresolved_moves_block_merge",
+    "eval.verified_move_requires_receipt"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T11:30:09Z",
+  "dependency_class": "missing_release_control",
+  "blocks_merge": true,
+  "finding_ref": "tribunal.ship_without_bryan.pr3#qpm_pr3_merge_blocking_receipt_outcome_gate",
+  "hidden_context_dependencies": [
+    "The current CI passes despite the PR explicitly listing missing Golden requirements.",
+    "Proposed Move schema has no blocks_merge, hidden-context, resolution-artifact, or acceptance-check fields.",
+    "No queue instance exists for known blockers.",
+    "No required-check or review ruleset is verified.",
+    "A move can be marked implemented without a verified receipt or outcome obligation.",
+    "No automated count enforces unresolved_consequential_moves: 0."
+  ],
+  "resolution_artifacts": [
+    "schemas/proposed-move.schema.json",
+    "schemas/proposed-move-queue.schema.json",
+    "proposed-moves/pr-3/queue.json",
+    "scripts/validate_golden_pack.py",
+    ".github/workflows/golden-gates.yml",
+    "docs/runbooks/github-ruleset.md"
+  ],
+  "acceptance_checks": [
+    "CI fails while any blocks_merge move is not verified.",
+    "Verified blockers require receipt_ref and all acceptance checks to be evidenced.",
+    "Duplicate move IDs fail validation.",
+    "The PR remains draft and receives a REQUEST_CHANGES tribunal review.",
+    "Merge rules require the Ship It Without Bryan check before canon promotion."
+  ]
+}

@@ -1,0 +1,312 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/proposed-move.schema.json",
+  "title": "Quirk Proposed Move",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "schema_version",
+    "lane",
+    "title",
+    "desired_change",
+    "expected_outcome",
+    "proposer",
+    "source_refs",
+    "affected_objects",
+    "authority_required",
+    "risk",
+    "reversibility",
+    "disposition",
+    "created_at",
+    "dependency_class",
+    "blocks_merge",
+    "finding_ref",
+    "hidden_context_dependencies",
+    "resolution_artifacts",
+    "acceptance_checks"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^qpm_[A-Za-z0-9_-]+$"
+    },
+    "schema_version": {
+      "const": "proposed-move.v1"
+    },
+    "lane": {
+      "type": "string",
+      "enum": [
+        "canon",
+        "policy",
+        "schema",
+        "capability",
+        "skill",
+        "prompt",
+        "eval",
+        "gate",
+        "research-adoption",
+        "media-release",
+        "migration",
+        "forgetting",
+        "poison"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "desired_change": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_outcome": {
+      "type": "string",
+      "minLength": 1
+    },
+    "proposer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_id",
+        "actor_type"
+      ],
+      "properties": {
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_type": {
+          "type": "string",
+          "enum": [
+            "human",
+            "agent",
+            "service"
+          ]
+        }
+      }
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "contradiction_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "affected_objects": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "authority_required": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "rights_or_safety_impact"
+      ],
+      "properties": {
+        "class": {
+          "type": "string",
+          "enum": [
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4",
+            "L5"
+          ]
+        },
+        "rights_or_safety_impact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "strange_intact_risk": {
+          "type": "string",
+          "enum": [
+            "none",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      }
+    },
+    "reversibility": {
+      "type": "string",
+      "enum": [
+        "trivial",
+        "reversible",
+        "compensatable",
+        "irreversible"
+      ]
+    },
+    "implementation_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "eval_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "disposition": {
+      "type": "string",
+      "enum": [
+        "new",
+        "triage",
+        "experiment",
+        "revise",
+        "awaiting_authority",
+        "approved",
+        "rejected",
+        "deferred",
+        "poisoned",
+        "boneyard",
+        "implemented",
+        "verified"
+      ]
+    },
+    "outcome_due_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receipt_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dependency_class": {
+      "type": "string",
+      "enum": [
+        "hidden_bryan_context",
+        "oral_tradition",
+        "implicit_authority",
+        "undefined_vocabulary",
+        "undocumented_topology",
+        "missing_operator_contract",
+        "missing_personalization_boundary",
+        "missing_execution_contract",
+        "missing_evidence_contract",
+        "missing_security_contract",
+        "undocumented_provider_state",
+        "missing_projection_contract",
+        "missing_release_control",
+        "missing_portability_contract"
+      ]
+    },
+    "blocks_merge": {
+      "type": "boolean"
+    },
+    "finding_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hidden_context_dependencies": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "resolution_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "acceptance_checks": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "resolution_note": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "disposition": {
+            "enum": [
+              "verified",
+              "rejected",
+              "boneyard",
+              "poisoned"
+            ]
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "required": [
+          "receipt_ref",
+          "resolution_note"
+        ],
+        "properties": {
+          "evidence_refs": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}
