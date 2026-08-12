@@ -1,0 +1,8 @@
+{
+  "matches": [
+    "skill.alpha",
+    "skill.beta"
+  ],
+  "trigger": "same phrase",
+  "routing_policy": null
+}

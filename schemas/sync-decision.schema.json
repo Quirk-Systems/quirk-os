@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.dev/schemas/sync-decision.schema.json",
+  "title": "Quirk Sync Decision Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "decision_id", "kind", "subject_ref", "status", "payload", "evidence_refs", "created_at"],
+  "properties": {
+    "schema_version": {"const": "sync-decision.v1"},
+    "decision_id": {"type": "string", "pattern": "^decision\\.[a-z0-9._-]+$"},
+    "kind": {"enum": ["freshness", "trigger_route", "label_review", "taxonomy_gap", "research_contradiction", "capacity", "rights_review"]},
+    "subject_ref": {"type": "string", "minLength": 1},
+    "status": {"enum": ["proposed", "review_required", "approved", "blocked", "deferred", "superseded"]},
+    "payload": {"type": "object"},
+    "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "created_at": {"type": "string", "format": "date-time"},
+    "decided_by": {"type": ["string", "null"]},
+    "supersedes": {"type": ["string", "null"]}
+  },
+  "allOf": [
+    {"if": {"properties": {"kind": {"const": "freshness"}}}, "then": {"properties": {"payload": {"required": ["status", "last_verified_at", "max_age_days", "evaluated_at"], "properties": {"status": {"enum": ["fresh", "aging", "stale", "expired"]}}}}}},
+    {"if": {"properties": {"kind": {"const": "trigger_route"}}}, "then": {"properties": {"payload": {"required": ["matching_skill_refs", "routing_policy", "collision_behavior"], "properties": {"matching_skill_refs": {"type": "array", "minItems": 1}, "routing_policy": {"enum": ["explicit_priority", "mutually_exclusive", "human_select", "fail_closed"]}, "collision_behavior": {"const": "block"}}}}}},
+    {"if": {"properties": {"kind": {"const": "label_review"}}}, "then": {"properties": {"payload": {"required": ["label_ref", "confidence", "consequence", "review_required"], "properties": {"confidence": {"type": "number", "minimum": 0, "maximum": 1}, "review_required": {"type": "boolean"}}}}}},
+    {"if": {"properties": {"kind": {"const": "taxonomy_gap"}}}, "then": {"properties": {"payload": {"required": ["unknown_value", "proposed_distinction", "other_prohibited"]}}}},
+    {"if": {"properties": {"kind": {"const": "research_contradiction"}}}, "then": {"properties": {"payload": {"required": ["claim_refs", "normalized_terms", "preserve_both"]}}}},
+    {"if": {"properties": {"kind": {"const": "capacity"}}}, "then": {"properties": {"payload": {"required": ["wip", "wip_limit", "stop_pull", "proposed_rebalance"]}}}},
+    {"if": {"properties": {"kind": {"const": "rights_review"}}}, "then": {"properties": {"payload": {"required": ["outcome", "license_verified", "privacy_review", "provenance_complete"]}}}}
+  ]
+}

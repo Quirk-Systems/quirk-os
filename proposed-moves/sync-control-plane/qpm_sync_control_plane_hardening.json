@@ -1,0 +1,71 @@
+{
+  "id": "qpm_sync_control_plane_hardening",
+  "schema_version": "proposed-move.v1",
+  "lane": "capability",
+  "title": "Harden Quirk Sync Control Plane after admission gauntlet",
+  "desired_change": "Implement QH-001 through QH-010 as executable contracts, migration guards, fixtures, mappers, CI, and provider boundaries.",
+  "expected_outcome": "The candidate becomes eligible for an explicit human admission decision while remaining incapable of self-promotion.",
+  "proposer": {
+    "actor_id": "agent.quirk-sync-steward",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/5",
+    "evidence://sync-control-plane/admission-gauntlet/2026-08-11"
+  ],
+  "evidence_refs": [
+    "evals/sync-control-plane/fixtures.json",
+    "supabase/tests/sync_control_plane_hardening.sql"
+  ],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "program.quirk-sync-control-plane",
+    "agent.quirk-sync-steward",
+    "schema.runtime-manifest",
+    "schema.source-binding",
+    "schema.sync-run-receipt"
+  ],
+  "dependencies": [
+    "github://Quirk-Systems/quirk-os/pull/3",
+    "github://Quirk-Systems/quirk-os/pull/4"
+  ],
+  "authority_required": [
+    "authority.repo_candidate_write",
+    "authority.supabase_alpha_migration",
+    "authority.human_admission"
+  ],
+  "risk": {
+    "class": "L3",
+    "rights_or_safety_impact": "Incorrect activation or sync could expand authority, overwrite evidence, or create provider drift.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "compensatable",
+  "implementation_ref": "docs/sync-control-plane/INTEROPERABILITY.md",
+  "eval_refs": [
+    "eval.sync-control-plane.v0.2",
+    "supabase.test.sync-control-plane-hardening"
+  ],
+  "disposition": "implemented",
+  "created_at": "2026-08-12T03:00:00Z",
+  "dependency_class": "missing_execution_contract",
+  "blocks_merge": true,
+  "finding_ref": "admission-gauntlet.2026-08-11",
+  "hidden_context_dependencies": [
+    "Human admission remains intentionally external to agent capability."
+  ],
+  "resolution_artifacts": [
+    "schemas/runtime-manifest.schema.json",
+    "supabase/migrations/20260812030000_sync_control_plane_contracts.sql",
+    "scripts/validate_sync_control_plane.py",
+    ".github/workflows/sync-control-plane-conformance.yml"
+  ],
+  "acceptance_checks": [
+    "All eleven fixtures pass.",
+    "Unauthorized active manifests are rejected in schema, policy, and database.",
+    "Receipts are append-only.",
+    "Outbox reaches dead letter after bounded retries.",
+    "Projection snapshot rebuilds from Canon and runtime state.",
+    "Cloudflare remains deferred until separately admitted."
+  ],
+  "resolution_note": "Implementation complete as candidate; human admission and inherited stacked-PR reconciliation remain external gates."
+}

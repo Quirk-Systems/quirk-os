@@ -1,0 +1,14 @@
+api_version: quirk.dev/policy/v1alpha1
+kind: Policy
+metadata:
+  id: policy.receipt-immutability
+  version: 0.2.0
+  status: candidate
+rules:
+  - receipts are append-only after insertion
+  - corrections create a new receipt with supersedes_receipt_id and correction_reason
+  - failed, blocked, cancelled, and successful runs remain inspectable
+  - no agent, service, or administrator action may silently rewrite receipt history
+implementation_refs:
+  - quirk_sync.prevent_append_only_mutation
+  - schemas/sync-run-receipt.schema.json

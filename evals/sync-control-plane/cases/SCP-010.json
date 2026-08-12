@@ -1,0 +1,9 @@
+{
+  "product_ref": "data-product.candidate",
+  "rights": {
+    "outcome": "deferred",
+    "license_verified": false,
+    "privacy_review": "blocked",
+    "provenance_complete": false
+  }
+}

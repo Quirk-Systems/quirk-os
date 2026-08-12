@@ -1,0 +1,22 @@
+{
+  "records": [
+    {
+      "source_ref": "drive://doc-1",
+      "format": "document",
+      "content": "usable",
+      "rights": "approved"
+    },
+    {
+      "source_ref": "drive://doc-2",
+      "format": "document",
+      "content": null,
+      "rights": "approved"
+    },
+    {
+      "source_ref": "drive://doc-3",
+      "format": "dataset",
+      "content": "rows",
+      "rights": "unclear"
+    }
+  ]
+}

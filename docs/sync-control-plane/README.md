@@ -1,195 +1,84 @@
 # Quirk Sync Control Plane
 
-**Status:** Candidate  
-**Authority ceiling:** Observe, normalize, validate, persist runtime state, project, and propose.  
-**Prohibited:** Canon promotion, authority expansion, irreversible mutation, history deletion, and production deployment without explicit admission.
+**Version:** 0.2.0 candidate  
+**Authority ceiling:** observe, infer, persist private runtime state, rebuild projections, and propose  
+**Admission:** human decision required  
+**Protected:** Canon promotion, authority expansion, manifest activation, merge, destructive history mutation, and production deployment
 
-This package bootstraps governed synchronization across GitHub, Supabase, Google Drive, Airtable, Notion, and Vercel. It stacks on the four-plane Ledger architecture in PR #3 and must satisfy Never #0001 from PR #4: capability never implies authority.
+The Sync Control Plane provides one interoperable identity, authority, mapping, evidence, and projection spine across GitHub, Supabase, Google Drive, Airtable, Notion, Vercel, and a deliberately deferred Cloudflare boundary.
 
-## Purpose
+## Authority topology
 
-Quirk needs one interoperable identity and receipt model so agents, skills, data, orchestration runs, and human-facing views can move across platforms without creating six competing sources of truth.
-
-The control plane provides:
-
-- stable Quirk object keys independent of vendor IDs;
-- explicit source bindings for every platform projection;
-- versioned agent, skill, capability, and orchestrator manifests;
-- idempotent sync receipts and replay-safe cursors;
-- drift detection without automatic canon repair;
-- projection outbox records for bounded downstream writes;
-- human admission points for consequential or irreversible changes.
-
-## Plane and platform authority
-
-| Platform | Plane | Authoritative for | Never authoritative for |
+| Platform | Plane | Owns | Never owns |
 | --- | --- | --- | --- |
-| GitHub | Canonical | Schemas, policies, manifests, migrations, evals, executable specs | Live run state or human work-in-progress |
-| Supabase | Runtime | Object bindings, cursors, receipts, run state, outbox, measured outcomes | Canon, permission expansion, or silent policy changes |
-| Google Drive | Work | Source intake, review packs, authored working documents, archival context | Machine-executable canon |
-| Airtable | Projection | Operational portfolio, work queue, decisions, agent/skill inspection | Canon or runtime truth |
-| Notion | Projection | Human-readable wiki, orientation, interpretation, onboarding | Canon or runtime truth |
-| Vercel | Projection | Approved application deployment and interface delivery | Canon, database authority, or orchestration policy |
+| GitHub | canonical | schemas, policies, manifests, migrations, evals, executable specifications | live runtime state |
+| Supabase | runtime | bindings, cursors, immutable receipts, transition ledger, Proposed Moves, outbox, observed outcomes | Canon or human admission |
+| Google Drive | work | source intake, authored drafts, review packs, archive context | executable Canon |
+| Airtable | projection | portfolio, work queue, decisions, binding and manifest inspection | Canon or runtime truth |
+| Notion | projection | orientation, interpretation, onboarding, RFC synthesis | Canon or runtime truth |
+| Vercel | delivery projection | admitted interface delivery | Canon, policy, or database authority |
+| Cloudflare | deferred edge candidate | future inventory only | runtime, Canon, or unadmitted deployment |
 
-## Canonical flow
+## What v0.2 hardens
 
-```text
-GitHub candidate or admitted canon
-  → validated manifest and migration
-  → Supabase runtime registry
-  → receipt-backed projection outbox
-  → Airtable / Notion / Drive / Vercel projections
-  → observed drift or human feedback
-  → Proposed Move
-  → GitHub candidate change
-```
+1. **Manifest admission** — `active` requires independent approval, an authority grant, evaluated content hash, legal transition evidence, and non-empty evals and stop conditions.
+2. **Self-promotion rejection** — requester and approver cannot be the same actor; schema, policy, Python tests, and a database trigger all enforce the boundary.
+3. **Immutable evidence** — receipts and manifest-transition records are append-only; corrections supersede rather than rewrite.
+4. **Typed decision contracts** — freshness, trigger routing, label review, taxonomy gaps, contradictions, capacity, and rights are explicit objects.
+5. **Drift control** — observed hash mismatch marks a binding drifted, blocks silent repair, and emits a typed Proposed Move.
+6. **Bounded delivery** — outbox claims use leases and `SKIP LOCKED`; retries stop at five and enter dead letter with evidence.
+7. **Projection reconstruction** — canonical identity plus runtime state can rebuild a projection envelope.
+8. **Canonical/runtime mappings** — `receipt_id↔receipt_key`, `binding_id↔binding_key`, and `object_key↔object_id` are versioned and tested.
+9. **Independent CI** — sync conformance runs separately from stacked Golden Project Pack admission.
+10. **Cloudflare boundary** — represented as `DEFER_UNBOUND`, never silently promoted into the active platform topology.
 
-No downstream projection writes directly back into Canon. A proposed reverse sync produces evidence and a Proposed Move.
-
-## Identity model
-
-Every cross-platform object has:
-
-1. `object_key` — stable Quirk identity.
-2. `kind` — data asset, agent, skill, capability, orchestrator, project, decision, document, deployment, or other admitted kind.
-3. `canonical_uri` — Git-backed or explicitly approved canonical reference.
-4. `source_bindings[]` — platform and vendor identifiers.
-5. `content_hash` — normalized payload fingerprint.
-6. `authority_class` — canonical, runtime, projection, or work.
-7. `sync_direction` — pull, push, bidirectional-proposal, projection-only, or none.
-8. `state` — discovered, candidate, active, drifted, paused, error, retired.
-9. `run_receipts[]` — immutable evidence of attempted and completed work.
-
-## Runtime tables
-
-The candidate migration creates a non-exposed `quirk_sync` schema:
-
-- `object_registry`
-- `source_bindings`
-- `manifest_registry`
-- `sync_cursors`
-- `run_receipts`
-- `projection_outbox`
-
-The schema is denied to `public`, `anon`, and `authenticated`. It is intended for trusted server-side orchestration only. No public policies, client mutation path, or self-promotion function is introduced.
-
-## Agent and skill rules
-
-An agent or skill manifest may describe tools and supported actions, but its `authority_ceiling` is independent of capability.
-
-Every invocation must resolve:
+## Execution flow
 
 ```text
-actor + purpose + authority grant + manifest version + tool scope + object scope
+GitHub candidate/canon
+  -> validate schemas and admission contract
+  -> Supabase private runtime
+  -> immutable receipt + transition record
+  -> bounded projection outbox
+  -> Drive / Airtable / Notion projections
+  -> Vercel only after admission
+  -> Cloudflare remains deferred
+  -> observed drift or feedback
+  -> typed Proposed Move
+  -> GitHub candidate change
 ```
 
-before execution.
+## Local conformance
 
-A successful run may:
+```bash
+python -m pip install -r requirements-evals.txt
+python -m unittest discover -s tests -p 'test_*.py' -v
+python scripts/validate_sync_control_plane.py --repo . --require-admit
+```
 
-- update runtime state;
-- emit evidence;
-- enqueue a bounded projection;
-- propose a manifest, schema, controller, or roadmap change.
+A successful run means **eligible for a human admission decision**. It does not activate the candidate.
 
-A successful run may not activate its own new version or increase its own authority.
+## Database proof
 
-## Sync policies
+Apply the candidate migration, then execute the transactional proof script:
 
-### Pull
+```text
+supabase/migrations/20260812030000_sync_control_plane_contracts.sql
+supabase/migrations/20260812030001_sync_control_plane_evidence.sql
+supabase/migrations/20260812030002_sync_control_plane_delivery.sql
+supabase/tests/sync_control_plane_hardening.sql
+```
 
-Fetch remote state, fingerprint it, preserve provenance, classify drift, and store the observation. Pull does not overwrite Canon.
+The proof transaction rolls back all test data while asserting valid activation, self-promotion rejection, rights blocking, trigger collision blocking, duplicate identity rejection, idempotent receipts, append-only history, deferred Cloudflare representation, dead-letter exhaustion, drift-to-Proposed-Move behavior, and projection reconstruction.
 
-### Push
+## Admission checklist
 
-Allowed only from an admitted source toward a declared projection. The outbox item must name the destination, payload hash, idempotency key, and authority grant.
+- [ ] Candidate conformance workflow passes.
+- [ ] Supabase transactional proof passes on the intended environment.
+- [ ] Runtime and canonical mappings round-trip.
+- [ ] All eleven fixtures pass.
+- [ ] No browser-role runtime privileges exist.
+- [ ] Stacked PR #3 and Never #0001 dependencies are reconciled.
+- [ ] Bryan records approve, revise, reject, or supersede.
 
-### Bidirectional proposal
-
-Changes on either side are observed. Conflicts produce a Proposed Move; they are not auto-merged.
-
-### Projection only
-
-The destination can be rebuilt from authoritative state and must not be treated as a source.
-
-## Initial adapter responsibilities
-
-### GitHub adapter
-
-- discover repositories, branches, manifests, schemas, PRs, and release evidence;
-- emit stable repository and file bindings;
-- read admitted refs and candidate refs separately;
-- never merge or promote without human authority.
-
-### Supabase adapter
-
-- persist runtime bindings, cursors, receipts, outbox, and observed outcomes;
-- use migrations for DDL;
-- remain private by default;
-- expose no service credentials to a browser.
-
-### Google Drive adapter
-
-- inventory Docs, Sheets, Slides, files, folders, and revisions;
-- preserve duplicate candidates and provenance;
-- route unresolved changes to review;
-- treat authored Docs and Sheets as work-plane records.
-
-### Airtable adapter
-
-- project projects, tools, work, decisions, sync bindings, agents, and skills;
-- retain canonical URLs and object keys;
-- never become source of truth because a record is easier to edit.
-
-### Notion adapter
-
-- publish a readable operating map, glossary, decisions, and status;
-- show projection warnings and canonical references;
-- collect human interpretation as proposed feedback.
-
-### Vercel adapter
-
-- deploy only approved interface builds;
-- bind deployments to repository commit and manifest version;
-- never infer approval from successful build capability.
-
-## Drift response
-
-| Drift class | Default response |
-| --- | --- |
-| Metadata-only | Refresh projection with receipt |
-| Content mismatch | Mark drifted; enqueue review |
-| Canon conflict | Block push; create Proposed Move |
-| Missing remote object | Pause binding; preserve history |
-| Permission mismatch | Stop; escalate |
-| Unknown vendor state | Quarantine observation |
-| Manifest version mismatch | Refuse invocation until reconciled |
-
-## Acceptance gates
-
-The package remains Candidate until all are demonstrated:
-
-1. Schema validation succeeds.
-2. Migration applies in isolation and rolls back or compensates cleanly.
-3. Runtime schema is inaccessible to browser roles.
-4. Replaying a run with the same idempotency key creates no duplicate mutation.
-5. One object can bind to all six platforms without identity collision.
-6. Drift creates evidence and a Proposed Move rather than silent repair.
-7. Agent and skill authority ceilings are enforced independently of tools.
-8. Projection outbox retries are bounded and inspectable.
-9. A projection can be rebuilt from runtime and Canon.
-10. Historical bindings and receipts survive retirement.
-11. A capability cannot activate or promote itself.
-
-## Bootstrap scope
-
-This candidate intentionally does not:
-
-- deploy a new Vercel project;
-- merge PR #3 or PR #4;
-- expose a public Supabase API;
-- turn Airtable, Notion, or Drive into canonical stores;
-- run full bulk synchronization across every existing object;
-- resolve duplicate Drive or Notion identities without review.
-
-It establishes the spine required to perform those actions safely.
+Until the checklist is complete: **keep the PR draft, manifests candidate, Vercel undeployed, and Cloudflare deferred.**

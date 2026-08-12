@@ -1,0 +1,37 @@
+{
+  "schema_version": "runtime-manifest.v2",
+  "manifest_key": "agent.valid",
+  "manifest_kind": "agent",
+  "version": "1.0.0",
+  "status": "active",
+  "requested_status": "active",
+  "canonical_uri": "https://github.com/Quirk-Systems/quirk-os/blob/main/agents/valid.yaml",
+  "content_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "authority_ceiling": "propose",
+  "domains": [
+    "sync"
+  ],
+  "tools": [],
+  "inputs_schema_ref": "schemas/source-binding.schema.json",
+  "outputs_schema_ref": "schemas/sync-run-receipt.schema.json",
+  "eval_refs": [
+    "eval.valid"
+  ],
+  "stop_conditions": [
+    "missing_authority"
+  ],
+  "admission": {
+    "decision": "approved",
+    "decision_ref": "decision.manifest.valid",
+    "authority_grant_ref": "grant.manifest.valid",
+    "requested_by": "agent.valid",
+    "approved_by": "human.bryan",
+    "evaluated_content_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "transition_ref": "transition.agent.valid.1",
+    "decided_at": "2026-08-12T00:00:00Z",
+    "evidence_refs": [
+      "evidence://valid"
+    ]
+  },
+  "metadata": {}
+}

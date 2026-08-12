@@ -1,0 +1,16 @@
+{
+  "claims": [
+    {
+      "claim_ref": "claim.a",
+      "term": "active user",
+      "definition": "logged in during 30 days",
+      "value": true
+    },
+    {
+      "claim_ref": "claim.b",
+      "term": "active user",
+      "definition": "performed core action during 7 days",
+      "value": false
+    }
+  ]
+}

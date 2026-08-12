@@ -1,0 +1,11 @@
+{
+  "assignment": {
+    "subject_ref": "asset.1",
+    "label_ref": "label.release_ready",
+    "confidence": 0.61,
+    "consequence": "release",
+    "evidence_refs": [
+      "span://1"
+    ]
+  }
+}

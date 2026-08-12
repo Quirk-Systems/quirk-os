@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.dev/schemas/projection-envelope.schema.json",
+  "title": "Quirk Rebuildable Projection Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "object_key",
+    "kind",
+    "canonical_uri",
+    "canonical_version",
+    "content_hash",
+    "authority_class",
+    "projection",
+    "source_bindings",
+    "generated_at",
+    "generator_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "projection-envelope.v1"
+    },
+    "object_key": {
+      "type": "string",
+      "minLength": 3
+    },
+    "kind": {
+      "type": "string"
+    },
+    "canonical_uri": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri"
+    },
+    "canonical_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "content_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "authority_class": {
+      "const": "projection"
+    },
+    "projection": {
+      "type": "object"
+    },
+    "source_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "generator_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

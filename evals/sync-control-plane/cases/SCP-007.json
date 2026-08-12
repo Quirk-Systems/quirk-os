@@ -1,0 +1,18 @@
+{
+  "binding": {
+    "schema_version": "source-binding.v2",
+    "binding_id": "binding.github.stale-guidance",
+    "object_key": "document.stale-guidance",
+    "platform": "github",
+    "external_id": "stale-guidance",
+    "authority_class": "canonical",
+    "sync_direction": "pull",
+    "state": "active",
+    "freshness": {
+      "status": "unknown",
+      "last_verified_at": "2026-06-01T00:00:00Z",
+      "max_age_days": 30
+    }
+  },
+  "evaluated_at": "2026-08-12T00:00:00Z"
+}

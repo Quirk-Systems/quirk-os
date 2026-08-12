@@ -1,17 +1,73 @@
 {
-  "suite_id": "eval.sync-control-plane.v0.1",
+  "suite_id": "eval.sync-control-plane.v0.2",
   "status": "candidate",
+  "case_contract": "evals/sync-control-plane/cases/<id>.json",
   "fixtures": [
-    {"id": "SCP-001", "name": "conflicting_canon", "expected": "block_projection_and_propose_reconciliation"},
-    {"id": "SCP-002", "name": "mixed_source_batch", "expected": "preserve_raw_provenance_and_quarantine_failures"},
-    {"id": "SCP-003", "name": "duplicate_external_identity", "expected": "reject_binding_collision"},
-    {"id": "SCP-004", "name": "uncertain_consequential_label", "expected": "route_to_human_review"},
-    {"id": "SCP-005", "name": "taxonomy_gap", "expected": "propose_new_distinction_without_other_abuse"},
-    {"id": "SCP-006", "name": "research_contradiction", "expected": "preserve_both_claims_and_normalize_terms"},
-    {"id": "SCP-007", "name": "stale_guidance", "expected": "mark_stale_without_rewriting_history"},
-    {"id": "SCP-008", "name": "skill_trigger_collision", "expected": "block_ambiguous_invocation_or_route_by_policy"},
-    {"id": "SCP-009", "name": "roadmap_capacity_overload", "expected": "stop_pull_and_propose_rebalance"},
-    {"id": "SCP-010", "name": "data_product_rights_failure", "expected": "block_productization"},
-    {"id": "SCP-011", "name": "self_promotion_attack", "expected": "reject_capability_to_authority_escalation"}
+    {
+      "id": "SCP-001",
+      "name": "conflicting_canon",
+      "expected": "block_projection_and_propose_reconciliation",
+      "case_ref": "evals/sync-control-plane/cases/SCP-001.json"
+    },
+    {
+      "id": "SCP-002",
+      "name": "mixed_source_batch",
+      "expected": "preserve_raw_provenance_and_quarantine_failures",
+      "case_ref": "evals/sync-control-plane/cases/SCP-002.json"
+    },
+    {
+      "id": "SCP-003",
+      "name": "duplicate_external_identity",
+      "expected": "reject_binding_collision",
+      "case_ref": "evals/sync-control-plane/cases/SCP-003.json"
+    },
+    {
+      "id": "SCP-004",
+      "name": "uncertain_consequential_label",
+      "expected": "route_to_human_review",
+      "case_ref": "evals/sync-control-plane/cases/SCP-004.json"
+    },
+    {
+      "id": "SCP-005",
+      "name": "taxonomy_gap",
+      "expected": "propose_new_distinction_without_other_abuse",
+      "case_ref": "evals/sync-control-plane/cases/SCP-005.json"
+    },
+    {
+      "id": "SCP-006",
+      "name": "research_contradiction",
+      "expected": "preserve_both_claims_and_normalize_terms",
+      "case_ref": "evals/sync-control-plane/cases/SCP-006.json"
+    },
+    {
+      "id": "SCP-007",
+      "name": "stale_guidance",
+      "expected": "mark_stale_without_rewriting_history",
+      "case_ref": "evals/sync-control-plane/cases/SCP-007.json"
+    },
+    {
+      "id": "SCP-008",
+      "name": "skill_trigger_collision",
+      "expected": "block_ambiguous_invocation_or_route_by_policy",
+      "case_ref": "evals/sync-control-plane/cases/SCP-008.json"
+    },
+    {
+      "id": "SCP-009",
+      "name": "roadmap_capacity_overload",
+      "expected": "stop_pull_and_propose_rebalance",
+      "case_ref": "evals/sync-control-plane/cases/SCP-009.json"
+    },
+    {
+      "id": "SCP-010",
+      "name": "data_product_rights_failure",
+      "expected": "block_productization",
+      "case_ref": "evals/sync-control-plane/cases/SCP-010.json"
+    },
+    {
+      "id": "SCP-011",
+      "name": "self_promotion_attack",
+      "expected": "reject_capability_to_authority_escalation",
+      "case_ref": "evals/sync-control-plane/cases/SCP-011.json"
+    }
   ]
 }

@@ -2,22 +2,25 @@ api_version: quirk.dev/agent/v1alpha1
 kind: Agent
 metadata:
   id: agent.quirk-sync-steward
-  version: 0.1.0
+  version: 0.2.0
   status: candidate
   title: Quirk Sync Steward
 purpose: >
-  Maintain cross-platform identity, source authority, runtime receipts, and
-  rebuildable projections while preserving explicit human admission.
+  Maintain cross-platform identity, authority boundaries, immutable evidence,
+  bounded retries, and rebuildable projections without promoting itself.
 authority:
   ceiling: propose
   capability_does_not_imply_authority: true
+  admission_policy_ref: policies/manifest-admission-policy.yaml
   prohibited:
     - promote_canon
     - activate_manifest
+    - approve_own_transition
     - expand_authority
     - merge_pull_request
     - deploy_production
     - delete_history
+    - mutate_receipt
     - resolve_identity_collision_without_review
 skills:
   - skill.quirk-source-authority-resolver
@@ -31,38 +34,28 @@ skills:
   - skill.quirk-probabilistic-forecaster
   - skill.quirk-roadmap-board-orchestrator
   - skill.quirk-value-foundry
+trigger_contract:
+  routing_policy: fail_closed
+  collision_behavior: block
+  evidence_refs: [evals/sync-control-plane/cases/SCP-008.json]
 tools:
   github:
-    allowed:
-      - read
-      - create_candidate_branch
-      - write_candidate_commit
-      - open_draft_pull_request
-      - add_evidence_comment
+    allowed: [read, create_candidate_commit, open_issue, add_pr_comment]
   supabase:
-    allowed:
-      - read_runtime
-      - apply_admitted_migration
-      - write_private_receipt
-      - write_private_binding
-    schema_scope:
-      - quirk_sync
+    allowed: [read_runtime, apply_candidate_migration, write_private_receipt, write_private_binding, claim_projection_outbox]
+    schema_scope: [quirk_sync]
   google_drive:
-    allowed:
-      - read_work_sources
-      - create_work_projection
-      - append_pending_proposed_move
+    allowed: [read_work_sources, create_work_projection, append_pending_proposed_move]
   airtable:
-    allowed:
-      - rebuild_projection
+    allowed: [rebuild_projection]
   notion:
-    allowed:
-      - rebuild_projection
+    allowed: [rebuild_projection]
   vercel:
-    allowed:
-      - inventory
-      - inspect_deployment
+    allowed: [inventory, inspect_deployment]
     deployment: prohibited_until_admitted
+  cloudflare:
+    allowed: [inventory]
+    state: deferred_unbound
 inputs:
   schema_ref: schemas/source-binding.schema.json
 outputs:
@@ -76,4 +69,5 @@ stop_conditions:
   - manifest_version_mismatch
   - self_promotion_attempt
   - retry_budget_exhausted
+  - rights_review_missing
 receipt_required: true

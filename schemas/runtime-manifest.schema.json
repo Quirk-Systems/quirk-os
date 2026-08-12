@@ -1,90 +1,139 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://quirk.dev/schemas/runtime-manifest.schema.json",
-  "title": "Quirk Runtime Manifest",
+  "title": "Quirk Runtime Manifest v2",
+  "description": "Portable manifest source. Capability, tool access, and successful execution never imply admission or authority.",
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "schema_version",
     "manifest_key",
     "manifest_kind",
     "version",
     "status",
+    "requested_status",
     "canonical_uri",
+    "content_hash",
     "authority_ceiling",
     "inputs_schema_ref",
-    "outputs_schema_ref"
+    "outputs_schema_ref",
+    "domains",
+    "metadata"
   ],
   "properties": {
-    "manifest_key": {
-      "type": "string",
-      "pattern": "^(agent|skill|capability|orchestrator)\\.[a-z0-9._-]+$"
-    },
-    "manifest_kind": {
-      "enum": ["agent", "skill", "capability", "orchestrator"]
-    },
-    "version": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
-    },
-    "status": {
-      "enum": ["candidate", "active", "paused", "superseded", "revoked"]
-    },
-    "canonical_uri": {
-      "type": "string",
-      "format": "uri"
-    },
-    "content_hash": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
-    },
-    "authority_ceiling": {
-      "enum": ["observe", "infer", "propose", "execute_reversible", "enforce_invariant", "execute_protected"],
-      "description": "Independent of tools and model capability."
+    "schema_version": {"const": "runtime-manifest.v2"},
+    "manifest_key": {"type": "string", "pattern": "^(agent|skill|capability|orchestrator)\\.[a-z0-9._-]+$"},
+    "manifest_kind": {"enum": ["agent", "skill", "capability", "orchestrator"]},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"},
+    "status": {"enum": ["candidate", "active", "paused", "superseded", "revoked"]},
+    "requested_status": {"enum": ["candidate", "active", "paused", "superseded", "revoked"]},
+    "canonical_uri": {"type": "string", "format": "uri"},
+    "content_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "authority_ceiling": {"enum": ["observe", "infer", "propose", "execute_reversible", "enforce_invariant", "execute_protected"]},
+    "domains": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": ["sync", "research", "classification", "forecasting", "roadmapping", "data_productization", "deployment", "governance", "security"]}
     },
     "tools": {
       "type": "array",
+      "default": [],
       "items": {
         "type": "object",
         "additionalProperties": false,
         "required": ["ref", "allowed_actions"],
         "properties": {
-          "ref": {"type": "string"},
-          "allowed_actions": {
-            "type": "array",
-            "items": {"type": "string"},
-            "uniqueItems": true
-          },
-          "object_scope": {
-            "type": "array",
-            "items": {"type": "string"},
-            "uniqueItems": true
-          }
+          "ref": {"type": "string", "minLength": 1},
+          "allowed_actions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "object_scope": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "requires_authority": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
         }
       }
     },
-    "inputs_schema_ref": {"type": "string"},
-    "outputs_schema_ref": {"type": "string"},
-    "eval_refs": {
-      "type": "array",
-      "items": {"type": "string"},
-      "uniqueItems": true
+    "inputs_schema_ref": {"type": "string", "minLength": 1},
+    "outputs_schema_ref": {"type": "string", "minLength": 1},
+    "eval_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "skill_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^skill\\.[a-z0-9._-]+$"}},
+    "stop_conditions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "admission": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["decision", "decision_ref", "authority_grant_ref", "requested_by", "approved_by", "evaluated_content_hash", "transition_ref", "decided_at", "evidence_refs"],
+      "properties": {
+        "decision": {"const": "approved"},
+        "decision_ref": {"type": "string", "minLength": 1},
+        "authority_grant_ref": {"type": "string", "minLength": 1},
+        "requested_by": {"type": "string", "pattern": "^(human|agent|service|system)\\.[a-z0-9._-]+$"},
+        "approved_by": {"type": "string", "pattern": "^(human|agent|service|system)\\.[a-z0-9._-]+$"},
+        "evaluated_content_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "transition_ref": {"type": "string", "minLength": 1},
+        "decided_at": {"type": "string", "format": "date-time"},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
     },
-    "skill_refs": {
-      "type": "array",
-      "items": {"type": "string"},
-      "uniqueItems": true
+    "rights_review": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["outcome", "license_verified", "privacy_review", "provenance_complete", "reviewed_by", "reviewed_at", "evidence_refs"],
+      "properties": {
+        "outcome": {"enum": ["approved", "blocked", "deferred"]},
+        "license_verified": {"type": "boolean"},
+        "privacy_review": {"enum": ["approved", "blocked", "not_applicable"]},
+        "provenance_complete": {"type": "boolean"},
+        "reviewed_by": {"type": "string", "pattern": "^(human|agent|service|system)\\.[a-z0-9._-]+$"},
+        "reviewed_at": {"type": "string", "format": "date-time"},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
     },
-    "stop_conditions": {
-      "type": "array",
-      "items": {"type": "string"},
-      "minItems": 1
+    "trigger_contract": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["routing_policy", "collision_behavior", "evidence_refs"],
+      "properties": {
+        "routing_policy": {"enum": ["explicit_priority", "mutually_exclusive", "human_select", "fail_closed"]},
+        "collision_behavior": {"const": "block"},
+        "priority_order": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^skill\\.[a-z0-9._-]+$"}},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
     },
     "metadata": {"type": "object"}
   },
   "allOf": [
     {
-      "if": {"properties": {"status": {"const": "active"}}},
-      "then": {"required": ["content_hash", "eval_refs", "stop_conditions"]}
+      "if": {"properties": {"status": {"const": "active"}}, "required": ["status"]},
+      "then": {
+        "required": ["admission", "eval_refs", "stop_conditions"],
+        "properties": {
+          "requested_status": {"const": "active"},
+          "eval_refs": {"minItems": 1},
+          "stop_conditions": {"minItems": 1},
+          "admission": {"type": "object"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"requested_status": {"const": "active"}, "domains": {"contains": {"const": "data_productization"}}},
+        "required": ["requested_status", "domains"]
+      },
+      "then": {
+        "required": ["rights_review"],
+        "properties": {
+          "rights_review": {
+            "type": "object",
+            "properties": {
+              "outcome": {"const": "approved"},
+              "license_verified": {"const": true},
+              "privacy_review": {"const": "approved"},
+              "provenance_complete": {"const": true}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"manifest_kind": {"const": "orchestrator"}, "skill_refs": {"minItems": 2}}, "required": ["manifest_kind", "skill_refs"]},
+      "then": {"required": ["trigger_contract"], "properties": {"trigger_contract": {"type": "object"}}}
     }
   ]
 }

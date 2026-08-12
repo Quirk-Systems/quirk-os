@@ -1,0 +1,13 @@
+api_version: quirk.dev/platform/v1alpha1
+kind: PlatformBindingCandidate
+metadata:
+  id: platform.cloudflare
+  version: 0.1.0
+  status: deferred_unbound
+plane: projection
+sync_direction: none
+external_id: unverified
+allowed_roles: [inventory_candidate]
+prohibited_roles: [canon, primary_runtime, unadmitted_deployment, authority_source]
+decision_ref: decisions/ADR-0001-cloudflare-boundary.md
+admission_required: true

@@ -1,0 +1,7 @@
+{
+  "board_ref": "board.current",
+  "wip": 9,
+  "wip_limit": 5,
+  "capacity": 4,
+  "demand": 8
+}

@@ -2,121 +2,71 @@ api_version: quirk.dev/program/v1alpha1
 kind: Program
 metadata:
   id: program.quirk-sync-control-plane
-  version: 0.1.0
+  version: 0.2.0
   status: candidate
   title: Quirk Sync Control Plane
   owner_ref: human.bryan
 authority:
   maximum_right: propose
   capability_does_not_imply_authority: true
+  admission_policy_ref: policies/manifest-admission-policy.yaml
   protected_actions:
     - promote_canon
     - expand_authority
     - merge_pull_request
     - deploy_production
     - delete_history
-dependencies:
-  - ref: github://Quirk-Systems/quirk-os/pull/3
-    role: four_plane_ledger_architecture
-  - ref: github://Quirk-Systems/quirk-os/pull/4
-    role: never_capability_implies_authority
+    - activate_manifest
 planes:
   canonical:
     platform: github
-    owns:
-      - schemas
-      - policies
-      - migrations
-      - manifests
-      - evals
-      - executable_specs
+    owns: [schemas, policies, manifests, migrations, evals, executable_specs]
   runtime:
     platform: supabase
-    owns:
-      - object_bindings
-      - cursors
-      - receipts
-      - run_state
-      - projection_outbox
-      - measured_outcomes
+    owns: [object_bindings, cursors, receipts, run_state, transition_ledger, proposed_moves, projection_outbox, measured_outcomes]
   work:
     platform: google_drive
-    owns:
-      - source_intake
-      - authored_working_docs
-      - review_packs
-      - archival_context
+    owns: [source_intake, authored_working_docs, review_packs, archival_context]
   projections:
-    platforms:
-      - airtable
-      - notion
-      - vercel
+    platforms: [airtable, notion, vercel]
     rebuildable: true
-object_kinds:
-  - data_asset
-  - agent
-  - skill
-  - capability
-  - orchestrator
-  - project
-  - decision
-  - document
-  - deployment
-  - proposed_move
-manifest_kinds:
-  - agent
-  - skill
-  - capability
-  - orchestrator
-sync_directions:
-  - pull
-  - push
-  - bidirectional_proposal
-  - projection_only
-  - none
+  deferred_edges:
+    - platform: cloudflare
+      state: deferred_unbound
+      decision_ref: decisions/ADR-0001-cloudflare-boundary.md
+contracts:
+  manifest: schemas/runtime-manifest.schema.json
+  transition: schemas/manifest-transition.schema.json
+  binding: schemas/source-binding.schema.json
+  receipt: schemas/sync-run-receipt.schema.json
+  decision: schemas/sync-decision.schema.json
+  projection: schemas/projection-envelope.schema.json
+  mapping: mappings/sync-control-plane.v1.yaml
 orchestration:
-  lanes:
-    - discover
-    - fingerprint
-    - normalize
-    - validate
-    - persist_runtime
-    - project
-    - observe
-    - detect_drift
-    - propose
   default_failure_posture: fail_closed
+  maximum_batch_size: 500
   retry_policy:
     max_attempts: 5
     exponential_backoff: true
     dead_letter_after_exhaustion: true
-controllers:
-  - id: controller.canon_projection_drift
-    sensor: content_hash_mismatch
-    actuator: propose_reconciliation
-    authority_ceiling: propose
-  - id: controller.sync_retry
-    sensor: outbox_delivery_failure
-    actuator: retry_bounded
-    authority_ceiling: execute_reversible
-  - id: controller.manifest_version_guard
-    sensor: invocation_version_mismatch
-    actuator: block_invocation
-    authority_ceiling: enforce_invariant
-skills:
-  - quirk-source-authority-resolver
-  - quirk-object-contract-engineer
-  - quirk-data-refinery
-  - quirk-semantic-label-foundry
-  - quirk-research-cartographer
-  - quirk-distillation-synthesizer
-  - quirk-evidence-instrumenter
-  - quirk-control-loop-designer
-  - quirk-probabilistic-forecaster
-  - quirk-roadmap-board-orchestrator
-  - quirk-value-foundry
+  controllers:
+    - id: controller.manifest_admission
+      implementation_ref: quirk_sync.guard_manifest_activation
+      authority_ceiling: enforce_invariant
+    - id: controller.canon_projection_drift
+      implementation_ref: quirk_sync.observe_binding
+      authority_ceiling: propose
+    - id: controller.sync_retry
+      implementation_ref: quirk_sync.claim_projection_outbox
+      authority_ceiling: execute_reversible
+    - id: controller.receipt_immutability
+      implementation_ref: quirk_sync.prevent_append_only_mutation
+      authority_ceiling: enforce_invariant
 acceptance:
   fixtures_ref: evals/sync-control-plane/fixtures.json
+  runner_ref: scripts/validate_sync_control_plane.py
+  database_proof_ref: supabase/tests/sync_control_plane_hardening.sql
+  active_only_after_human_admission: true
   required:
     - schema_valid
     - isolated_migration_proof

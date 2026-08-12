@@ -1,0 +1,33 @@
+flowchart TD
+    M["move.sync-control-plane.execute-admission-gauntlet"] --> C["Candidate PR #5"]
+    C --> G{"Admission gates"}
+
+    G -->|"PASS"| S3["Browser roles denied"]
+    G -->|"ENFORCED PASS"| F3["SCP-003 duplicate identity rejected"]
+    G -->|"PARTIAL / SPEC ONLY"| P["Replay · retries · drift · rebuild · history"]
+    G -->|"FAIL"| A["Authority transition guard missing"]
+    G -->|"FAIL"| R["Rights-unclear active manifest validates"]
+    G -->|"FAIL"| T["Trigger collision has no runtime contract"]
+    G -->|"FAIL"| X["Self-promotion manifest validates structurally"]
+
+    A --> V["VERDICT: REVISE"]
+    R --> V
+    T --> V
+    X --> V
+    P --> V
+
+    V --> B["ADMISSION BLOCKED"]
+    B --> GH["GitHub: candidate evidence only"]
+    B --> SB["Supabase: private runtime; no activation"]
+    B --> GD["Drive: work-plane dossier"]
+    B --> NT["Notion: human projection"]
+    B --> AT["Airtable: move remains Proposed"]
+    B --> VE["Vercel: inventory only"]
+    B --> CF["Cloudflare: DEFER — unbound and overlap unresolved"]
+
+    CF --> H["Hardening pack QH-001…QH-010"]
+    GH --> H
+    SB --> H
+    H --> D{"Human admission after evidence?"}
+    D -->|"No"| B
+    D -->|"Yes, only after rerun"| RC["New candidate + fresh gauntlet"]
