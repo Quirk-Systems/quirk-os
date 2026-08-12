@@ -7,6 +7,7 @@ on:
       - 'docs/personalization/**'
       - 'evals/intent-shaper/**'
       - 'examples/personalization-plan.valid.json'
+      - 'examples/personalization-plan.generated-ui.valid.json'
       - 'policies/personalization-adaptation-policy.yaml'
       - 'schemas/personalization-plan.schema.json'
       - 'scripts/intent_shaper/**'
@@ -47,13 +48,15 @@ jobs:
         run: |
           python scripts/validate_intent_shaper.py \
             --repo . \
-            --output evals/intent-shaper/conformance-results.json
+            --base-sha "${{ github.event.pull_request.base.sha || github.sha }}" \
+            --head-sha "${{ github.sha }}" \
+            --output evals/intent-shaper/conformance-results/qis-015.reconstruction.json
 
       - name: Upload Intent Shaper evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: intent-shaper-conformance
-          path: evals/intent-shaper/conformance-results.json
+          name: qis-015-reconstruction-${{ github.sha }}
+          path: evals/intent-shaper/conformance-results/qis-015.reconstruction.json
           if-no-files-found: error
           retention-days: 30

@@ -667,6 +667,432 @@
             "string",
             "null"
           ]
+        },
+        "generated_ui_contract": {
+          "$ref": "#/$defs/generatedUiContract"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "generated_ui"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "generated_ui_contract"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "generated_ui"
+                }
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "generated_ui_contract"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "generatedUiContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "runtime_manifest_ref",
+        "semantic_projection",
+        "reconstruction_inputs",
+        "declarative_actions",
+        "plain_fallback",
+        "evidence_refs"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "generated-ui.v1"
+        },
+        "runtime_manifest_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "semantic_projection": {
+          "$ref": "#/$defs/generatedUiSemanticProjection"
+        },
+        "reconstruction_inputs": {
+          "$ref": "#/$defs/generatedUiReconstructionInputs"
+        },
+        "declarative_actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/generatedUiDeclarativeAction"
+          }
+        },
+        "plain_fallback": {
+          "$ref": "#/$defs/generatedUiPlainFallback"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "ticket": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reviewed_by": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "generatedUiSemanticProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "view_id",
+        "platform",
+        "decision_semantics",
+        "components"
+      ],
+      "properties": {
+        "view_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "platform": {
+          "enum": [
+            "chat",
+            "web",
+            "mobile",
+            "github",
+            "other"
+          ]
+        },
+        "decision_semantics": {
+          "type": "string",
+          "minLength": 1
+        },
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/generatedUiSemanticComponent"
+          }
+        }
+      }
+    },
+    "generatedUiSemanticComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_id",
+        "registry_ref",
+        "state_slot",
+        "binding",
+        "label"
+      ],
+      "properties": {
+        "component_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "registry_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state_slot": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "generatedUiReconstructionInputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_ref",
+        "locale",
+        "timezone",
+        "clock",
+        "randomness",
+        "environment",
+        "network_access",
+        "model_calls",
+        "profile_retrieval",
+        "mutable_registries",
+        "locale_defaults",
+        "time_defaults",
+        "component_registry"
+      ],
+      "properties": {
+        "schema_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1
+        },
+        "clock": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "timestamp"
+          ],
+          "properties": {
+            "mode": {
+              "const": "pinned"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "randomness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "seed"
+          ],
+          "properties": {
+            "mode": {
+              "const": "pinned"
+            },
+            "seed": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "environment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pythonhashseed"
+          ],
+          "properties": {
+            "pythonhashseed": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "network_access": {
+          "const": false
+        },
+        "model_calls": {
+          "const": false
+        },
+        "profile_retrieval": {
+          "const": false
+        },
+        "mutable_registries": {
+          "const": false
+        },
+        "locale_defaults": {
+          "const": false
+        },
+        "time_defaults": {
+          "const": false
+        },
+        "component_registry": {
+          "$ref": "#/$defs/generatedUiComponentRegistry"
+        }
+      }
+    },
+    "generatedUiComponentRegistry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_id",
+        "version",
+        "entries",
+        "registry_hash"
+      ],
+      "properties": {
+        "registry_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/generatedUiComponentRegistryEntry"
+          }
+        },
+        "registry_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "generatedUiComponentRegistryEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_ref",
+        "component_kind",
+        "semantic_role",
+        "state_slots",
+        "supported_actions"
+      ],
+      "properties": {
+        "component_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "component_kind": {
+          "enum": [
+            "heading",
+            "choice_group",
+            "button",
+            "summary",
+            "section",
+            "field"
+          ]
+        },
+        "semantic_role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state_slots": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "supported_actions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "set_field",
+              "choose_option",
+              "submit_intent"
+            ]
+          }
+        }
+      }
+    },
+    "generatedUiDeclarativeAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_id",
+        "type",
+        "target",
+        "value"
+      ],
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "set_field",
+            "choose_option",
+            "submit_intent"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {}
+      }
+    },
+    "generatedUiPlainFallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "steps"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "checklist",
+            "plain_text",
+            "decision_card"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     }

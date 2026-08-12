@@ -173,5 +173,117 @@
         "canon_updated": false
       }
     }
-  ]
+  ],
+  "reconstruction_suite": {
+    "case_id": "QIS-015",
+    "plan_fixture": "examples/personalization-plan.generated-ui.valid.json",
+    "expected": {
+      "semantic_hash": "698c5437de184fd1c08b24b0435a2b7ec195a5bfc06abdda624e45ee1dd2fc7d",
+      "subhashes": {
+        "inputs": "77330ddac30dcdff174596d0b66152e6d75a8b0b7c2a5bddd894fac214e332bb",
+        "registry": "24e32174d548552dba26f4a38ad736b42ade4e0eea460a5ea354a680be32fdda",
+        "layout": "89ba241c7cf9b1d3337d028ec4107e4719012746533334d19d41d76cbad4a554",
+        "actions": "00eaa16fcb6019c7490e07aa024ff11dda35f8356f1aeb25cbdfe8aeb1184b39",
+        "fallback": "0303877b7a6d30897cdd68b85982a9bc90f02ed20c970378bdb1c52457f2af1d",
+        "semantic": "698c5437de184fd1c08b24b0435a2b7ec195a5bfc06abdda624e45ee1dd2fc7d"
+      }
+    },
+    "mutations": [
+      {
+        "id": "QIS-015-M01",
+        "operation": "replace",
+        "path": ["task_affordances", 0, "generated_ui_contract", "reconstruction_inputs", "component_registry", "entries", 1, "semantic_role"],
+        "value": "capture_incident_lane",
+        "recompute_registry_hash": true,
+        "expected_changed_subhashes": ["inputs", "registry", "layout", "semantic"],
+        "expected_unchanged_subhashes": ["actions", "fallback"]
+      },
+      {
+        "id": "QIS-015-M02",
+        "operation": "replace",
+        "path": ["task_affordances", 0, "generated_ui_contract", "semantic_projection", "platform"],
+        "value": "chat",
+        "expected_changed_subhashes": ["inputs", "layout", "semantic"],
+        "expected_unchanged_subhashes": ["actions", "fallback", "registry"]
+      },
+      {
+        "id": "QIS-015-M03",
+        "operation": "replace",
+        "path": ["task_affordances", 0, "generated_ui_contract", "declarative_actions", 0, "value"],
+        "value": "defects",
+        "expected_changed_subhashes": ["actions", "inputs", "semantic"],
+        "expected_unchanged_subhashes": ["fallback", "layout", "registry"]
+      },
+      {
+        "id": "QIS-015-M04",
+        "operation": "replace",
+        "path": ["task_affordances", 0, "generated_ui_contract", "plain_fallback", "steps", 1],
+        "value": "Choose one incident lane",
+        "expected_changed_subhashes": ["fallback", "inputs", "semantic"],
+        "expected_unchanged_subhashes": ["actions", "layout", "registry"]
+      },
+      {
+        "id": "QIS-015-M05",
+        "operation": "replace",
+        "path": ["task_affordances", 0, "generated_ui_contract", "metadata", "reviewed_by"],
+        "value": "human.operator",
+        "expected_changed_subhashes": [],
+        "expected_unchanged_subhashes": ["actions", "fallback", "inputs", "layout", "registry", "semantic"]
+      }
+    ],
+    "adversarial_cases": [
+      {
+        "id": "QIS-015-A01",
+        "mutation": {
+          "operation": "remove",
+          "path": ["task_affordances", 0, "generated_ui_contract", "reconstruction_inputs", "timezone"]
+        },
+        "expected_code": "MISSING_PINNED_INPUT"
+      },
+      {
+        "id": "QIS-015-A02",
+        "mutation": {
+          "operation": "replace",
+          "path": ["task_affordances", 0, "generated_ui_contract", "reconstruction_inputs", "component_registry", "registry_hash"],
+          "value": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "expected_code": "REGISTRY_DRIFT"
+      },
+      {
+        "id": "QIS-015-A03",
+        "mutation": {
+          "operation": "add",
+          "path": ["task_affordances", 0, "generated_ui_contract", "unexpected_field"],
+          "value": true
+        },
+        "expected_code": "UNEXPECTED_FIELD"
+      },
+      {
+        "id": "QIS-015-A04",
+        "mutation": {
+          "operation": "replace",
+          "path": ["task_affordances", 0, "generated_ui_contract", "declarative_actions", 0, "type"],
+          "value": "open_browser"
+        },
+        "expected_code": "UNKNOWN_ENUM_VALUE"
+      },
+      {
+        "id": "QIS-015-A05",
+        "mutation": {
+          "operation": "remove",
+          "path": ["task_affordances", 0, "generated_ui_contract", "evidence_refs"]
+        },
+        "expected_code": "MISSING_EVIDENCE"
+      },
+      {
+        "id": "QIS-015-A06",
+        "mutation": {
+          "operation": "replace",
+          "path": ["authority", "ceiling"],
+          "value": "execute_reversible"
+        },
+        "expected_code": "AUTHORITY_DRIFT"
+      }
+    ]
+  }
 }
