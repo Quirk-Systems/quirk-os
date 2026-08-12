@@ -1,0 +1,67 @@
+name: Sync Control Plane Conformance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sync-control-plane-conformance.yml'
+      - 'agents/quirk-sync-steward/**'
+      - 'decisions/ADR-0001-cloudflare-boundary.md'
+      - 'evals/sync-control-plane/**'
+      - 'mappings/sync-control-plane.v1.yaml'
+      - 'platform/cloudflare.manifest.yaml'
+      - 'policies/**'
+      - 'programs/quirk-sync-control-plane.yaml'
+      - 'requirements-evals.txt'
+      - 'schemas/**'
+      - 'scripts/sync_control_plane/**'
+      - 'scripts/validate_sync_control_plane.py'
+      - 'supabase/migrations/*sync_control_plane*'
+      - 'supabase/tests/sync_control_plane_hardening.sql'
+      - 'tests/test_sync_control_plane.py'
+      - 'workflows/quirk-sync-control-plane.workflow.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-control-plane-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate-conformance:
+    name: candidate-conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Install evaluation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run unit and adversarial tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Run admission conformance
+        run: |
+          python scripts/validate_sync_control_plane.py \
+            --repo . \
+            --output evals/sync-control-plane/conformance-results.json \
+            --require-admit
+
+      - name: Upload conformance evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sync-control-plane-conformance
+          path: evals/sync-control-plane/conformance-results.json
+          if-no-files-found: error
+          retention-days: 30

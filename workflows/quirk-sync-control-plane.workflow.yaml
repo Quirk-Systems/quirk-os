@@ -1,0 +1,71 @@
+api_version: quirk.dev/workflow/v1alpha1
+kind: Workflow
+metadata:
+  id: workflow.quirk-sync-control-plane
+  version: 0.2.0
+  status: candidate
+trigger:
+  allowed: [manual, admitted_proposed_move]
+  scheduled: false
+actor_ref: agent.quirk-sync-steward
+authority_ceiling: propose
+inputs:
+  - object_key
+  - purpose
+  - requested_platforms
+  - authority_ref
+  - source_refs
+steps:
+  - id: resolve_authority
+    skill: skill.quirk-source-authority-resolver
+    on_conflict: block_and_propose
+  - id: validate_manifest_transition
+    action: quirk_sync.guard_manifest_activation
+    on_failure: block_and_receipt
+  - id: discover_bindings
+    action: inventory_platform_state
+  - id: fingerprint
+    action: normalize_and_hash
+  - id: validate_contracts
+    skill: skill.quirk-object-contract-engineer
+    on_failure: quarantine
+  - id: plan_refinement
+    skill: skill.quirk-data-refinery
+    mode: dry_run
+  - id: persist_runtime
+    action: upsert_private_binding_and_cursor
+    idempotency_required: true
+  - id: observe_drift
+    action: quirk_sync.observe_binding
+    on_drift: block_and_propose
+  - id: enqueue_projection
+    action: write_projection_outbox
+    max_attempts: 5
+  - id: deliver_projection
+    action: quirk_sync.claim_projection_outbox
+    destinations: [google_drive, airtable, notion]
+    vercel: inventory_only
+    cloudflare: deferred_unbound
+  - id: rebuild_and_compare
+    action: quirk_sync.rebuild_projection_snapshot
+    on_drift: block_and_propose
+  - id: emit_receipt
+    skill: skill.quirk-evidence-instrumenter
+    append_only: true
+  - id: propose_next_moves
+    skill: skill.quirk-roadmap-board-orchestrator
+controls:
+  default_failure_posture: fail_closed
+  maximum_batch_size: 500
+  protected_actions_require_human: true
+  receipts_append_only: true
+  transition_ledger_append_only: true
+  retry:
+    max_attempts: 5
+    exponential_backoff: true
+    dead_letter: true
+outputs: [run_receipt, transition_record, binding_changes, projection_results, drift_findings, proposed_moves]
+acceptance:
+  fixtures_ref: evals/sync-control-plane/fixtures.json
+  runner_ref: scripts/validate_sync_control_plane.py
+  active_only_after_human_admission: true

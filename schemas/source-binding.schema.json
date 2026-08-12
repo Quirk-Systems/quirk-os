@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.dev/schemas/source-binding.schema.json",
+  "title": "Quirk Source Binding v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "binding_id", "object_key", "platform", "external_id", "authority_class", "sync_direction", "state", "freshness"],
+  "properties": {
+    "schema_version": {"const": "source-binding.v2"},
+    "binding_id": {"type": "string", "pattern": "^binding\\.[a-z0-9._-]+$"},
+    "object_key": {"type": "string", "minLength": 3, "maxLength": 255},
+    "platform": {"enum": ["github", "supabase", "google_drive", "airtable", "notion", "vercel", "cloudflare"]},
+    "external_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "external_url": {"type": ["string", "null"], "format": "uri"},
+    "authority_class": {"enum": ["canonical", "runtime", "work", "projection"]},
+    "sync_direction": {"enum": ["pull", "push", "bidirectional_proposal", "projection_only", "none"]},
+    "state": {"enum": ["discovered", "candidate", "active", "deferred", "drifted", "paused", "error", "retired"]},
+    "canonical_uri": {"type": ["string", "null"], "format": "uri"},
+    "content_hash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "last_seen_at": {"type": ["string", "null"], "format": "date-time"},
+    "last_synced_at": {"type": ["string", "null"], "format": "date-time"},
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {"enum": ["unknown", "fresh", "aging", "stale", "expired"]},
+        "last_verified_at": {"type": ["string", "null"], "format": "date-time"},
+        "max_age_days": {"type": ["integer", "null"], "minimum": 0},
+        "evaluated_at": {"type": ["string", "null"], "format": "date-time"},
+        "reason": {"type": ["string", "null"]}
+      }
+    },
+    "cursor": {"type": "object"},
+    "metadata": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"platform": {"const": "cloudflare"}}, "required": ["platform"]},
+      "then": {
+        "properties": {
+          "state": {"enum": ["discovered", "deferred", "paused", "retired"]},
+          "sync_direction": {"enum": ["none", "projection_only"]}
+        }
+      }
+    }
+  ]
+}

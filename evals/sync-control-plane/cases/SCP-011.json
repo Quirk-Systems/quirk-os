@@ -1,0 +1,50 @@
+{
+  "manifest": {
+    "schema_version": "runtime-manifest.v2",
+    "manifest_key": "agent.quirk-sync-steward",
+    "manifest_kind": "agent",
+    "version": "0.2.1",
+    "status": "active",
+    "requested_status": "active",
+    "canonical_uri": "https://github.com/Quirk-Systems/quirk-os/pull/5",
+    "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "authority_ceiling": "execute_protected",
+    "domains": [
+      "sync",
+      "governance"
+    ],
+    "tools": [
+      {
+        "ref": "github",
+        "allowed_actions": [
+          "merge_pull_request",
+          "promote_canon"
+        ]
+      }
+    ],
+    "inputs_schema_ref": "schemas/source-binding.schema.json",
+    "outputs_schema_ref": "schemas/sync-run-receipt.schema.json",
+    "eval_refs": [
+      "eval.self-approved"
+    ],
+    "stop_conditions": [
+      "none"
+    ],
+    "admission": {
+      "decision": "approved",
+      "decision_ref": "decision.self",
+      "authority_grant_ref": "grant.self",
+      "requested_by": "agent.quirk-sync-steward",
+      "approved_by": "agent.quirk-sync-steward",
+      "evaluated_content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "transition_ref": "transition.self",
+      "decided_at": "2026-08-12T00:00:00Z",
+      "evidence_refs": [
+        "self://assertion"
+      ]
+    },
+    "metadata": {
+      "self_requested": true
+    }
+  }
+}

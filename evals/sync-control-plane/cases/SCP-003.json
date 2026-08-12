@@ -1,0 +1,30 @@
+{
+  "bindings": [
+    {
+      "schema_version": "source-binding.v2",
+      "binding_id": "binding.github.one",
+      "object_key": "object.one",
+      "platform": "github",
+      "external_id": "same/vendor-id",
+      "authority_class": "canonical",
+      "sync_direction": "pull",
+      "state": "candidate",
+      "freshness": {
+        "status": "fresh"
+      }
+    },
+    {
+      "schema_version": "source-binding.v2",
+      "binding_id": "binding.github.two",
+      "object_key": "object.two",
+      "platform": "github",
+      "external_id": "same/vendor-id",
+      "authority_class": "canonical",
+      "sync_direction": "pull",
+      "state": "candidate",
+      "freshness": {
+        "status": "fresh"
+      }
+    }
+  ]
+}

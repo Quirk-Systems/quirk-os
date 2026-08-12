@@ -1,0 +1,16 @@
+{
+  "sources": [
+    {
+      "source_ref": "github://Quirk-Systems/quirk-os/canon/rule-x",
+      "object_key": "rule.x",
+      "authority_class": "canonical",
+      "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "source_ref": "drive://rule-x",
+      "object_key": "rule.x",
+      "authority_class": "canonical",
+      "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ]
+}

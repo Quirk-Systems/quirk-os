@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.dev/schemas/sync-run-receipt.schema.json",
+  "title": "Quirk Sync Run Receipt v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "receipt_id", "idempotency_key", "run_type", "status", "immutable", "started_at", "input_refs", "output_refs", "evidence_refs"],
+  "properties": {
+    "schema_version": {"const": "sync-run-receipt.v2"},
+    "receipt_id": {"type": "string", "pattern": "^receipt\\.[a-z0-9._-]+$"},
+    "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 255},
+    "run_type": {"enum": ["discover", "pull", "push", "reconcile", "project", "validate", "backfill", "rebuild", "compensate"]},
+    "status": {"enum": ["planned", "running", "succeeded", "failed", "blocked", "cancelled", "superseded"]},
+    "immutable": {"const": true},
+    "actor_ref": {"type": ["string", "null"]},
+    "authority_ref": {"type": ["string", "null"]},
+    "agent_ref": {"type": ["string", "null"]},
+    "skill_ref": {"type": ["string", "null"]},
+    "manifest_version": {"type": ["string", "null"]},
+    "trace_id": {"type": ["string", "null"]},
+    "started_at": {"type": "string", "format": "date-time"},
+    "completed_at": {"type": ["string", "null"], "format": "date-time"},
+    "input_refs": {"type": "array", "items": {"type": "string"}},
+    "output_refs": {"type": "array", "items": {"type": "string"}},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "metrics": {"type": "object", "additionalProperties": {"type": ["number", "integer", "string", "boolean", "null"]}},
+    "error": {"type": ["object", "null"]},
+    "proposed_move_ref": {"type": ["string", "null"]},
+    "content_hashes": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^[a-f0-9]{64}$"}},
+    "receipt_hash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$", "description": "SHA-256 over canonical receipt payload with receipt_hash omitted."},
+    "supersedes_receipt_id": {"type": ["string", "null"], "pattern": "^receipt\\.[a-z0-9._-]+$"},
+    "correction_reason": {"type": ["string", "null"], "minLength": 1},
+    "outcome": {"type": "object"}
+  },
+  "allOf": [
+    {"if": {"properties": {"status": {"enum": ["succeeded", "failed", "blocked", "cancelled", "superseded"]}}, "required": ["status"]}, "then": {"required": ["completed_at", "receipt_hash"]}},
+    {"if": {"properties": {"status": {"const": "failed"}}, "required": ["status"]}, "then": {"required": ["error"]}},
+    {"if": {"required": ["supersedes_receipt_id"]}, "then": {"required": ["correction_reason"]}}
+  ]
+}

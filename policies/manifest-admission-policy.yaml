@@ -1,0 +1,30 @@
+api_version: quirk.dev/policy/v1alpha1
+kind: Policy
+metadata:
+  id: policy.manifest-admission
+  version: 0.2.0
+  status: candidate
+invariant: capability_never_implies_authority
+rules:
+  - id: no_self_approval
+    require: admission.requested_by != admission.approved_by
+  - id: evaluated_hash_matches
+    require: admission.evaluated_content_hash == content_hash
+  - id: explicit_grant
+    require: admission.authority_grant_ref
+  - id: legal_transition
+    require: admission.transition_ref
+  - id: active_requires_evidence
+    require: eval_refs and stop_conditions and admission.evidence_refs
+  - id: rights_before_productization
+    when: domains contains data_productization
+    require: rights_review.outcome == approved and rights_review.license_verified and rights_review.privacy_review == approved and rights_review.provenance_complete
+  - id: collisions_fail_closed
+    when: manifest_kind == orchestrator and len(skill_refs) > 1
+    require: trigger_contract.collision_behavior == block
+protected_actions:
+  - activate_manifest
+  - promote_canon
+  - expand_authority
+  - merge_pull_request
+  - deploy_production

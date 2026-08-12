@@ -1,0 +1,8 @@
+{
+  "classification": {
+    "subject_ref": "object.unknown",
+    "candidate_labels": [],
+    "suggested_fallback": "other",
+    "observed_distinction": "hybrid_actor"
+  }
+}

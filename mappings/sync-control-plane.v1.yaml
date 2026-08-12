@@ -1,0 +1,35 @@
+api_version: quirk.dev/mapping/v1
+kind: ProjectionMapping
+metadata:
+  id: mapping.sync-control-plane
+  version: 1.0.0
+canonical_to_runtime:
+  source_binding:
+    binding_id: source_bindings.binding_key
+    object_key: object_registry.object_key via source_bindings.object_id
+    platform: source_bindings.platform
+    external_id: source_bindings.external_id
+    authority_class: source_bindings.authority_class
+    sync_direction: source_bindings.sync_direction
+    state: source_bindings.state
+    freshness: source_bindings.freshness
+  run_receipt:
+    receipt_id: run_receipts.receipt_key
+    schema_version: run_receipts.schema_version
+    idempotency_key: run_receipts.idempotency_key
+    immutable: constant true
+    supersedes_receipt_id: run_receipts.supersedes_receipt_key
+runtime_to_canonical:
+  source_binding:
+    source_bindings.id: omitted_runtime_identity
+    source_bindings.object_id: resolve_to_object_registry.object_key
+    source_bindings.binding_key: binding_id
+  run_receipt:
+    run_receipts.id: omitted_runtime_identity
+    run_receipts.receipt_key: receipt_id
+    run_receipts.supersedes_receipt_key: supersedes_receipt_id
+invariants:
+  - runtime UUIDs never replace stable Quirk object keys
+  - every lossy field is named and tested
+  - canonical and runtime projections validate independently
+  - reverse sync emits a Proposed Move rather than mutating Canon
