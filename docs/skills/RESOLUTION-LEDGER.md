@@ -5,7 +5,7 @@
 | Finding | Resolution |
 | --- | --- |
 | Skills CI failed before validation | Removed implicit cache discovery; pinned current Node 24 actions and bound pip cache to `requirements-evals.txt`. |
-| Branch depended on obsolete PR #5 contracts | Reconciled and rebased the skill branch onto PR #5 head `bf09bb90bcb365db55fdd47239fe7a48d48aa1f0`, including the outbox lease and manifest-transition repairs. |
+| Branch depended on obsolete PR #5 contracts | Reconciled through the current PR #5 stack, preserving the outbox lease and manifest-transition repairs. |
 | Authority-only fixture coverage | Expanded to 44 executable positive, adversarial, regression, and authority cases. |
 | Prose-only packages | Added 11 strict `manifest.json` contracts and a rebuildable registry. |
 | Mutable or ambiguous identity | Added exact Git blob SHA and canonical manifest SHA-256 binding. |
@@ -16,13 +16,14 @@
 | Mapping drift | Added `mappings/skill-package.v1.yaml` with no silent loss and Proposed-Move-only reverse flow. |
 | No receipt contract | Added strict immutable skill-run receipt schema and positive validation. |
 | Unresolved PR #6 comments | None existed at inspection time; no review threads were open. |
-| Placeholder debt | Validator rejects TODO-style markers inside the bounded skill pack. |
-| Skills workflow verification | Push and pull-request runs passed on the hardened commit. |
-| Sync-control-plane dependency verification | Sync Control Plane Conformance passed on the hardened commit. |
+| Placeholder debt | Validator rejects unresolved placeholder markers inside the bounded skill pack. |
+| Skills workflow verification | Push and pull-request validation has passed on the hardened candidate. |
+| Sync-control-plane dependency verification | Sync Control Plane Conformance passes on the reconciled stack. |
+| Inherited Golden gate conflated merge with admission | PR #3 separates candidate merge-readiness from Golden admission while preserving all tribunal holds. |
 
-## Inherited dependency blocker
+## Current inherited gate state
 
-Golden Gates still fails at `structural-integrity → Validate Golden Project Pack`. The same step failed on PR #5 commit `f344af21ff96e9e748a0a0c65dbc20ae71912222` before this skill commit existed. The Node 20 annotation is a warning; the validator exits 1. This PR does not modify the Golden Project Pack, its tribunal queue, or `scripts/validate_golden_pack.py`, so the failure remains owned by stacked PR #3 / its inherited evidence contract rather than being silently patched through this child PR.
+Golden Gates is an owned structural gate for the Golden Project Pack. It allows a structurally valid `PROPOSED` candidate to be preserved and merged while continuing to emit explicit Golden-admission holds. The Ship It Without Bryan findings remain unresolved admission evidence; this child neither verifies nor waives them.
 
 ## Intentionally unresolved because code cannot manufacture the evidence
 
@@ -31,6 +32,6 @@ Golden Gates still fails at `structural-integrity → Validate Golden Project Pa
 - organization branch-protection configuration;
 - three independent consumers proving repository extraction;
 - revocation and replay evidence beyond the bounded grant contract;
-- inherited PR #3 Golden Gates findings.
+- inherited PR #3 Golden admission findings.
 
-These remain visible blockers. They are not converted into green checks by wording.
+These remain visible admission blockers. They are not converted into green admission checks by wording or by candidate merge-readiness.
