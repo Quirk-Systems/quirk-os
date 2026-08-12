@@ -1,0 +1,60 @@
+name: Intent Shaper Conformance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/intent-shaper-conformance.yml'
+      - 'docs/personalization/**'
+      - 'evals/intent-shaper/**'
+      - 'examples/personalization-plan.valid.json'
+      - 'policies/personalization-adaptation-policy.yaml'
+      - 'schemas/generated-ui-gate-receipt.schema.json'
+      - 'schemas/personalization-plan.schema.json'
+      - 'scripts/intent_shaper/**'
+      - 'scripts/validate_intent_shaper.py'
+      - 'skills/quirk-intent-shaper/**'
+      - 'tests/test_intent_shaper.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intent-shaper-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate-intent-conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Install evaluation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run Intent Shaper tests
+        run: python -m unittest tests.test_intent_shaper -v
+
+      - name: Run Intent Shaper conformance
+        run: |
+          python scripts/validate_intent_shaper.py \
+            --repo . \
+            --output evals/intent-shaper/conformance-results/qis-014.generated-ui-gate.json
+
+      - name: Upload Intent Shaper evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: qis-014-generated-ui-gate-${{ github.sha }}
+          path: evals/intent-shaper/conformance-results/qis-014.generated-ui-gate.json
+          if-no-files-found: error
+          retention-days: 30

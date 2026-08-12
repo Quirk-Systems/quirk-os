@@ -1,0 +1,1763 @@
+{
+  "suite_id": "eval.intent-shaper.v0.1",
+  "status": "candidate",
+  "cases": [
+    {
+      "id": "QIS-001",
+      "name": "explicit_override_beats_inference",
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "writing.dossier",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {
+            "ref": "pref.saved.concise",
+            "dimension": "verbosity",
+            "value": "short",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "writing.dossier"
+          },
+          {
+            "ref": "pref.current.detailed",
+            "dimension": "verbosity",
+            "value": "detailed",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "writing.dossier"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [
+          "pref.current.detailed"
+        ],
+        "ignored_refs": [
+          "pref.saved.concise"
+        ],
+        "conflicts": []
+      }
+    },
+    {
+      "id": "QIS-002",
+      "name": "purpose_partition_prevents_leakage",
+      "operation": "purpose_partition",
+      "input": {
+        "scope": "security.incident",
+        "preferences": [
+          {
+            "ref": "pref.security.evidence_first",
+            "dimension": "structure",
+            "value": "evidence_first",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "security.incident"
+          },
+          {
+            "ref": "pref.bryminn.performance_risk",
+            "dimension": "structure",
+            "value": "breath_risk",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "music.performance"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [
+          "pref.security.evidence_first"
+        ],
+        "excluded_scopes": [
+          "music.performance"
+        ]
+      }
+    },
+    {
+      "id": "QIS-003",
+      "name": "persona_hand_not_identity",
+      "operation": "persona_hand",
+      "input": {
+        "primary": {
+          "ref": "persona.brayn",
+          "role": "system_architecture",
+          "weight": 0.7
+        },
+        "supporting": [
+          {
+            "ref": "persona.bryan",
+            "role": "reality_grounding",
+            "weight": 0.3
+          }
+        ]
+      },
+      "expected": {
+        "primary_ref": "persona.brayn",
+        "supporting_refs": [
+          "persona.bryan"
+        ],
+        "weight_total": 1.0,
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-004",
+      "name": "platform_affect_changes_form_not_semantics",
+      "operation": "platform_affect",
+      "input": {
+        "platform": "github",
+        "semantic_decision_hash": "same-decision",
+        "rendered_decision_hash": "same-decision"
+      },
+      "expected": {
+        "platform": "github",
+        "effects": [
+          "versioned",
+          "diff_first",
+          "executable_evidence"
+        ],
+        "affordance_bias": [
+          "diff",
+          "code_patch",
+          "check_run"
+        ],
+        "semantic_decision_hash_preserved": true
+      }
+    },
+    {
+      "id": "QIS-005",
+      "name": "truth_over_style",
+      "operation": "truth_over_style",
+      "input": {
+        "stakes": "protected",
+        "evidence_mode": "minimal",
+        "requested_dramatic_intensity": 1.0
+      },
+      "expected": {
+        "evidence_mode": "strict",
+        "max_dramatic_intensity": 0.2,
+        "uncertainty_required": true,
+        "style_can_override_truth": false
+      }
+    },
+    {
+      "id": "QIS-006",
+      "name": "conflicting_preferences_exposed",
+      "operation": "preference_conflict",
+      "input": {
+        "scope": "product.strategy",
+        "preferences": [
+          {
+            "ref": "pref.current.one_answer",
+            "dimension": "option_count",
+            "value": "one",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "product.strategy"
+          },
+          {
+            "ref": "pref.current.alternatives",
+            "dimension": "option_count",
+            "value": "three",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "product.strategy"
+          }
+        ]
+      },
+      "expected": {
+        "conflicts": [
+          "option_count"
+        ],
+        "silent_average": false,
+        "requires_default_plus_bounded_alternatives": true
+      }
+    },
+    {
+      "id": "QIS-007",
+      "name": "stale_preference_does_not_control",
+      "operation": "stale_preference",
+      "input": {
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {
+            "ref": "pref.old.format",
+            "valid_until": "2025-12-31T23:59:59Z"
+          },
+          {
+            "ref": "pref.current.format",
+            "valid_until": "2027-12-31T23:59:59Z"
+          }
+        ]
+      },
+      "expected": {
+        "expired_refs": [
+          "pref.old.format"
+        ],
+        "adaptation_proposal": true,
+        "history_rewritten": false
+      }
+    },
+    {
+      "id": "QIS-008",
+      "name": "negative_constraints_first_class",
+      "operation": "negative_constraints",
+      "input": {
+        "desired_traits": [
+          "energy",
+          "startup_sludge",
+          "specificity",
+          "fake_rebellion"
+        ],
+        "no_fill": [
+          "startup_sludge",
+          "fake_rebellion"
+        ]
+      },
+      "expected": {
+        "accepted_traits": [
+          "energy",
+          "specificity"
+        ],
+        "blocked_traits": [
+          "startup_sludge",
+          "fake_rebellion"
+        ],
+        "negative_constraints_applied_first": true
+      }
+    },
+    {
+      "id": "QIS-009",
+      "name": "affordance_matches_task",
+      "operation": "select_affordance",
+      "input": {
+        "task_class": "decide",
+        "complexity": "low"
+      },
+      "expected": {
+        "selected": "decision_card",
+        "generated_ui": false,
+        "smallest_useful_form": true
+      }
+    },
+    {
+      "id": "QIS-010",
+      "name": "personalization_off_means_off",
+      "operation": "personalization_off",
+      "input": {
+        "scope": "general",
+        "preferences": [
+          {
+            "ref": "pref.current.format",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "general"
+          },
+          {
+            "ref": "pref.saved.voice",
+            "dimension": "voice",
+            "value": "feral",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "general"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [
+          "pref.current.format"
+        ],
+        "ignored_refs": [
+          "pref.saved.voice"
+        ],
+        "stored_retrieval": false,
+        "persona_hand": [],
+        "saved_profile_loaded": false
+      }
+    },
+    {
+      "id": "QIS-011",
+      "name": "adaptation_cannot_self_promote",
+      "operation": "adaptation_guard",
+      "input": {
+        "repeated_successes": 11,
+        "requested_action": "persist_preference"
+      },
+      "expected": {
+        "status": "proposed",
+        "feedback_receipt_required": true,
+        "auto_apply": false,
+        "human_admission_required": true,
+        "memory_updated": false,
+        "settings_updated": false,
+        "canon_updated": false
+      }
+    },
+    {
+      "id": "QIS-012",
+      "name": "generated_ui_candidate_evidence_complete",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "candidate_evidence_complete",
+        "reason_codes": [
+          "CANDIDATE_EVIDENCE_COMPLETE"
+        ],
+        "runtime_authorized": false,
+        "deployment_authorized": false
+      }
+    },
+    {
+      "id": "QIS-013",
+      "name": "generated_ui_missing_component_manifest_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_MISSING"
+        ]
+      }
+    },
+    {
+      "id": "QIS-014",
+      "name": "generated_ui_malformed_component_version_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "latest",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_VERSION_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "QIS-015",
+      "name": "generated_ui_stale_manifest_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-08-11T23:59:59Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_STALE"
+        ]
+      }
+    },
+    {
+      "id": "QIS-016",
+      "name": "generated_ui_inaccessible_manifest_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/missing.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_INACCESSIBLE"
+        ]
+      }
+    },
+    {
+      "id": "QIS-017",
+      "name": "generated_ui_inaccessible_machine_check_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": false,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED"
+        ]
+      }
+    },
+    {
+      "id": "QIS-018",
+      "name": "generated_ui_authority_expansion_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "execute_protected"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "AUTHORITY_EXPANSION_REQUESTED"
+        ]
+      }
+    },
+    {
+      "id": "QIS-019",
+      "name": "generated_ui_manual_evidence_missing_blocked",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "missing",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "blocked_manual",
+        "reason_codes": [
+          "MANUAL_EVIDENCE_MISSING"
+        ]
+      }
+    },
+    {
+      "id": "QIS-020",
+      "name": "generated_ui_unverifiable_hash_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_HASH_UNVERIFIABLE"
+        ]
+      }
+    },
+    {
+      "id": "QIS-021",
+      "name": "generated_ui_missing_fallback_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "SEMANTIC_FALLBACK_MISSING"
+        ]
+      }
+    },
+    {
+      "id": "QIS-022",
+      "name": "generated_ui_missing_reconstruction_inputs_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "RECONSTRUCTION_INPUTS_MISSING"
+        ]
+      }
+    }
+  ]
+}

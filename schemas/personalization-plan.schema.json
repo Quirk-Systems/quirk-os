@@ -1,0 +1,1091 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/personalization-plan.schema.json",
+  "title": "Quirk Personalization Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plan_id",
+    "version",
+    "status",
+    "intent",
+    "purpose_partition",
+    "persona_hand",
+    "voice",
+    "aesthetic",
+    "preferences",
+    "platform_affects",
+    "task_affordances",
+    "settings",
+    "authority",
+    "uncertainty",
+    "evaluation",
+    "learning",
+    "created_at"
+  ],
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "pattern": "^personalization\\.plan\\.[a-z0-9._-]+$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "status": {
+      "enum": [
+        "candidate",
+        "approved",
+        "applied",
+        "expired",
+        "superseded",
+        "rejected"
+      ]
+    },
+    "approval_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "desired_change",
+        "task_class",
+        "stakes",
+        "completion_evidence"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "desired_change": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task_class": {
+          "enum": [
+            "decide",
+            "compare",
+            "research",
+            "build",
+            "repair",
+            "approve",
+            "write",
+            "create",
+            "plan",
+            "organize",
+            "explore",
+            "reflect",
+            "communicate",
+            "other"
+          ]
+        },
+        "stakes": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "protected"
+          ]
+        },
+        "destination": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "audience": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "non_goals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "completion_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "purpose_partition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "domain",
+        "scope_key"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "domain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "excluded_scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "persona_hand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary",
+        "supporting",
+        "selection_reason"
+      ],
+      "properties": {
+        "primary": {
+          "$ref": "#/$defs/personaSelection"
+        },
+        "supporting": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/personaSelection"
+          }
+        },
+        "selection_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "user_confirmed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tone_axes",
+        "required_traits",
+        "no_fill"
+      ],
+      "properties": {
+        "profile_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tone_axes": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          }
+        },
+        "required_traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "lexical_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "no_fill": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "aesthetic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principles",
+        "avoided_patterns",
+        "modality"
+      ],
+      "properties": {
+        "profile_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "principles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "avoided_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "modality": {
+          "enum": [
+            "text",
+            "visual",
+            "audio",
+            "interactive",
+            "multimodal"
+          ]
+        }
+      }
+    },
+    "preferences": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/preferenceUse"
+      }
+    },
+    "platform_affects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/platformAffect"
+      }
+    },
+    "task_affordances": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/taskAffordance"
+      }
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adaptation_mode",
+        "personalization_enabled"
+      ],
+      "properties": {
+        "personalization_enabled": {
+          "type": "boolean"
+        },
+        "adaptation_mode": {
+          "enum": [
+            "off",
+            "current_task_only",
+            "propose_only",
+            "human_admitted"
+          ]
+        },
+        "verbosity": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 10
+        },
+        "challenge_level": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 10
+        },
+        "creativity": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 10
+        },
+        "evidence_mode": {
+          "enum": [
+            "minimal",
+            "standard",
+            "strict"
+          ]
+        },
+        "generated_ui": {
+          "enum": [
+            "off",
+            "task_gated",
+            "preferred"
+          ]
+        },
+        "implicit_signal_use": {
+          "enum": [
+            "off",
+            "limited",
+            "allowed"
+          ]
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ceiling",
+        "human_required",
+        "prohibited"
+      ],
+      "properties": {
+        "ceiling": {
+          "enum": [
+            "observe",
+            "infer",
+            "propose",
+            "execute_reversible"
+          ]
+        },
+        "human_required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "prohibited": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "uncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "confidence",
+        "unknowns",
+        "conflicts"
+      ],
+      "properties": {
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criteria",
+        "counterfactuals_required",
+        "pass_threshold"
+      ],
+      "properties": {
+        "criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "counterfactuals_required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "pass_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "candidate_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        }
+      }
+    },
+    "learning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feedback_receipt_required",
+        "auto_apply",
+        "allowed_updates"
+      ],
+      "properties": {
+        "feedback_receipt_required": {
+          "const": true
+        },
+        "auto_apply": {
+          "const": false
+        },
+        "allowed_updates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "generated_ui_plan": {
+      "$ref": "#/$defs/GeneratedUiPlan"
+    }
+  },
+  "$defs": {
+    "personaSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "role",
+        "weight"
+      ],
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "preferenceUse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "source",
+        "confidence",
+        "scope",
+        "reversible",
+        "decision"
+      ],
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "enum": [
+            "explicit_current",
+            "explicit_saved",
+            "observed",
+            "inferred",
+            "imported"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "valid_from": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "valid_until": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "reversible": {
+          "type": "boolean"
+        },
+        "decision": {
+          "enum": [
+            "use",
+            "ignore",
+            "conflict",
+            "expired",
+            "superseded"
+          ]
+        }
+      }
+    },
+    "platformAffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "platform",
+        "effects",
+        "constraints",
+        "affordance_bias"
+      ],
+      "properties": {
+        "platform": {
+          "enum": [
+            "github",
+            "google_drive",
+            "airtable",
+            "notion",
+            "vercel",
+            "cloudflare",
+            "email",
+            "chat",
+            "voice",
+            "mobile",
+            "web",
+            "music",
+            "code",
+            "other"
+          ]
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "affordance_bias": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "taskAffordance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "priority",
+        "rationale",
+        "reversible"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "plain_answer",
+            "decision_card",
+            "ranked_pair",
+            "matrix",
+            "map",
+            "timeline",
+            "checklist",
+            "diff",
+            "code_patch",
+            "simulation",
+            "batch_review",
+            "generated_ui",
+            "draft",
+            "diagram",
+            "other"
+          ]
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reversible": {
+          "type": "boolean"
+        },
+        "fallback": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "generated_ui"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "fallback"
+            ],
+            "properties": {
+              "fallback": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "GeneratedUiPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan_id",
+        "version",
+        "component_manifests",
+        "authority_effects",
+        "semantic_fallback_ref",
+        "reconstruction_contract",
+        "accessibility",
+        "freshness"
+      ],
+      "properties": {
+        "plan_id": {
+          "type": "string",
+          "pattern": "^generated-ui\\.plan\\.[a-z0-9._-]+$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "component_manifests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/ComponentManifest"
+          }
+        },
+        "authority_effects": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "none",
+              "read_candidate",
+              "propose_reversible"
+            ]
+          }
+        },
+        "semantic_fallback_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reconstruction_contract": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "input_refs",
+            "deterministic_renderer_ref",
+            "replay_hash_sha256"
+          ],
+          "properties": {
+            "input_refs": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "deterministic_renderer_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "replay_hash_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "accessibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "machine_checks",
+            "manual_evidence"
+          ],
+          "properties": {
+            "machine_checks": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "focus_order_declared",
+                "focus_visible_tokens",
+                "screen_reader_semantics_declared",
+                "reflow_zoom_support_declared",
+                "contrast_tokens_verified",
+                "reduced_motion_support_declared",
+                "errors_identifiable",
+                "status_announcements_mapped"
+              ],
+              "properties": {
+                "focus_order_declared": {
+                  "const": true
+                },
+                "focus_visible_tokens": {
+                  "const": true
+                },
+                "screen_reader_semantics_declared": {
+                  "const": true
+                },
+                "reflow_zoom_support_declared": {
+                  "const": true
+                },
+                "contrast_tokens_verified": {
+                  "const": true
+                },
+                "reduced_motion_support_declared": {
+                  "const": true
+                },
+                "errors_identifiable": {
+                  "const": true
+                },
+                "status_announcements_mapped": {
+                  "const": true
+                }
+              }
+            },
+            "manual_evidence": {
+              "type": "array",
+              "minItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "requirement",
+                  "status",
+                  "evidence_ref"
+                ],
+                "properties": {
+                  "requirement": {
+                    "enum": [
+                      "keyboard",
+                      "focus_order_visibility",
+                      "screen_reader_semantics",
+                      "reflow_zoom",
+                      "contrast",
+                      "reduced_motion",
+                      "errors",
+                      "status_announcements"
+                    ]
+                  },
+                  "status": {
+                    "enum": [
+                      "provided",
+                      "missing"
+                    ]
+                  },
+                  "evidence_ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reviewed_by": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reviewed_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "freshness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "captured_at",
+            "valid_until"
+          ],
+          "properties": {
+            "captured_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "valid_until": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    "ComponentManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_id",
+        "manifest_ref",
+        "version",
+        "content_hash_sha256",
+        "data_bindings",
+        "state_bindings",
+        "user_actions"
+      ],
+      "properties": {
+        "component_id": {
+          "type": "string",
+          "pattern": "^component\\.[a-z0-9._-]+$"
+        },
+        "manifest_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "content_hash_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "data_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/GeneratedUiBinding"
+          }
+        },
+        "state_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/GeneratedUiBinding"
+          }
+        },
+        "user_actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/GeneratedUiAction"
+          }
+        }
+      }
+    },
+    "GeneratedUiBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "source_ref",
+        "required"
+      ],
+      "properties": {
+        "binding_id": {
+          "type": "string",
+          "pattern": "^(binding|state)\\.[a-z0-9._-]+$"
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "GeneratedUiAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_id",
+        "label",
+        "kind",
+        "effect_ref",
+        "authority_effect"
+      ],
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "pattern": "^action\\.[a-z0-9._-]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "navigate",
+            "mutate_local_state",
+            "submit_candidate",
+            "request_review"
+          ]
+        },
+        "effect_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority_effect": {
+          "enum": [
+            "none",
+            "read_candidate",
+            "propose_reversible"
+          ]
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "approved",
+              "applied"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "approval_ref"
+        ],
+        "properties": {
+          "approval_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task_affordances": {
+            "contains": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "generated_ui"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            }
+          }
+        },
+        "required": [
+          "task_affordances"
+        ]
+      },
+      "then": {
+        "required": [
+          "generated_ui_plan"
+        ],
+        "properties": {
+          "generated_ui_plan": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task_affordances": {
+            "contains": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "generated_ui"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            }
+          }
+        },
+        "required": [
+          "task_affordances"
+        ]
+      },
+      "then": {
+        "required": [
+          "generated_ui_plan"
+        ]
+      }
+    }
+  ]
+}

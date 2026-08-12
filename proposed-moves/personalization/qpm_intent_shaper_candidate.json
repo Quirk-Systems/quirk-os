@@ -1,0 +1,82 @@
+{
+  "id": "qpm_intent_shaper_candidate",
+  "schema_version": "proposed-move.v1",
+  "lane": "skill",
+  "title": "Admit the Quirk Intent Shaper as a candidate personalization compiler",
+  "desired_change": "Evaluate and harden a purpose-scoped Skill that compiles intent, Persona Hand, voice, tone, aesthetic, preferences, settings, platform affects, task affordances, authority, and uncertainty into a reversible Personalization Plan.",
+  "expected_outcome": "Quirk produces task-specific experiences that feel personally aligned without flattening identity, leaking preferences across purposes, hiding uncertainty, or allowing adaptation capability to become memory authority.",
+  "proposer": {
+    "actor_id": "assistant.openai.gpt-5.6-pro",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "https://quirkenterprise.com/",
+    "https://quirkenterprise.com/insights",
+    "github://Quirk-Systems/quirk-os/pull/5",
+    "skills/quirk-intent-shaper/skill-scratchpad.md"
+  ],
+  "evidence_refs": [],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "skill.quirk-intent-shaper",
+    "quirk.preference_graph",
+    "quirk.persona_hand",
+    "quirk.voice",
+    "quirk.aesthetic",
+    "quirk.settings",
+    "quirk.platform_affect",
+    "quirk.task_affordance"
+  ],
+  "dependencies": [
+    "program.quirk-sync-control-plane",
+    "never.capability_implies_authority"
+  ],
+  "authority_required": [
+    "authority.human.bryan",
+    "authority.quirk_core.canon_owner",
+    "authority.personalization"
+  ],
+  "risk": {
+    "class": "L3",
+    "rights_or_safety_impact": "Bad personalization can leak context, overfit identity, amplify sensitive inference, or silently change future behavior.",
+    "strange_intact_risk": "high"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "skills/quirk-intent-shaper/SKILL.md",
+  "eval_refs": [
+    "eval.intent-shaper.v0.1"
+  ],
+  "disposition": "new",
+  "created_at": "2026-08-11T23:27:05-05:00",
+  "dependency_class": "missing_personalization_boundary",
+  "blocks_merge": false,
+  "finding_ref": "competitor.quirk-enterprises#personalization-separation",
+  "hidden_context_dependencies": [
+    "Preference evidence is distributed across conversations, settings, files, and runtime projections.",
+    "Persona and voice conventions are currently richer than their typed runtime contracts.",
+    "Platform affects and task affordances are not yet admitted object families.",
+    "Implicit feedback can be misread without purpose and causal context."
+  ],
+  "resolution_artifacts": [
+    "skills/quirk-intent-shaper/SKILL.md",
+    "skills/quirk-intent-shaper/skill-scratchpad.md",
+    "schemas/personalization-plan.schema.json",
+    "evals/intent-shaper/cases.json",
+    "docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md",
+    "diagrams/intent-personalization-control-loop.mmd",
+    "diagrams/platform-affect-task-affordance-router.mmd",
+    "diagrams/competitor-separation-map.mmd"
+  ],
+  "acceptance_checks": [
+    "Current explicit instructions always outrank stored or inferred preferences.",
+    "Purpose partitions prevent preference leakage across domains.",
+    "Personalization-off mode retrieves no saved preference or persona evidence.",
+    "Persona selection never grants authority or claims permanent identity.",
+    "Platform affects change form without changing semantic decisions.",
+    "Generated UI is task-gated, accessible, reconstructable, and has a plain fallback.",
+    "Feedback creates an immutable receipt before any adaptation proposal.",
+    "Inferred preferences cannot self-promote into settings or Canon.",
+    "All eleven QIS fixtures execute and pass.",
+    "One human admission decision defines permitted runtime scope."
+  ]
+}
