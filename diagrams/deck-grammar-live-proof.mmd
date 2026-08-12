@@ -1,0 +1,18 @@
+flowchart TD
+  G["Same Goal<br/>same facts · same completion evidence"] --> D["Same Eligible Deck"]
+  D --> CA["Canon Architect Preset"]
+  D --> BM["BryMinn Studio Preset"]
+
+  CA --> H1["Hand A<br/>Brayn · Bryan · Brayk<br/>contracts · tribunal · evidence"]
+  BM --> H2["Hand B<br/>BryMinn · Bryan<br/>section map · breath · progression"]
+
+  H1 --> O1["Approach A<br/>schemas → tests → admission dossier"]
+  H2 --> O2["Approach B<br/>opening → escalation → reveal → proof"]
+
+  G --> INV{"Invariant comparison"}
+  H1 --> INV
+  H2 --> INV
+  INV -->|"same truth"| PASS["PASS"]
+  INV -->|"same owned-card snapshot"| PASS
+  INV -->|"same authority grant"| PASS
+  INV -->|"different active cards and approach"| PASS

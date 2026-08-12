@@ -1,0 +1,17 @@
+{
+  "affordance_id": "affordance.contract-diff",
+  "title": "Contract Diff",
+  "purpose": "Reveal semantic and structural change between candidate contract versions.",
+  "task_classes": ["build_candidate_pack", "repair", "approve"],
+  "platforms": ["github", "chat"],
+  "input_schema_ref": null,
+  "state_effects": ["creates_review_evidence", "does_not_mutate_canon"],
+  "authority_required": "infer",
+  "reversible": true,
+  "evidence_emitted": ["artifact.contract-diff"],
+  "accessibility": {"keyboard": "required", "screen_reader": "required", "reduced_motion": "not_applicable"},
+  "fallback": "GitHub-flavored Markdown table with added, removed, and changed semantics.",
+  "required_capabilities": [],
+  "prohibited_when": ["source_versions_unresolved"],
+  "metadata": {"candidate": true}
+}
