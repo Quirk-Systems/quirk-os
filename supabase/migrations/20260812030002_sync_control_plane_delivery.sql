@@ -14,7 +14,7 @@ alter table quirk_sync.projection_outbox add constraint projection_outbox_compen
 create or replace function quirk_sync.claim_projection_outbox(p_worker_id text,p_limit integer default 25,p_lease_seconds integer default 60)
 returns setof quirk_sync.projection_outbox language plpgsql set search_path=pg_catalog,quirk_sync as $$
 begin return query
-  with c as (select id from quirk_sync.projection_outbox where status in ('pending','failed') and available_at<=now()
+  with c as (select id from quirk_sync.projection_outbox where status in ('pending','failed','leased') and available_at<=now()
     and attempts<max_attempts and (leased_until is null or leased_until<now()) order by available_at,id
     for update skip locked limit greatest(1,least(p_limit,100)))
   update quirk_sync.projection_outbox o set status='leased',attempts=o.attempts+1,lease_token=gen_random_uuid(),
