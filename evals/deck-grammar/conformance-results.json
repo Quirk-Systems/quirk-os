@@ -1,0 +1,357 @@
+{
+  "suite_id": "eval.deck-grammar.v0.1",
+  "generated_at": "2026-08-12T05:00:00Z",
+  "status": "passed",
+  "schema_count": 15,
+  "schema_checks": [
+    {
+      "name": "card.persona.brayn",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.persona.bryan",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.persona.brayk",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.persona.bryminn",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.aesthetic.structural-clarity",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.aesthetic.premium-chaos",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.aesthetic.lyric-nonce",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.aesthetic.performance-pressure",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.affordance.source-authority-census",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.affordance.contract-diff",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.affordance.tribunal-docket",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.affordance.section-map",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.affordance.vocal-mechanics",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.affordance.narrative-progression",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.asset.evidence-pack",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "card.asset.creative-reference-bank",
+      "schema": "card-definition.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "collection.bryan.deck-grammar-proof",
+      "schema": "collection.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "entitlement.premium.deck-grammar-proof",
+      "schema": "entitlement-grant.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "area.quirk-architecture",
+      "schema": "area.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "goal.deck-grammar.candidate-pack",
+      "schema": "goal.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "intention.deck-grammar.preserve-invariants",
+      "schema": "intention.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "preset.canon-architect",
+      "schema": "hand-preset.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "preset.bryminn-studio",
+      "schema": "hand-preset.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "affordance.contract-diff.json",
+      "schema": "affordance.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "artifact.live-proof-report.json",
+      "schema": "artifact.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "asset.evidence-pack.json",
+      "schema": "asset.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "art.two-hands.json",
+      "schema": "art.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "aesthetic.premium-chaos.json",
+      "schema": "aesthetic-contract.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "same-goal-live-proof-reproducible",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "live-proof-deck",
+      "schema": "eligible-deck.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "hand.deck-grammar.candidate-pack.canon-architect.b8822e9663",
+      "schema": "active-hand.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "hand.deck-grammar.candidate-pack.bryminn-studio.36828fbfa6",
+      "schema": "active-hand.schema.json",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "same-goal-two-presets-invariants",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "quirk-object-type-registry-complete",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "canonical-template-module-set",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "adversarial_cases": [
+    {
+      "case_id": "QDG-001",
+      "attack": "premium_authority_escalation",
+      "decision": "reject",
+      "reason": "entitlements may alter access, never authority",
+      "expected": "reject",
+      "passed": true
+    },
+    {
+      "case_id": "QDG-002",
+      "attack": "borrowed_claimed_owned",
+      "decision": "reject",
+      "reason": "borrowed access cannot be represented as ownership",
+      "expected": "reject",
+      "passed": true
+    },
+    {
+      "case_id": "QDG-003",
+      "attack": "expired_entitlement_in_deck",
+      "decision": "exclude",
+      "reason": "expired access is removed from the eligible Deck",
+      "expected": "exclude",
+      "passed": true
+    },
+    {
+      "case_id": "QDG-004",
+      "attack": "persona_permanent_identity",
+      "decision": "reject",
+      "reason": "a Persona card is a temporary functional lens",
+      "expected": "reject",
+      "passed": true
+    },
+    {
+      "case_id": "QDG-005",
+      "attack": "aesthetic_hides_evidence",
+      "decision": "reject",
+      "reason": "aesthetic may not hide evidence, uncertainty, authority, risk, price, or accessibility",
+      "expected": "reject",
+      "passed": true
+    },
+    {
+      "case_id": "QDG-006",
+      "attack": "area_preference_leak",
+      "decision": "exclude",
+      "reason": "purpose and Area partitions prevent preference leakage",
+      "expected": "exclude",
+      "passed": true
+    },
+    {
+      "case_id": "QDG-007",
+      "attack": "artifact_promoted_without_rights",
+      "decision": "reject",
+      "reason": "Asset promotion requires clear rights and provenance",
+      "expected": "reject",
+      "passed": true
+    },
+    {
+      "case_id": "QDG-008",
+      "attack": "owned_card_removed_with_subscription",
+      "decision": "preserve_owned",
+      "reason": "subscription cancellation cannot remove independently owned cards",
+      "expected": "preserve_owned",
+      "passed": true
+    },
+    {
+      "case_id": "QDG-009",
+      "attack": "rarity_used_as_quality",
+      "decision": "reject",
+      "reason": "rarity and quality are independent dimensions",
+      "expected": "reject",
+      "passed": true
+    },
+    {
+      "case_id": "QDG-010",
+      "attack": "discard_deletes_history",
+      "decision": "reject",
+      "reason": "discard removes a card from the Hand, not from history",
+      "expected": "reject",
+      "passed": true
+    },
+    {
+      "case_id": "QDG-011",
+      "attack": "hand_persists_without_consent",
+      "decision": "require_consent",
+      "reason": "non-ephemeral Hands require explicit consent",
+      "expected": "require_consent",
+      "passed": true
+    }
+  ],
+  "live_proof": {
+    "proof_id": "proof.deck-grammar.same-goal-two-presets.v0.1",
+    "verdict": "PASS",
+    "invariants": {
+      "same_goal_ref": true,
+      "same_truth_snapshot": true,
+      "same_ownership_snapshot": true,
+      "same_authority": true,
+      "different_active_cards": true,
+      "different_approach": true
+    },
+    "preset_refs": [
+      "preset.canon-architect",
+      "preset.bryminn-studio"
+    ],
+    "truth_snapshot": {
+      "goal_hash": "0cff451d234961102fe3c2327419408d5d72849a2480a937e989cbc34a8dea44",
+      "facts_hash": "bbbcd7384241336a31d61e469618ba457a6f5961f90cad98cb3ffb355a9536ee"
+    },
+    "ownership_snapshot": {
+      "collection_hash": "234866f9ccdea2614185e62b7647ea7354b0e8260886f47afa4b7dee8220ff6d",
+      "owned_instance_ids": [
+        "card-instance.owned.aesthetic-lyric-nonce",
+        "card-instance.owned.aesthetic-performance-pressure",
+        "card-instance.owned.aesthetic-premium-chaos",
+        "card-instance.owned.aesthetic-structural-clarity",
+        "card-instance.owned.affordance-contract-diff",
+        "card-instance.owned.affordance-narrative-progression",
+        "card-instance.owned.affordance-section-map",
+        "card-instance.owned.affordance-source-authority-census",
+        "card-instance.owned.asset-creative-reference-bank",
+        "card-instance.owned.asset-evidence-pack",
+        "card-instance.owned.persona-brayk",
+        "card-instance.owned.persona-brayn",
+        "card-instance.owned.persona-bryan",
+        "card-instance.owned.persona-bryminn"
+      ]
+    },
+    "authority_snapshot": {
+      "ceiling": "propose",
+      "grant_ref": "authority.human.deck-grammar-candidate",
+      "cards_cannot_expand_authority": true
+    }
+  },
+  "protected_actions": {
+    "manifest_activation": 0,
+    "canon_promotions": 0,
+    "ownership_mutations": 0,
+    "authority_expansions": 0,
+    "production_deployments": 0,
+    "persistent_hands_without_consent": 0
+  },
+  "content_hash": "efc7b28456076c06caac8fcc31d82662a521e5fc2d874274e9c6e17e067fa20a"
+}

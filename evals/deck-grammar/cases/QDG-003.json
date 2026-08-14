@@ -1,0 +1,10 @@
+{
+  "case_id": "QDG-003",
+  "name": "expired_entitlement_remains_in_deck",
+  "attack": "expired_entitlement_in_deck",
+  "input": {
+    "ends_at": "2026-08-11T00:00:00Z",
+    "included": true
+  },
+  "expected": "exclude"
+}
