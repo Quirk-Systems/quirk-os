@@ -1,0 +1,13 @@
+{
+  "art_id": "art.deck-grammar.two-hands-performance-map",
+  "source_artifact_refs": ["artifact.deck-grammar.live-proof-report"],
+  "title": "Two Hands, One Goal",
+  "creator_ref": "human.bryan",
+  "primary_purpose": ["aesthetic", "performative", "narrative"],
+  "medium": "Mermaid diagram and spoken architecture score",
+  "rights": {"status": "clear", "owner_ref": "human.bryan", "license_ref": null},
+  "aesthetic_refs": ["aesthetic.premium-chaos", "aesthetic.structural-clarity"],
+  "performance_contract": {"opening": "state the invariant Goal", "contrast": "split into Canon Architect and BryMinn Studio approaches", "reveal": "show identical truth, ownership, and authority snapshots", "ending": "return to one admission decision"},
+  "status": "candidate",
+  "metadata": {"diagram_ref": "diagrams/deck-grammar-live-proof.mmd"}
+}
