@@ -98,9 +98,12 @@ Optional top-level fields:
 - `proven_capability_refs`;
 - `human_constraints`;
 - `recent_outcome_refs`;
-- `allowed_destination_types`.
+- `allowed_destination_types`;
+- `canonical_destination_refs`, a unique array of Git-backed or otherwise contract-authorized references that can justify a resolved placement claim.
 
 Missing optional context must remain missing. The generator may not manufacture it.
+
+The JSON Schema can validate the timezone field's shape but not membership in the IANA database. The semantic validator must resolve `timezone` using Python `zoneinfo.ZoneInfo`; an unknown zone fails with `INVALID_TIMEZONE`.
 
 ## 7. Output contract
 
@@ -144,13 +147,14 @@ The validator must enforce all of the following after validating both JSON docum
 1. `input.outcome_spine == output.outcome_spine` as deep structural equality.
 2. The output `authority_ceiling` remains exactly `propose`.
 3. `output.source_refs` must be a subset of or equal to references supplied in the input; the generator cannot invent source references.
-4. `estimated_minutes` must remain within the input's available time.
-5. `placement_disposition == unresolved` whenever no canonical destination evidence is supplied.
+4. `estimated_minutes` must not exceed the input's `available_minutes` and must remain within 10–15 inclusive.
+5. `placement_disposition == resolved` is valid only when `input.canonical_destination_refs` is present and non-empty. If no canonical placement evidence is supplied and placement is relevant, disposition must be `unresolved`.
 6. `destination_hints`, if present, must not be absolute filesystem roots, invented canonical repositories, or platform-plane declarations.
 7. `decision_state`, `receipt_state`, and `outcome_state` remain `reserved`.
 8. No output field may claim that the move was accepted, executed, verified, published, admitted, canonical, or outcome-confirmed.
-9. A `content_hash` must cover the canonicalized move payload while excluding the `content_hash` field itself. The precise canonicalization procedure must be deterministic and documented in the implementation plan before code is written.
-10. The Task 1 `QDM-A01` Poison Marker remains authoritative negative evidence: literal `Quirkroot` and equivalent unsupported architectural inventions must fail closed.
+9. `timezone` must resolve through Python `zoneinfo.ZoneInfo`, and `weekday` must equal the weekday of `local_date` interpreted in that supplied timezone context. Task 2 does not derive the date from the system clock.
+10. A `content_hash` must be SHA-256 over UTF-8 bytes of a canonical JSON serialization of the complete output object with `content_hash` removed. Canonical serialization for v1 is `json.dumps(payload_without_hash, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)`. No output field in v1 permits floating-point values, avoiding cross-runtime number-format ambiguity.
+11. The Task 1 `QDM-A01` Poison Marker remains authoritative negative evidence: literal `Quirkroot` and equivalent unsupported architectural inventions must fail closed.
 
 ## 9. Fail-closed finding codes
 
@@ -174,13 +178,23 @@ Task 2 tests must cover at least these findings:
 - `UNSUPPORTED_ARCHITECTURE`
 - `PLACEMENT_UNRESOLVED`
 - `TIMEBOX_EXCEEDED`
+- `INVALID_TIMEZONE`
+- `WEEKDAY_MISMATCH`
 - `CONTENT_HASH_MISMATCH`
 
 A failing case may emit more than one finding code when appropriate, but must include the code that identifies the primary violated invariant.
 
-## 10. Duplicate identity handling
+## 10. Duplicate identity and idempotent retry handling
 
-`DUPLICATE_SPINE_ID` cannot be proven by JSON Schema alone because uniqueness is contextual. The Task 2 validator therefore accepts an optional set of previously observed spine identifiers during evaluation. If the incoming `spine_id` already exists in that evaluation set for a different generation request, validation fails.
+`DUPLICATE_SPINE_ID` cannot be proven by JSON Schema alone because uniqueness is contextual. The semantic validator therefore accepts an optional mapping of previously observed `spine_id` values to deterministic input fingerprints.
+
+The input fingerprint is SHA-256 over UTF-8 bytes of the same canonical JSON serialization rule used for output hashing, applied to the complete input object.
+
+Behavior is:
+
+- unseen `spine_id` → valid with respect to uniqueness;
+- previously seen `spine_id` with the same input fingerprint → valid idempotent retry;
+- previously seen `spine_id` with a different input fingerprint → fail with `DUPLICATE_SPINE_ID`.
 
 This is evaluation/runtime semantics only. Task 2 does not create a database uniqueness constraint or new persistence table.
 
@@ -261,10 +275,11 @@ Task 2 is complete only when fresh verification proves:
 5. unsupported architecture is rejected using the Task 1 semantics;
 6. invented source references are rejected;
 7. timebox overflow is rejected;
-8. deterministic content hashing is verified;
-9. duplicate `spine_id` detection is tested contextually;
-10. all existing Daily Move fixture tests still pass;
-11. no Supabase, Airtable, Drive, publication, merge, admission, or runtime-grant mutation occurs.
+8. unknown IANA timezones and weekday mismatches are rejected;
+9. deterministic content hashing is verified;
+10. duplicate `spine_id` conflicts are rejected while exact-input retries remain idempotent;
+11. all existing Daily Move fixture tests still pass;
+12. no Supabase, Airtable, Drive, publication, merge, admission, or runtime-grant mutation occurs.
 
 Passing these checks is candidate evidence only.
 
