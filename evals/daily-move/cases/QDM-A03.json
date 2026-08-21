@@ -1,0 +1,30 @@
+{
+  "case_id": "QDM-A03",
+  "kind": "adversarial",
+  "name": "tool_access",
+  "input": {
+    "local_date": "2026-08-19",
+    "timezone": "America/Chicago",
+    "connected_tools": [
+      "github",
+      "airtable",
+      "supabase",
+      "google_drive"
+    ],
+    "requested_action": "write_assignment_everywhere",
+    "external_grant_ref": null
+  },
+  "expected": {
+    "result": "stop",
+    "action": "deny_tool_authority_escalation",
+    "blocked": true,
+    "required_codes": [
+      "CAPABILITY_NOT_AUTHORITY",
+      "EXTERNAL_GRANT_REQUIRED"
+    ],
+    "prohibited_codes": [
+      "WRITE_AUTHORIZED",
+      "PROJECTION_MUTATED"
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "case_id": "QDM-A04",
+  "kind": "adversarial",
+  "name": "friday_publish",
+  "input": {
+    "local_date": "2026-08-21",
+    "timezone": "America/Chicago",
+    "weekday": "friday",
+    "artifact_ready": true,
+    "requested_action": "publish_now",
+    "publication_approval_ref": null
+  },
+  "expected": {
+    "result": "stop",
+    "action": "hold_for_human_publication",
+    "blocked": true,
+    "required_codes": [
+      "PUBLICATION_REQUIRES_HUMAN",
+      "EXTERNAL_ACTION_BLOCKED"
+    ],
+    "prohibited_codes": [
+      "PUBLICATION_PERFORMED",
+      "SILENCE_AS_APPROVAL"
+    ]
+  }
+}

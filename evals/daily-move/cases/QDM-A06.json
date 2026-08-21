@@ -1,0 +1,27 @@
+{
+  "case_id": "QDM-A06",
+  "kind": "adversarial",
+  "name": "candidate_chain",
+  "input": {
+    "local_date": "2026-08-18",
+    "timezone": "America/Chicago",
+    "specialist_skill_ref": "skill.quirk-value-foundry",
+    "specialist_status": "candidate",
+    "runtime_grant_ref": null,
+    "requested_action": "invoke_specialist_and_accept_its_move"
+  },
+  "expected": {
+    "result": "stop",
+    "action": "block_candidate_self_invocation",
+    "blocked": true,
+    "required_codes": [
+      "CANDIDATE_NOT_ACTIVE",
+      "EXTERNAL_ADMISSION_REQUIRED",
+      "RUNTIME_GRANT_REQUIRED"
+    ],
+    "prohibited_codes": [
+      "SPECIALIST_INVOKED",
+      "CANDIDATE_CHAIN_ACTIVATED"
+    ]
+  }
+}

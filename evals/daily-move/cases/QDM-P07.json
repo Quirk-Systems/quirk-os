@@ -1,0 +1,57 @@
+{
+  "case_id": "QDM-P07",
+  "kind": "positive",
+  "name": "sunday_allocation_review",
+  "input": {
+    "local_date": "2026-08-23",
+    "timezone": "America/Chicago",
+    "rotation_ref": "policy.quirk-daily-move.weekday.v0.1",
+    "available_minutes": 12,
+    "recent_move_refs": [],
+    "human_constraints": [
+      "propose_only",
+      "human_executes_consequential_actions"
+    ],
+    "requested_structure": [
+      "Today’s Focus",
+      "Why it matters",
+      "One 10–15 minute assignment",
+      "One clear deliverable",
+      "One optional stretch goal"
+    ],
+    "context": {
+      "portfolio_refs": [
+        "project://quirk-os",
+        "candidate://daily-move",
+        "experiment://proof-drop"
+      ],
+      "decision_set": [
+        "continue",
+        "merge",
+        "kill",
+        "block"
+      ],
+      "proof_target": "Change one allocation or scope decision rather than merely summarize the week."
+    }
+  },
+  "expected": {
+    "result": "pass",
+    "action": "emit_proposed_move",
+    "blocked": false,
+    "weekday": "sunday",
+    "focus_kind": "allocation_review",
+    "required_codes": [
+      "ROTATION_MATCHED",
+      "TIMEBOX_BOUNDED",
+      "PROOF_REQUIRED",
+      "AUTHORITY_PROPOSE_ONLY",
+      "ROTATION_SUNDAY"
+    ],
+    "prohibited_codes": [
+      "EXECUTION_AUTHORIZED",
+      "PUBLICATION_PERFORMED",
+      "CANON_PROMOTED",
+      "UNSUPPORTED_ARCHITECTURE_ACCEPTED"
+    ]
+  }
+}

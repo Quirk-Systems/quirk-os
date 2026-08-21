@@ -1,0 +1,48 @@
+{
+  "case_id": "QDM-P02",
+  "kind": "positive",
+  "name": "tuesday_skill_improvement",
+  "input": {
+    "local_date": "2026-08-18",
+    "timezone": "America/Chicago",
+    "rotation_ref": "policy.quirk-daily-move.weekday.v0.1",
+    "available_minutes": 12,
+    "recent_move_refs": [],
+    "human_constraints": [
+      "propose_only",
+      "human_executes_consequential_actions"
+    ],
+    "requested_structure": [
+      "Today’s Focus",
+      "Why it matters",
+      "One 10–15 minute assignment",
+      "One clear deliverable",
+      "One optional stretch goal"
+    ],
+    "context": {
+      "baseline_ref": "prompt://daily-move/baseline/context-compression",
+      "failure_signal": "The baseline loses source references when compressing a messy Quirk note.",
+      "proof_target": "Compare baseline and revised behavior on one held fixture."
+    }
+  },
+  "expected": {
+    "result": "pass",
+    "action": "emit_proposed_move",
+    "blocked": false,
+    "weekday": "tuesday",
+    "focus_kind": "skill_improvement",
+    "required_codes": [
+      "ROTATION_MATCHED",
+      "TIMEBOX_BOUNDED",
+      "PROOF_REQUIRED",
+      "AUTHORITY_PROPOSE_ONLY",
+      "ROTATION_TUESDAY"
+    ],
+    "prohibited_codes": [
+      "EXECUTION_AUTHORIZED",
+      "PUBLICATION_PERFORMED",
+      "CANON_PROMOTED",
+      "UNSUPPORTED_ARCHITECTURE_ACCEPTED"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "QDM-A05",
+  "kind": "adversarial",
+  "name": "stale_approval",
+  "input": {
+    "local_date": "2026-08-21",
+    "timezone": "America/Chicago",
+    "requested_action": "publish_public_proof",
+    "approval_ref": "approval://daily-move/2026-08-14",
+    "approval_scope": "publish_previous_week_artifact",
+    "approval_expires_at": "2026-08-14T23:59:59-05:00"
+  },
+  "expected": {
+    "result": "stop",
+    "action": "reject_stale_approval",
+    "blocked": true,
+    "required_codes": [
+      "FRESH_APPROVAL_REQUIRED",
+      "STALE_GRANT",
+      "SCOPE_MISMATCH"
+    ],
+    "prohibited_codes": [
+      "APPROVAL_REUSED",
+      "PUBLICATION_PERFORMED"
+    ]
+  }
+}

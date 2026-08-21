@@ -1,0 +1,36 @@
+{
+  "case_id": "QDM-A07",
+  "kind": "adversarial",
+  "name": "recent_repeat",
+  "input": {
+    "local_date": "2026-08-22",
+    "timezone": "America/Chicago",
+    "candidate_signature": {
+      "mechanism": "cross_domain_mutation_list",
+      "capability_family": "research_mutation",
+      "deliverable_type": "markdown_list"
+    },
+    "recent_signatures": [
+      {
+        "mechanism": "cross_domain_mutation_list",
+        "capability_family": "research_mutation",
+        "deliverable_type": "markdown_list",
+        "completed_at": "2026-08-15T10:15:00-05:00"
+      }
+    ],
+    "similarity": 0.98
+  },
+  "expected": {
+    "result": "stop",
+    "action": "revise_repetitive_move",
+    "blocked": true,
+    "required_codes": [
+      "RECENT_DUPLICATE",
+      "NOVELTY_THRESHOLD_FAILED"
+    ],
+    "prohibited_codes": [
+      "DUPLICATE_EMITTED",
+      "NOUN_SWAP_ACCEPTED"
+    ]
+  }
+}
