@@ -1,7 +1,7 @@
 ---
 schema_version: quirk.applause-gate.h0-b-evidence/0.1
 status: CANDIDATE_EVIDENCE
-execution_state: IMPLEMENTED_AWAITING_FINAL_CI
+execution_state: IMPLEMENTED_AND_VERIFIED
 runtime_state: INACTIVE
 canon_state: NOT_PROMOTED
 admission_state: NOT_AUTHORIZED
@@ -23,21 +23,24 @@ The earlier PR #63 merge remains reconciled as preservation-only by `ABG-03-MERG
 | ABG-03 reconciliation | `50e3fb63abf64f91cbeeeb4bc8b4dff7ac2dba8c` | Preserve merge event without promotion or authority inheritance. |
 | Task 1 — schema | `f9d5ca699b4ced26da2bc70d4b16e423e6a0a426` | Strict `applause-review.v1` schema, example, schema tests. |
 | Task 2 — classifier | `cbebe41d9828d64ade03e5ee29efc0ec384323f4` | Pure deterministic fixture-to-request adapter and classifier core. |
-| Task 3 — conformance | `b0dc23bfd33c3dbd7882aa5e08bad21991583932` | 19-case conformance runner and read-only PR workflow. |
+| Task 3 — conformance | `b0dc23bfd33c3dbd7882aa5e08bad21991583932` | 19-case conformance runner and read-only CI. |
 | Task 4 — receipts | `c45943fbc97fd4485ce269b2f7a716dc4feb8770` | Canonical deterministic receipt hashing and source digests. |
 | Task 5 — candidate Skill | `64d33aeda19106a267075aef3179785d9157252b` | Candidate package, v0.3 registry projection, four shared eval cases, compatibility validator. |
+| CI trigger hardening | `63f8a36eff0dc9742636be0d06b19a4660c5265a` | Add non-main push evidence lane for Applause Gate. |
+| Compatibility repair | `f7f055770dbd30e28af555bf56285c8fddf74ce6` | Update stale manifest inventory assertion from 11 to 12 while preserving 44 core runtime cases. |
 
-## TDD evidence
+## TDD and conformance evidence
 
-Each behavioral tranche was constructed RED → GREEN before its implementation commit:
+Each behavioral tranche was constructed RED → GREEN before its implementation commit. Repository-hosted verification on `f7f055770dbd30e28af555bf56285c8fddf74ce6` then executed the full relevant suite.
 
-- Task 1 RED: schema/example absent; GREEN target: four schema tests.
-- Task 2 RED: classifier module absent; GREEN target: five focused classifier tests.
-- Task 3 RED: H0-B validator absent; GREEN target: 19/19 fixture verdicts, zero false `VERIFIED_SUCCESS`, zero fabricated evidence refs, zero authority smuggling, zero schema errors.
-- Task 4 RED: receipt helper / receipt hash absent; GREEN target: cold-process equality and self-omitting receipt hash.
-- Task 5 RED: package/manifest/shared candidate cases absent; GREEN target: content-addressed candidate package, four eval kinds, shared adapter passes while live runtime evaluator still rejects the candidate skill ID.
+Observed exact-head successful runs:
 
-Final repository-hosted CI at this evidence commit is authoritative for completion; this file is intentionally committed before final runs so the exact successor head can be tested.
+- Golden Gates run `32580096329`, job `97048053432` `structural-integrity` — `success`.
+- Applause Gate Conformance run `32580096335`, job `97048053495` `candidate-applause-gate-conformance` — `success`; tests, 19-case conformance, and evidence upload all succeeded.
+- Validate Quirk Skills Candidate run `32580096319`, job `97048053382` `skill-candidate-conformance` — `success`; repository tests, 12-skill/48-case candidate conformance, and evidence upload all succeeded.
+- Sync Control Plane Conformance run `32580096318`, job `97048053383` `candidate-conformance` — `success`; unit/adversarial tests, admission conformance, and evidence upload all succeeded.
+
+A prior Skills run exposed one stale hardcoded inventory assertion (`12 != 11`). That failure was preserved as RED evidence, corrected narrowly in `f7f055770dbd30e28af555bf56285c8fddf74ce6`, and the complete Skills job then passed.
 
 ## Compatibility rulings
 
@@ -59,21 +62,15 @@ These rulings preserve candidate-before-canon and capability-does-not-imply-auth
 - registry version: `0.3.0`
 - registry SHA-256: `4d1e36f421a1a8aebcbdb094705818c8af3ad7fce00e3d0c408bc9d80bb83391`
 
-## Required final checks
+## Final-head rule
 
-This tranche is not complete until the exact current PR head has real executed jobs and all applicable checks succeed. Required evidence:
-
-- Golden Gates: executed jobs > 0, conclusion `success`.
-- Applause Gate Conformance: executed jobs > 0, conclusion `success`.
-- Skills validation when triggered by changed Skill paths: executed and successful.
-- No later commit after the reviewed final head.
-- PR remains draft and unmerged.
+This documentation-only successor must itself remain green before handoff. The final PR conversation receipt records the run IDs bound to the resulting exact head; any later commit invalidates that handoff and requires fresh verification.
 
 ## Current authority state
 
 ```text
 H0_B_IMPLEMENTATION = CANDIDATE_IMPLEMENTED
-FINAL_CI = PENDING
+FINAL_CI = PASS
 RUNTIME_ACTIVATION = NOT_AUTHORIZED
 CANON_PROMOTION = NOT_AUTHORIZED
 MERGE = NOT_AUTHORIZED
@@ -82,4 +79,4 @@ DEPLOYMENT = NOT_AUTHORIZED
 PUBLICATION = NOT_AUTHORIZED
 ```
 
-Passing final checks may change `FINAL_CI` to `PASS`; they cannot change any authority state.
+Passing evidence changes no authority state.
