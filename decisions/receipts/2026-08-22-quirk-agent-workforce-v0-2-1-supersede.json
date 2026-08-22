@@ -1,0 +1,187 @@
+{
+  "schema_version": "quirk.decision-receipt.v0.1.0",
+  "schema_ref": null,
+  "schema_status": "inline receipt format; no schema artifact is created or admitted by this decision",
+  "immutable": true,
+  "receipt_id": "receipt.decision.sha256.dec18c1b1cfcc6711d5499e17a664a063a822d7edf9fcbae2d9acb5c72327db9",
+  "receipt_content_digest": "sha256:dec18c1b1cfcc6711d5499e17a664a063a822d7edf9fcbae2d9acb5c72327db9",
+  "receipt_identity": {
+    "algorithm": "sha256",
+    "canonicalization": "RFC 8785 JSON Canonicalization Scheme (JCS) over the payload object",
+    "covered_field": "payload",
+    "encoding": "UTF-8",
+    "excluded_envelope_fields": [
+      "receipt_id",
+      "receipt_content_digest",
+      "receipt_commit_sha",
+      "receipt_storage"
+    ]
+  },
+  "receipt_commit_sha": null,
+  "receipt_storage": {
+    "rule": "The commit storing this receipt is not the reviewed subject commit.",
+    "recording": "The containing commit SHA, tree SHA, blob SHA, and branch are reported by an external storage attestation after commit creation."
+  },
+  "supersedes_receipt_id": null,
+  "correction_reason": null,
+  "payload": {
+    "receipt_kind": "DecisionReceipt",
+    "decision_id": "decision.quirk-agent-workforce.composed-v0-2-1",
+    "decision_vocabulary": [
+      "APPROVE",
+      "REVISE",
+      "HOLD",
+      "SUPERSEDE"
+    ],
+    "decision": "SUPERSEDE",
+    "decision_status": "effective",
+    "outcome": "approved_design_specification_supersedes_prior_design",
+    "issued_at": "2026-08-22T08:00:00Z",
+    "effective_at": "2026-08-22T08:00:00Z",
+    "issuer": {
+      "actor_id": "github-user:207279",
+      "actor_type": "human",
+      "name": "Bryan Sayler",
+      "role": "Quirk human decision owner",
+      "github_login": "bryansayler",
+      "identity_basis": "authenticated connected GitHub profile at receipt recording time"
+    },
+    "recorded_by": {
+      "actor_type": "connected_github_integration",
+      "authority_source": "exact human instruction to issue this receipt",
+      "may_expand_decision": false
+    },
+    "subject": {
+      "subject_id": "quirk.agent-workforce.cross-system-reconciliation",
+      "subject_version": "0.2.1",
+      "subject_repository_id": "github.repository:1316241620",
+      "subject_repository_numeric_id": 1316241620,
+      "subject_repository_node_id": "R_kgDOTnRA1A",
+      "subject_repository_full_name": "Quirk-Systems/quirk-os",
+      "subject_repository_locator": "https://github.com/Quirk-Systems/quirk-os",
+      "subject_commit_sha": "476eed0130a2e76241fcc9166594f24d5966a5af",
+      "subject_parent_commit_sha": "db58a5b4d9952c765bebc4e4fd08dc115e5e5af6",
+      "subject_tree_sha": "762d45bbd370c6153d45361ace9785562437a310",
+      "subject_path": "docs/superpowers/specs/2026-08-22-quirk-agent-workforce-cross-system-reconciliation-v0-2-design.md",
+      "subject_blob_sha": "796c258b02cd0e3b7996af5756ca8fb218d4ef41",
+      "subject_content_digest": "sha256:65764afc920a26a5338145ae2c06fe73533705f7086e477d145cb87779f46d59",
+      "subject_commit_verification": {
+        "verified_signature": false,
+        "reason": "unsigned",
+        "effect": "non-blocking provenance limitation because the decision binds the exact commit, tree, blob, and payload digest"
+      }
+    },
+    "reviewed_file_scope": [
+      {
+        "path": "docs/superpowers/specs/2026-08-22-quirk-agent-workforce-dual-plane-design.md",
+        "commit_sha": "ab031a7e5c51704acaf15da0f4f705cc6f6a8531",
+        "blob_sha": "bcb46881672dfec9dae4d9eef46cdf1d49f3ba4b",
+        "content_digest": "sha256:9c572e32260efd271e38b152bd4fb93340a5fd4fd2c41d5206672bc098c99a6a"
+      },
+      {
+        "path": "docs/superpowers/specs/2026-08-22-quirk-agent-workforce-cross-system-reconciliation-v0-2-design.md",
+        "commit_sha": "476eed0130a2e76241fcc9166594f24d5966a5af",
+        "blob_sha": "796c258b02cd0e3b7996af5756ca8fb218d4ef41",
+        "content_digest": "sha256:65764afc920a26a5338145ae2c06fe73533705f7086e477d145cb87779f46d59"
+      }
+    ],
+    "changed_file_scope_from_subject_parent": [
+      "docs/superpowers/specs/2026-08-22-quirk-agent-workforce-cross-system-reconciliation-v0-2-design.md"
+    ],
+    "immutable_composition": [
+      {
+        "spec_id": "quirk.agent-workforce.dual-plane-design",
+        "version": "0.1.0",
+        "repository_full_name": "Quirk-Systems/quirk-os",
+        "commit_sha": "ab031a7e5c51704acaf15da0f4f705cc6f6a8531",
+        "path": "docs/superpowers/specs/2026-08-22-quirk-agent-workforce-dual-plane-design.md",
+        "blob_sha": "bcb46881672dfec9dae4d9eef46cdf1d49f3ba4b",
+        "content_digest": "sha256:9c572e32260efd271e38b152bd4fb93340a5fd4fd2c41d5206672bc098c99a6a",
+        "preservation": "immutable, incorporated, and auditable"
+      },
+      {
+        "spec_id": "quirk.agent-workforce.cross-system-reconciliation",
+        "version": "0.2.1",
+        "repository_full_name": "Quirk-Systems/quirk-os",
+        "commit_sha": "476eed0130a2e76241fcc9166594f24d5966a5af",
+        "tree_sha": "762d45bbd370c6153d45361ace9785562437a310",
+        "path": "docs/superpowers/specs/2026-08-22-quirk-agent-workforce-cross-system-reconciliation-v0-2-design.md",
+        "blob_sha": "796c258b02cd0e3b7996af5756ca8fb218d4ef41",
+        "content_digest": "sha256:65764afc920a26a5338145ae2c06fe73533705f7086e477d145cb87779f46d59",
+        "precedence": "controls only where the two composed specifications conflict"
+      }
+    ],
+    "supersession": {
+      "supersedes_spec_id": "quirk.agent-workforce.dual-plane-design",
+      "supersedes_version": "0.1.0",
+      "supersedes_commit_sha": "ab031a7e5c51704acaf15da0f4f705cc6f6a8531",
+      "supersedes_content_digest": "sha256:9c572e32260efd271e38b152bd4fb93340a5fd4fd2c41d5206672bc098c99a6a",
+      "replacement": "the immutable v0.1.0 plus v0.2.1 composition recorded above",
+      "historical_record_disposition": "preserved; never rewritten or deleted"
+    },
+    "effective_scope": {
+      "type": "written_design_specification_only",
+      "approved": [
+        "five-plane operating separation",
+        "exactly eleven candidate roles",
+        "separate incumbent Sync Steward",
+        "five non-interchangeable grant kinds",
+        "external approval and supersession receipts",
+        "provider-resource containment",
+        "publication authority boundary",
+        "ActionReadinessRecord requirements",
+        "successor adversarial fixture requirements"
+      ],
+      "catalog_effect": "candidate roles remain candidate",
+      "component_effect": "no component is admitted",
+      "runtime_effect": "none",
+      "projection_effect": "none"
+    },
+    "effective_grant_reference": null,
+    "effective_grant_reason": "This is a human design decision receipt, not an execution grant.",
+    "explicitly_not_authorized": [
+      "implementation planning",
+      "agent manifests",
+      "GitHub profiles",
+      "prompts",
+      "skills",
+      "connectors",
+      "provider or account access",
+      "model execution",
+      "runtime",
+      "activation",
+      "installation",
+      "projection",
+      "invocation",
+      "deployment",
+      "database or Supabase effects",
+      "network or domain changes",
+      "telemetry operations",
+      "product, market, commercial, safety, legal, rights, or efficacy claims",
+      "Preference Graph access, inference, proposal promotion, write, update, or mutation",
+      "pull-request creation",
+      "review",
+      "merge",
+      "release",
+      "publication"
+    ],
+    "downstream_requirements": [
+      "a separate exact human decision for each action",
+      "all required component admissions",
+      "the complete intersection of every applicable typed grant",
+      "an ActionReadinessRecord",
+      "rollback obligations",
+      "an immutable execution receipt"
+    ],
+    "invalidators": [
+      "change to either composed payload",
+      "change to the reviewed subject commit",
+      "change to the reviewed subject tree",
+      "change to the reviewed file scope",
+      "change to either composed content digest",
+      "receipt correction or revocation through a later explicit human decision"
+    ],
+    "decision_text_is_verbatim": true,
+    "decision_text": "SUPERSEDE — composed design only. I reviewed the Quirk Agent Workforce composed v0.2.1 design at exact head 476eed0130a2e76241fcc9166594f24d5966a5af, tree 762d45bbd370c6153d45361ace9785562437a310, and reconciliation payload digest sha256:65764afc920a26a5338145ae2c06fe73533705f7086e477d145cb87779f46d59.\n\nI supersede quirk.agent-workforce.dual-plane-design@0.1.0 solely as the effective approved design specification with the immutable composition of:\n\n1. v0.1.0 at commit ab031a7e5c51704acaf15da0f4f705cc6f6a8531 and digest sha256:9c572e32260efd271e38b152bd4fb93340a5fd4fd2c41d5206672bc098c99a6a; and\n2. the v0.2.1 reconciliation at exact head, tree and digest identified above.\n\nThe v0.1 artifact remains immutable, incorporated and auditable. The v0.2.1 reconciliation controls only where the documents conflict, including the five-plane operating separation, five non-interchangeable grant kinds, external approval and supersession receipts, provider-resource containment, publication authority, action-readiness requirements and successor adversarial fixtures.\n\nThis preserves exactly eleven candidate roles and the separate incumbent Sync Steward. It does not admit, activate, install, project or invoke any role or component.\n\nThis decision does not authorize implementation planning, manifests, GitHub profiles, prompts, skills, connectors, provider or account access, model execution, runtime, deployment, database or Supabase effects, network or domain changes, telemetry operations, product claims, Preference Graph access or mutation, pull-request creation, review, merge, release or publication.\n\nEvery downstream action remains separately gated by its exact human decision, component admissions, applicable typed-grant intersection, ActionReadinessRecord, rollback obligations and execution receipt. Any change to either composed payload, the reviewed head, tree, file scope or digest requires fresh human review."
+  }
+}
