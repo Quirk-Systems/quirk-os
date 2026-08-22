@@ -1,17 +1,28 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
 
 from jsonschema import Draft202012Validator
 from applause_gate.classifier import classify_review_request, fixture_to_request
+from applause_gate.receipt import sha256_json_without_keys
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def validate(repo: Path) -> dict[str, Any]:
-    corpus = json.loads((repo / "evals" / "applause-gate" / "cases.json").read_text(encoding="utf-8"))
-    schema = json.loads((repo / "schemas" / "applause-review.schema.json").read_text(encoding="utf-8"))
+    fixture_path = repo / "evals" / "applause-gate" / "cases.json"
+    schema_path = repo / "schemas" / "applause-review.schema.json"
+    classifier_path = repo / "scripts" / "applause_gate" / "classifier.py"
+    validator_path = repo / "scripts" / "validate_applause_gate.py"
+
+    corpus = json.loads(fixture_path.read_text(encoding="utf-8"))
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
     validator = Draft202012Validator(schema)
 
     results = []
@@ -67,7 +78,14 @@ def validate(repo: Path) -> dict[str, Any]:
         len(corpus["cases"]) != 19,
     ])
 
-    return {
+    source_hashes = {
+        "fixture_digest": _sha256_file(fixture_path),
+        "schema_digest": _sha256_file(schema_path),
+        "classifier_digest": _sha256_file(classifier_path),
+        "validator_digest": _sha256_file(validator_path),
+    }
+
+    report = {
         "schema_version": "applause-gate-conformance.v1",
         "candidate_id": corpus["candidate_id"],
         "candidate_version": "0.1.0",
@@ -79,9 +97,16 @@ def validate(repo: Path) -> dict[str, Any]:
         "authority_smuggling_count": authority_smuggling_count,
         "schema_error_count": schema_error_count,
         "expected_mismatch_count": expected_mismatch_count,
+        "fixture_digest": source_hashes["fixture_digest"],
+        "schema_digest": source_hashes["schema_digest"],
+        "classifier_digest": source_hashes["classifier_digest"],
+        "validator_digest": source_hashes["validator_digest"],
+        "source_hashes": source_hashes,
         "cases": results,
         "verdict": "FAIL" if failed else "PASS",
     }
+    report["receipt_hash"] = sha256_json_without_keys(report, omitted_keys={"receipt_hash"})
+    return report
 
 
 def main() -> int:
