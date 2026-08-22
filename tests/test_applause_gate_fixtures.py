@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -63,6 +64,31 @@ class ApplauseGateFixtureTests(unittest.TestCase):
         for case in self.cases:
             if case["kind"] in {"negative", "adversarial"}:
                 self.assertNotEqual(case["expected"]["verdict"], "VERIFIED_SUCCESS", case["id"])
+
+    def test_validator_rejects_mutated_verdict_vocabulary(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_root = Path(temp_dir)
+            fixture_dir = temp_root / "evals" / "applause-gate"
+            fixture_dir.mkdir(parents=True)
+
+            mutated = json.loads(json.dumps(self.corpus))
+            mutated["verdict_vocabulary"] = mutated["verdict_vocabulary"][:-1]
+            (fixture_dir / "cases.json").write_text(
+                json.dumps(mutated),
+                encoding="utf-8",
+            )
+
+            result = subprocess.run(
+                [sys.executable, str(VALIDATOR), "--repo", str(temp_root), "--require-pass"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stderr or result.stdout)
+            report = json.loads(result.stdout)
+            self.assertEqual(report["verdict"], "FAIL")
+            self.assertIn("verdict_vocabulary changed", report["errors"])
 
     def test_validator_reports_pass(self):
         result = subprocess.run(
