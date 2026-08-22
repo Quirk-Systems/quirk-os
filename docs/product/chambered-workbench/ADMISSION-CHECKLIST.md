@@ -16,6 +16,9 @@
 - [ ] No preference graph mutation is claimed.
 - [ ] Four Chambers is treated as the initial chamber set, not a fixed ceiling.
 - [ ] N-chamber expansion requires nomination, evidence, review, and separate approval.
+- [ ] Operator Contract Extraction is labeled as the approved **candidate direction**, not an approved implementation or Canon contract.
+- [ ] Every new contract is explicitly descriptive and non-executable.
+- [ ] No actual creative payload is included or published.
 
 ## Product-design review checklist
 
@@ -26,16 +29,49 @@
 - [ ] Source and signal are distinct.
 - [ ] Candidate and canon are distinct.
 - [ ] Confidence and permission are distinct.
+- [ ] Chamber and lifecycle state are distinct.
+- [ ] Exact object version and digest are visible before consequential decisions.
+- [ ] Proposer, evaluator, executor, decision authority, and verifier functions remain inspectable and distinguishable.
+- [ ] Existing authority and Design Tribunal roles are referenced rather than replaced by a new role dialect.
 - [ ] Blocked transitions explain why they are blocked.
 - [ ] Receipt schema is visible before consequential transition.
 - [ ] Gallery preservation does not imply reuse or promotion.
 - [ ] Future chambers cannot bypass the shell contract.
+- [ ] A visual cycle does not claim learning, scale, or compounding without a measured return path and decision.
+- [ ] Scores and telemetry cannot appear as proof without their evidence contracts.
+
+## HookCandidate contract review
+
+- [ ] `HookCandidate` remains a vertical test fixture and does not reserve or canonize a core object type.
+- [ ] The selected fixture is synthetic, redacted, test-only, and non-releaseable.
+- [ ] Material changes create exact new versions, digests, and typed lineage edges.
+- [ ] `object_digest` covers the immutable candidate-subject snapshot while `payload_digest` covers payload bytes; versioned governance projections and active UI chamber remain separate and carry their own integrity refs.
+- [ ] Rights do not inherit silently.
+- [ ] Candidate preservation, rejection, deferral, boneyard, supersession, and retirement preserve decision reasons.
+- [ ] Only documentary `observe`, `infer`, and `propose` moves appear in this extraction.
+- [ ] Operator-facing `inspect_*` names map to `observe`; they do not create a second authority enum.
+- [ ] `scoped → composing` and `review_ready → evaluating` are explicit governed transitions, not chamber-navigation side effects.
+- [ ] Every move binds an exact subject version and declares consequence, invariant, evidence, authority, risk, reversibility, fallback, and receipt posture.
+- [ ] Candidate move output never contains an execution token, provider credential, publication target, implementation reference, applied patch, or mutable receipt.
+- [ ] Evidence sufficiency is named-decision-specific, not global.
+- [ ] Authority grants match exact subject, version, operation, purpose, environment, risk, time, delegation, and co-approval.
+- [ ] Authority scope binds paired object id/version/digest tuples rather than parallel lists.
 
 ## Release-blocking fixture backlog
 
-These are not implemented in this PR. They are required before runtime work.
+These are not implemented in this PR. They are required before runtime work. The detailed design fixtures live in [`ADVERSARIAL-FIXTURES-v0.1.md`](ADVERSARIAL-FIXTURES-v0.1.md).
 
-- [ ] Candidate cannot self-promote to canon by entering Gallery.
+- [ ] `circular-diagram-is-not-loop`
+- [ ] `automation-is-not-scale`
+- [ ] `retention-without-reinvestment`
+- [ ] `repetition-without-improvement`
+- [ ] `benchmark-gaming`
+- [ ] `self-certified-value`
+- [ ] `learning-self-promotes`
+- [ ] `capability-implies-authority`
+- [ ] `candidate-location-implies-canon`
+- [ ] `score-without-rubric-or-reviewer`
+- [ ] `telemetry-without-event-lineage`
 - [ ] Confidence cannot produce or expand authority.
 - [ ] Foundry cannot include excluded or reference-only inputs.
 - [ ] Transition cannot execute without a receipt schema.
