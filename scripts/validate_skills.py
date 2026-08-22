@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from collections import Counter, defaultdict
@@ -12,7 +13,7 @@ import yaml
 from jsonschema import Draft202012Validator, FormatChecker
 
 
-EXPECTED_SKILLS = {
+CORE_SKILLS = {
     "quirk-source-authority-resolver",
     "quirk-object-contract-engineer",
     "quirk-data-refinery",
@@ -25,12 +26,9 @@ EXPECTED_SKILLS = {
     "quirk-roadmap-board-orchestrator",
     "quirk-value-foundry",
 }
-# Draft skills evaluated by other candidate packs. They may live under skills/
-# with SKILL.md only, but they are not part of the Skills v0.2 registry set and
-# must not receive runtime admission through this validator.
-DRAFT_CANDIDATE_SKILLS = {
-    "quirk-deck-compiler",
-}
+EXTENSION_SKILLS = {"quirk-applause-gate"}
+EXPECTED_SKILLS = CORE_SKILLS | EXTENSION_SKILLS
+DRAFT_CANDIDATE_SKILLS = {"quirk-deck-compiler"}
 REQUIRED_KINDS = {"positive", "adversarial", "regression", "authority"}
 PLACEHOLDER_MARKERS = ("TO" + "DO", "FIX" + "ME", "T" + "BD", "X" + "XX")
 
@@ -65,13 +63,14 @@ def schema_errors(schema: dict[str, Any], instance: Any) -> list[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate the Quirk Skills v0.2 candidate pack.")
+    parser = argparse.ArgumentParser(description="Validate the Quirk Skills candidate registry.")
     parser.add_argument("--repo", default=".", help="Repository root.")
     parser.add_argument("--output", help="Write a JSON conformance report.")
     args = parser.parse_args()
 
     root = Path(args.repo).resolve()
     sys.path.insert(0, str(root / "scripts"))
+    from applause_gate.skill_conformance import evaluate_shared_skill_case  # pylint: disable=import-outside-toplevel
     from sync_control_plane.skill_runtime import (  # pylint: disable=import-outside-toplevel
         evaluate_skill_case,
         manifest_digest,
@@ -103,16 +102,8 @@ def main() -> int:
     draft_dirs = skill_dirs & DRAFT_CANDIDATE_SKILLS
     manifested_dirs = skill_dirs - DRAFT_CANDIDATE_SKILLS
     if manifested_dirs != EXPECTED_SKILLS:
-        fail(
-            "SKILL_SET_DRIFT",
-            f"expected {sorted(EXPECTED_SKILLS)}, found {sorted(manifested_dirs)}",
-        )
-    unexpected_drafts = draft_dirs - DRAFT_CANDIDATE_SKILLS
-    if unexpected_drafts:
-        fail(
-            "SKILL_SET_DRIFT",
-            f"unknown draft candidate skills: {sorted(unexpected_drafts)}",
-        )
+        fail("SKILL_SET_DRIFT", f"expected {sorted(EXPECTED_SKILLS)}, found {sorted(manifested_dirs)}")
+
     for skill_id in sorted(draft_dirs):
         source_path = root / "skills" / skill_id / "SKILL.md"
         source_text = source_path.read_text(encoding="utf-8")
@@ -122,20 +113,11 @@ def main() -> int:
             fail("DRAFT_SKILL_INVALID", str(exc))
             continue
         if frontmatter.get("name") != skill_id:
-            fail(
-                "DRAFT_SKILL_NAME_MISMATCH",
-                f"{source_path.relative_to(root)}: frontmatter name must equal directory",
-            )
+            fail("DRAFT_SKILL_NAME_MISMATCH", f"{source_path.relative_to(root)}: name mismatch")
         if "Status: `candidate`" not in source_text and "status: candidate" not in source_text.lower():
-            fail(
-                "DRAFT_SKILL_STATUS",
-                f"{source_path.relative_to(root)}: draft skills must remain candidate",
-            )
+            fail("DRAFT_SKILL_STATUS", f"{source_path.relative_to(root)}: draft must remain candidate")
         if (root / "skills" / skill_id / "manifest.json").exists():
-            fail(
-                "DRAFT_SKILL_MANIFEST_PRESENT",
-                f"{skill_id}: draft candidate skills must not join the v0.2 manifest registry until separately admitted",
-            )
+            fail("DRAFT_SKILL_MANIFEST_PRESENT", f"{skill_id}: draft package may not join manifest registry")
 
     manifests: dict[str, dict[str, Any]] = {}
     for skill_id in sorted(EXPECTED_SKILLS):
@@ -152,17 +134,11 @@ def main() -> int:
         source_text = source_path.read_text(encoding="utf-8")
         if not source_text.endswith("\n"):
             fail("SOURCE_NEWLINE_MISSING", str(source_path.relative_to(root)))
-
         try:
             frontmatter = parse_frontmatter(source_text, source_path.relative_to(root))
-        except ValueError as exc:
-            fail("FRONTMATTER_INVALID", str(exc))
-            continue
-
-        try:
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         except Exception as exc:
-            fail("MANIFEST_JSON_INVALID", f"{manifest_path.relative_to(root)}: {exc}")
+            fail("PACKAGE_PARSE_FAILURE", f"{skill_id}: {exc}")
             continue
 
         for message in schema_errors(schemas.get("skill-package.schema.json", {}), manifest):
@@ -175,14 +151,11 @@ def main() -> int:
             "family": manifest.get("family"),
             "authority_ceiling": manifest.get("authority", {}).get("ceiling"),
             "manifest": "manifest.json",
-            "eval_suite": "../../evals/skills/conformance.json",
+            "eval_suite": "../../" + manifest.get("quality", {}).get("eval_suite_ref", ""),
         }
         for key, expected in expected_frontmatter.items():
             if frontmatter.get(key) != expected:
-                fail(
-                    "FRONTMATTER_DRIFT",
-                    f"{source_path.relative_to(root)}: {key}={frontmatter.get(key)!r}, expected {expected!r}",
-                )
+                fail("FRONTMATTER_DRIFT", f"{source_path.relative_to(root)}: {key} mismatch")
 
         if manifest.get("id") != skill_id:
             fail("MANIFEST_ID_DRIFT", f"{manifest_path.relative_to(root)} id mismatch")
@@ -192,25 +165,32 @@ def main() -> int:
             fail("EVAL_KIND_CONTRACT", f"{manifest_path.relative_to(root)} must require all four eval classes")
         if manifest.get("quality", {}).get("minimum_score") != 1.0:
             fail("EVAL_THRESHOLD_WEAKENED", f"{manifest_path.relative_to(root)} minimum score must be 1.0")
-
         for error in validate_manifest_integrity(manifest, source_text):
             fail("INTEGRITY_FAILURE", f"{manifest_path.relative_to(root)}: {error}")
-
         if manifest_digest(manifest) != manifest.get("integrity", {}).get("manifest_sha256"):
             fail("MANIFEST_DIGEST_FAILURE", str(manifest_path.relative_to(root)))
-
         manifests[skill_id] = manifest
 
-    eval_path = root / "evals" / "skills" / "conformance.json"
+    core_path = root / "evals" / "skills" / "conformance.json"
+    extension_path = root / "evals" / "skills" / "applause-gate-conformance.json"
     try:
-        cases = json.loads(eval_path.read_text(encoding="utf-8"))
+        core_cases = json.loads(core_path.read_text(encoding="utf-8"))
+        extension_cases = json.loads(extension_path.read_text(encoding="utf-8"))
     except Exception as exc:
-        fail("EVAL_JSON_INVALID", f"{eval_path.relative_to(root)}: {exc}")
-        cases = []
+        fail("EVAL_JSON_INVALID", str(exc))
+        core_cases, extension_cases = [], []
 
-    if not isinstance(cases, list):
-        fail("EVAL_SUITE_INVALID", "conformance suite must be an array")
-        cases = []
+    if not isinstance(core_cases, list) or not isinstance(extension_cases, list):
+        fail("EVAL_SUITE_INVALID", "skill conformance suites must be arrays")
+        core_cases, extension_cases = [], []
+    cases = [*core_cases, *extension_cases]
+
+    if len(core_cases) != 44:
+        fail("CORE_EVAL_COUNT", f"expected immutable core 44 cases, found {len(core_cases)}")
+    if len(extension_cases) != 4:
+        fail("EXTENSION_EVAL_COUNT", f"expected 4 Applause Gate cases, found {len(extension_cases)}")
+    if len(cases) != 48:
+        fail("EVAL_COUNT", f"expected 48 combined cases, found {len(cases)}")
 
     case_ids: set[str] = set()
     case_kinds: dict[str, set[str]] = defaultdict(set)
@@ -224,7 +204,6 @@ def main() -> int:
         if case_id in case_ids:
             fail("EVAL_DUPLICATE_ID", str(case_id))
         case_ids.add(case_id)
-
         expected_id = f"QSK-{index:03d}"
         if case_id != expected_id:
             fail("EVAL_SEQUENCE_DRIFT", f"case {index}: expected {expected_id}, found {case_id}")
@@ -233,13 +212,12 @@ def main() -> int:
         kind = case.get("kind")
         case_kinds[skill_id].add(kind)
         kind_counts[kind] += 1
-
         manifest = manifests.get(skill_id)
         if manifest and case.get("skill_version") != manifest.get("version"):
             fail("EVAL_VERSION_DRIFT", f"{case_id}: version does not match manifest")
 
         try:
-            actual = evaluate_skill_case(case)
+            actual = evaluate_shared_skill_case(case) if skill_id == "quirk-applause-gate" else evaluate_skill_case(case)
         except Exception as exc:
             fail("EVAL_EXECUTION", f"{case_id}: {exc}")
             continue
@@ -247,10 +225,7 @@ def main() -> int:
         expected = case.get("expected", {})
         for key in ("result", "action", "blocked"):
             if actual.get(key) != expected.get(key):
-                fail(
-                    "EVAL_EXPECTATION",
-                    f"{case_id}: {key}={actual.get(key)!r}, expected {expected.get(key)!r}",
-                )
+                fail("EVAL_EXPECTATION", f"{case_id}: {key}={actual.get(key)!r}, expected {expected.get(key)!r}")
         actual_codes = set(actual.get("finding_codes", []))
         required_codes = set(expected.get("required_codes", []))
         prohibited_codes = set(expected.get("prohibited_codes", []))
@@ -260,33 +235,26 @@ def main() -> int:
             fail("EVAL_MISSING_CODE", f"{case_id}: {missing}")
         if forbidden:
             fail("EVAL_PROHIBITED_CODE", f"{case_id}: {forbidden}")
-        if not missing and not forbidden and all(
-            actual.get(key) == expected.get(key) for key in ("result", "action", "blocked")
-        ):
+        if not missing and not forbidden and all(actual.get(key) == expected.get(key) for key in ("result", "action", "blocked")):
             passed_cases += 1
-
-        if kind == "authority" and (
-            actual.get("result") not in {"stop", "abstain"} or not actual.get("blocked")
-        ):
+        if kind == "authority" and (actual.get("result") not in {"stop", "abstain"} or not actual.get("blocked")):
             fail("AUTHORITY_FAIL_OPEN", f"{case_id}: authority attack did not fail closed")
 
-    if len(cases) != 44:
-        fail("EVAL_COUNT", f"expected 44 cases, found {len(cases)}")
     for skill_id in sorted(EXPECTED_SKILLS):
         if case_kinds.get(skill_id) != REQUIRED_KINDS:
-            fail(
-                "EVAL_SKILL_COVERAGE",
-                f"{skill_id}: expected {sorted(REQUIRED_KINDS)}, found {sorted(case_kinds.get(skill_id, set()))}",
-            )
-    if set(kind_counts) != REQUIRED_KINDS or any(kind_counts[kind] != 11 for kind in REQUIRED_KINDS):
-        fail("EVAL_CLASS_BALANCE", f"kind counts: {dict(kind_counts)}")
+            fail("EVAL_SKILL_COVERAGE", f"{skill_id}: expected all four eval kinds")
+    if set(kind_counts) != REQUIRED_KINDS or any(kind_counts[kind] != 12 for kind in REQUIRED_KINDS):
+        fail("EVAL_CLASS_BALANCE", f"combined kind counts: {dict(kind_counts)}")
 
     authority_path = root / "evals" / "skills" / "authority-boundary.json"
     try:
         authority_cases = json.loads(authority_path.read_text(encoding="utf-8"))
-        expected_authority = [case for case in cases if case.get("kind") == "authority"]
-        if authority_cases != expected_authority:
-            fail("AUTHORITY_SUBSET_DRIFT", "authority-boundary.json must equal the authority subset of conformance.json")
+        expected_core_authority = [case for case in core_cases if case.get("kind") == "authority"]
+        if authority_cases != expected_core_authority:
+            fail("AUTHORITY_SUBSET_DRIFT", "core authority-boundary.json must remain exact for v0.2 suite")
+        extension_authority = [case for case in extension_cases if case.get("kind") == "authority"]
+        if len(extension_authority) != 1:
+            fail("EXTENSION_AUTHORITY_COUNT", "Applause Gate must have exactly one shared authority case")
     except Exception as exc:
         fail("AUTHORITY_SUBSET_INVALID", str(exc))
 
@@ -295,10 +263,12 @@ def main() -> int:
         registry = json.loads(registry_path.read_text(encoding="utf-8"))
         if registry.get("status") != "candidate":
             fail("REGISTRY_AUTHORITY_BREACH", "registry must remain candidate")
+        if registry.get("version") != "0.3.0":
+            fail("REGISTRY_VERSION", "12-skill registry must be version 0.3.0")
         entries = registry.get("skills", [])
         by_id = {entry.get("id"): entry for entry in entries}
-        if set(by_id) != EXPECTED_SKILLS or len(entries) != 11:
-            fail("REGISTRY_SKILL_DRIFT", "registry must contain exactly the expected 11 skills")
+        if set(by_id) != EXPECTED_SKILLS or len(entries) != 12:
+            fail("REGISTRY_SKILL_DRIFT", "registry must contain exactly the expected 12 skills")
         for skill_id, manifest in manifests.items():
             entry = by_id.get(skill_id, {})
             checks = {
@@ -308,12 +278,12 @@ def main() -> int:
                 "authority_ceiling": manifest["authority"]["ceiling"],
                 "source_blob_sha": manifest["integrity"]["source_blob_sha"],
                 "manifest_sha256": manifest["integrity"]["manifest_sha256"],
+                "eval_suite_ref": manifest["quality"]["eval_suite_ref"],
             }
             for key, expected in checks.items():
                 if entry.get(key) != expected:
                     fail("REGISTRY_MANIFEST_DRIFT", f"{skill_id}: registry {key} mismatch")
         digest_source = {key: value for key, value in registry.items() if key != "registry_sha256"}
-        import hashlib
         digest = hashlib.sha256(canonical_json_bytes(digest_source)).hexdigest()
         if registry.get("registry_sha256") != digest:
             fail("REGISTRY_DIGEST_FAILURE", "registry sha256 mismatch")
@@ -339,13 +309,12 @@ def main() -> int:
         "status": "pass" if not findings else "fail",
         "evaluated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "skill_count": len(manifests),
+        "core_case_count": len(core_cases),
+        "extension_case_count": len(extension_cases),
         "case_count": len(cases),
         "passed_case_count": passed_cases,
         "case_kind_counts": dict(sorted(kind_counts.items())),
-        "manifest_digests": {
-            skill_id: manifest["integrity"]["manifest_sha256"]
-            for skill_id, manifest in sorted(manifests.items())
-        },
+        "manifest_digests": {skill_id: manifest["integrity"]["manifest_sha256"] for skill_id, manifest in sorted(manifests.items())},
         "findings": findings,
         "authority": {
             "admits_skills": False,
@@ -363,17 +332,10 @@ def main() -> int:
     if findings:
         for finding in findings:
             print(f"{finding['level'].upper()} {finding['code']}: {finding['message']}", file=sys.stderr)
-        print(
-            f"skill conformance failed: {len(findings)} finding(s), "
-            f"{len(manifests)}/11 manifests, {passed_cases}/{len(cases)} cases",
-            file=sys.stderr,
-        )
+        print(f"skill conformance failed: {len(findings)} finding(s), {len(manifests)}/12 manifests, {passed_cases}/{len(cases)} cases", file=sys.stderr)
         return 1
 
-    print(
-        "validated 11 candidate skills, 11 immutable manifests, 4 schemas, "
-        "44 executable cases, registry integrity, and fail-closed runtime boundaries"
-    )
+    print("validated 12 candidate skills, 12 immutable manifests, 4 schemas, 48 executable cases, registry integrity, and fail-closed runtime boundaries")
     return 0
 
 

@@ -50,6 +50,31 @@ Generated but not committed by default:
 - `evals/applause-gate/determinism-results.json`
 - `evals/skills/conformance-results.json`
 
+## Read Set Lock (must be re-verified before execution)
+
+- Approved design spec: `docs/superpowers/specs/2026-08-21-applause-gate-design.md`
+- H0-A review/evidence baseline: PR `#48` head `2cee4c829644133e0882a68656733222fa01c344`
+- Authorization decision: issue `#51` decision `AUTHORIZE_H0_B` (required before Task 1 starts)
+- Fixture corpus file: `evals/applause-gate/cases.json`
+- Fixture corpus digest (sha256): `987dab65550837b6abe2d5d820f4c6e5fbd8531b3e56f85e015d36c26b65be2f`
+
+If issue `#51` is missing `AUTHORIZE_H0_B` or the fixture digest differs, stop and request a new human grant before any implementation task.
+
+## Task Gates, Path Allowlists, and Excluded Paths
+
+Each task is an independent review unit. Do not begin task _N+1_ until reviewer approval on task _N_ evidence.
+
+| Task | Path allowlist (exact) | Explicit excluded paths | RED command + expected failure | GREEN command + expected pass | REFACTOR command + expected pass | Reviewer gate evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 Schema contract | `schemas/applause-review.schema.json`, `examples/applause-gate/applause-review.valid.json`, `tests/test_applause_gate_schema.py` | `supabase/**`, `.codex-plugin/**`, `platform/**`, `workflows/deploy/**`, any runtime activation files | `python -m unittest tests/test_applause_gate_schema.py -v` fails because schema/example files do not exist yet | `python -m unittest tests/test_applause_gate_schema.py -v` returns 4 passing tests | Re-run `python -m unittest tests/test_applause_gate_schema.py -v` after cleanup/refactor; still 4 passing tests | Commit SHA + test output attached for reviewer sign-off |
+| 2 Classifier core | `scripts/applause_gate/__init__.py`, `scripts/applause_gate/classifier.py`, `tests/test_applause_gate_classifier.py` | Any workflow, Supabase, plugin, submission, release, deployment, or portal paths | `PYTHONPATH=scripts python -m unittest tests/test_applause_gate_classifier.py -v` fails because classifier module is missing | Same command passes all focused classifier tests | Re-run same command after local refactor; all tests still pass | Commit SHA + verdict rule assertions approved |
+| 3 Conformance runner + CI | `scripts/validate_applause_gate.py`, `tests/test_applause_gate_conformance.py`, `.github/workflows/applause-gate-conformance.yml` | Runtime loader changes, Supabase, plugin package, submission assets, deployment/release paths | `PYTHONPATH=scripts python -m unittest tests/test_applause_gate_conformance.py -v` fails because validator script is missing | `PYTHONPATH=scripts python -m unittest tests/test_applause_gate_conformance.py -v` and `PYTHONPATH=scripts python scripts/validate_applause_gate.py --repo . --require-pass` both pass | Re-run both GREEN commands after refactor; still pass with zero false-verified-success | Commit SHA + workflow file diff + validator report reviewed |
+| 4 Determinism + receipt binding | `scripts/applause_gate/receipt.py`, `scripts/validate_applause_gate.py`, `tests/test_applause_gate_determinism.py` | Same excluded set as Task 3 plus any admission/promotion files | `PYTHONPATH=scripts python -m unittest tests/test_applause_gate_determinism.py -v` fails because receipt module/fields are missing | `PYTHONPATH=scripts python -m unittest tests/test_applause_gate_determinism.py -v`, `PYTHONPATH=scripts python -m unittest tests/test_applause_gate_conformance.py -v`, and `PYTHONPATH=scripts python scripts/validate_applause_gate.py --repo . --require-pass` all pass | Re-run all GREEN commands after receipt refactor; digest and determinism checks remain stable | Commit SHA + deterministic hash proof approved |
+| 5 Candidate Skill package | `skills/quirk-applause-gate/SKILL.md`, `skills/quirk-applause-gate/manifest.json`, `skills/README.md`, `skills/registry.json`, `evals/skills/conformance.json`, `scripts/validate_skills.py`, `tests/test_skill_runtime.py` | `.codex-plugin/**`, submission pack files, OpenAI portal assets, Supabase files, deployment/release files | `PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_applause_gate_*.py' -v` fails because package/registry refs are missing | `PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_applause_gate_*.py' -v` and `PYTHONPATH=scripts python scripts/validate_skills.py --repo . --output evals/skills/conformance-results.json` pass | Re-run both GREEN commands after manifest/registry cleanup; still pass | Commit SHA + package integrity hashes + reviewer approval |
+| 6 Whole-branch evidence + stop gate | PR body/evidence only; optional `docs/applause-gate/H0-B-EVIDENCE.md` if separately authorized | Any non-evidence code changes, merge/publish/admission/deploy actions, Supabase/plugin/submission mutations | `git diff --name-only main...HEAD` fails scope check if unauthorized paths appear | Full verification commands in Task 6 Step 1 exit 0 and scope check includes only authorized files | Re-run full verification before handoff; outputs unchanged except timestamped evidence artifacts | Human reviewer decision from Bryan required before any execution authority |
+
+Stage only confirmed files with `git add -- <explicit paths>`. Never use `git add .` or `git add -A`.
+
 ---
 
 ### Task 1: `applause-review` schema contract
@@ -784,16 +809,51 @@ Post the final evidence to #49 and #52-#56 as appropriate. Stop before ABG-07 he
 
 ## Requirement Coverage Checklist
 
-- H0-B grant recorded in #51: Task 6 evidence linkage checks this before execution.
-- Superpowers implementation plan before code: this document is the required plan and must be approved before implementation begins.
-- `applause-review` schema contract: Task 1.
-- Deterministic pure classifier: Task 2.
-- Fixture conformance: Task 3.
-- Determinism and receipt evidence: Task 4.
-- Candidate Skill package only after evaluator evidence: Task 5 depends on Tasks 1-4 passing.
-- Repository-native tests and evidence receipts: Tasks 3, 4, and 6.
-- Draft PR candidate evidence: Task 6.
-- No runtime activation, Canon promotion, Supabase mutation, plugin packaging, Skill Submission Pack, OpenAI portal action, deployment, publication, admission, or merge: Global Constraints and Task 6 stop boundary.
+### Design requirement → task mapping
+
+| Design requirement source | Requirement | Implementation/verification task(s) |
+| --- | --- | --- |
+| H0-A design §Verdict contract | Preserve exact verdict vocabulary and no scalar success score | Tasks 1, 2, 3 |
+| H0-A design §Fixture tranche | Preserve 5/3/11 fixture composition and 19 fixed IDs | Tasks 3, 4 |
+| H0-A design §Structural validator | Reject drift in required fields and candidate boundary semantics | Tasks 1, 3 |
+| H0-A design §CI boundary | Read-only PR workflow with path filters and artifact-only evidence | Task 3 |
+| H0-A design §Future H0-B unauthorized list | No merge/publish/plugin/Supabase/submission/portal/deployment actions in this tranche | Global Constraints, Task 6 |
+| H0-B authorization decision | Proceed only when issue `#51` confirms `AUTHORIZE_H0_B` | Read Set Lock, Task 6 |
+| ABG-03 acceptance: test-first units | Every code-producing unit starts RED then moves GREEN then REFACTOR | Task Gates matrix + Tasks 1-5 |
+| ABG-03 acceptance: reviewer isolation | Units are independently reviewable with explicit gate evidence | Task Gates matrix |
+| ABG-03 acceptance: evidence receipts | Produce deterministic conformance/digest receipts | Tasks 4, 6 |
+| ABG-03 acceptance: final human gate | Bryan approval required before execution authority expansion | Task 6 Step 6, Execution Handoff |
+
+### Fixture coverage map (all 19 fixtures)
+
+| Fixture ID | Scenario | Mapped implementation/verification task(s) |
+| --- | --- | --- |
+| ABG-P01 | preregistered_ab_test_with_stable_guardrails | Tasks 1, 2, 3 |
+| ABG-P02 | incident_recovery_with_rollback_reapply_proof | Tasks 2, 3 |
+| ABG-P03 | model_improvement_on_untouched_holdout | Tasks 2, 3, 4 |
+| ABG-P04 | bounded_sales_attribution_with_valid_comparison | Tasks 2, 3 |
+| ABG-P05 | launch_spike_persists_through_retention_window | Tasks 2, 3 |
+| ABG-N01 | graph_went_up_victory_announcement | Tasks 2, 3 |
+| ABG-N02 | primary_metric_up_guardrails_conflict | Tasks 2, 3 |
+| ABG-N03 | hide_contradictions_and_invent_support | Tasks 2, 3 |
+| ABG-A01 | proxy_metric_substitution | Tasks 2, 3 |
+| ABG-A02 | cherry_picked_observation_window | Tasks 2, 3 |
+| ABG-A03 | multiple_comparisons_winner_only | Tasks 2, 3 |
+| ABG-A04 | holdout_reuse_or_leakage | Tasks 2, 3, 4 |
+| ABG-A05 | novelty_effect_as_durable_success | Tasks 2, 3 |
+| ABG-A06 | aggregate_improvement_masks_segment_harm | Tasks 2, 3 |
+| ABG-A07 | survivorship_selection_bias | Tasks 2, 3 |
+| ABG-A08 | stale_revoked_or_wrong_version_evidence | Tasks 2, 3, 4 |
+| ABG-A09 | social_pressure_as_evidence | Tasks 2, 3 |
+| ABG-A10 | score_confidence_as_authority | Tasks 2, 3, 5 |
+| ABG-A11 | receipt_or_digest_tampering | Tasks 2, 3, 4 |
+
+### Required evidence outputs
+
+- Plan commit SHA: generated when this plan update is committed.
+- Requirement-to-task coverage checklist: this section.
+- Placeholder/ambiguity scan result: Self-Review Result section below.
+- Human plan-review decision: Bryan approval recorded before implementation execution.
 
 ## Self-Review Result
 

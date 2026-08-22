@@ -2,17 +2,20 @@
 
 Status: **candidate / non-operative**.
 
-These 11 Skills v0.2 packages are portable procedural-intelligence candidates. Each package now contains:
+The manifest registry now contains 12 candidate Skill packages. Eleven retain the Skills v0.2 shared conformance suite; `quirk-applause-gate` joins through a bounded v0.3 registry extension with its own four-case shared conformance slice. Every package remains evidence-only until separately admitted.
+
+Each manifested package contains:
 
 - `SKILL.md` — human/agent procedure;
 - `manifest.json` — strict machine contract, source blob SHA, and canonical manifest digest;
-- four mandatory eval classes in `evals/skills/conformance.json`;
+- positive, adversarial, regression, and authority evaluation coverage;
 - explicit trigger, tool, resource, authority, learning, compatibility, and stop contracts.
 
-The central `registry.json` is a rebuildable inventory. It is not Canon and cannot activate anything.
+The central `registry.json` is a rebuildable candidate inventory. It is not Canon and cannot activate anything.
 
 | Skill | Family | Ceiling | Primary output |
 | --- | --- | --- | --- |
+| `quirk-applause-gate` | challenge | infer | bounded applause review |
 | `quirk-source-authority-resolver` | research | infer | authority census |
 | `quirk-object-contract-engineer` | structure | propose | contract pack |
 | `quirk-data-refinery` | structure | propose | refinery plan |
@@ -26,10 +29,14 @@ The central `registry.json` is a rebuildable inventory. It is not Canon and cann
 | `quirk-value-foundry` | productize | propose | reusable value candidate |
 | `quirk-deck-compiler` | structure | propose | purpose-filtered Deck, proposed Hand, and invariant proof |
 
-`quirk-deck-compiler` is an additional candidate package under evaluation with the Deck Grammar pack. It includes an exploratory `skill-scratchpad.md`. Scratchpad content remains candidate ideation until admitted through schemas, evaluations, evidence, and human authority.
+`quirk-deck-compiler` remains a separate draft candidate under the Deck Grammar pack and is not part of the manifested registry.
+
+## Applause Gate compatibility boundary
+
+Applause Gate's package family is `challenge`, because that is the repository's existing schema vocabulary for evidence-challenging procedures. Its four shared cases live in `evals/skills/applause-gate-conformance.json`; the immutable 44-case v0.2 core suite remains unchanged. The conformance adapter under `scripts/applause_gate/skill_conformance.py` is evaluation-only and is intentionally not added to `scripts/sync_control_plane/skill_evaluator.py`.
 
 ## Runtime rule
 
-The loader rejects candidate or unadmitted versions, over-ceiling grants, self-approved grants, expired grants, undeclared actions, manifest tampering, and source tampering. Passing evals remain evidence—not admission.
+The runtime loader rejects candidate or unadmitted versions, over-ceiling grants, self-approved grants, expired grants, undeclared actions, manifest tampering, and source tampering. Passing evals remain evidence—not admission.
 
-No skill may self-activate, increase its own authority, promote Canon, rewrite history, persist an inferred preference or Hand, misrepresent access as ownership, or perform an irreversible write merely because the capability or credentials exist.
+No Skill may self-activate, increase its own authority, promote Canon, rewrite history, persist an inferred preference or Hand, misrepresent access as ownership, or perform an irreversible write merely because capability, evidence, or credentials exist.
