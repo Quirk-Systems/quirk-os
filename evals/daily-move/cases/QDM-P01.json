@@ -25,6 +25,18 @@
         "github://Quirk-Systems/quirk-os/evidence/manual-review-summary"
       ],
       "proof_target": "Show one repeated operation reduced without adding write authority."
+    },
+    "assignment": {
+      "minutes": 12,
+      "instruction": "Draft a propose-only mapping for the repeated review-note copy operation."
+    },
+    "deliverable": {
+      "kind": "automation_candidate",
+      "description": "A candidate mapping from accepted review notes to the evidence summary.",
+      "proof_target": "Show one repeated operation reduced without adding write authority.",
+      "source_refs": ["github://Quirk-Systems/quirk-os/evidence/manual-review-summary"],
+      "finding_ref": "eval.daily-move.QDM-P01",
+      "artifact_ref": "artifact://daily-move/QDM-P01/review-note-map"
     }
   },
   "expected": {

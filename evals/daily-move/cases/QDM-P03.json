@@ -25,6 +25,18 @@
       ],
       "buyer_job": "An AI-assisted team needs a durable record of what was decided, why, and by whom.",
       "proof_target": "Package the smallest buyer-usable projection and name one validation action."
+    },
+    "assignment": {
+      "minutes": 12,
+      "instruction": "Outline the smallest buyer-usable decision-record asset and one validation action."
+    },
+    "deliverable": {
+      "kind": "asset_candidate",
+      "description": "A candidate buyer-facing decision-record asset outline.",
+      "proof_target": "Package the smallest buyer-usable projection and name one validation action.",
+      "source_refs": ["evidence://decision-receipt/internal-use/0005"],
+      "finding_ref": "eval.daily-move.QDM-P03",
+      "artifact_ref": "artifact://daily-move/QDM-P03/decision-record-asset"
     }
   },
   "expected": {

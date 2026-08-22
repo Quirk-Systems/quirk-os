@@ -23,6 +23,18 @@
       "baseline_ref": "prompt://daily-move/baseline/context-compression",
       "failure_signal": "The baseline loses source references when compressing a messy Quirk note.",
       "proof_target": "Compare baseline and revised behavior on one held fixture."
+    },
+    "assignment": {
+      "minutes": 12,
+      "instruction": "Revise the context-compression prompt and compare it on one held fixture."
+    },
+    "deliverable": {
+      "kind": "skill_comparison",
+      "description": "A baseline-versus-revision comparison preserving source references.",
+      "proof_target": "Compare baseline and revised behavior on one held fixture.",
+      "source_refs": ["prompt://daily-move/baseline/context-compression"],
+      "finding_ref": "eval.daily-move.QDM-P02",
+      "artifact_ref": "artifact://daily-move/QDM-P02/context-compression-comparison"
     }
   },
   "expected": {

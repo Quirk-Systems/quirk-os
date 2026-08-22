@@ -32,6 +32,18 @@
         "block"
       ],
       "proof_target": "Change one allocation or scope decision rather than merely summarize the week."
+    },
+    "assignment": {
+      "minutes": 12,
+      "instruction": "Propose one explicit allocation or scope change across the current portfolio."
+    },
+    "deliverable": {
+      "kind": "allocation_decision",
+      "description": "A candidate allocation decision with one selected continue, merge, kill, or block outcome.",
+      "proof_target": "Change one allocation or scope decision rather than merely summarize the week.",
+      "source_refs": ["project://quirk-os", "candidate://daily-move", "experiment://proof-drop"],
+      "finding_ref": "eval.daily-move.QDM-P07",
+      "artifact_ref": "artifact://daily-move/QDM-P07/allocation-decision"
     }
   },
   "expected": {
