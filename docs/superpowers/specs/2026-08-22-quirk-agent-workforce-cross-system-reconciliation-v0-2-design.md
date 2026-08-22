@@ -1,42 +1,47 @@
 ---
 spec_id: quirk.agent-workforce.cross-system-reconciliation
 title: Quirk Agent Workforce Cross-System Reconciliation
-version: 0.2.0
-decision_date: 2026-08-22
-human_decision: APPROVE_SPEC_ONLY_RECONCILIATION
-document_status: approved-for-spec-only-commit
-architecture_status: approved-successor-design
+version: 0.2.1
+revision_date: 2026-08-22
+revision_basis: exact-head-human-decision-revise
+reviewed_head: db58a5b4d9952c765bebc4e4fd08dc115e5e5af6
+reviewed_payload_digest: sha256:b83ff5be80b8d22c5bca7d1b4cc436d5ae0db64b9a1ba058ba2a19b1dfa51cf7
+human_decision: REVISE_COMPOSED_DESIGN_ONLY
+document_status: committed-awaiting-exact-head-review
+architecture_status: candidate-awaiting-exact-head-review
 catalog_status: candidate-unchanged
 runtime_status: inactive
 projection_status: not-created
-authority_scope: local-draft-read-only-census-and-one-spec-only-commit
+authority_scope: one-spec-only-corrective-commit
 target_repository: Quirk-Systems/quirk-os
-target_parent_commit: ab031a7e5c51704acaf15da0f4f705cc6f6a8531
+target_parent_commit: db58a5b4d9952c765bebc4e4fd08dc115e5e5af6
 target_branch: spec/quirk-agent-workforce-v0-2
 incorporates_spec: quirk.agent-workforce.dual-plane-design@0.1.0
 incorporates_commit: ab031a7e5c51704acaf15da0f4f705cc6f6a8531
 incorporates_digest: sha256:9c572e32260efd271e38b152bd4fb93340a5fd4fd2c41d5206672bc098c99a6a
-supersedes: quirk.agent-workforce.dual-plane-design@0.1.0
+supersedes: null
+proposes_superseding: quirk.agent-workforce.dual-plane-design@0.1.0
+approval_decision_receipt: null
 ---
 
 # Quirk Agent Workforce Cross-System Reconciliation
 
 ## 1. Decision and authority boundary
 
-This specification is the 0.2.0 successor to the approved Quirk Agent Workforce Dual-Plane Design 0.1.0. It incorporates the exact 0.1.0 document identified above and changes only the cross-system contract described here. Unchanged role records, lifecycle rules, non-authorities, separation-of-duties laws, Preference Graph firewall, projection design, and rollout gates remain effective by exact reference.
+This specification is the corrected 0.2.1 candidate successor to the approved Quirk Agent Workforce Dual-Plane Design 0.1.0. It incorporates the exact 0.1.0 document identified above and proposes changing only the cross-system contract described here. Until an external exact-head human decision receipt approves this candidate, the 0.1.0 design remains the effective approved design. Unchanged role records, lifecycle rules, non-authorities, separation-of-duties laws, Preference Graph firewall, projection design, and rollout gates remain effective by exact reference.
 
 The eleven-role candidate catalog remains exactly QAG-000 through QAG-100 in increments of ten. No role is added, removed, admitted, activated, projected, installed, invoked, or granted authority. The incumbent `agent.quirk-sync-steward` remains separate and unchanged.
 
-The human decision authorizes:
+The exact-head `REVISE` decision authorizes:
 
-1. a local successor draft;
-2. a narrowly scoped read-only census across named systems;
-3. one successor-spec commit in `Quirk-Systems/quirk-os`.
+1. correction of this candidate specification on its existing branch;
+2. one spec-only corrective commit in `Quirk-Systems/quirk-os`; and
+3. deterministic readback needed to identify the corrected head, tree, scope, and digest.
 
 It does not authorize:
 
 - an agent manifest, GitHub profile, prompt, skill, plugin, submission pack, schema, validator, fixture, compiler, workflow, connector, model execution, runtime, database object, migration, package, container, deployment, API key, secret, or external projection;
-- a Google Drive, Notion, Airtable, Supabase, Cloudflare, OpenAI, Vercel, commerce-provider, or other provider write;
+- a Google Drive, Notion, Airtable, Supabase, Cloudflare, OpenAI, Vercel, commerce-provider, or other provider read or write except the exact GitHub readback required to verify this corrective commit;
 - a GitHub pull request, review, merge, release, ruleset, CODEOWNERS change, organization setting, package publication, or agent activation;
 - a product, market, commercial, safety, legal, license, rights, or efficacy claim;
 - a Preference Graph read, inference, proposal promotion, write, update, or mutation.
@@ -45,14 +50,35 @@ Connector availability, repository permission, provider support, role title, suc
 
 This specification does not authorize merge.
 
+### 1.1 Approval and supersession are external decisions
+
+This candidate MUST NOT mark itself approved, effective, admitted, or superseding. Approval and supersession require a separate human-issued `DecisionReceipt` bound to the exact candidate commit, tree, payload digest, reviewed scope, decision vocabulary, limitations, and invalidators. The receipt MUST distinguish the reviewed subject identity from the commit or system that stores the receipt.
+
+An `APPROVE` receipt MAY approve the composed design without superseding 0.1.0. A `SUPERSEDE` receipt MUST explicitly identify the prior design being displaced. Silence, branch existence, a successful commit, provider access, passing checks, high confidence, or satisfaction of security prerequisites is not either decision.
+
+The user's conditional direction that downstream actions require high confidence and necessary security measures is a gating policy, not a wildcard grant. A downstream action becomes executable only through the exact intersection of all required grant kinds, after its necessity, scoped confidence basis, security prerequisites, rollback, and receipt obligations are recorded. No conditional policy can supply a missing resource, operation, environment, audience, amount, expiry, or human decision.
+
+Every future provider or runtime action MUST carry an `ActionReadinessRecord` with:
+
+| Gate | Required proof |
+|---|---|
+| Exact action | Stable actor, provider/account/project/environment/resource, operation and state transition, data class, start/expiry, and prohibited outcomes |
+| Necessity | Approved outcome, evidence the action is needed now, no-op consequence, and why a narrower or non-mutating alternative is insufficient |
+| Confidence | `HIGH` only when source freshness, target identity, preconditions, expected result, counterevidence, uncertainty, and invalidators are recorded; labels without evidence fail closed |
+| Security | Admitted components, least privilege, separation of duties, secret references rather than secret values, data minimization, network/egress bounds, tenant isolation, backup, rollback, idempotency, rate/cost limits, observability, and incident recovery as applicable |
+| Authority intersection | Every required typed grant and human decision receipt independently valid for the exact action; no grant inferred from confidence or necessity |
+| Evidence return | Pre-state, action/provider identifier, bounded logs, post-state readback, result, side effects, rollback state, and immutable `ExecutionReceipt` |
+
+Every hard gate is conjunctive. A high aggregate score cannot average away a failed authority, identity, privacy, security, rollback, or receipt requirement. Pull-request creation, merge, public deployment, domain routing, database migration, network-policy change, telemetry control, and Preference Graph mutation remain separately decidable actions even when they support one approved outcome.
+
 ## 2. Successor composition and precedence
 
-The effective 0.2.0 design is the immutable composition of:
+The candidate composed 0.2.1 design proposed for approval is:
 
 1. the exact 0.1.0 document at commit `ab031a7e5c51704acaf15da0f4f705cc6f6a8531` and digest `sha256:9c572e32260efd271e38b152bd4fb93340a5fd4fd2c41d5206672bc098c99a6a`; and
-2. this reconciliation document at its eventual exact commit and digest.
+2. this corrected reconciliation document at its eventual exact commit and digest.
 
-This document controls where the two conflict. It replaces the generic grant language in 0.1.0 with typed grant kinds, extends `WorkOrder` with component-admission binding, adds an external human legal/OSS-counsel gate, strengthens receipt identity, and requires digest-bound evidence manifests.
+If an external exact-head decision receipt approves this composition, this document controls where the two conflict. It proposes replacing the generic grant language in 0.1.0 with typed grant kinds, extending `WorkOrder` with component-admission binding, adding an external human legal/OSS-counsel gate, strengthening receipt identity, and requiring digest-bound evidence manifests.
 
 No implementation may copy only the convenient half of the composition. Missing either exact document, any digest mismatch, or an unknown successor fails closed.
 
@@ -63,7 +89,7 @@ The census was deliberately non-mutating. It establishes current evidence bounda
 | Surface | Observed evidence | Classification | Consequence |
 |---|---|---|---|
 | `Quirk-Systems/quirk-os` | 0.1.0 branch is one commit ahead of main with one 692-line design file | repository evidence | Valid design baseline only |
-| GitHub code search | No indexed `ComponentAdmissionRef` or typed three-grant successor was found in the searched Quirk repositories | bounded negative search | Successor machinery is not evidenced; search absence is not proof of global absence |
+| GitHub code search | No indexed `ComponentAdmissionRef` or the then-proposed typed three-grant successor was found in the searched Quirk repositories | bounded historical negative search | Implementation machinery is not evidenced; search absence is not proof of global absence |
 | Notion | `Quirk Sync Control Plane — Candidate` declares itself a projection and points to GitHub as source | noncanonical projection claim | May inform compatibility; cannot prove the runtime or authorize work |
 | Airtable | `Quirk Work Control Plane — Candidate Registry v0.1.0` exposes candidate-only tables whose descriptions deny canon, execution, and receipt authority | noncanonical projection schema | May inform projection shape; cannot define source semantics |
 | Google Drive | A bounded metadata search returned no exact workforce document title and several fuzzy unrelated results | access/search evidence | No Drive document is imported; no absence or preference claim is made |
@@ -73,7 +99,7 @@ The census was deliberately non-mutating. It establishes current evidence bounda
 
 Claims inside an external projection remain `UNVERIFIED_PROJECTION_CLAIM` until rebound to exact source, environment, evidence, and receipt. A projection saying that tables, runtime, RLS, bindings, or deployments exist is not proof that they exist now or existed as claimed.
 
-## 4. Three planes, not one vague agent blob
+## 4. Five planes, not one vague agent blob
 
 ~~~mermaid
 flowchart TD
@@ -100,9 +126,11 @@ The allowed grant kinds for this design are:
 
 | Grant kind | Permits when separately issued | Cannot permit |
 |---|---|---|
-| `AgentWorkGrant` | One bounded agent task, approved read/comment/routing action, or candidate branch/spec action | Component installation/runtime, commerce/customer/financial action, admission, activation, merge, or release |
-| `CommerceCapabilityGrant` | One exact provider, tenant, environment, mode, resource, and commercial action with amount/state/idempotency bounds | General agent work, component installation, semantic admission, graph mutation, or reuse at another provider |
-| `ComponentRuntimeGrant` | One admitted component/version/digest in one runtime/environment with exact execution, storage, network, tool, and secret-reference scope | Agent task expansion, commerce authority, semantic admission, or provider-wide permission |
+| `AgentWorkGrant` | One bounded agent task, approved read/comment/routing action, or candidate branch/spec action | Component installation/runtime, provider-resource control, commerce/customer/financial action, publication, admission, activation, merge, or release |
+| `ProviderResourceGrant` | One exact provider, account/organization, tenant, project, environment, resource, access mode, operation class, field/state transition, and data class | Component execution, provider-wide administration, commerce authority, publication, semantic admission, graph mutation, or reuse across a resource, tenant, environment, or provider |
+| `CommerceCapabilityGrant` | One exact provider, tenant, environment, mode, resource, and commercial action with amount/state/idempotency bounds | General agent work, component installation, unrelated provider-resource control, publication, semantic admission, graph mutation, or reuse at another provider |
+| `ComponentRuntimeGrant` | One admitted component/version/digest in one runtime/environment with exact execution, storage, network, tool, and secret-reference scope | Agent task expansion, provider administration, commerce authority, publication, semantic admission, or provider-wide permission |
+| `PublicationGrant` | One exact payload/version/digest, audience, channel, destination, exposure mode, release window, withdrawal path, and public identity | General agent work, component execution, provider administration, commerce authority, semantic admission, graph mutation, or reuse for another payload, audience, channel, or destination |
 
 The common envelope binds:
 
@@ -114,11 +142,15 @@ The common envelope binds:
 - start, expiry, revocation, non-delegation, non-reuse, and supersession;
 - required evidence, rollback, reconciliation, and execution receipts.
 
-Grant kinds MUST NOT be cast, inherited, unioned, widened, treated as aliases, or inferred from overlapping fields. One action requiring two kinds requires two valid grants and satisfies both independently. Decomposing work cannot increase their aggregate authority.
+Grant kinds MUST NOT be cast, inherited, unioned, widened, treated as aliases, or inferred from overlapping fields. One action requiring multiple kinds requires every applicable grant and satisfies each independently. Decomposing work cannot increase their aggregate authority.
 
 Unknown, omitted, wildcard, stale, revoked, digest-mismatched, environment-mismatched, or cross-kind grants fail closed.
 
-For the eleven-role workforce, every future `WorkOrder` uses `AgentWorkGrant`. A role cannot issue, approve, or convert its own grant.
+For the eleven-role workforce, every future `WorkOrder` uses `AgentWorkGrant` and intersects it with each additional grant required by the intended effects. A role cannot issue, approve, or convert its own grant.
+
+`ProviderResourceGrant.operation_class` MUST be one exact allowed value such as `inspect`, `query`, `export`, `create`, `update`, `delete`, `control`, `identity`, `network`, or `observability`; `*`, `admin`, `manage`, implied defaults, and undocumented provider bundles fail closed. A provider read that exposes secrets, personal data, customer data, privileged incidents, or Preference Graph material is still a governed provider-resource operation.
+
+`PublicationGrant` is required for public deployment, external release, public URL or network exposure, domain or DNS routing to a public surface, marketplace/package publication, outbound campaign delivery, or externally visible agent communication. Creating a deployable artifact is not publication; exposing it is.
 
 ## 6. Component admission is a prerequisite, not a footnote
 
@@ -198,15 +230,22 @@ Analytics, spreadsheet, document, dashboard, or chart outputs are derived projec
 
 | Plane | Candidate use | Required future containment | Status now |
 |---|---|---|---|
-| GitHub custom agent | Deterministic organization profile projection | Explicit tools because omission enables all; automatic invocation disabled; candidate user invocation disabled; no MCP; exact source/compiler/profile digests; separate `.github-private` protection | Not created |
-| OpenAI Agents SDK | Optional execution adapter for bounded application workflows | Separate admitted app/runtime; exact model/provider/tools; harness/compute separation; approvals, state, traces, network, data, and secret policy; `ComponentRuntimeGrant` | Not created or executed |
-| OpenAI Sandbox Agent | Optional isolated compute adapter | Exact manifest, mounts, files, commands, packages, ports, snapshots, credentials, egress, session lifecycle, and destruction/export policy | Not created or executed |
-| Cloudflare Agents | Optional durable runtime adapter | Exact Worker/account/environment; Durable Object/state schema; storage, WebSocket/RPC, schedules, Workflows, MCP, browser, email, payments, observability, migration, deletion, and human-approval policy | Not created, inventoried, or deployed |
-| Notion | Human-readable orientation projection | Exact page/database, source digest, projection receipt, no command/authority semantics | Read-only candidate page observed |
-| Airtable | Operational projection | Exact base/table/record mapping, source digest, no receipt/admission/command semantics | Read-only candidate schema observed |
-| Google Drive/Docs/Sheets | Work products and review packs | Exact file, source provenance, content digest/revision, audience, sensitivity, retention, and no-canon notice | Metadata search only; no workforce artifact imported |
+| GitHub custom agent | Deterministic organization profile projection | Explicit tools because omission enables all; automatic invocation disabled; candidate user invocation disabled; no MCP; exact source/compiler/profile digests; separate `.github-private` protection; `AgentWorkGrant`; `ProviderResourceGrant` for GitHub state; `PublicationGrant` for externally visible release | Not created |
+| OpenAI Agents SDK | Optional execution adapter for bounded application workflows | Separate admitted app/runtime; exact model/provider/tools; harness/compute separation; approvals, state, traces, network, data, and secret policy; `ComponentRuntimeGrant`; `ProviderResourceGrant` for provider state | Not created or executed |
+| OpenAI Sandbox Agent | Optional isolated compute adapter | Exact manifest, mounts, files, commands, packages, ports, snapshots, credentials, egress, session lifecycle, destruction/export policy; `ComponentRuntimeGrant`; `ProviderResourceGrant` for provider state | Not created or executed |
+| Cloudflare Agents | Optional durable runtime adapter | Exact Worker/account/environment; Durable Object/state schema; storage, WebSocket/RPC, schedules, Workflows, MCP, browser, email, payments, observability, migration, deletion, and human-approval policy; runtime and provider-resource grants; publication grant for exposure | Not created, inventoried, or deployed |
+| PostHog / Sentry | Product analytics, feature-control, experiment, incident, trace, and observability surfaces | Exact organization/project/environment; read versus export versus configuration mutation; sensitivity/retention/redaction; `ProviderResourceGrant`; separate runtime or publication grants for behavioral or external effects | Documentation compatibility only; no account read or change |
+| Temporal | Durable workflow execution and message-driven state transition | Exact namespace/task queue/workflow type/ID/run and operation; admitted workflow code; replay/versioning/retention policy; `ProviderResourceGrant` plus `ComponentRuntimeGrant` for execution | Documentation compatibility only; no workflow started or signaled |
+| Supabase | Database, Auth, Storage, Realtime, Edge Function, and policy surface | Exact organization/project/environment/schema/table/bucket/function/policy; row/data class; RLS/service-role boundary; migration/rollback; `ProviderResourceGrant` plus runtime, commerce, or publication grants where effects intersect | Documentation compatibility only; no project read or change |
+| Tailscale | Identity, device, grant, route, service, and public-network surface | Exact tailnet/identity/device/tag/service/route and policy delta; lockout and rollback proof; `ProviderResourceGrant`; `PublicationGrant` for Funnel or equivalent public exposure | Documentation compatibility only; no tailnet read or change |
+| Spaceship / Hostinger | Domain, DNS, hosting, VPS, account, and billing surfaces | Exact account/domain/zone/record/service/environment; TTL/propagation/rollback; ownership and spend bounds; `ProviderResourceGrant`; `PublicationGrant` for routing/exposure; `CommerceCapabilityGrant` for purchase or billing effect | Documentation compatibility only; no account, domain, DNS, hosting, or billing action |
+| FastAPI Cloud | Build, deploy, hosted runtime, and publication surface | Exact source/head/artifact digest/project/environment/build/deploy target; secrets/network/rollback/observability; `ComponentRuntimeGrant`; `ProviderResourceGrant`; `PublicationGrant` for external exposure | Documentation compatibility only; no build, deployment, hosting, or publication |
+| Game Studio toolchain | Candidate component set for building an interactive artifact | Exact skill/tool/version/digest, generated asset provenance, test evidence, local runtime boundary, and `ComponentAdmissionRef`; runtime grant for execution; provider-resource grant only for an exact external provider; publication grant for exposure | Named candidate coordinate only; no component admitted, build run, or artifact published |
+| Notion | Human-readable orientation projection | Exact page/database, source digest, projection receipt, no command/authority semantics; `ProviderResourceGrant` for any provider read or write | Read-only candidate page observed |
+| Airtable | Operational projection | Exact base/table/record mapping, source digest, no receipt/admission/command semantics; `ProviderResourceGrant` for any provider read or write | Read-only candidate schema observed |
+| Google Drive/Docs/Sheets | Work products and review packs | Exact file, source provenance, content digest/revision, audience, sensitivity, retention, and no-canon notice; `ProviderResourceGrant`; `PublicationGrant` when shared beyond the approved audience | Metadata search only; no workforce artifact imported |
 | Data Analytics artifacts | Derived evidence views | Bound source query/snapshot, transformation, grain, completeness, digest, and non-authority notice | None created |
-| Skill/plugin submission | Candidate packaging and review evidence | Exact source/version/digest, manifest, evaluation, dependency/rights/security evidence, separate submission and publication grants | Not created or submitted |
+| Skill/plugin submission | Candidate packaging and review evidence | Exact source/version/digest, manifest, evaluation, dependency/rights/security evidence, separate `ProviderResourceGrant` for submission-state mutation and `PublicationGrant` for publication | Not created or submitted |
 
 The same semantic role MAY eventually have multiple provider adapters. Each adapter is a separately admitted component and separately activated projection/runtime. Provider-native state, memory, sessions, traces, schedules, approvals, or identities MUST NOT be silently synchronized or treated as Quirk Memory or Preference Graph content.
 
@@ -226,8 +265,14 @@ The 0.1.0 fixture catalog remains required. A future implementation adds at leas
 |---|---|
 | `component_reference_as_admission` | Reject named/available/imported component without exact admitted `ComponentAdmissionRef` |
 | `mutable_dependency_or_template` | Reject floating version, tag, branch, starter, provider default, or transitive dependency |
-| `grant_kind_confusion` | Reject agent, commerce, and runtime grants used outside their exact kind |
+| `grant_kind_confusion` | Reject agent, provider-resource, commerce, runtime, and publication grants used outside their exact kind |
 | `grant_union_escalation` | Reject combining partial grants into wider authority |
+| `provider_admin_as_component_runtime` | Reject provider account, project, tenant, configuration, identity, network, data, or control-plane action offered under only `ComponentRuntimeGrant` |
+| `provider_resource_cross_scope_reuse` | Reject resource grant reused across provider, account, tenant, project, environment, resource, operation class, or data class |
+| `public_exposure_without_publication_grant` | Reject deployment, DNS routing, Funnel, public URL, marketplace/package release, campaign delivery, or external communication without exact `PublicationGrant` |
+| `publication_payload_or_audience_drift` | Reject publication when payload digest, audience, channel, destination, exposure window, or withdrawal path differs from the grant |
+| `confidence_or_necessity_as_authority` | Reject high confidence, operational necessity, security readiness, urgency, or successful dry run offered in place of an exact grant and decision receipt |
+| `security_score_averages_hard_failure` | Reject aggregate readiness score when any authority, identity, privacy, security, rollback, or receipt hard gate fails |
 | `provider_runtime_equivalence` | Reject GitHub/OpenAI/Cloudflare projection or runtime as interchangeable |
 | `connector_access_as_authority` | Reject authenticated access or successful read/write as permission |
 | `legal_counsel_impersonation` | Reject agent-issued rights or legal clearance |
@@ -243,22 +288,25 @@ The 0.1.0 fixture catalog remains required. A future implementation adds at leas
 
 ## 13. Acceptance criteria for this reconciliation tranche
 
-This tranche passes only when:
+This corrective tranche passes only when:
 
-- one new Markdown successor spec is committed from exact parent `ab031a7e5c51704acaf15da0f4f705cc6f6a8531`;
+- only this Markdown candidate specification is changed in one corrective commit whose parent is exact reviewed head `db58a5b4d9952c765bebc4e4fd08dc115e5e5af6`;
 - the original 0.1.0 file remains byte-identical at its recorded digest;
 - the successor explicitly preserves exactly eleven candidate roles and the separate incumbent Sync Steward;
-- the three typed grant kinds cannot impersonate or widen one another;
+- the five typed grant kinds cannot impersonate, substitute for, or widen one another;
+- provider-resource control cannot be laundered through component runtime authority;
+- public exposure cannot occur without an exact publication grant;
 - every future WorkOrder requires exact component-admission references;
 - external human legal/OSS counsel is a gate, not a role or agent capability;
 - receipt subject identity, receipt content identity, and receipt storage identity are distinct;
 - evidence manifests distinguish full-tree proof, diffs, projections, provider reads, derived analytics, and unverified claims;
-- GitHub, OpenAI, Cloudflare, Drive, Notion, Airtable, analytics, documents, spreadsheets, skills, and plugins remain provider-specific candidate surfaces;
+- GitHub, OpenAI, Cloudflare, PostHog, Sentry, Temporal, Supabase, Tailscale, Spaceship, Hostinger, FastAPI Cloud, Game Studio, Drive, Notion, Airtable, analytics, documents, spreadsheets, skills, and plugins remain provider-specific candidate surfaces;
 - no manifest, profile, skill, submission pack, schema, validator, fixture, code, dependency, connector, API key, runtime, database object, deployment, projection, or provider configuration is created or changed;
 - no pull request, review, merge, admission, activation, publication, external provider write, or Preference Graph effect occurs;
-- exact parent, new commit, two-file compare, original digest, successor digest, and no-write census are verified and reported.
+- the candidate metadata records no approval or supersession before an external exact-head human decision receipt;
+- exact reviewed parent, corrected commit, corrected tree, changed-file scope, original digest, corrected payload digest, and no-write census are verified and reported.
 
-The next gate after this commit is fresh human review of the exact successor head and digest. Implementation planning remains blocked until that review separately approves the composed 0.2.0 design.
+The next gate after this corrective commit is fresh human review of the exact corrected head and digest. Implementation planning remains blocked until that review separately approves the composed 0.2.1 candidate design. Approval does not itself authorize implementation, provider access, activation, publication, pull request creation, or merge.
 
 ## 14. Required primary references for later implementation
 
@@ -271,5 +319,14 @@ Current behavior must be reverified at implementation time because these provide
 - OpenAI Sandbox Agents: https://developers.openai.com/api/docs/guides/agents/sandboxes
 - Cloudflare Agents: https://developers.cloudflare.com/agents/
 - Cloudflare human-in-the-loop patterns: https://github.com/cloudflare/agents/blob/main/docs/agents/human-in-the-loop.md
+- PostHog feature flags: https://posthog.com/docs/feature-flags/start-here
+- Temporal workflow messages: https://docs.temporal.io/sending-messages
+- Supabase Row Level Security: https://supabase.com/docs/guides/database/postgres/row-level-security
+- Supabase Edge Functions: https://supabase.com/docs/guides/functions
+- Tailscale grants: https://tailscale.com/docs/reference/syntax/grants
+- Spaceship Knowledgebase: https://www.spaceship.com/knowledgebase/
+- Hostinger DNS management: https://www.hostinger.com/support/1583249-how-to-manage-dns-records-at-hostinger/
+- FastAPI Cloud deployment: https://fastapicloud.com/docs/fastapi-cloud-cli/deploy/
+- Sentry documentation: https://docs.sentry.io/
 
 This document is a decision artifact. It is not an agent, runtime, connector, projection, deployment, admission, or execution grant.
