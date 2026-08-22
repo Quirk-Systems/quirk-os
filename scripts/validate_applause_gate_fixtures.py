@@ -14,14 +14,15 @@ EXPECTED_IDS = [
     "ABG-A06", "ABG-A07", "ABG-A08", "ABG-A09", "ABG-A10", "ABG-A11",
 ]
 EXPECTED_COUNTS = {"positive": 5, "negative": 3, "adversarial": 11}
-EXPECTED_VERDICTS = {
+EXPECTED_VERDICT_VOCABULARY = [
     "SIGNAL_ONLY",
     "SUPPORTED_DIAGNOSIS",
     "VERIFIED_SUCCESS",
     "FALSE_POSITIVE",
     "UNRESOLVED",
     "EVIDENCE_INTEGRITY_FAILURE",
-}
+]
+EXPECTED_VERDICTS = set(EXPECTED_VERDICT_VOCABULARY)
 REQUIRED_CASE_FIELDS = {
     "id", "kind", "scenario", "claim", "signal", "evidence", "expected",
     "required_behaviors", "prohibited_behaviors",
@@ -38,6 +39,8 @@ def validate(repo: Path) -> dict:
         errors.append("unexpected schema_version")
     if corpus.get("candidate_id") != "quirk-applause-gate":
         errors.append("unexpected candidate_id")
+    if corpus.get("verdict_vocabulary") != EXPECTED_VERDICT_VOCABULARY:
+        errors.append("verdict_vocabulary changed")
 
     boundary = corpus.get("candidate_boundary", {})
     expected_boundary = {
