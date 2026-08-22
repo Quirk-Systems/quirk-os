@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.foundation/schemas/applause-review.schema.json",
+  "title": "Candidate-only Applause Gate review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "candidate_id",
+    "case_id",
+    "claim",
+    "signal",
+    "claim_state",
+    "signal_state",
+    "evidence_sufficiency",
+    "causal_support",
+    "contradiction_state",
+    "guardrail_state",
+    "version_binding",
+    "freshness_state",
+    "commitment_risk",
+    "verdict",
+    "required_codes",
+    "withheld_claims",
+    "missing_proof",
+    "reversible_next_move",
+    "evidence_refs",
+    "warnings",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "applause-review.v1"
+    },
+    "review_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "claim": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "signal": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "claim_state": {
+      "type": "string",
+      "enum": ["bounded", "withheld", "rejected"]
+    },
+    "signal_state": {
+      "type": "string",
+      "enum": ["detected", "conflicted", "manipulated", "untrusted"]
+    },
+    "evidence_sufficiency": {
+      "type": "string",
+      "enum": ["sufficient", "partial", "insufficient", "invalid"]
+    },
+    "causal_support": {
+      "type": "string",
+      "enum": ["supported", "bounded", "unsupported", "contradicted", "unknown"]
+    },
+    "contradiction_state": {
+      "type": "string",
+      "enum": ["none_detected", "present", "material"]
+    },
+    "guardrail_state": {
+      "type": "string",
+      "enum": ["stable", "violated", "unknown", "not_applicable"]
+    },
+    "version_binding": {
+      "type": "string",
+      "enum": ["bound", "unbound", "mismatched", "tampered"]
+    },
+    "freshness_state": {
+      "type": "string",
+      "enum": ["current", "stale", "revoked", "unknown"]
+    },
+    "commitment_risk": {
+      "type": "string",
+      "enum": ["low", "elevated", "high"]
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "SIGNAL_ONLY",
+        "SUPPORTED_DIAGNOSIS",
+        "VERIFIED_SUCCESS",
+        "FALSE_POSITIVE",
+        "UNRESOLVED",
+        "EVIDENCE_INTEGRITY_FAILURE"
+      ]
+    },
+    "required_codes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$"
+      }
+    },
+    "withheld_claims": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2048
+      }
+    },
+    "missing_proof": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2048
+      }
+    },
+    "reversible_next_move": {
+      "type": "string",
+      "enum": [
+        "Observe the signal and request missing evidence.",
+        "Record the supported diagnosis with residual uncertainty as candidate evidence only.",
+        "Record the bounded verified-success review as candidate evidence only.",
+        "Reject the claim and preserve contradictory evidence.",
+        "Preserve the unresolved review and request missing proof.",
+        "Quarantine the evidence and rerun against trusted version-bound inputs."
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*_refs?$"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2048
+      }
+    },
+    "authority_effect": {
+      "type": "string",
+      "const": "none"
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"verdict": {"const": "SIGNAL_ONLY"}}},
+      "then": {
+        "properties": {
+          "reversible_next_move": {
+            "const": "Observe the signal and request missing evidence."
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"verdict": {"const": "SUPPORTED_DIAGNOSIS"}}},
+      "then": {
+        "properties": {
+          "reversible_next_move": {
+            "const": "Record the supported diagnosis with residual uncertainty as candidate evidence only."
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"verdict": {"const": "VERIFIED_SUCCESS"}}},
+      "then": {
+        "properties": {
+          "evidence_sufficiency": {"const": "sufficient"},
+          "causal_support": {"const": "supported"},
+          "contradiction_state": {"enum": ["none_detected", "present"]},
+          "guardrail_state": {"const": "stable"},
+          "version_binding": {"const": "bound"},
+          "freshness_state": {"const": "current"},
+          "commitment_risk": {"const": "low"},
+          "reversible_next_move": {
+            "const": "Record the bounded verified-success review as candidate evidence only."
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"verdict": {"const": "FALSE_POSITIVE"}}},
+      "then": {
+        "properties": {
+          "reversible_next_move": {
+            "const": "Reject the claim and preserve contradictory evidence."
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"verdict": {"const": "UNRESOLVED"}}},
+      "then": {
+        "properties": {
+          "reversible_next_move": {
+            "const": "Preserve the unresolved review and request missing proof."
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"verdict": {"const": "EVIDENCE_INTEGRITY_FAILURE"}}},
+      "then": {
+        "properties": {
+          "reversible_next_move": {
+            "const": "Quarantine the evidence and rerun against trusted version-bound inputs."
+          }
+        }
+      }
+    }
+  ]
+}

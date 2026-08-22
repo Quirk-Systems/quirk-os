@@ -1,0 +1,73 @@
+name: Applause Gate Conformance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/applause-gate-conformance.yml'
+      - 'requirements-evals.txt'
+      - 'docs/superpowers/plans/2026-08-21-applause-gate-implementation-plan.md'
+      - 'docs/superpowers/specs/2026-08-21-applause-gate-design.md'
+      - 'schemas/applause-review.schema.json'
+      - 'examples/applause-gate/**'
+      - 'scripts/applause_gate/**'
+      - 'scripts/validate_applause_gate.py'
+      - 'scripts/validate_applause_gate_fixtures.py'
+      - 'tests/test_applause_gate_*.py'
+      - 'evals/applause-gate/**'
+      - 'skills/quirk-applause-gate/**'
+      - 'skills/README.md'
+      - 'skills/registry.json'
+      - 'evals/skills/**'
+      - 'scripts/validate_skills.py'
+      - 'tests/test_skill_runtime.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: applause-gate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate-applause-gate-conformance:
+    name: candidate-applause-gate-conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Install evaluation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run Applause Gate tests
+        env:
+          PYTHONPATH: scripts
+        run: python -m unittest discover -s tests -p 'test_applause_gate_*.py' -v
+
+      - name: Run Applause Gate conformance
+        env:
+          PYTHONPATH: scripts
+        run: |
+          python scripts/validate_applause_gate.py \
+            --repo . \
+            --output evals/applause-gate/conformance-results.json \
+            --require-pass
+
+      - name: Upload Applause Gate evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: applause-gate-conformance-${{ github.sha }}
+          path: evals/applause-gate/conformance-results.json
+          if-no-files-found: error
+          retention-days: 30
