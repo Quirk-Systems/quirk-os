@@ -11,6 +11,19 @@ on:
       - 'tests/test_applause_gate_*.py'
       - 'skills/quirk-applause-gate/**'
       - 'evals/applause-gate/**'
+      - 'evals/skills/applause-gate-conformance.json'
+  push:
+    branches-ignore: [main]
+    paths:
+      - '.github/workflows/applause-gate-conformance.yml'
+      - 'schemas/applause-review.schema.json'
+      - 'examples/applause-gate/**'
+      - 'scripts/applause_gate/**'
+      - 'scripts/validate_applause_gate.py'
+      - 'tests/test_applause_gate_*.py'
+      - 'skills/quirk-applause-gate/**'
+      - 'evals/applause-gate/**'
+      - 'evals/skills/applause-gate-conformance.json'
   workflow_dispatch:
 
 permissions:
