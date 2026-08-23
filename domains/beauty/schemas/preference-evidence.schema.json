@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quirk://schemas/beauty/preference-evidence/0.1.0",
+  "title": "PreferenceEvidence",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "actorId": { "type": "string" },
+    "purpose": { "type": "string" },
+    "contextId": { "type": "string" },
+    "preferredFeature": { "type": "string" },
+    "contrastedFeature": { "type": "string" },
+    "sourceChoiceId": { "type": "string" },
+    "sourceType": { "const": "explicit_human_choice" },
+    "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "truthStatus": { "const": "candidate" },
+    "recordedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["id", "actorId", "purpose", "contextId", "preferredFeature", "contrastedFeature", "sourceChoiceId", "sourceType", "weight", "confidence", "truthStatus", "recordedAt"]
+}

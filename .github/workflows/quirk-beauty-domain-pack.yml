@@ -1,0 +1,57 @@
+name: Quirk Beauty Domain Pack
+
+on:
+  pull_request:
+    paths:
+      - "docs/canon/QUIRK-BEAUTY-DOMAIN-BOUNDARY.*"
+      - "decisions/ADR-0002-quirk-beauty-domain-boundary.md"
+      - "domains/beauty/**"
+      - "supabase/migrations/20260821090000_quirk_beauty_taste_engine_candidate.sql"
+      - "supabase/tests/quirk_beauty_taste_engine_rls.sql"
+      - ".github/workflows/quirk-beauty-domain-pack.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/canon/QUIRK-BEAUTY-DOMAIN-BOUNDARY.*"
+      - "domains/beauty/**"
+      - "supabase/migrations/20260821090000_quirk_beauty_taste_engine_candidate.sql"
+      - "supabase/tests/quirk_beauty_taste_engine_rls.sql"
+      - ".github/workflows/quirk-beauty-domain-pack.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  domain-pack:
+    name: Node ${{ matrix.node }} contract suite
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    defaults:
+      run:
+        working-directory: domains/beauty
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Run candidate contract suite
+        run: npm run ci
+      - name: Prove synthetic evidence cannot pass the real-proof gate
+        shell: bash
+        run: |
+          if npm run proof:verify -- proof/synthetic-example.json; then
+            echo "Synthetic evidence incorrectly passed the real-proof verifier."
+            exit 1
+          fi
+          echo "Synthetic evidence was rejected as required."
+      - name: Upload synthetic machinery fixture
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quirk-beauty-synthetic-proof-node-${{ matrix.node }}
+          path: domains/beauty/proof/synthetic-example.json
+          if-no-files-found: error
