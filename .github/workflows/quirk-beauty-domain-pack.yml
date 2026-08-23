@@ -1,0 +1,53 @@
+name: Quirk Beauty Domain Pack
+
+on:
+  pull_request:
+    paths:
+      - "canon/domains/beauty/**"
+      - "domains/beauty/**"
+      - ".github/workflows/quirk-beauty-domain-pack.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quirk-beauty-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Node ${{ matrix.node }} verification
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    defaults:
+      run:
+        working-directory: domains/beauty
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: domains/beauty/package-lock.json
+
+      - name: Install locked dependency graph
+        run: npm ci --ignore-scripts
+
+      - name: Verify pack, tests, proof boundaries, and manifest
+        run: npm run ci
+
+      - name: Upload synthetic evidence on Node 24
+        if: matrix.node == 24
+        uses: actions/upload-artifact@v4
+        with:
+          name: quirk-beauty-synthetic-evidence-${{ github.sha }}
+          path: domains/beauty/fixtures/proof/synthetic-example.json
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "quirk://beauty/schemas/outcome/0.1.1",
+  "required": [
+    "id",
+    "actorId",
+    "purpose",
+    "recommendationId",
+    "optionId",
+    "kind",
+    "explicit",
+    "testedInRealWorld",
+    "sourceType",
+    "note",
+    "observedAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^outcome:"
+    },
+    "actorId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "recommendationId": {
+      "type": "string",
+      "pattern": "^recommendation:"
+    },
+    "optionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "preferred",
+        "rejected",
+        "mixed",
+        "not_tested"
+      ]
+    },
+    "explicit": {
+      "const": true
+    },
+    "testedInRealWorld": {
+      "type": "boolean"
+    },
+    "sourceType": {
+      "const": "explicit_human_report"
+    },
+    "note": {
+      "type": "string"
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

@@ -1,0 +1,627 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "quirk://beauty/schemas/proof-bundle/0.1.1",
+  "required": [
+    "proofId",
+    "synthetic",
+    "participantConsent",
+    "choice",
+    "evidence",
+    "recommendation",
+    "outcome",
+    "proposal",
+    "decision",
+    "receipt",
+    "coreAttestation",
+    "verifiedAt"
+  ],
+  "properties": {
+    "proofId": {
+      "type": "string",
+      "pattern": "^qb-taste-proof-"
+    },
+    "synthetic": {
+      "type": "boolean"
+    },
+    "participantConsent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "granted",
+        "recordedAt",
+        "purpose"
+      ],
+      "properties": {
+        "granted": {
+          "type": "boolean"
+        },
+        "recordedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "choice": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "$id": "quirk://beauty/schemas/choice/0.1.1",
+      "required": [
+        "id",
+        "actorId",
+        "context",
+        "presentedOptionIds",
+        "selectedOptionId",
+        "abstained",
+        "sourceType",
+        "capturedAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^choice:[A-Za-z0-9._:-]+$"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "purpose"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "purpose": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "presentedOptionIds": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "selectedOptionId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "abstained": {
+          "type": "boolean"
+        },
+        "sourceType": {
+          "const": "explicit_human_choice"
+        },
+        "capturedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "$id": "quirk://beauty/schemas/preference-evidence/0.1.1",
+        "required": [
+          "id",
+          "actorId",
+          "purpose",
+          "contextId",
+          "preferredFeature",
+          "contrastedFeature",
+          "sourceChoiceId",
+          "sourceType",
+          "weight",
+          "confidence",
+          "truthStatus",
+          "recordedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evidence:"
+          },
+          "actorId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          },
+          "contextId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "preferredFeature": {
+            "type": "string",
+            "pattern": "^[^=]+=.+"
+          },
+          "contrastedFeature": {
+            "type": "string",
+            "pattern": "^[^=]+=.+"
+          },
+          "sourceChoiceId": {
+            "type": "string",
+            "pattern": "^choice:"
+          },
+          "sourceType": {
+            "const": "explicit_human_choice"
+          },
+          "weight": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "truthStatus": {
+            "const": "candidate"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "recommendation": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "$id": "quirk://beauty/schemas/recommendation/0.1.1",
+      "required": [
+        "id",
+        "actorId",
+        "purpose",
+        "optionId",
+        "score",
+        "confidence",
+        "evidenceIds",
+        "factors",
+        "insufficientEvidence",
+        "status",
+        "generatedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^recommendation:"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "optionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "score": {
+          "type": "number"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "evidenceIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^evidence:"
+          }
+        },
+        "factors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "feature",
+              "contribution",
+              "evidenceIds"
+            ],
+            "properties": {
+              "feature": {
+                "type": "string",
+                "pattern": "^[^=]+=.+"
+              },
+              "contribution": {
+                "type": "number"
+              },
+              "evidenceIds": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^evidence:"
+                }
+              }
+            }
+          }
+        },
+        "insufficientEvidence": {
+          "type": "boolean"
+        },
+        "status": {
+          "const": "candidate"
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "outcome": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "$id": "quirk://beauty/schemas/outcome/0.1.1",
+      "required": [
+        "id",
+        "actorId",
+        "purpose",
+        "recommendationId",
+        "optionId",
+        "kind",
+        "explicit",
+        "testedInRealWorld",
+        "sourceType",
+        "note",
+        "observedAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^outcome:"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendationId": {
+          "type": "string",
+          "pattern": "^recommendation:"
+        },
+        "optionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "preferred",
+            "rejected",
+            "mixed",
+            "not_tested"
+          ]
+        },
+        "explicit": {
+          "const": true
+        },
+        "testedInRealWorld": {
+          "type": "boolean"
+        },
+        "sourceType": {
+          "const": "explicit_human_report"
+        },
+        "note": {
+          "type": "string"
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "proposal": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "$id": "quirk://beauty/schemas/graph-update-proposal/0.1.1",
+      "required": [
+        "id",
+        "actorId",
+        "purpose",
+        "expectedGraphRevision",
+        "recommendationId",
+        "outcomeId",
+        "deltas",
+        "requiresRevision",
+        "autoApply",
+        "truthStatus",
+        "proposedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^graph-update-proposal:"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expectedGraphRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "recommendationId": {
+          "type": "string",
+          "pattern": "^recommendation:"
+        },
+        "outcomeId": {
+          "type": "string",
+          "pattern": "^outcome:"
+        },
+        "deltas": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "feature",
+              "delta",
+              "evidenceIds"
+            ],
+            "properties": {
+              "feature": {
+                "type": "string",
+                "pattern": "^[^=]+=.+"
+              },
+              "delta": {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1
+              },
+              "evidenceIds": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "autoApply": {
+          "const": false
+        },
+        "truthStatus": {
+          "const": "candidate"
+        },
+        "proposedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "requiresRevision": {
+          "type": "boolean"
+        }
+      }
+    },
+    "decision": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "$id": "quirk://beauty/schemas/graph-update-decision/0.1.1",
+      "required": [
+        "id",
+        "proposalId",
+        "actorId",
+        "purpose",
+        "decision",
+        "humanConfirmed",
+        "reason",
+        "corrections",
+        "decidedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^graph-update-decision:"
+        },
+        "proposalId": {
+          "type": "string",
+          "pattern": "^graph-update-proposal:"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision": {
+          "enum": [
+            "approve",
+            "revise",
+            "reject"
+          ]
+        },
+        "humanConfirmed": {
+          "const": true
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "corrections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "feature",
+              "setStrength",
+              "evidenceIds"
+            ],
+            "properties": {
+              "feature": {
+                "type": "string",
+                "pattern": "^[^=]+=.+"
+              },
+              "setStrength": {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1
+              },
+              "evidenceIds": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "decidedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "receipt": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "$id": "quirk://beauty/schemas/graph-update-receipt/0.1.1",
+      "required": [
+        "kind",
+        "actorId",
+        "purpose",
+        "proposalId",
+        "decisionId",
+        "beforeRevision",
+        "afterRevision",
+        "appliedAt",
+        "evidenceIds",
+        "effect",
+        "id",
+        "actionDigest",
+        "receiptWriter"
+      ],
+      "properties": {
+        "kind": {
+          "const": "PreferenceGraphUpdateReceipt"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "proposalId": {
+          "type": "string",
+          "pattern": "^graph-update-proposal:"
+        },
+        "decisionId": {
+          "type": "string",
+          "pattern": "^graph-update-decision:"
+        },
+        "beforeRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "afterRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "appliedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidenceIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "effect": {
+          "const": "bounded_preference_graph_update"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^receipt:"
+        },
+        "actionDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "receiptWriter": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "verifiedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "coreAttestation": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  }
+}

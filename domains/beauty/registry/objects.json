@@ -1,0 +1,222 @@
+{
+  "registryVersion": "0.1.1",
+  "status": "candidate",
+  "objects": [
+    {
+      "id": "beauty.TasteSession",
+      "purpose": "Bind one proof attempt to an actor, purpose, context, lifecycle, and expiry.",
+      "owner": "quirk.products.beauty",
+      "inputs": [
+        "actorId",
+        "purpose",
+        "context"
+      ],
+      "outputs": [
+        "sessionId",
+        "state"
+      ],
+      "lifecycle": [
+        "purpose_declared",
+        "choice_recorded",
+        "evidence_reviewed",
+        "recommendation_proposed",
+        "outcome_recorded",
+        "graph_update_proposed",
+        "approved|revised|rejected|expired",
+        "receipted"
+      ],
+      "interfaces": [
+        "Taste Engine",
+        "Supabase projection"
+      ],
+      "authority": "none",
+      "failureStates": [
+        "abandoned",
+        "expired",
+        "purpose_mismatch"
+      ]
+    },
+    {
+      "id": "beauty.ExplicitChoice",
+      "purpose": "Record an explicit human comparison or abstention.",
+      "owner": "quirk.products.beauty",
+      "inputs": [
+        "presented options",
+        "context",
+        "human action"
+      ],
+      "outputs": [
+        "choice evidence source"
+      ],
+      "lifecycle": [
+        "captured",
+        "corrected|suppressed"
+      ],
+      "interfaces": [
+        "Taste Engine"
+      ],
+      "authority": "observation_only",
+      "failureStates": [
+        "invalid_selection",
+        "implicit_source",
+        "missing_contrast"
+      ]
+    },
+    {
+      "id": "beauty.PreferenceEvidence",
+      "purpose": "Represent candidate contrast evidence derived from an explicit choice.",
+      "owner": "quirk.products.beauty",
+      "inputs": [
+        "ExplicitChoice",
+        "visible attributes"
+      ],
+      "outputs": [
+        "preferredFeature",
+        "contrastedFeature",
+        "weight",
+        "confidence"
+      ],
+      "lifecycle": [
+        "candidate",
+        "corrected|suppressed|expired"
+      ],
+      "interfaces": [
+        "Preference Graph proposal adapter"
+      ],
+      "authority": "proposal_input_only",
+      "failureStates": [
+        "no_contrast",
+        "cross_purpose",
+        "unsupported_attribute"
+      ]
+    },
+    {
+      "id": "beauty.CandidateRecommendation",
+      "purpose": "Rank a candidate option with evidence-linked factors and uncertainty.",
+      "owner": "quirk.products.beauty",
+      "inputs": [
+        "candidate options",
+        "purpose-scoped evidence"
+      ],
+      "outputs": [
+        "ranked candidates",
+        "factors",
+        "expiry"
+      ],
+      "lifecycle": [
+        "candidate",
+        "expired|superseded"
+      ],
+      "interfaces": [
+        "Product surface",
+        "OpenAI explanation renderer"
+      ],
+      "authority": "recommendation_only",
+      "failureStates": [
+        "insufficient_evidence",
+        "stale",
+        "unsupported_factor"
+      ]
+    },
+    {
+      "id": "beauty.ExplicitOutcome",
+      "purpose": "Capture what a human explicitly reports after a real-world test.",
+      "owner": "quirk.products.beauty",
+      "inputs": [
+        "recommendation",
+        "human report"
+      ],
+      "outputs": [
+        "preferred|rejected|mixed|not_tested"
+      ],
+      "lifecycle": [
+        "recorded",
+        "corrected"
+      ],
+      "interfaces": [
+        "Taste Engine"
+      ],
+      "authority": "observation_only",
+      "failureStates": [
+        "inferred_outcome",
+        "not_tested",
+        "lineage_mismatch"
+      ]
+    },
+    {
+      "id": "beauty.GraphUpdateProposal",
+      "purpose": "Propose exact purpose-scoped Preference Graph deltas without applying them.",
+      "owner": "quirk.products.beauty",
+      "inputs": [
+        "recommendation",
+        "explicit outcome",
+        "expected graph revision"
+      ],
+      "outputs": [
+        "deltas",
+        "expiry"
+      ],
+      "lifecycle": [
+        "candidate",
+        "approved|revised|rejected|expired"
+      ],
+      "interfaces": [
+        "Quirk Human Gate"
+      ],
+      "authority": "proposal_only",
+      "failureStates": [
+        "auto_apply",
+        "stale_revision",
+        "cross_purpose"
+      ]
+    },
+    {
+      "id": "beauty.CoreDecisionMirror",
+      "purpose": "Read-only reference to a Human Gate decision issued by Quirk core.",
+      "owner": "quirk.core.governance",
+      "inputs": [
+        "core decision reference"
+      ],
+      "outputs": [
+        "decision mirror"
+      ],
+      "lifecycle": [
+        "mirrored",
+        "superseded"
+      ],
+      "interfaces": [
+        "Supabase",
+        "Airtable"
+      ],
+      "authority": "mirror_only",
+      "failureStates": [
+        "missing_core_reference",
+        "tampered_envelope"
+      ]
+    },
+    {
+      "id": "beauty.CoreReceiptMirror",
+      "purpose": "Read-only reference to a Quirk core effect receipt.",
+      "owner": "quirk.core.evidence",
+      "inputs": [
+        "core receipt reference"
+      ],
+      "outputs": [
+        "receipt mirror"
+      ],
+      "lifecycle": [
+        "mirrored",
+        "superseded"
+      ],
+      "interfaces": [
+        "Supabase",
+        "Airtable"
+      ],
+      "authority": "mirror_only",
+      "failureStates": [
+        "missing_core_reference",
+        "digest_mismatch"
+      ]
+    }
+  ]
+}

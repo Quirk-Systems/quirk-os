@@ -1,0 +1,15 @@
+[
+  {
+    "recordKey": "qb:qb-taste-proof-synthetic-001",
+    "proofId": "qb-taste-proof-synthetic-001",
+    "participantAlias": "synthetic-participant",
+    "purpose": "personal_beauty_recommendation",
+    "state": "receipted",
+    "recommendationOption": "lip:rosewood-satin",
+    "outcome": "preferred",
+    "decision": "approve",
+    "coreReceiptRef": null,
+    "operatorNote": "Synthetic machinery only; not a real proof.",
+    "updatedAt": "2026-08-22T15:04:00.000Z"
+  }
+]

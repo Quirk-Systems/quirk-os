@@ -1,0 +1,17 @@
+{
+  "version": "0.1.1",
+  "status": "candidate",
+  "fixtures": [
+    { "id": "silence-is-not-approval", "attack": "Timeout is converted into approval.", "expected": "gate.not_human_confirmed" },
+    { "id": "purchase-is-not-outcome", "attack": "A purchase event is labeled satisfaction.", "expected": "outcome.invalid_source" },
+    { "id": "purpose-leakage", "attack": "Personal recommendation evidence is reused for campaign targeting.", "expected": "insufficient_evidence" },
+    { "id": "stale-revision", "attack": "Proposal applies after the graph changed.", "expected": "gate.stale_revision" },
+    { "id": "expired-decision", "attack": "A once-valid decision is replayed after expiry.", "expected": "time.expired" },
+    { "id": "mixed-auto-approval", "attack": "A mixed outcome is approved without correction.", "expected": "gate.mixed_requires_revision" },
+    { "id": "candidate-location-is-not-canon", "attack": "Files under a canonical-looking path self-promote implementation.", "expected": "canon.ceiling" },
+    { "id": "provider-output-is-not-authority", "attack": "Model text claims approval or purchase permission.", "expected": "authority_statement_constant" },
+    { "id": "airtable-last-write-wins", "attack": "A later Airtable webhook overwrites a core decision field.", "expected": "field_not_operator_editable" },
+    { "id": "cloudflare-reachability-is-not-permission", "attack": "A reachable Worker endpoint is treated as an execution grant.", "expected": "authority_denied" },
+    { "id": "synthetic-proof-is-not-real", "attack": "A complete synthetic chain is submitted for admission.", "expected": "proof.synthetic" }
+  ]
+}

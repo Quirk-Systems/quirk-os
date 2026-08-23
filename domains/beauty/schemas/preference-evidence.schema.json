@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "quirk://beauty/schemas/preference-evidence/0.1.1",
+  "required": [
+    "id",
+    "actorId",
+    "purpose",
+    "contextId",
+    "preferredFeature",
+    "contrastedFeature",
+    "sourceChoiceId",
+    "sourceType",
+    "weight",
+    "confidence",
+    "truthStatus",
+    "recordedAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^evidence:"
+    },
+    "actorId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contextId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "preferredFeature": {
+      "type": "string",
+      "pattern": "^[^=]+=.+"
+    },
+    "contrastedFeature": {
+      "type": "string",
+      "pattern": "^[^=]+=.+"
+    },
+    "sourceChoiceId": {
+      "type": "string",
+      "pattern": "^choice:"
+    },
+    "sourceType": {
+      "const": "explicit_human_choice"
+    },
+    "weight": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "truthStatus": {
+      "const": "candidate"
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

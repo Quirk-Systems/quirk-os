@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "quirk://beauty/schemas/choice/0.1.1",
+  "required": [
+    "id",
+    "actorId",
+    "context",
+    "presentedOptionIds",
+    "selectedOptionId",
+    "abstained",
+    "sourceType",
+    "capturedAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^choice:[A-Za-z0-9._:-]+$"
+    },
+    "actorId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "purpose"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "presentedOptionIds": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "selectedOptionId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "abstained": {
+      "type": "boolean"
+    },
+    "sourceType": {
+      "const": "explicit_human_choice"
+    },
+    "capturedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

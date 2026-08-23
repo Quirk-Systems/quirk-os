@@ -1,0 +1,28 @@
+{
+  "id": "quirk.products.beauty.domain-pack",
+  "version": "0.1.1",
+  "canonicalBoundary": "../../canon/domains/beauty/domain-boundary.yaml",
+  "status": "candidate",
+  "proofSequence": [
+    "choice",
+    "preference_evidence",
+    "recommendation",
+    "real_world_outcome",
+    "human_confirmed_graph_update"
+  ],
+  "providers": {
+    "github": "authoritative_review_plane",
+    "supabase": "candidate_private_projection",
+    "airtable": "candidate_operational_projection",
+    "cloudflare": "candidate_request_boundary",
+    "openai": "candidate_explanation_renderer",
+    "huggingface": "deferred_evaluation_packaging"
+  },
+  "authorityCeiling": {
+    "runtimeActivation": false,
+    "canonicalPromotion": false,
+    "publication": false,
+    "transaction": false,
+    "silentGraphMutation": false
+  }
+}

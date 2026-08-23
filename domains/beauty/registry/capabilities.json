@@ -1,0 +1,116 @@
+{
+  "registryVersion": "0.1.1",
+  "status": "candidate",
+  "capabilities": [
+    {
+      "id": "beauty.capture_explicit_choice",
+      "inputs": [
+        "actor",
+        "purpose",
+        "visible options",
+        "explicit action"
+      ],
+      "outputs": [
+        "ExplicitChoice"
+      ],
+      "permissions": [
+        "internal_candidate_write"
+      ],
+      "forbidden": [
+        "infer choice",
+        "publish",
+        "purchase",
+        "graph mutation"
+      ]
+    },
+    {
+      "id": "beauty.derive_preference_evidence",
+      "inputs": [
+        "ExplicitChoice",
+        "visible attributes"
+      ],
+      "outputs": [
+        "PreferenceEvidence[]"
+      ],
+      "permissions": [
+        "pure_compute"
+      ],
+      "forbidden": [
+        "sensitive inference",
+        "cross-purpose reuse",
+        "canon promotion"
+      ]
+    },
+    {
+      "id": "beauty.rank_candidate_recommendations",
+      "inputs": [
+        "purpose-scoped evidence",
+        "candidate options"
+      ],
+      "outputs": [
+        "CandidateRecommendation[]"
+      ],
+      "permissions": [
+        "pure_compute"
+      ],
+      "forbidden": [
+        "action execution",
+        "affiliate weighting",
+        "outcome inference"
+      ]
+    },
+    {
+      "id": "beauty.record_explicit_outcome",
+      "inputs": [
+        "CandidateRecommendation",
+        "explicit human report"
+      ],
+      "outputs": [
+        "ExplicitOutcome"
+      ],
+      "permissions": [
+        "internal_candidate_write"
+      ],
+      "forbidden": [
+        "infer from engagement",
+        "treat purchase as use"
+      ]
+    },
+    {
+      "id": "beauty.propose_graph_update",
+      "inputs": [
+        "explicit outcome",
+        "graph revision"
+      ],
+      "outputs": [
+        "GraphUpdateProposal"
+      ],
+      "permissions": [
+        "proposal_only"
+      ],
+      "forbidden": [
+        "auto_apply",
+        "issue Human Gate decision",
+        "issue core receipt"
+      ]
+    },
+    {
+      "id": "beauty.render_recommendation_explanation",
+      "inputs": [
+        "evidence-locked recommendation envelope"
+      ],
+      "outputs": [
+        "structured explanation"
+      ],
+      "permissions": [
+        "provider_model_render"
+      ],
+      "forbidden": [
+        "change rank",
+        "invent evidence",
+        "grant authority",
+        "call effects"
+      ]
+    }
+  ]
+}

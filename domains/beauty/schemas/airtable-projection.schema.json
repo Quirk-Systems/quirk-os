@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "quirk://beauty/schemas/airtable-projection/0.1.1",
+  "required": [
+    "recordKey",
+    "proofId",
+    "participantAlias",
+    "purpose",
+    "state",
+    "recommendationOption",
+    "outcome",
+    "decision",
+    "coreReceiptRef",
+    "operatorNote",
+    "updatedAt"
+  ],
+  "properties": {
+    "recordKey": {
+      "type": "string",
+      "pattern": "^qb:"
+    },
+    "proofId": {
+      "type": "string",
+      "pattern": "^qb-taste-proof-"
+    },
+    "participantAlias": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "enum": [
+        "candidate",
+        "awaiting_real_world_test",
+        "awaiting_human_gate",
+        "receipted",
+        "rejected",
+        "expired"
+      ]
+    },
+    "recommendationOption": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "outcome": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "decision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "coreReceiptRef": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "operatorNote": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
