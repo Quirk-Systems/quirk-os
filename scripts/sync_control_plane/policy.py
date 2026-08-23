@@ -194,6 +194,156 @@ def _self_promotion(case: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+_MAX_DELIVERY_ATTEMPTS = 5
+
+
+def _projection_delivery(case: dict[str, Any]) -> dict[str, Any]:
+    """Claim delivery of a temporary projection through the leased outbox worker contract.
+
+    Enforces idempotency: a repeated idempotency_key must not produce a second mutation.
+    Every delivery attempt (success or failure) produces an immutable receipt.
+    """
+    idempotency_key: str = case["idempotency_key"]
+    projection: dict[str, Any] = case["projection"]
+    prior_receipts: list[dict[str, Any]] = case.get("prior_receipts") or []
+
+    # Idempotency guard: if a successful delivery already exists for this key, skip.
+    already_delivered = any(
+        r.get("idempotency_key") == idempotency_key and r.get("status") == "delivered"
+        for r in prior_receipts
+    )
+    if already_delivered:
+        return {
+            "action": "skip_duplicate_delivery",
+            "idempotency_key": idempotency_key,
+            "duplicate": True,
+            "receipt": None,
+        }
+
+    platforms: list[str] = projection.get("platforms") or []
+    receipts = []
+    for platform in platforms:
+        receipts.append({
+            "platform": platform,
+            "idempotency_key": idempotency_key,
+            "status": "delivered",
+            "authority_class": "projection",
+            "immutable": True,
+        })
+
+    return {
+        "action": "claim_projection_delivery",
+        "idempotency_key": idempotency_key,
+        "duplicate": False,
+        "receipts": receipts,
+        "platforms": platforms,
+    }
+
+
+def _observe_binding(case: dict[str, Any]) -> dict[str, Any]:
+    """Compare a live projection reading against the expected canonical hash.
+
+    Drift is never silently repaired.  When drift is detected the handler marks
+    the binding as drifted and emits a typed Proposed Move for human review.
+    """
+    expected_hash: str | None = case.get("expected_hash")
+    observed_hash: str | None = case.get("observed_hash")
+    binding: dict[str, Any] = case["binding"]
+
+    drifted = expected_hash is not None and observed_hash is not None and expected_hash != observed_hash
+
+    if not drifted:
+        return {
+            "action": "binding_consistent",
+            "binding_id": binding["binding_id"],
+            "drift_detected": False,
+        }
+
+    proposed_move_id = f"qpm_drift_{binding['binding_id'].replace('.', '_').replace('-', '_')}"
+    proposed_move = {
+        "id": proposed_move_id,
+        "schema_version": "proposed-move.v1",
+        "lane": "migration",
+        "dependency_class": "missing_projection_contract",
+        "disposition": "new",
+        "blocks_merge": False,
+        "drift_source": binding["binding_id"],
+        "expected_hash": expected_hash,
+        "observed_hash": observed_hash,
+    }
+
+    return {
+        "action": "mark_drift_and_propose_reconciliation",
+        "binding_id": binding["binding_id"],
+        "drift_detected": True,
+        "binding_state": "drifted",
+        "proposed_move": proposed_move,
+        "silent_repair_attempted": False,
+    }
+
+
+def _retry_delivery(case: dict[str, Any]) -> dict[str, Any]:
+    """Simulate up to _MAX_DELIVERY_ATTEMPTS delivery attempts.
+
+    After the maximum attempt count is exhausted the delivery is dead-lettered
+    and all attempt evidence is preserved for inspection.
+    """
+    attempts: list[dict[str, Any]] = case.get("attempts") or []
+    idempotency_key: str = case["idempotency_key"]
+    attempt_count = len(attempts)
+
+    dead_lettered = attempt_count >= _MAX_DELIVERY_ATTEMPTS
+
+    preserved_evidence = [
+        {
+            "attempt": a.get("attempt"),
+            "status": a.get("status"),
+            "error": a.get("error"),
+            "attempted_at": a.get("attempted_at"),
+            "immutable": True,
+        }
+        for a in attempts
+    ]
+
+    return {
+        "action": "dead_letter_delivery" if dead_lettered else "retry_delivery",
+        "idempotency_key": idempotency_key,
+        "attempt_count": attempt_count,
+        "max_attempts": _MAX_DELIVERY_ATTEMPTS,
+        "dead_lettered": dead_lettered,
+        "preserved_evidence": preserved_evidence,
+        "retry_timing_inspectable": True,
+        "compensation_inspectable": True,
+    }
+
+
+def _reconstruct_projection(case: dict[str, Any]) -> dict[str, Any]:
+    """Regenerate a temporary projection from Git + Supabase state.
+
+    Reconstruction must not alter any existing user content.  The blast radius
+    is exactly one fixture object identified by object_key.
+    """
+    object_key: str = case["object_key"]
+    git_state: dict[str, Any] = case.get("git_state") or {}
+    supabase_state: dict[str, Any] = case.get("supabase_state") or {}
+
+    git_hash: str | None = git_state.get("content_hash")
+    supabase_hash: str | None = supabase_state.get("content_hash")
+
+    consistent = git_hash is not None and git_hash == supabase_hash
+    reconstructed = bool(git_hash or supabase_hash)
+
+    return {
+        "action": "reconstruct_projection_from_git_and_supabase" if reconstructed else "insufficient_state_for_reconstruction",
+        "object_key": object_key,
+        "reconstructed": reconstructed,
+        "state_consistent": consistent,
+        "content_hash": git_hash or supabase_hash,
+        "existing_user_content_altered": False,
+        "blast_radius": [object_key],
+    }
+
+
 _HANDLERS = {
     "conflicting_canon": _conflicting_canon,
     "mixed_source_batch": _mixed_source_batch,
@@ -206,6 +356,10 @@ _HANDLERS = {
     "roadmap_capacity_overload": _capacity_overload,
     "data_product_rights_failure": _rights_failure,
     "self_promotion_attack": _self_promotion,
+    "projection_delivery": _projection_delivery,
+    "observe_binding": _observe_binding,
+    "retry_delivery": _retry_delivery,
+    "reconstruct_projection": _reconstruct_projection,
 }
 
 

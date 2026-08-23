@@ -34,8 +34,8 @@ class SyncControlPlaneTests(unittest.TestCase):
     def validate(self, schema, instance):
         return list(Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(instance))
 
-    def test_all_eleven_fixtures(self):
-        self.assertEqual(11, len(self.fixtures["fixtures"]))
+    def test_all_sixteen_fixtures(self):
+        self.assertEqual(16, len(self.fixtures["fixtures"]))
         for fixture in self.fixtures["fixtures"]:
             with self.subTest(fixture=fixture["id"]):
                 result = evaluate_fixture(fixture["name"], load(fixture["case_ref"]))
