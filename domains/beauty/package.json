@@ -1,0 +1,20 @@
+{
+  "name": "@quirk-systems/beauty-domain-pack",
+  "version": "0.1.1",
+  "private": true,
+  "type": "module",
+  "description": "Candidate Taste Engine implementation for the human-approved Quirk Beauty domain boundary.",
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs cloudflare/test/*.test.mjs",
+    "validate": "node scripts/validate-pack.mjs",
+    "proof:synthetic": "node scripts/run-synthetic-proof.mjs",
+    "proof:verify": "node scripts/verify-proof.mjs",
+    "manifest": "node scripts/generate-manifest.mjs",
+    "ci": "npm run validate && npm test && npm run proof:synthetic && npm run manifest:check",
+    "manifest:check": "node scripts/generate-manifest.mjs --check"
+  },
+  "license": "UNLICENSED"
+}

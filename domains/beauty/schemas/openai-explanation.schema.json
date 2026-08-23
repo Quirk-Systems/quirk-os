@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "quirk://beauty/schemas/openai-explanation/0.1.1",
+  "required": [
+    "recommendationId",
+    "summary",
+    "reasons",
+    "uncertainties",
+    "authorityStatement",
+    "evidenceIds"
+  ],
+  "properties": {
+    "recommendationId": {
+      "type": "string",
+      "pattern": "^recommendation:"
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "text",
+          "evidenceIds"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 220
+          },
+          "evidenceIds": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^evidence:"
+            }
+          }
+        }
+      }
+    },
+    "uncertainties": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 220
+      }
+    },
+    "authorityStatement": {
+      "const": "Recommendation only. No action or Preference Graph update is authorized."
+    },
+    "evidenceIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^evidence:"
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "quirk://beauty/schemas/graph-update-proposal/0.1.1",
+  "required": [
+    "id",
+    "actorId",
+    "purpose",
+    "expectedGraphRevision",
+    "recommendationId",
+    "outcomeId",
+    "deltas",
+    "requiresRevision",
+    "autoApply",
+    "truthStatus",
+    "proposedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^graph-update-proposal:"
+    },
+    "actorId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expectedGraphRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "recommendationId": {
+      "type": "string",
+      "pattern": "^recommendation:"
+    },
+    "outcomeId": {
+      "type": "string",
+      "pattern": "^outcome:"
+    },
+    "deltas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "feature",
+          "delta",
+          "evidenceIds"
+        ],
+        "properties": {
+          "feature": {
+            "type": "string",
+            "pattern": "^[^=]+=.+"
+          },
+          "delta": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "evidenceIds": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "autoApply": {
+      "const": false
+    },
+    "truthStatus": {
+      "const": "candidate"
+    },
+    "proposedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "requiresRevision": {
+      "type": "boolean"
+    }
+  }
+}

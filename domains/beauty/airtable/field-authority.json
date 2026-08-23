@@ -1,0 +1,21 @@
+{
+  "version": "0.1.1",
+  "status": "candidate",
+  "table": "Beauty Taste Proofs",
+  "keyField": "recordKey",
+  "fields": {
+    "recordKey": { "authority": "git_derived_projection", "editable": false },
+    "proofId": { "authority": "git_derived_projection", "editable": false },
+    "participantAlias": { "authority": "proof_bundle", "editable": false, "pii": false },
+    "purpose": { "authority": "proof_bundle", "editable": false },
+    "state": { "authority": "proof_bundle", "editable": false },
+    "recommendationOption": { "authority": "proof_bundle", "editable": false },
+    "outcome": { "authority": "explicit_human_report", "editable": false },
+    "decision": { "authority": "quirk_core_human_gate", "editable": false },
+    "coreReceiptRef": { "authority": "quirk_core_evidence", "editable": false },
+    "operatorNote": { "authority": "airtable_operator", "editable": true },
+    "updatedAt": { "authority": "projection_writer", "editable": false }
+  },
+  "conflictRule": "field_authority_wins_not_last_webhook",
+  "deletionRule": "projection deletion never deletes Git canon or Quirk core evidence"
+}
