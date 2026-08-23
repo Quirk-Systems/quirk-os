@@ -86,7 +86,6 @@ def validate_daily_move_pair(
     output_doc: Mapping[str, Any],
     observed_spines: Mapping[str, str] | None = None,
 ) -> list[str]:
-    del observed_spines  # Task 5 adds contextual duplicate-spine semantics.
     findings: list[str] = []
 
     input_schema = load_json(ROOT_DEFAULT / INPUT_SCHEMA_PATH)
@@ -111,6 +110,12 @@ def validate_daily_move_pair(
         for field, code in required_spine_codes.items():
             if not input_spine.get(field):
                 findings.append(code)
+
+        if observed_spines is not None:
+            spine_id = input_spine.get("spine_id")
+            if isinstance(spine_id, str) and spine_id in observed_spines:
+                if observed_spines[spine_id] != input_fingerprint(input_doc):
+                    findings.append("DUPLICATE_SPINE_ID")
 
     if isinstance(input_spine, Mapping) and isinstance(output_spine, Mapping):
         mutation_codes = {

@@ -169,5 +169,36 @@ class DailyMoveSemanticTests(unittest.TestCase):
         self.assertIn("UNSUPPORTED_ARCHITECTURE", validate_daily_move_pair(self.input_doc, candidate))
 
 
+    def test_unseen_spine_id_is_valid_for_uniqueness(self):
+        self.assertNotIn(
+            "DUPLICATE_SPINE_ID",
+            validate_daily_move_pair(self.input_doc, self.output_doc, {}),
+        )
+
+    def test_same_input_same_spine_is_idempotent_retry(self):
+        spine_id = self.input_doc["outcome_spine"]["spine_id"]
+        observed = {spine_id: input_fingerprint(self.input_doc)}
+        self.assertNotIn(
+            "DUPLICATE_SPINE_ID",
+            validate_daily_move_pair(self.input_doc, self.output_doc, observed),
+        )
+
+    def test_same_spine_with_different_input_fails(self):
+        spine_id = self.input_doc["outcome_spine"]["spine_id"]
+        observed = {spine_id: "0" * 64}
+        self.assertIn(
+            "DUPLICATE_SPINE_ID",
+            validate_daily_move_pair(self.input_doc, self.output_doc, observed),
+        )
+
+
+    def test_duplicate_validation_does_not_mutate_observed_spines(self):
+        spine_id = self.input_doc["outcome_spine"]["spine_id"]
+        observed = {spine_id: "0" * 64}
+        before = copy.deepcopy(observed)
+        validate_daily_move_pair(self.input_doc, self.output_doc, observed)
+        self.assertEqual(before, observed)
+
+
 if __name__ == "__main__":
     unittest.main()
