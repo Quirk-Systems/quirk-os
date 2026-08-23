@@ -1,0 +1,37 @@
+{
+  "schema_version": "daily-move.output.v1",
+  "outcome_spine": {
+    "spine_id": "qos_20260821_01",
+    "goal_id": "qgoal_daily_move_task2",
+    "move_id": "qdm_20260821_friday_01",
+    "decision_id": "qdecision_20260821_friday_01",
+    "receipt_id": "receipt.daily-move.20260821.01",
+    "outcome_id": "qoutcome_20260821_friday_01",
+    "decision_state": "reserved",
+    "receipt_state": "reserved",
+    "outcome_state": "reserved"
+  },
+  "status": "proposed",
+  "authority_ceiling": "propose",
+  "weekday": "Friday",
+  "focus": "Lock one candidate contract boundary.",
+  "why_it_matters": "A move with lifecycle addresses can later be joined to its decision, receipt, and observed outcome.",
+  "steps": [
+    "Inspect the approved Task 2 contract.",
+    "Validate one positive input/output pair.",
+    "Record any schema violation as candidate evidence."
+  ],
+  "deliverable": "A validated candidate input/output contract pair.",
+  "stretch_goal": "Add one negative mutation after the positive pair is green.",
+  "capability_family": "contracts_and_structured_output",
+  "proof_required": "Both documents validate and preserve the same Outcome Spine.",
+  "completion_criterion": "The positive pair passes local schema validation without claiming later lifecycle events occurred.",
+  "estimated_minutes": 12,
+  "source_refs": ["github:Quirk-Systems/quirk-os#daily-move-task2"],
+  "risk_class": "L0",
+  "reversibility": "trivial",
+  "placement_disposition": "resolved",
+  "unknowns": [],
+  "destination_hints": ["repository_file"],
+  "content_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+}
