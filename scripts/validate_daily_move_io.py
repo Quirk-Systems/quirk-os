@@ -85,11 +85,14 @@ def validate_daily_move_pair(
     input_doc: Mapping[str, Any],
     output_doc: Mapping[str, Any],
     observed_spines: Mapping[str, str] | None = None,
+    *,
+    root: Path | None = None,
 ) -> list[str]:
     findings: list[str] = []
+    schema_root = (root or ROOT_DEFAULT).resolve()
 
-    input_schema = load_json(ROOT_DEFAULT / INPUT_SCHEMA_PATH)
-    output_schema = load_json(ROOT_DEFAULT / OUTPUT_SCHEMA_PATH)
+    input_schema = load_json(schema_root / INPUT_SCHEMA_PATH)
+    output_schema = load_json(schema_root / OUTPUT_SCHEMA_PATH)
     if list(Draft202012Validator(input_schema).iter_errors(input_doc)):
         findings.append("INPUT_SCHEMA_INVALID")
     if list(Draft202012Validator(output_schema).iter_errors(output_doc)):
@@ -101,6 +104,7 @@ def validate_daily_move_pair(
         findings.append("NO_SPINE")
     else:
         required_spine_codes = {
+            "spine_id": "MISSING_SPINE_ID",
             "goal_id": "MISSING_GOAL_ID",
             "move_id": "MISSING_MOVE_ID",
             "decision_id": "MISSING_DECISION_ID",
@@ -173,3 +177,41 @@ def validate_daily_move_pair(
         findings.append("CONTENT_HASH_MISMATCH")
 
     return sorted(set(findings))
+
+
+def conformance_report(root: Path) -> dict[str, Any]:
+    root = root.resolve()
+    input_doc = load_json(root / VALID_INPUT_PATH)
+    output_doc = load_json(root / VALID_OUTPUT_PATH)
+    findings = validate_daily_move_pair(input_doc, output_doc, root=root)
+    return {
+        "schema_version": "daily-move.io-conformance.v1",
+        "valid_pair": not findings,
+        "finding_codes": findings,
+        "input_fingerprint": input_fingerprint(input_doc),
+        "output_content_hash": output_doc.get("content_hash"),
+        "expected_output_hash": expected_output_hash(output_doc),
+        "external_writes": 0,
+        "authority_ceiling": "propose",
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Validate Quirk Daily Move input/output contracts.")
+    parser.add_argument("--root", type=Path, default=ROOT_DEFAULT)
+    parser.add_argument("--require-pass", action="store_true")
+    parser.add_argument("--report", type=Path)
+    args = parser.parse_args()
+
+    report = conformance_report(args.root)
+    payload = json.dumps(report, indent=2, sort_keys=True) + "\n"
+    print(payload, end="")
+    if args.report:
+        target = args.report if args.report.is_absolute() else Path.cwd() / args.report
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(payload, encoding="utf-8")
+    return 1 if args.require_pass and not report["valid_pair"] else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

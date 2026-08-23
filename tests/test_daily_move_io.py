@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import copy
 import json
+import shutil
+import tempfile
 import unittest
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
 from scripts.validate_daily_move_io import (
+    conformance_report,
     expected_output_hash,
     input_fingerprint,
     validate_daily_move_pair,
@@ -18,6 +21,7 @@ INPUT_SCHEMA_PATH = ROOT / "schemas/daily-move-input.schema.json"
 OUTPUT_SCHEMA_PATH = ROOT / "schemas/daily-move-output.schema.json"
 VALID_INPUT_PATH = ROOT / "evals/daily-move/io-cases/valid-input.json"
 VALID_OUTPUT_PATH = ROOT / "evals/daily-move/io-cases/valid-output.json"
+INVALID_CASES_PATH = ROOT / "evals/daily-move/io-cases/invalid-cases.json"
 
 
 def load_json(path: Path):
@@ -27,6 +31,47 @@ def load_json(path: Path):
 def rehash(output_doc):
     output_doc["content_hash"] = expected_output_hash(output_doc)
     return output_doc
+
+
+def _resolve_parent(document, path):
+    current = document
+    for segment in path[:-1]:
+        current = current[segment]
+    return current, path[-1]
+
+
+def set_path(document, path, value):
+    parent, leaf = _resolve_parent(document, path)
+    parent[leaf] = value
+
+
+def delete_path(document, path):
+    parent, leaf = _resolve_parent(document, path)
+    del parent[leaf]
+
+
+def apply_case(case, input_doc, output_doc):
+    observed = None
+    operation = case["operation"]
+    target = case["target"]
+    if operation == "observed_conflict":
+        spine_id = input_doc["outcome_spine"]["spine_id"]
+        observed = {spine_id: "0" * 64}
+    else:
+        document = input_doc if target == "input" else output_doc
+        path = case["path"]
+        if operation == "delete":
+            delete_path(document, path)
+        elif operation == "set":
+            set_path(document, path, copy.deepcopy(case["value"]))
+        elif operation == "append":
+            parent, leaf = _resolve_parent(document, path)
+            parent[leaf].append(copy.deepcopy(case["value"]))
+        else:
+            raise AssertionError(f"unsupported mutation operation: {operation}")
+    if case.get("rehash"):
+        rehash(output_doc)
+    return input_doc, output_doc, observed
 
 
 class DailyMoveSchemaTests(unittest.TestCase):
@@ -198,6 +243,58 @@ class DailyMoveSemanticTests(unittest.TestCase):
         before = copy.deepcopy(observed)
         validate_daily_move_pair(self.input_doc, self.output_doc, observed)
         self.assertEqual(before, observed)
+
+
+    def test_invalid_case_corpus_contract_is_unique_and_complete(self):
+        cases = load_json(INVALID_CASES_PATH)
+        self.assertEqual(22, len(cases))
+        self.assertEqual(len(cases), len({case["case_id"] for case in cases}))
+        self.assertEqual(
+            [f"QDM-IO-A{index:02d}" for index in range(1, 23)],
+            [case["case_id"] for case in cases],
+        )
+        for case in cases:
+            self.assertEqual(
+                {"case_id", "target", "operation", "path", "expected_code"},
+                set(case) - {"value", "rehash"},
+                case["case_id"],
+            )
+
+    def test_invalid_case_corpus_emits_expected_primary_codes(self):
+        cases = load_json(INVALID_CASES_PATH)
+        for case in cases:
+            input_doc = copy.deepcopy(self.input_doc)
+            output_doc = copy.deepcopy(self.output_doc)
+            input_doc, output_doc, observed = apply_case(case, input_doc, output_doc)
+            findings = validate_daily_move_pair(input_doc, output_doc, observed)
+            self.assertIn(case["expected_code"], findings, case["case_id"])
+
+
+    def test_conformance_report_is_valid_candidate_evidence_only(self):
+        report = conformance_report(ROOT)
+        self.assertTrue(report["valid_pair"])
+        self.assertEqual([], report["finding_codes"])
+        self.assertEqual("propose", report["authority_ceiling"])
+        self.assertEqual(0, report["external_writes"])
+        self.assertEqual(report["output_content_hash"], report["expected_output_hash"])
+
+
+    def test_conformance_report_uses_requested_root_for_schemas(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "schemas").mkdir(parents=True)
+            (root / "evals/daily-move/io-cases").mkdir(parents=True)
+            shutil.copy2(INPUT_SCHEMA_PATH, root / "schemas/daily-move-input.schema.json")
+            shutil.copy2(OUTPUT_SCHEMA_PATH, root / "schemas/daily-move-output.schema.json")
+            shutil.copy2(VALID_INPUT_PATH, root / "evals/daily-move/io-cases/valid-input.json")
+            shutil.copy2(VALID_OUTPUT_PATH, root / "evals/daily-move/io-cases/valid-output.json")
+            schema_path = root / "schemas/daily-move-input.schema.json"
+            schema = load_json(schema_path)
+            schema["required"].append("root_specific_required_field")
+            schema_path.write_text(json.dumps(schema), encoding="utf-8")
+            report = conformance_report(root)
+            self.assertFalse(report["valid_pair"])
+            self.assertIn("INPUT_SCHEMA_INVALID", report["finding_codes"])
 
 
 if __name__ == "__main__":

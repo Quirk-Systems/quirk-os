@@ -28,3 +28,10 @@ Task 1 does not:
 - publish, merge, deploy, or promote Canon.
 
 Passing this suite proves only that the fixture corpus and future-runtime gate are structurally enforceable. Bryan retains admission and execution authority.
+
+## Task 2 — I/O and Outcome Spine
+
+Task 2 adds generator input/output contract evidence under `io-cases/`.
+It does not replace or weaken `QDM-P01..P07` or `QDM-A01..A11`.
+Decision, receipt, and outcome IDs are reserved addresses, not realized events.
+Task 2 conformance is Candidate evidence only and creates no external writes.
