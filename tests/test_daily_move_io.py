@@ -24,6 +24,11 @@ def load_json(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def rehash(output_doc):
+    output_doc["content_hash"] = expected_output_hash(output_doc)
+    return output_doc
+
+
 class DailyMoveSchemaTests(unittest.TestCase):
     def test_valid_examples_match_draft_2020_12_schemas(self):
         input_schema = load_json(INPUT_SCHEMA_PATH)
@@ -75,6 +80,58 @@ class DailyMoveSemanticTests(unittest.TestCase):
     def test_weekday_mismatch_fails(self):
         self.output_doc["weekday"] = "Thursday"
         self.assertIn("WEEKDAY_MISMATCH", validate_daily_move_pair(self.input_doc, self.output_doc))
+
+    def test_each_outcome_spine_identity_mutation_fails_with_field_specific_code(self):
+        expected_codes = {
+            "spine_id": "SPINE_ID_MUTATED",
+            "move_id": "MOVE_ID_MUTATED",
+            "decision_id": "DECISION_ID_MUTATED",
+            "receipt_id": "RECEIPT_ID_MUTATED",
+            "outcome_id": "OUTCOME_ID_MUTATED",
+        }
+        for field, code in expected_codes.items():
+            candidate = copy.deepcopy(self.output_doc)
+            candidate["outcome_spine"][field] += "_changed"
+            rehash(candidate)
+            self.assertIn(code, validate_daily_move_pair(self.input_doc, candidate), field)
+
+    def test_missing_spine_and_goal_are_fail_closed(self):
+        missing_spine = copy.deepcopy(self.input_doc)
+        del missing_spine["outcome_spine"]
+        self.assertIn("NO_SPINE", validate_daily_move_pair(missing_spine, self.output_doc))
+
+        missing_goal = copy.deepcopy(self.input_doc)
+        del missing_goal["outcome_spine"]["goal_id"]
+        self.assertIn("MISSING_GOAL_ID", validate_daily_move_pair(missing_goal, self.output_doc))
+
+    def test_realized_event_fabrication_fails(self):
+        candidate = copy.deepcopy(self.output_doc)
+        candidate["outcome_spine"]["decision_state"] = "approved"
+        self.assertIn("REALIZED_EVENT_FABRICATION", validate_daily_move_pair(self.input_doc, candidate))
+
+    def test_authority_above_propose_fails(self):
+        candidate = copy.deepcopy(self.output_doc)
+        candidate["authority_ceiling"] = "execute_bounded"
+        self.assertIn("AUTHORITY_ABOVE_PROPOSE", validate_daily_move_pair(self.input_doc, candidate))
+
+    def test_invented_source_reference_fails(self):
+        candidate = copy.deepcopy(self.output_doc)
+        candidate["source_refs"].append("invented:source")
+        rehash(candidate)
+        self.assertIn("INVENTED_SOURCE_REF", validate_daily_move_pair(self.input_doc, candidate))
+
+    def test_timebox_overflow_fails(self):
+        candidate = copy.deepcopy(self.output_doc)
+        candidate["estimated_minutes"] = 15
+        constrained_input = copy.deepcopy(self.input_doc)
+        constrained_input["available_minutes"] = 12
+        rehash(candidate)
+        self.assertIn("TIMEBOX_EXCEEDED", validate_daily_move_pair(constrained_input, candidate))
+
+    def test_content_hash_mismatch_fails(self):
+        candidate = copy.deepcopy(self.output_doc)
+        candidate["content_hash"] = "0" * 64
+        self.assertIn("CONTENT_HASH_MISMATCH", validate_daily_move_pair(self.input_doc, candidate))
 
 
 if __name__ == "__main__":
