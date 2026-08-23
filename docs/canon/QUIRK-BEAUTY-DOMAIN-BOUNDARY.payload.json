@@ -51,7 +51,7 @@
       "satisfaction_requires_explicit_human_evidence",
       "preference_updates_are_purpose_scoped_and_human_confirmed",
       "corrections_override_prior_inference_instead_of_being_silently_averaged",
-      "every consequential transition_leaves_traceable_evidence",
+      "every_consequential_transition_leaves_traceable_evidence",
       "only_this_domain_boundary_is_canonical_in_v0_1"
     ],
     "required_proof": {

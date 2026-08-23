@@ -8,9 +8,9 @@ metadata:
   truth_status: canonical
   authority_level: explicit_human_admission
   admitted_by: bryan
-  admitted_on: 2026-08-21
+  admitted_on: "2026-08-21"
   authority_basis: explicit_user_instruction_current_conversation
-  content_hash: sha256:e22c575b17d3a196e28c0a178e70a6dcfbd337218e105736fa2a5b5f1f117467
+  content_hash: sha256:264c636c364db2caa08b2d4370eb10618c721d74f2588f8359546d8a9b45fb21
   hash_basis: sorted-json-payload-excluding-content_hash
 spec:
   purpose: >-
