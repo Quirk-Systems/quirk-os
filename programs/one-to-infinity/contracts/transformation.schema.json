@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/one-to-infinity/transformation.schema.json",
+  "title": "One-to-Infinity Transformation Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_type","schema_version","status","candidate_only","no_runtime","no_canon_promotion","transformation_id","owner","value_contract","mechanism","loop_classification","economics","evidence_requirements","governance","promotion_policy"],
+  "properties": {
+    "contract_type": {"const": "one_to_infinity_transformation"},
+    "schema_version": {"const": "0.1.0-candidate"},
+    "status": {"const": "candidate"},
+    "candidate_only": {"const": true},
+    "no_runtime": {"const": true},
+    "no_canon_promotion": {"const": true},
+    "transformation_id": {"type": "string", "pattern": "^oti-[a-z0-9-]+$"},
+    "owner": {"type": "string", "minLength": 2},
+    "value_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["beneficiary","problem","before_state","desired_after_state","value_measure","minimum_effect","non_value_proxies"],
+      "properties": {
+        "beneficiary": {"type": "string", "minLength": 3},
+        "problem": {"type": "string", "minLength": 8},
+        "before_state": {"type": "string", "minLength": 3},
+        "desired_after_state": {"type": "string", "minLength": 3},
+        "value_measure": {"type": "string", "minLength": 3},
+        "minimum_effect": {"type": "number"},
+        "non_value_proxies": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 2}}
+      }
+    },
+    "mechanism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trigger","actor","action","observable_output","retained_state","reinvestment_rule","constraints","balancers","delays"],
+      "properties": {
+        "trigger": {"type": "string", "minLength": 3},
+        "actor": {"type": "string", "minLength": 2},
+        "action": {"type": "string", "minLength": 3},
+        "observable_output": {"type": "string", "minLength": 3},
+        "retained_state": {"type": "object", "required": ["state_id","description"], "properties": {"state_id": {"type": "string", "pattern": "^state-[a-z0-9-]+$"}, "description": {"type": "string", "minLength": 6}}},
+        "reinvestment_rule": {"type": "object", "required": ["source_output","target_next_cycle","effect","requires_human_authorization"], "properties": {"source_output": {"type": "string", "minLength": 3}, "target_next_cycle": {"type": "string", "minLength": 3}, "effect": {"type": "string", "minLength": 3}, "requires_human_authorization": {"const": true}}},
+        "constraints": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 3}},
+        "balancers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 3}},
+        "delays": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 2}}
+      }
+    },
+    "loop_classification": {"type": "array", "minItems": 1, "items": {"enum": ["value","learning","retention","distribution","reputation","monetization","data","network","production","agent"]}},
+    "economics": {"type": "object", "required": ["marginal_human_attention","marginal_cost","capacity_constraints"], "properties": {"marginal_human_attention": {"type": "number", "minimum": 0}, "marginal_cost": {"type": "number", "minimum": 0}, "capacity_constraints": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 3}}}},
+    "evidence_requirements": {"type": "array", "minItems": 5, "items": {"enum": ["value_proof","retention_proof","closure_proof","economic_scalability_proof","compounding_proof"]}},
+    "governance": {"type": "object", "required": ["human_gate_required","provider_may_promote","capability_does_not_imply_authority"], "properties": {"human_gate_required": {"const": true}, "provider_may_promote": {"const": false}, "capability_does_not_imply_authority": {"const": true}}},
+    "promotion_policy": {"type": "object", "required": ["no_auto_promotion","requires_exact_human_decision"], "properties": {"no_auto_promotion": {"const": true}, "requires_exact_human_decision": {"const": true}}}
+  }
+}
