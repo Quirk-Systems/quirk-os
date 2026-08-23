@@ -27,11 +27,15 @@
   "proof_required": "Both documents validate and preserve the same Outcome Spine.",
   "completion_criterion": "The positive pair passes local schema validation without claiming later lifecycle events occurred.",
   "estimated_minutes": 12,
-  "source_refs": ["github:Quirk-Systems/quirk-os#daily-move-task2"],
+  "source_refs": [
+    "github:Quirk-Systems/quirk-os#daily-move-task2"
+  ],
   "risk_class": "L0",
   "reversibility": "trivial",
   "placement_disposition": "resolved",
   "unknowns": [],
-  "destination_hints": ["repository_file"],
-  "content_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+  "destination_hints": [
+    "repository_file"
+  ],
+  "content_hash": "34c795b5669e4554cdbaf2f1acc11256b2e1e1617fb5876ffe6cd5d2e778e6e6"
 }
