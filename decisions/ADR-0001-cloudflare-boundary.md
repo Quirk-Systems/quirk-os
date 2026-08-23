@@ -1,8 +1,10 @@
 # ADR-0001 — Cloudflare boundary
 
-**Status:** Candidate decision — `DEFER_UNBOUND`  
-**Date:** 2026-08-11  
-**Owner:** Bryan  
+**Status:** Superseded — `INVENTORY_COMPLETE_DEFER_SELECTIVE` (see ADR-0002)
+**Original status:** `DEFER_UNBOUND`
+**Date:** 2026-08-11
+**Superseded:** 2026-08-12 by [ADR-0002](ADR-0002-cloudflare-capability-inventory.md)
+**Owner:** Bryan
 **Scope:** Quirk Sync Control Plane
 
 ## Decision
