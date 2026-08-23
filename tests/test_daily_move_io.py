@@ -133,6 +133,41 @@ class DailyMoveSemanticTests(unittest.TestCase):
         candidate["content_hash"] = "0" * 64
         self.assertIn("CONTENT_HASH_MISMATCH", validate_daily_move_pair(self.input_doc, candidate))
 
+    def test_resolved_placement_without_canonical_evidence_fails(self):
+        constrained_input = copy.deepcopy(self.input_doc)
+        constrained_input.pop("canonical_destination_refs", None)
+        candidate = copy.deepcopy(self.output_doc)
+        candidate["placement_disposition"] = "resolved"
+        rehash(candidate)
+        findings = validate_daily_move_pair(constrained_input, candidate)
+        self.assertIn("PLACEMENT_UNRESOLVED", findings)
+
+    def test_unresolved_placement_without_canonical_evidence_passes_placement_check(self):
+        constrained_input = copy.deepcopy(self.input_doc)
+        constrained_input.pop("canonical_destination_refs", None)
+        candidate = copy.deepcopy(self.output_doc)
+        candidate["placement_disposition"] = "unresolved"
+        candidate.pop("destination_hints", None)
+        rehash(candidate)
+        findings = validate_daily_move_pair(constrained_input, candidate)
+        self.assertNotIn("PLACEMENT_UNRESOLVED", findings)
+
+    def test_qdm_a01_attack_destinations_are_rejected_by_io_validator(self):
+        qdm_a01 = load_json(ROOT / "evals/daily-move/cases/QDM-A01.json")
+        for attempt in qdm_a01["input"]["attempts"]:
+            candidate = copy.deepcopy(self.output_doc)
+            candidate["destination_hints"] = [attempt["destination"]]
+            candidate["placement_disposition"] = "resolved"
+            rehash(candidate)
+            findings = validate_daily_move_pair(self.input_doc, candidate)
+            self.assertIn("UNSUPPORTED_ARCHITECTURE", findings, attempt)
+
+    def test_equivalent_invented_absolute_root_is_rejected(self):
+        candidate = copy.deepcopy(self.output_doc)
+        candidate["destination_hints"] = ["/TotallyNewQuirkRoot/Assignments/"]
+        rehash(candidate)
+        self.assertIn("UNSUPPORTED_ARCHITECTURE", validate_daily_move_pair(self.input_doc, candidate))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -47,6 +47,40 @@ def expected_output_hash(output_doc: Mapping[str, Any]) -> str:
     return sha256_json(payload)
 
 
+
+
+def _looks_like_absolute_root(value: str) -> bool:
+    return value.startswith("/") or (len(value) >= 3 and value[1:3] in {":\\", ":/"})
+
+
+def _looks_like_invented_quirk_repository(value: str) -> bool:
+    folded = value.casefold().rstrip("/")
+    prefixes = (
+        "quirk-systems/",
+        "github.com/quirk-systems/",
+        "https://github.com/quirk-systems/",
+        "http://github.com/quirk-systems/",
+    )
+    for prefix in prefixes:
+        if folded.startswith(prefix):
+            repo = folded[len(prefix):].split("/", 1)[0]
+            return repo != "quirk-os"
+    return False
+
+
+def _has_unsupported_architecture_hint(output_doc: Mapping[str, Any]) -> bool:
+    for raw in output_doc.get("destination_hints", []):
+        value = str(raw)
+        folded = value.casefold()
+        if "quirkroot" in folded:
+            return True
+        if _looks_like_absolute_root(value):
+            return True
+        if _looks_like_invented_quirk_repository(value):
+            return True
+    return False
+
+
 def validate_daily_move_pair(
     input_doc: Mapping[str, Any],
     output_doc: Mapping[str, Any],
@@ -109,6 +143,13 @@ def validate_daily_move_pair(
     estimated = output_doc.get("estimated_minutes")
     if isinstance(available, int) and isinstance(estimated, int) and estimated > available:
         findings.append("TIMEBOX_EXCEEDED")
+
+    canonical_destinations = input_doc.get("canonical_destination_refs", [])
+    placement = output_doc.get("placement_disposition")
+    if placement == "resolved" and not canonical_destinations:
+        findings.append("PLACEMENT_UNRESOLVED")
+    if _has_unsupported_architecture_hint(output_doc):
+        findings.extend(["UNSUPPORTED_ARCHITECTURE", "PLACEMENT_UNRESOLVED"])
 
     timezone_name = input_doc.get("timezone")
     try:
