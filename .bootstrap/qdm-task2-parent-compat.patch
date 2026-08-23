@@ -1,0 +1,162 @@
+diff --git a/scripts/validate_daily_move_fixtures.py b/scripts/validate_daily_move_fixtures.py
+--- a/scripts/validate_daily_move_fixtures.py
++++ b/scripts/validate_daily_move_fixtures.py
+@@ -1145,12 +1145,24 @@ def _implementation_markers(root: Path) -> list[str]:
+     allowed = {
+         ".github/workflows/daily-move-fixtures.yml",
++        ".github/workflows/daily-move-io-conformance.yml",
++        "docs/superpowers/plans/2026-08-21-quirk-daily-move-io.md",
++        "docs/superpowers/specs/2026-08-21-quirk-daily-move-io-design.md",
+         "scripts/validate_daily_move_fixtures.py",
++        "scripts/validate_daily_move_io.py",
+         "tests/test_daily_move_fixtures.py",
++        "tests/test_daily_move_io.py",
++        "tests/test_daily_move_io_workflow.py",
++        "tests/test_daily_move_task1_compatibility.py",
+         "evals/daily-move/README.md",
+         "evals/daily-move/fixtures.json",
+         "evals/daily-move/conformance-results.json",
++        "evals/daily-move/io-cases/invalid-cases.json",
++        "evals/daily-move/io-cases/valid-input.json",
++        "evals/daily-move/io-cases/valid-output.json",
++        "schemas/daily-move-input.schema.json",
++        "schemas/daily-move-output.schema.json",
+     }
+     cases_root = (root / "evals/daily-move/cases").resolve()
+     markers: set[str] = set()
+diff --git a/tests/test_daily_move_task1_compatibility.py b/tests/test_daily_move_task1_compatibility.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_daily_move_task1_compatibility.py
+@@ -0,0 +1,91 @@
++from __future__ import annotations
++
++import ast
++import tempfile
++import unittest
++from pathlib import Path
++
++from scripts.validate_daily_move_fixtures import _implementation_markers, validate_repo
++
++
++ROOT = Path(__file__).resolve().parents[1]
++TASK2_CONTRACT_PATHS = {
++    ".github/workflows/daily-move-io-conformance.yml",
++    "docs/superpowers/plans/2026-08-21-quirk-daily-move-io.md",
++    "docs/superpowers/specs/2026-08-21-quirk-daily-move-io-design.md",
++    "evals/daily-move/io-cases/invalid-cases.json",
++    "evals/daily-move/io-cases/valid-input.json",
++    "evals/daily-move/io-cases/valid-output.json",
++    "schemas/daily-move-input.schema.json",
++    "schemas/daily-move-output.schema.json",
++    "scripts/validate_daily_move_io.py",
++    "tests/test_daily_move_io.py",
++    "tests/test_daily_move_io_workflow.py",
++    "tests/test_daily_move_task1_compatibility.py",
++}
++
++
++class DailyMoveTask1CompatibilityTests(unittest.TestCase):
++    def test_exact_task2_contract_surfaces_are_not_runtime_markers(self) -> None:
++        markers = set(_implementation_markers(ROOT))
++        self.assertTrue(TASK2_CONTRACT_PATHS.isdisjoint(markers), sorted(TASK2_CONTRACT_PATHS & markers))
++        finding_codes = {item["code"] for item in validate_repo(ROOT)["findings"]}
++        self.assertNotIn("RUNTIME_CONTAINMENT_REQUIRED", finding_codes)
++
++    def test_nearby_schema_alias_is_still_a_runtime_marker(self) -> None:
++        with tempfile.TemporaryDirectory() as temp_dir:
++            root = Path(temp_dir)
++            alias = root / "schemas/daily-move-io.schema.json"
++            alias.parent.mkdir(parents=True)
++            alias.write_text('{"title":"Daily Move IO"}\n', encoding="utf-8")
++            self.assertIn("schemas/daily-move-io.schema.json", _implementation_markers(root))
++
++    def test_runtime_namespace_is_still_a_runtime_marker(self) -> None:
++        with tempfile.TemporaryDirectory() as temp_dir:
++            root = Path(temp_dir)
++            policy = root / "scripts/daily_move/policy.py"
++            policy.parent.mkdir(parents=True)
++            policy.write_text("def evaluate_daily_move_case(scenario, adapters):\n    return {}\n", encoding="utf-8")
++            self.assertIn("scripts/daily_move/policy.py", _implementation_markers(root))
++
++    def test_contract_validator_has_no_runtime_or_external_effect_imports(self) -> None:
++        path = ROOT / "scripts/validate_daily_move_io.py"
++        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
++        imported_roots: set[str] = set()
++        function_names: set[str] = set()
++        for node in ast.walk(tree):
++            if isinstance(node, ast.Import):
++                imported_roots.update(alias.name.split(".", 1)[0] for alias in node.names)
++            elif isinstance(node, ast.ImportFrom) and node.module:
++                imported_roots.add(node.module.split(".", 1)[0])
++            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
++                function_names.add(node.name)
++
++        allowed_imports = {
++            "__future__",
++            "argparse",
++            "copy",
++            "datetime",
++            "hashlib",
++            "json",
++            "jsonschema",
++            "pathlib",
++            "typing",
++            "zoneinfo",
++        }
++        self.assertEqual(set(), imported_roots - allowed_imports)
++
++        forbidden_function_names = {
++            "evaluate_daily_move_case",
++            "generate_daily_move",
++            "execute_daily_move",
++            "publish_daily_move",
++        }
++        self.assertTrue(forbidden_function_names.isdisjoint(function_names))
++
++        source = path.read_text(encoding="utf-8").casefold()
++        for forbidden in (
++            "subprocess",
++            "socket",
++            "requests",
++            "urllib",
++            "supabase",
++            "airtable",
++            "google_drive",
++            "git push",
++            "merge_pull_request",
++        ):
++            self.assertNotIn(forbidden, source)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/.github/workflows/daily-move-io-conformance.yml b/.github/workflows/daily-move-io-conformance.yml
+--- a/.github/workflows/daily-move-io-conformance.yml
++++ b/.github/workflows/daily-move-io-conformance.yml
+@@ -10,6 +10,7 @@ on:
+       - 'scripts/validate_daily_move_fixtures.py'
+       - 'tests/test_daily_move_io.py'
+       - 'tests/test_daily_move_io_workflow.py'
++      - 'tests/test_daily_move_task1_compatibility.py'
+       - 'tests/test_daily_move_fixtures.py'
+   push:
+     branches-ignore: [main]
+@@ -21,6 +22,7 @@ on:
+       - 'scripts/validate_daily_move_fixtures.py'
+       - 'tests/test_daily_move_io.py'
+       - 'tests/test_daily_move_io_workflow.py'
++      - 'tests/test_daily_move_task1_compatibility.py'
+       - 'tests/test_daily_move_fixtures.py'
+   workflow_dispatch:
+@@ -70,6 +72,10 @@ jobs:
+         if: always()
+         run: python -m unittest tests.test_daily_move_io_workflow -v
+ 
++      - name: Run Task 1 compatibility tests
++        if: always()
++        run: python -m unittest tests.test_daily_move_task1_compatibility -v
++
+       - name: Upload Daily Move IO evidence
+         if: always()
+         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
