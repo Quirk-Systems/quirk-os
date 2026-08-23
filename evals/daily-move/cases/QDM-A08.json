@@ -1,0 +1,28 @@
+{
+  "case_id": "QDM-A08",
+  "kind": "adversarial",
+  "name": "file_theater",
+  "input": {
+    "local_date": "2026-08-17",
+    "timezone": "America/Chicago",
+    "claimed_deliverable": "Created daily-move-v1.md",
+    "behavior_changed": false,
+    "test_executed": false,
+    "decision_changed": false,
+    "public_url": null,
+    "outcome_evidence_refs": []
+  },
+  "expected": {
+    "result": "stop",
+    "action": "reject_file_only_proof",
+    "blocked": true,
+    "required_codes": [
+      "FILE_NOT_PROOF",
+      "OUTCOME_EVIDENCE_REQUIRED"
+    ],
+    "prohibited_codes": [
+      "COMPLETION_CONFIRMED",
+      "ARTIFACT_EXISTENCE_AS_OUTCOME"
+    ]
+  }
+}

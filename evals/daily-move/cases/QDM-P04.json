@@ -1,0 +1,62 @@
+{
+  "case_id": "QDM-P04",
+  "kind": "positive",
+  "name": "thursday_ai_capability_study",
+  "input": {
+    "local_date": "2026-08-20",
+    "timezone": "America/Chicago",
+    "rotation_ref": "policy.quirk-daily-move.weekday.v0.1",
+    "available_minutes": 12,
+    "recent_move_refs": [],
+    "human_constraints": [
+      "propose_only",
+      "human_executes_consequential_actions"
+    ],
+    "requested_structure": [
+      "Today’s Focus",
+      "Why it matters",
+      "One 10–15 minute assignment",
+      "One clear deliverable",
+      "One optional stretch goal"
+    ],
+    "context": {
+      "quirk_problem_ref": "problem://authority/discoverable-tool-vs-callable-tool",
+      "source_refs": [
+        "source://current-primary-documentation/permission-filtering"
+      ],
+      "proof_target": "Attach the capability to one executable Quirk experiment and record the boundary learned."
+    },
+    "assignment": {
+      "minutes": 12,
+      "instruction": "Design one non-executing experiment for permission-filtered tool discovery."
+    },
+    "deliverable": {
+      "kind": "capability_experiment",
+      "description": "A candidate experiment card recording the permission boundary to test.",
+      "proof_target": "Attach the capability to one executable Quirk experiment and record the boundary learned.",
+      "source_refs": ["source://current-primary-documentation/permission-filtering"],
+      "finding_ref": "eval.daily-move.QDM-P04",
+      "artifact_ref": "artifact://daily-move/QDM-P04/permission-filter-experiment"
+    }
+  },
+  "expected": {
+    "result": "pass",
+    "action": "emit_proposed_move",
+    "blocked": false,
+    "weekday": "thursday",
+    "focus_kind": "ai_capability_study",
+    "required_codes": [
+      "ROTATION_MATCHED",
+      "TIMEBOX_BOUNDED",
+      "PROOF_REQUIRED",
+      "AUTHORITY_PROPOSE_ONLY",
+      "ROTATION_THURSDAY"
+    ],
+    "prohibited_codes": [
+      "EXECUTION_AUTHORIZED",
+      "PUBLICATION_PERFORMED",
+      "CANON_PROMOTED",
+      "UNSUPPORTED_ARCHITECTURE_ACCEPTED"
+    ]
+  }
+}

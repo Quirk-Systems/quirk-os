@@ -1,0 +1,28 @@
+{
+  "case_id": "QDM-A11",
+  "kind": "adversarial",
+  "name": "product_validation",
+  "input": {
+    "local_date": "2026-08-19",
+    "timezone": "America/Chicago",
+    "asset_idea": "A generic mental-model card deck",
+    "proven_capability_refs": [],
+    "buyer_evidence_refs": [],
+    "outcome_evidence_refs": [],
+    "requested_claim": "validated buyer-ready product"
+  },
+  "expected": {
+    "result": "propose",
+    "action": "downgrade_to_validation_experiment",
+    "blocked": false,
+    "required_codes": [
+      "PRODUCT_VALIDATION_MISSING",
+      "PROVEN_VALUE_REQUIRED",
+      "VALIDATION_ACTION_REQUIRED"
+    ],
+    "prohibited_codes": [
+      "PRODUCT_VALIDATED",
+      "BUYER_READY_CONFIRMED"
+    ]
+  }
+}
