@@ -7,7 +7,27 @@
     "timezone": "America/Chicago",
     "rotation_ref": "policy.quirk-daily-move.weekday.v0.1",
     "available_minutes": 12,
-    "recent_move_refs": [],
+    "recent_move_refs": [
+      "receipt://daily-move/2026-08-15-separation-checklist"
+    ],
+    "candidate_signature": {
+      "mechanism": "cross_domain_invariant_translation",
+      "capability_family": "research_mutation",
+      "deliverable_type": "proposed_move"
+    },
+    "history_envelope": {
+      "complete": true,
+      "items": [{
+        "move_ref": "receipt://daily-move/2026-08-15-separation-checklist",
+        "state": "completed",
+        "completed_at": "2026-08-15T10:15:00-05:00",
+        "signature": {
+          "mechanism": "separation_checklist",
+          "capability_family": "research_mutation",
+          "deliverable_type": "decision_card"
+        }
+      }]
+    },
     "human_constraints": [
       "propose_only",
       "human_executes_consequential_actions"
@@ -23,6 +43,18 @@
       "source_domain": "air-traffic separation minima",
       "source_ref": "research://mechanism/separation-minima",
       "proof_target": "Translate source mechanism → invariant → Quirk mutation without importing source authority."
+    },
+    "assignment": {
+      "minutes": 12,
+      "instruction": "Translate separation minima into an invariant and a propose-only Quirk mutation."
+    },
+    "deliverable": {
+      "kind": "mechanism_translation",
+      "description": "A source-mechanism to invariant to candidate-mutation translation card.",
+      "proof_target": "Translate source mechanism → invariant → Quirk mutation without importing source authority.",
+      "source_refs": ["research://mechanism/separation-minima"],
+      "finding_ref": "eval.daily-move.QDM-P06",
+      "artifact_ref": "artifact://daily-move/QDM-P06/separation-invariant"
     }
   },
   "expected": {
@@ -36,7 +68,8 @@
       "TIMEBOX_BOUNDED",
       "PROOF_REQUIRED",
       "AUTHORITY_PROPOSE_ONLY",
-      "ROTATION_SATURDAY"
+      "ROTATION_SATURDAY",
+      "LEGITIMATE_NEAR_NEIGHBOR_ACCEPTED"
     ],
     "prohibited_codes": [
       "EXECUTION_AUTHORIZED",

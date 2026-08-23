@@ -3,23 +3,12 @@ name: Daily Move Fixture Conformance
 on:
   pull_request:
     paths:
-      - '.github/workflows/daily-move-fixtures.yml'
-      - 'evals/daily-move/**'
-      - 'programs/quirk-daily-move.yaml'
-      - 'scripts/daily_move/**'
-      - 'scripts/validate_daily_move_fixtures.py'
-      - 'skills/quirk-daily-move-generator/**'
-      - 'tests/test_daily_move_fixtures.py'
+      - '**'
   push:
-    branches-ignore: [main]
+    branches:
+      - main
     paths:
-      - '.github/workflows/daily-move-fixtures.yml'
-      - 'evals/daily-move/**'
-      - 'programs/quirk-daily-move.yaml'
-      - 'scripts/daily_move/**'
-      - 'scripts/validate_daily_move_fixtures.py'
-      - 'skills/quirk-daily-move-generator/**'
-      - 'tests/test_daily_move_fixtures.py'
+      - '**'
   workflow_dispatch:
 
 permissions:
@@ -38,11 +27,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.13'
+
+      - name: Install pinned evaluation dependencies
+        run: python -m pip install -r requirements-evals.txt
 
       - name: Run Daily Move fixture tests
         run: python -m unittest discover -s tests -p 'test_daily_move_fixtures.py' -v

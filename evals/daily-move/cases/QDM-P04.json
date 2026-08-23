@@ -25,6 +25,18 @@
         "source://current-primary-documentation/permission-filtering"
       ],
       "proof_target": "Attach the capability to one executable Quirk experiment and record the boundary learned."
+    },
+    "assignment": {
+      "minutes": 12,
+      "instruction": "Design one non-executing experiment for permission-filtered tool discovery."
+    },
+    "deliverable": {
+      "kind": "capability_experiment",
+      "description": "A candidate experiment card recording the permission boundary to test.",
+      "proof_target": "Attach the capability to one executable Quirk experiment and record the boundary learned.",
+      "source_refs": ["source://current-primary-documentation/permission-filtering"],
+      "finding_ref": "eval.daily-move.QDM-P04",
+      "artifact_ref": "artifact://daily-move/QDM-P04/permission-filter-experiment"
     }
   },
   "expected": {

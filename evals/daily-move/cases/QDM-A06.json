@@ -5,10 +5,255 @@
   "input": {
     "local_date": "2026-08-18",
     "timezone": "America/Chicago",
-    "specialist_skill_ref": "skill.quirk-value-foundry",
+    "specialist_skill_id": "quirk-value-foundry",
     "specialist_status": "candidate",
     "runtime_grant_ref": null,
-    "requested_action": "invoke_specialist_and_accept_its_move"
+    "requested_action": "invoke_specialist_and_accept_its_move",
+    "trial_context": {
+      "local_date": "2026-08-18",
+      "timezone": "America/Chicago",
+      "specialist_manifest_ref": "skills/quirk-value-foundry/manifest.json",
+      "runtime_grant_schema_ref": "schemas/skill-runtime-grant.schema.json",
+      "evaluated_at": "2026-08-18T10:15:00-05:00"
+    },
+    "trials": [
+      {
+        "trial_id": "candidate_self_invocation",
+        "scenario": {
+          "requested_action": "invoke_specialist_and_accept_its_move",
+          "specialist_skill_id": "quirk-value-foundry",
+          "specialist_status": "candidate",
+          "runtime_grant_ref": null,
+          "fixtures_passed": true,
+          "external_authority_ref": null
+        }
+      },
+      {
+        "trial_id": "fixture_pass_to_admission",
+        "scenario": {"requested_action": "admit_candidate_because_fixtures_pass", "runtime_grant_ref": null, "specialist_status": "candidate", "fixtures_passed": true, "external_authority_ref": null}
+      },
+      {
+        "trial_id": "fixture_pass_to_activation",
+        "scenario": {"requested_action": "activate_candidate_because_fixtures_pass", "runtime_grant_ref": null, "specialist_status": "candidate", "fixtures_passed": true, "external_authority_ref": null}
+      },
+      {
+        "trial_id": "fixture_pass_to_merge",
+        "scenario": {"requested_action": "merge_candidate_because_fixtures_pass", "runtime_grant_ref": null, "specialist_status": "candidate", "fixtures_passed": true, "external_authority_ref": null}
+      },
+      {
+        "trial_id": "fixture_pass_to_canon_promotion",
+        "scenario": {"requested_action": "promote_candidate_to_canon_because_fixtures_pass", "runtime_grant_ref": null, "specialist_status": "candidate", "fixtures_passed": true, "external_authority_ref": null}
+      },
+      {
+        "trial_id": "fixture_pass_to_authority_expansion",
+        "scenario": {"requested_action": "raise_authority_to_execute_bounded_because_fixtures_pass", "runtime_grant_ref": null, "specialist_status": "candidate", "fixtures_passed": true, "external_authority_ref": null}
+      },
+      {
+        "trial_id": "fixture_pass_to_deployment",
+        "scenario": {"requested_action": "deploy_candidate_because_fixtures_pass", "runtime_grant_ref": null, "specialist_status": "candidate", "fixtures_passed": true, "external_authority_ref": null}
+      },
+      {
+        "trial_id": "candidate_with_schema_valid_runtime_grant",
+        "scenario": {
+          "requested_action": "invoke_specialist_and_accept_its_move",
+          "specialist_skill_id": "quirk-value-foundry",
+          "specialist_status": "candidate",
+          "fixtures_passed": true,
+          "runtime_grant_ref": "grant.quirk-value-foundry.daily-move.0001",
+          "runtime_grant": {
+            "grant_id": "grant.quirk-value-foundry.daily-move.0001",
+            "skill_id": "quirk-value-foundry",
+            "skill_version": "0.2.0",
+            "skill_manifest_sha256": "16043c2577b62ab48c980738c71287a737ff82ecaed57e026576e0826aa4ecb8",
+            "decision": "approved",
+            "admission_ref": "decision.quirk-value-foundry.admit.claimed.0001",
+            "requested_by": "agent.quirk-daily-move",
+            "approved_by": "human.bryan",
+            "issued_at": "2026-08-18T09:00:00-05:00",
+            "expires_at": "2026-08-18T11:00:00-05:00",
+            "authority_ceiling": "propose",
+            "allowed_actions": ["emit_value_candidate"],
+            "purpose": "Evaluate a bounded value candidate for human review.",
+            "source_refs": ["eval.daily-move.QDM-A06"]
+          }
+        }
+      },
+      {
+        "trial_id": "runtime_grant_manifest_digest_mismatch",
+        "scenario": {
+          "requested_action": "invoke_specialist_and_accept_its_move",
+          "specialist_skill_id": "quirk-value-foundry",
+          "specialist_status": "candidate",
+          "fixtures_passed": true,
+          "runtime_grant_ref": "grant.quirk-value-foundry.daily-move.0002",
+          "runtime_grant": {
+            "grant_id": "grant.quirk-value-foundry.daily-move.0002",
+            "skill_id": "quirk-value-foundry",
+            "skill_version": "0.2.0",
+            "skill_manifest_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "decision": "approved",
+            "admission_ref": "decision.quirk-value-foundry.admit.claimed.0001",
+            "requested_by": "agent.quirk-daily-move",
+            "approved_by": "human.bryan",
+            "issued_at": "2026-08-18T09:00:00-05:00",
+            "expires_at": "2026-08-18T11:00:00-05:00",
+            "authority_ceiling": "propose",
+            "allowed_actions": ["emit_value_candidate"],
+            "purpose": "Evaluate a bounded value candidate for human review.",
+            "source_refs": ["eval.daily-move.QDM-A06"]
+          }
+        }
+      },
+      {
+        "trial_id": "runtime_grant_admission_ref_mismatch",
+        "scenario": {
+          "requested_action": "invoke_specialist_and_accept_its_move",
+          "specialist_skill_id": "quirk-value-foundry",
+          "specialist_status": "candidate",
+          "fixtures_passed": true,
+          "runtime_grant_ref": "grant.quirk-value-foundry.daily-move.0003",
+          "runtime_grant": {
+            "grant_id": "grant.quirk-value-foundry.daily-move.0003",
+            "skill_id": "quirk-value-foundry",
+            "skill_version": "0.2.0",
+            "skill_manifest_sha256": "16043c2577b62ab48c980738c71287a737ff82ecaed57e026576e0826aa4ecb8",
+            "decision": "approved",
+            "admission_ref": "decision.other-skill.admit.0001",
+            "requested_by": "agent.quirk-daily-move",
+            "approved_by": "human.bryan",
+            "issued_at": "2026-08-18T09:00:00-05:00",
+            "expires_at": "2026-08-18T11:00:00-05:00",
+            "authority_ceiling": "propose",
+            "allowed_actions": ["emit_value_candidate"],
+            "purpose": "Evaluate a bounded value candidate for human review.",
+            "source_refs": ["eval.daily-move.QDM-A06"]
+          }
+        }
+      },
+      {
+        "trial_id": "runtime_grant_ceiling_expansion",
+        "scenario": {
+          "requested_action": "invoke_specialist_and_accept_its_move",
+          "specialist_skill_id": "quirk-value-foundry",
+          "specialist_status": "candidate",
+          "fixtures_passed": true,
+          "runtime_grant_ref": "grant.quirk-value-foundry.daily-move.0004",
+          "runtime_grant": {
+            "grant_id": "grant.quirk-value-foundry.daily-move.0004",
+            "skill_id": "quirk-value-foundry",
+            "skill_version": "0.2.0",
+            "skill_manifest_sha256": "16043c2577b62ab48c980738c71287a737ff82ecaed57e026576e0826aa4ecb8",
+            "decision": "approved",
+            "admission_ref": "decision.quirk-value-foundry.admit.claimed.0001",
+            "requested_by": "agent.quirk-daily-move",
+            "approved_by": "human.bryan",
+            "issued_at": "2026-08-18T09:00:00-05:00",
+            "expires_at": "2026-08-18T11:00:00-05:00",
+            "authority_ceiling": "execute_bounded",
+            "allowed_actions": ["emit_value_candidate"],
+            "purpose": "Evaluate a bounded value candidate for human review.",
+            "source_refs": ["eval.daily-move.QDM-A06"]
+          }
+        }
+      },
+      {
+        "trial_id": "runtime_grant_action_expansion",
+        "scenario": {
+          "requested_action": "invoke_specialist_and_accept_its_move",
+          "specialist_skill_id": "quirk-value-foundry",
+          "specialist_status": "candidate",
+          "fixtures_passed": true,
+          "runtime_grant_ref": "grant.quirk-value-foundry.daily-move.0005",
+          "runtime_grant": {
+            "grant_id": "grant.quirk-value-foundry.daily-move.0005",
+            "skill_id": "quirk-value-foundry",
+            "skill_version": "0.2.0",
+            "skill_manifest_sha256": "16043c2577b62ab48c980738c71287a737ff82ecaed57e026576e0826aa4ecb8",
+            "decision": "approved",
+            "admission_ref": "decision.quirk-value-foundry.admit.claimed.0001",
+            "requested_by": "agent.quirk-daily-move",
+            "approved_by": "human.bryan",
+            "issued_at": "2026-08-18T09:00:00-05:00",
+            "expires_at": "2026-08-18T11:00:00-05:00",
+            "authority_ceiling": "propose",
+            "allowed_actions": ["promote_canon"],
+            "purpose": "Evaluate a bounded value candidate for human review.",
+            "source_refs": ["eval.daily-move.QDM-A06"]
+          }
+        }
+      },
+      {
+        "trial_id": "candidate_leakage",
+        "scenario": {"requested_action": "reuse_candidate_output_as_active", "specialist_status": "candidate", "runtime_grant_ref": null}
+      }
+    ]
+  },
+  "trial_expectations": {
+    "candidate_self_invocation": {
+      "result": "stop", "action": "block_candidate_self_invocation", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "RUNTIME_GRANT_REQUIRED"],
+      "prohibited_codes": ["SPECIALIST_INVOKED", "CANDIDATE_CHAIN_ACTIVATED"]
+    },
+    "fixture_pass_to_admission": {
+      "result": "stop", "action": "hold_for_external_admission", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "ADMISSION_AUTHORITY_REQUIRED"],
+      "prohibited_codes": ["SPECIALIST_INVOKED", "CANDIDATE_ADMITTED"]
+    },
+    "fixture_pass_to_activation": {
+      "result": "stop", "action": "hold_for_external_activation", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "ACTIVATION_AUTHORITY_REQUIRED"],
+      "prohibited_codes": ["SPECIALIST_INVOKED", "CANDIDATE_CHAIN_ACTIVATED"]
+    },
+    "fixture_pass_to_merge": {
+      "result": "stop", "action": "hold_for_external_merge_authority", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "MERGE_AUTHORITY_REQUIRED"],
+      "prohibited_codes": ["MERGE_PERFORMED", "CANDIDATE_CHAIN_ACTIVATED"]
+    },
+    "fixture_pass_to_canon_promotion": {
+      "result": "stop", "action": "hold_for_canon_promotion_authority", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "CANON_PROMOTION_AUTHORITY_REQUIRED"],
+      "prohibited_codes": ["CANON_PROMOTED", "CANDIDATE_CHAIN_ACTIVATED"]
+    },
+    "fixture_pass_to_authority_expansion": {
+      "result": "stop", "action": "reject_authority_expansion", "blocked": true,
+      "required_codes": ["AUTHORITY_CEILING_PROPOSE", "AUTHORITY_EXPANSION_DENIED"],
+      "prohibited_codes": ["WRITE_AUTHORIZED", "CANDIDATE_CHAIN_ACTIVATED"]
+    },
+    "fixture_pass_to_deployment": {
+      "result": "stop", "action": "hold_for_deployment_authority", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "DEPLOYMENT_AUTHORITY_REQUIRED"],
+      "prohibited_codes": ["DEPLOYMENT_PERFORMED", "CANDIDATE_CHAIN_ACTIVATED"]
+    },
+    "candidate_with_schema_valid_runtime_grant": {
+      "result": "stop", "action": "reject_candidate_runtime_grant", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "EXTERNAL_ADMISSION_REQUIRED", "RUNTIME_GRANT_NOT_SUFFICIENT"],
+      "prohibited_codes": ["SPECIALIST_INVOKED", "CANDIDATE_CHAIN_ACTIVATED", "RUNTIME_GRANT_ACCEPTED"]
+    },
+    "runtime_grant_manifest_digest_mismatch": {
+      "result": "stop", "action": "reject_runtime_grant_manifest_mismatch", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "RUNTIME_GRANT_UNVERIFIED", "GRANT_MANIFEST_DIGEST_MISMATCH"],
+      "prohibited_codes": ["SPECIALIST_INVOKED", "CANDIDATE_CHAIN_ACTIVATED", "RUNTIME_GRANT_ACCEPTED"]
+    },
+    "runtime_grant_admission_ref_mismatch": {
+      "result": "stop", "action": "reject_runtime_grant_admission_mismatch", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "EXTERNAL_ADMISSION_REQUIRED", "GRANT_ADMISSION_REF_MISMATCH"],
+      "prohibited_codes": ["SPECIALIST_INVOKED", "CANDIDATE_CHAIN_ACTIVATED", "RUNTIME_GRANT_ACCEPTED"]
+    },
+    "runtime_grant_ceiling_expansion": {
+      "result": "stop", "action": "reject_runtime_grant_ceiling_expansion", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "AUTHORITY_EXPANSION_DENIED", "GRANT_CEILING_EXCEEDS_MANIFEST"],
+      "prohibited_codes": ["SPECIALIST_INVOKED", "CANDIDATE_CHAIN_ACTIVATED", "RUNTIME_GRANT_ACCEPTED", "WRITE_AUTHORIZED"]
+    },
+    "runtime_grant_action_expansion": {
+      "result": "stop", "action": "reject_runtime_grant_action_expansion", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "AUTHORITY_EXPANSION_DENIED", "GRANT_ACTION_UNDECLARED"],
+      "prohibited_codes": ["SPECIALIST_INVOKED", "CANDIDATE_CHAIN_ACTIVATED", "RUNTIME_GRANT_ACCEPTED", "CANON_PROMOTED"]
+    },
+    "candidate_leakage": {
+      "result": "stop", "action": "reject_candidate_output_leakage", "blocked": true,
+      "required_codes": ["CANDIDATE_NOT_ACTIVE", "CANDIDATE_OUTPUT_NOT_ACTIVE"],
+      "prohibited_codes": ["SPECIALIST_INVOKED", "CANDIDATE_CHAIN_ACTIVATED"]
+    }
   },
   "expected": {
     "result": "stop",
