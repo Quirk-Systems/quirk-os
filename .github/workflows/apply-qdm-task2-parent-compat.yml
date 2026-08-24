@@ -38,9 +38,13 @@ jobs:
       - name: Install evaluation dependencies
         run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
 
-      - name: Verify and apply bounded compatibility patch
+      - name: Repair framing, verify, and apply bounded compatibility patch
         run: |
-          echo "00ee47864fe625ce7b1b8e7a184cc6865c7a052961c1437fdf4d5ca3e04bd982  .bootstrap/qdm-task2-parent-compat.patch" | sha256sum --check -
+          sed -i \
+            -e 's/@@ -1145,12 +1145,24/@@ -1145,10 +1145,22/' \
+            -e 's/@@ -21,6 +22,7/@@ -21,5 +22,6/' \
+            .bootstrap/qdm-task2-parent-compat.patch
+          echo "601606c2a620b1e2b97bed76e674da36def58a1a889ee49d19e01a4e82448ffa  .bootstrap/qdm-task2-parent-compat.patch" | sha256sum --check -
           git apply --check --whitespace=error-all .bootstrap/qdm-task2-parent-compat.patch
           git apply .bootstrap/qdm-task2-parent-compat.patch
 
