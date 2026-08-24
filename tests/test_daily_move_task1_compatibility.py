@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -41,6 +42,25 @@ class DailyMoveTask1CompatibilityTests(unittest.TestCase):
             markers = set(_implementation_markers(root))
             self.assertIn("schemas/daily-move-io.schema.json", markers)
             self.assertIn("scripts/daily_move/policy.py", markers)
+
+    def test_exact_untracked_contract_bytecode_is_ignored_but_alias_bytecode_is_not(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            exact_paths = (
+                root / "scripts/__pycache__/validate_daily_move_io.cpython-313.pyc",
+                root / "tests/__pycache__/test_daily_move_io.cpython-313.pyc",
+                root / "tests/__pycache__/test_daily_move_io_workflow.cpython-313.pyc",
+                root / "tests/__pycache__/test_daily_move_task1_compatibility.cpython-313.pyc",
+            )
+            for path in exact_paths:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"daily move contract bytecode")
+            alias = root / "tests/__pycache__/test_daily_move_generator.cpython-313.pyc"
+            alias.write_bytes(b"daily move runtime bytecode")
+            markers = set(_implementation_markers(root))
+            self.assertTrue({path.relative_to(root).as_posix() for path in exact_paths}.isdisjoint(markers))
+            self.assertIn(alias.relative_to(root).as_posix(), markers)
 
     def test_contract_validator_has_no_runtime_or_external_effect_surface(self) -> None:
         path = ROOT / "scripts/validate_daily_move_io.py"
