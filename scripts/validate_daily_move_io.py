@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Mapping
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
 
 ROOT_DEFAULT = Path(__file__).resolve().parents[1]
 INPUT_SCHEMA_PATH = Path("schemas/daily-move-input.schema.json")
@@ -47,6 +47,10 @@ def expected_output_hash(output_doc: Mapping[str, Any]) -> str:
     return sha256_json(payload)
 
 
+def _safe_string_set(value: Any) -> set[str]:
+    if not isinstance(value, (list, tuple, set, frozenset)):
+        return set()
+    return {item for item in value if isinstance(item, str)}
 
 
 def _looks_like_absolute_root(value: str) -> bool:
@@ -69,7 +73,10 @@ def _looks_like_invented_quirk_repository(value: str) -> bool:
 
 
 def _has_unsupported_architecture_hint(output_doc: Mapping[str, Any]) -> bool:
-    for raw in output_doc.get("destination_hints", []):
+    raw_hints = output_doc.get("destination_hints", [])
+    if not isinstance(raw_hints, (list, tuple)):
+        return False
+    for raw in raw_hints:
         value = str(raw)
         folded = value.casefold()
         if "quirkroot" in folded:
@@ -93,10 +100,18 @@ def validate_daily_move_pair(
 
     input_schema = load_json(schema_root / INPUT_SCHEMA_PATH)
     output_schema = load_json(schema_root / OUTPUT_SCHEMA_PATH)
-    if list(Draft202012Validator(input_schema).iter_errors(input_doc)):
+    format_checker = FormatChecker()
+    if list(Draft202012Validator(input_schema, format_checker=format_checker).iter_errors(input_doc)):
         findings.append("INPUT_SCHEMA_INVALID")
-    if list(Draft202012Validator(output_schema).iter_errors(output_doc)):
+    if list(Draft202012Validator(output_schema, format_checker=format_checker).iter_errors(output_doc)):
         findings.append("OUTPUT_SCHEMA_INVALID")
+
+    if not isinstance(input_doc, Mapping):
+        findings.extend(["INPUT_SCHEMA_INVALID", "NO_SPINE"])
+        return sorted(set(findings))
+    if not isinstance(output_doc, Mapping):
+        findings.extend(["OUTPUT_SCHEMA_INVALID", "CONTENT_HASH_MISMATCH"])
+        return sorted(set(findings))
 
     input_spine = input_doc.get("outcome_spine")
     output_spine = output_doc.get("outcome_spine")
@@ -118,8 +133,13 @@ def validate_daily_move_pair(
         if observed_spines is not None:
             spine_id = input_spine.get("spine_id")
             if isinstance(spine_id, str) and spine_id in observed_spines:
-                if observed_spines[spine_id] != input_fingerprint(input_doc):
-                    findings.append("DUPLICATE_SPINE_ID")
+                try:
+                    fingerprint = input_fingerprint(input_doc)
+                except (TypeError, ValueError):
+                    findings.append("INPUT_SCHEMA_INVALID")
+                else:
+                    if observed_spines[spine_id] != fingerprint:
+                        findings.append("DUPLICATE_SPINE_ID")
 
     if isinstance(input_spine, Mapping) and isinstance(output_spine, Mapping):
         mutation_codes = {
@@ -143,8 +163,8 @@ def validate_daily_move_pair(
     if output_doc.get("authority_ceiling") != "propose":
         findings.append("AUTHORITY_ABOVE_PROPOSE")
 
-    input_sources = set(input_doc.get("source_refs", []))
-    output_sources = set(output_doc.get("source_refs", []))
+    input_sources = _safe_string_set(input_doc.get("source_refs", []))
+    output_sources = _safe_string_set(output_doc.get("source_refs", []))
     if not output_sources.issubset(input_sources):
         findings.append("INVENTED_SOURCE_REF")
 
@@ -173,8 +193,13 @@ def validate_daily_move_pair(
     if expected_weekday is not None and output_doc.get("weekday") != expected_weekday:
         findings.append("WEEKDAY_MISMATCH")
 
-    if output_doc.get("content_hash") != expected_output_hash(output_doc):
+    try:
+        expected_hash = expected_output_hash(output_doc)
+    except (TypeError, ValueError):
         findings.append("CONTENT_HASH_MISMATCH")
+    else:
+        if output_doc.get("content_hash") != expected_hash:
+            findings.append("CONTENT_HASH_MISMATCH")
 
     return sorted(set(findings))
 
