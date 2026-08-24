@@ -40,7 +40,7 @@ jobs:
 
       - name: Verify and apply bounded bytecode patch
         run: |
-          echo "7cf190a20f5f85e3b8d4687fc34595273ad2267fca0eb1b3876c2a33accdca86  .bootstrap/qdm-task2-pycache-compat.patch" | sha256sum --check -
+          echo "3d00756908a3c785903ee86b12d627f7924aad0dd76b272a89d5dd473e520e22  .bootstrap/qdm-task2-pycache-compat.patch" | sha256sum --check -
           cp .github/workflows/apply-qdm-task2-pycache-compat.yml /tmp/apply-qdm-task2-pycache-compat.yml
           git apply --check --whitespace=error-all .bootstrap/qdm-task2-pycache-compat.patch
           git apply .bootstrap/qdm-task2-pycache-compat.patch
