@@ -1,6 +1,6 @@
 --- a/scripts/validate_daily_move_fixtures.py
 +++ b/scripts/validate_daily_move_fixtures.py
-@@ -1205,9 +1205,11 @@
+@@ -1205,8 +1205,10 @@
  
      def is_ignorable_generated_gate_bytecode(relative: str, path: Path) -> bool:
          matches_gate_bytecode = re.fullmatch(
