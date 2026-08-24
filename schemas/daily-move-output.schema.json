@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/daily-move-output.schema.json",
+  "title": "Quirk Daily Move Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "outcome_spine",
+    "status",
+    "authority_ceiling",
+    "weekday",
+    "focus",
+    "why_it_matters",
+    "steps",
+    "deliverable",
+    "stretch_goal",
+    "capability_family",
+    "proof_required",
+    "completion_criterion",
+    "estimated_minutes",
+    "source_refs",
+    "risk_class",
+    "reversibility",
+    "placement_disposition",
+    "unknowns",
+    "content_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "daily-move.output.v1"
+    },
+    "outcome_spine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spine_id",
+        "goal_id",
+        "move_id",
+        "decision_id",
+        "receipt_id",
+        "outcome_id",
+        "decision_state",
+        "receipt_state",
+        "outcome_state"
+      ],
+      "properties": {
+        "spine_id": {
+          "type": "string",
+          "pattern": "^qos_[A-Za-z0-9_-]+$"
+        },
+        "goal_id": {
+          "type": "string",
+          "pattern": "^qgoal_[A-Za-z0-9_-]+$"
+        },
+        "move_id": {
+          "type": "string",
+          "pattern": "^qdm_[A-Za-z0-9_-]+$"
+        },
+        "decision_id": {
+          "type": "string",
+          "pattern": "^qdecision_[A-Za-z0-9_-]+$"
+        },
+        "receipt_id": {
+          "type": "string",
+          "pattern": "^receipt\\.[a-z0-9._-]+$"
+        },
+        "outcome_id": {
+          "type": "string",
+          "pattern": "^qoutcome_[A-Za-z0-9_-]+$"
+        },
+        "decision_state": {
+          "const": "reserved"
+        },
+        "receipt_state": {
+          "const": "reserved"
+        },
+        "outcome_state": {
+          "const": "reserved"
+        }
+      }
+    },
+    "status": {
+      "const": "proposed"
+    },
+    "authority_ceiling": {
+      "const": "propose"
+    },
+    "weekday": {
+      "enum": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
+    },
+    "focus": {
+      "type": "string",
+      "minLength": 1
+    },
+    "why_it_matters": {
+      "type": "string",
+      "minLength": 1
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "deliverable": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stretch_goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_family": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "proof_required": {
+      "type": "string",
+      "minLength": 1
+    },
+    "completion_criterion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "estimated_minutes": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 15
+    },
+    "source_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "risk_class": {
+      "enum": [
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5"
+      ]
+    },
+    "reversibility": {
+      "enum": [
+        "trivial",
+        "reversible",
+        "compensatable",
+        "irreversible"
+      ]
+    },
+    "placement_disposition": {
+      "enum": [
+        "resolved",
+        "unresolved",
+        "not_applicable"
+      ]
+    },
+    "unknowns": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "destination_hints": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "recent_similarity": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "evidence_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "daily-move.input.v1",
+  "local_date": "2026-08-21",
+  "timezone": "America/Chicago",
+  "rotation_ref": "rotation.daily-move.v1",
+  "outcome_spine": {
+    "spine_id": "qos_20260821_01",
+    "goal_id": "qgoal_daily_move_task2",
+    "move_id": "qdm_20260821_friday_01",
+    "decision_id": "qdecision_20260821_friday_01",
+    "receipt_id": "receipt.daily-move.20260821.01",
+    "outcome_id": "qoutcome_20260821_friday_01",
+    "decision_state": "reserved",
+    "receipt_state": "reserved",
+    "outcome_state": "reserved"
+  },
+  "authority_ceiling": "propose",
+  "source_refs": ["github:Quirk-Systems/quirk-os#daily-move-task2"],
+  "goal_context": {
+    "statement": "Lock Task 2 contracts before generator implementation.",
+    "evidence_refs": ["github:Quirk-Systems/quirk-os#47"]
+  },
+  "available_minutes": 12,
+  "recent_move_refs": ["qdm_previous_01"],
+  "human_constraints": ["do_not_publish", "do_not_merge"],
+  "allowed_destination_types": ["repository_file", "pull_request"],
+  "canonical_destination_refs": ["github:Quirk-Systems/quirk-os"]
+}

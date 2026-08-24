@@ -44,3 +44,10 @@ This fixture-only validator never imports or executes repository implementation 
 Marker detection is a static guard, not proof against deliberately obfuscated code hidden inside an allowlisted gate file or expressed without recognizable Daily Move semantics. Diff review, protected-branch review, and the future contained runner remain required; a fixture-only pass cannot admit or activate an implementation.
 
 The CI gate is an exact six-step contract on `ubuntu-24.04`: universal pull-request coverage, `main`-only push coverage, read-only permissions, credential-free full-history checkout, pinned actions, exact dependency/test/conformance commands, and an `always()` evidence upload. Proposed Moves are checked with the target repository's canonical JSON Schema and strict RFC 3339 date-time validation. A future Daily Move Skill must use the canonical `evals/skills/daily-move.json` contract and bind that regular in-tree alias exactly to `evals/daily-move/fixtures.json`.
+
+## Task 2 — I/O and Outcome Spine
+
+Task 2 adds generator input/output contract evidence under `io-cases/`.
+It does not replace or weaken `QDM-P01..P07` or `QDM-A01..A11`.
+Decision, receipt, and outcome IDs are reserved addresses, not realized events.
+Task 2 conformance is Candidate evidence only and creates no external writes.

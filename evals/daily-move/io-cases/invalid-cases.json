@@ -1,0 +1,235 @@
+[
+  {
+    "case_id": "QDM-IO-A01",
+    "target": "input",
+    "operation": "delete",
+    "path": [
+      "outcome_spine"
+    ],
+    "expected_code": "NO_SPINE"
+  },
+  {
+    "case_id": "QDM-IO-A02",
+    "target": "input",
+    "operation": "delete",
+    "path": [
+      "outcome_spine",
+      "spine_id"
+    ],
+    "expected_code": "MISSING_SPINE_ID"
+  },
+  {
+    "case_id": "QDM-IO-A03",
+    "target": "input",
+    "operation": "delete",
+    "path": [
+      "outcome_spine",
+      "goal_id"
+    ],
+    "expected_code": "MISSING_GOAL_ID"
+  },
+  {
+    "case_id": "QDM-IO-A04",
+    "target": "input",
+    "operation": "delete",
+    "path": [
+      "outcome_spine",
+      "move_id"
+    ],
+    "expected_code": "MISSING_MOVE_ID"
+  },
+  {
+    "case_id": "QDM-IO-A05",
+    "target": "input",
+    "operation": "delete",
+    "path": [
+      "outcome_spine",
+      "decision_id"
+    ],
+    "expected_code": "MISSING_DECISION_ID"
+  },
+  {
+    "case_id": "QDM-IO-A06",
+    "target": "input",
+    "operation": "delete",
+    "path": [
+      "outcome_spine",
+      "receipt_id"
+    ],
+    "expected_code": "MISSING_RECEIPT_ID"
+  },
+  {
+    "case_id": "QDM-IO-A07",
+    "target": "input",
+    "operation": "delete",
+    "path": [
+      "outcome_spine",
+      "outcome_id"
+    ],
+    "expected_code": "MISSING_OUTCOME_ID"
+  },
+  {
+    "case_id": "QDM-IO-A08",
+    "target": "output",
+    "operation": "set",
+    "path": [
+      "outcome_spine",
+      "spine_id"
+    ],
+    "value": "qos_20260821_02",
+    "rehash": true,
+    "expected_code": "SPINE_ID_MUTATED"
+  },
+  {
+    "case_id": "QDM-IO-A09",
+    "target": "output",
+    "operation": "set",
+    "path": [
+      "outcome_spine",
+      "move_id"
+    ],
+    "value": "qdm_20260821_friday_02",
+    "rehash": true,
+    "expected_code": "MOVE_ID_MUTATED"
+  },
+  {
+    "case_id": "QDM-IO-A10",
+    "target": "output",
+    "operation": "set",
+    "path": [
+      "outcome_spine",
+      "decision_id"
+    ],
+    "value": "qdecision_20260821_friday_02",
+    "rehash": true,
+    "expected_code": "DECISION_ID_MUTATED"
+  },
+  {
+    "case_id": "QDM-IO-A11",
+    "target": "output",
+    "operation": "set",
+    "path": [
+      "outcome_spine",
+      "receipt_id"
+    ],
+    "value": "receipt.daily-move.20260821.02",
+    "rehash": true,
+    "expected_code": "RECEIPT_ID_MUTATED"
+  },
+  {
+    "case_id": "QDM-IO-A12",
+    "target": "output",
+    "operation": "set",
+    "path": [
+      "outcome_spine",
+      "outcome_id"
+    ],
+    "value": "qoutcome_20260821_friday_02",
+    "rehash": true,
+    "expected_code": "OUTCOME_ID_MUTATED"
+  },
+  {
+    "case_id": "QDM-IO-A13",
+    "target": "context",
+    "operation": "observed_conflict",
+    "path": [],
+    "expected_code": "DUPLICATE_SPINE_ID"
+  },
+  {
+    "case_id": "QDM-IO-A14",
+    "target": "output",
+    "operation": "set",
+    "path": [
+      "outcome_spine",
+      "decision_state"
+    ],
+    "value": "approved",
+    "rehash": true,
+    "expected_code": "REALIZED_EVENT_FABRICATION"
+  },
+  {
+    "case_id": "QDM-IO-A15",
+    "target": "output",
+    "operation": "set",
+    "path": [
+      "authority_ceiling"
+    ],
+    "value": "execute_bounded",
+    "rehash": true,
+    "expected_code": "AUTHORITY_ABOVE_PROPOSE"
+  },
+  {
+    "case_id": "QDM-IO-A16",
+    "target": "output",
+    "operation": "append",
+    "path": [
+      "source_refs"
+    ],
+    "value": "invented:source",
+    "rehash": true,
+    "expected_code": "INVENTED_SOURCE_REF"
+  },
+  {
+    "case_id": "QDM-IO-A17",
+    "target": "output",
+    "operation": "set",
+    "path": [
+      "destination_hints"
+    ],
+    "value": [
+      "/Quirkroot/Automation/daily-move/"
+    ],
+    "rehash": true,
+    "expected_code": "UNSUPPORTED_ARCHITECTURE"
+  },
+  {
+    "case_id": "QDM-IO-A18",
+    "target": "input",
+    "operation": "delete",
+    "path": [
+      "canonical_destination_refs"
+    ],
+    "expected_code": "PLACEMENT_UNRESOLVED"
+  },
+  {
+    "case_id": "QDM-IO-A19",
+    "target": "input",
+    "operation": "set",
+    "path": [
+      "available_minutes"
+    ],
+    "value": 10,
+    "expected_code": "TIMEBOX_EXCEEDED"
+  },
+  {
+    "case_id": "QDM-IO-A20",
+    "target": "input",
+    "operation": "set",
+    "path": [
+      "timezone"
+    ],
+    "value": "Mars/Olympus_Mons",
+    "expected_code": "INVALID_TIMEZONE"
+  },
+  {
+    "case_id": "QDM-IO-A21",
+    "target": "output",
+    "operation": "set",
+    "path": [
+      "weekday"
+    ],
+    "value": "Thursday",
+    "rehash": true,
+    "expected_code": "WEEKDAY_MISMATCH"
+  },
+  {
+    "case_id": "QDM-IO-A22",
+    "target": "output",
+    "operation": "set",
+    "path": [
+      "content_hash"
+    ],
+    "value": "0000000000000000000000000000000000000000000000000000000000000000",
+    "expected_code": "CONTENT_HASH_MISMATCH"
+  }
+]

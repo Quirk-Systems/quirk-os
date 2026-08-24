@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/daily-move-input.schema.json",
+  "title": "Quirk Daily Move Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "local_date",
+    "timezone",
+    "rotation_ref",
+    "outcome_spine",
+    "authority_ceiling",
+    "source_refs",
+    "goal_context",
+    "available_minutes"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "daily-move.input.v1"
+    },
+    "local_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rotation_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "outcome_spine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spine_id",
+        "goal_id",
+        "move_id",
+        "decision_id",
+        "receipt_id",
+        "outcome_id",
+        "decision_state",
+        "receipt_state",
+        "outcome_state"
+      ],
+      "properties": {
+        "spine_id": {
+          "type": "string",
+          "pattern": "^qos_[A-Za-z0-9_-]+$"
+        },
+        "goal_id": {
+          "type": "string",
+          "pattern": "^qgoal_[A-Za-z0-9_-]+$"
+        },
+        "move_id": {
+          "type": "string",
+          "pattern": "^qdm_[A-Za-z0-9_-]+$"
+        },
+        "decision_id": {
+          "type": "string",
+          "pattern": "^qdecision_[A-Za-z0-9_-]+$"
+        },
+        "receipt_id": {
+          "type": "string",
+          "pattern": "^receipt\\.[a-z0-9._-]+$"
+        },
+        "outcome_id": {
+          "type": "string",
+          "pattern": "^qoutcome_[A-Za-z0-9_-]+$"
+        },
+        "decision_state": {
+          "const": "reserved"
+        },
+        "receipt_state": {
+          "const": "reserved"
+        },
+        "outcome_state": {
+          "const": "reserved"
+        }
+      }
+    },
+    "authority_ceiling": {
+      "const": "propose"
+    },
+    "source_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "goal_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statement"
+      ],
+      "properties": {
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "available_minutes": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 15
+    },
+    "recent_move_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "priority_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "blocked_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "proven_capability_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "human_constraints": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "recent_outcome_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "allowed_destination_types": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "canonical_destination_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    }
+  }
+}

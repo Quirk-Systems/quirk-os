@@ -1,0 +1,94 @@
+name: Daily Move IO Conformance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/daily-move-io-conformance.yml'
+      - 'schemas/daily-move-*.schema.json'
+      - 'evals/daily-move/**'
+      - 'scripts/validate_daily_move_io.py'
+      - 'scripts/validate_daily_move_fixtures.py'
+      - 'tests/test_daily_move_io.py'
+      - 'tests/test_daily_move_io_workflow.py'
+      - 'tests/test_daily_move_task1_compatibility.py'
+      - 'tests/test_daily_move_fixtures.py'
+  push:
+    branches-ignore: [main]
+    paths:
+      - '.github/workflows/daily-move-io-conformance.yml'
+      - 'schemas/daily-move-*.schema.json'
+      - 'evals/daily-move/**'
+      - 'scripts/validate_daily_move_io.py'
+      - 'scripts/validate_daily_move_fixtures.py'
+      - 'tests/test_daily_move_io.py'
+      - 'tests/test_daily_move_io_workflow.py'
+      - 'tests/test_daily_move_task1_compatibility.py'
+      - 'tests/test_daily_move_fixtures.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-move-io-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  daily-move-io-conformance:
+    name: daily-move-io-conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Install evaluation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Validate Task 1 fixture corpus
+        run: python scripts/validate_daily_move_fixtures.py --require-pass
+
+      - name: Run Task 1 tests
+        run: python -m unittest tests.test_daily_move_fixtures -v
+
+      - name: Run Task 1 compatibility tests
+        run: python -m unittest tests.test_daily_move_task1_compatibility -v
+
+      - name: Initialize Daily Move IO evidence
+        if: always()
+        run: |
+          printf '%s\n' '{"schema_version":"daily-move.io-conformance.v1","valid_pair":false,"finding_codes":["VALIDATION_NOT_RUN"],"external_writes":0,"authority_ceiling":"propose"}' > daily-move-io-conformance.json
+
+      - name: Validate Task 2 IO contracts
+        if: always()
+        run: python scripts/validate_daily_move_io.py --require-pass --report daily-move-io-conformance.json
+
+      - name: Run Task 2 tests
+        if: always()
+        run: python -m unittest tests.test_daily_move_io -v
+
+      - name: Run Task 2 workflow contract tests
+        if: always()
+        run: python -m unittest tests.test_daily_move_io_workflow -v
+
+      - name: Upload Daily Move IO evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: daily-move-io-conformance
+          path: daily-move-io-conformance.json
+          if-no-files-found: error
+          retention-days: 30
