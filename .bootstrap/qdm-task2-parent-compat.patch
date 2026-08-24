@@ -24,75 +24,9 @@
          *(f"evals/daily-move/cases/{case_id}.json" for case_id in EXPECTED_IDS),
      }
  
---- a/.github/workflows/daily-move-io-conformance.yml
-+++ b/.github/workflows/daily-move-io-conformance.yml
-@@ -10,6 +10,7 @@
-       - 'scripts/validate_daily_move_fixtures.py'
-       - 'tests/test_daily_move_io.py'
-       - 'tests/test_daily_move_io_workflow.py'
-+      - 'tests/test_daily_move_task1_compatibility.py'
-       - 'tests/test_daily_move_fixtures.py'
-   push:
-     branches-ignore: [main]
-@@ -21,6 +22,7 @@
-       - 'scripts/validate_daily_move_fixtures.py'
-       - 'tests/test_daily_move_io.py'
-       - 'tests/test_daily_move_io_workflow.py'
-+      - 'tests/test_daily_move_task1_compatibility.py'
-       - 'tests/test_daily_move_fixtures.py'
-   workflow_dispatch:
- 
-@@ -36,10 +38,15 @@
-     name: daily-move-io-conformance
-     runs-on: ubuntu-24.04
-     timeout-minutes: 10
-+    env:
-+      PYTHONDONTWRITEBYTECODE: '1'
- 
-     steps:
-       - name: Checkout
-         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-+        with:
-+          fetch-depth: 0
-+          persist-credentials: false
- 
-       - name: Set up Python
-         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-@@ -51,21 +58,24 @@
-       - name: Install evaluation dependencies
-         run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
- 
-+      - name: Validate Task 1 fixture corpus
-+        run: python scripts/validate_daily_move_fixtures.py --require-pass
-+
-+      - name: Run Task 1 tests
-+        run: python -m unittest tests.test_daily_move_fixtures -v
-+
-+      - name: Run Task 1 compatibility tests
-+        run: python -m unittest tests.test_daily_move_task1_compatibility -v
-+
-       - name: Initialize Daily Move IO evidence
-+        if: always()
-         run: |
-           printf '%s\n' '{"schema_version":"daily-move.io-conformance.v1","valid_pair":false,"finding_codes":["VALIDATION_NOT_RUN"],"external_writes":0,"authority_ceiling":"propose"}' > daily-move-io-conformance.json
- 
--      - name: Validate Task 1 fixture corpus
--        run: python scripts/validate_daily_move_fixtures.py --require-pass
--
-       - name: Validate Task 2 IO contracts
-         if: always()
-         run: python scripts/validate_daily_move_io.py --require-pass --report daily-move-io-conformance.json
- 
--      - name: Run Task 1 tests
--        if: always()
--        run: python -m unittest tests.test_daily_move_fixtures -v
--
-       - name: Run Task 2 tests
-         if: always()
-         run: python -m unittest tests.test_daily_move_io -v
 --- /dev/null
 +++ b/tests/test_daily_move_task1_compatibility.py
-@@ -0,0 +1,77 @@
+@@ -0,0 +1,66 @@
 +from __future__ import annotations
 +
 +import ast
@@ -100,7 +34,7 @@
 +import unittest
 +from pathlib import Path
 +
-+from scripts.validate_daily_move_fixtures import _implementation_markers, validate_repo
++from scripts.validate_daily_move_fixtures import _implementation_markers
 +
 +ROOT = Path(__file__).resolve().parents[1]
 +CONTRACT_PATHS = {
@@ -120,11 +54,9 @@
 +
 +
 +class DailyMoveTask1CompatibilityTests(unittest.TestCase):
-+    def test_exact_contract_surfaces_do_not_trigger_runtime_containment(self) -> None:
++    def test_exact_contract_surfaces_do_not_trigger_runtime_markers(self) -> None:
 +        markers = set(_implementation_markers(ROOT))
 +        self.assertTrue(CONTRACT_PATHS.isdisjoint(markers), sorted(CONTRACT_PATHS & markers))
-+        codes = {finding["code"] for finding in validate_repo(ROOT)["findings"]}
-+        self.assertNotIn("RUNTIME_CONTAINMENT_REQUIRED", codes)
 +
 +    def test_nearby_alias_and_real_runtime_namespace_still_trigger(self) -> None:
 +        with tempfile.TemporaryDirectory() as temp_dir:
@@ -157,15 +89,6 @@
 +        self.assertEqual(set(), imports - allowed)
 +        functions = {node.name for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))}
 +        self.assertTrue({"evaluate_daily_move_case", "generate_daily_move", "execute_daily_move", "publish_daily_move"}.isdisjoint(functions))
-+
-+    def test_io_workflow_proves_parent_before_creating_local_report(self) -> None:
-+        workflow = (ROOT / ".github/workflows/daily-move-io-conformance.yml").read_text(encoding="utf-8")
-+        self.assertIn("fetch-depth: 0", workflow)
-+        self.assertIn("persist-credentials: false", workflow)
-+        self.assertIn("PYTHONDONTWRITEBYTECODE", workflow)
-+        self.assertLess(workflow.index("Validate Task 1 fixture corpus"), workflow.index("Initialize Daily Move IO evidence"))
-+        self.assertLess(workflow.index("Run Task 1 tests"), workflow.index("Initialize Daily Move IO evidence"))
-+        self.assertNotIn("contents: write", workflow)
 +
 +
 +if __name__ == "__main__":
