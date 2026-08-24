@@ -1,0 +1,64 @@
+api_version: quirk.canon/v1
+kind: DomainBoundary
+metadata:
+  id: quirk.products.beauty
+  name: Quirk Beauty
+  version: 0.1.0
+  lifecycle_status: canonized
+  truth_status: canonical
+  authority_level: explicit_human_admission
+  admitted_by: bryan
+  admitted_on: "2026-08-21"
+  authority_basis: explicit_user_instruction_current_conversation
+  content_hash: sha256:264c636c364db2caa08b2d4370eb10618c721d74f2588f8359546d8a9b45fb21
+  hash_basis: sorted-json-payload-excluding-content_hash
+spec:
+  purpose: >-
+    Observe, model, test, explain, and apply taste to the curation and
+    production of beautiful things within beauty-specific contexts.
+  owns:
+    - beauty-specific taste vocabulary, contexts, attributes, and comparison semantics
+    - beauty-specific choice, recommendation, outcome, and explanation experiences
+    - domain adapters that translate beauty evidence into generic Preference Graph proposals
+    - beauty-specific evaluation fixtures, failure cases, and proof artifacts
+  delegates:
+    quirk_core:
+      - identity and tenancy
+      - authorization, grants, revocation, expiry, and Human Gate enforcement
+      - immutable evidence and decision receipt services
+      - canonical doctrine and semantic registry authority
+      - generic Preference Graph storage, versioning, purpose partitions, overrides, decay, and forgetting
+      - model-provider execution and secrets
+      - publishing, outbound communication, transactions, and other effects
+      - cross-domain orchestration and action routing
+    quirk_commerce:
+      - catalog truth, offers, affiliate relationships, checkout, payment, attribution, and fulfillment
+  excludes:
+    - medical diagnosis or treatment advice
+    - sensitive-attribute inference
+    - autonomous publication, communication, purchase, or transaction
+    - silent Preference Graph mutation
+    - treating clicks, purchases, engagement, silence, or inferred satisfaction as explicit outcomes
+    - self-promotion of candidate artifacts into canon
+  invariants:
+    - capability_never_implies_authority
+    - candidate_never_implies_canon
+    - recommendation_never_implies_action
+    - outcome_never_implies_graph_mutation
+    - satisfaction_requires_explicit_human_evidence
+    - preference_updates_are_purpose_scoped_and_human_confirmed
+    - corrections_override_prior_inference_instead_of_being_silently_averaged
+    - every_consequential_transition_leaves_traceable_evidence
+    - only_this_domain_boundary_is_canonical_in_v0_1
+  required_proof:
+    sequence:
+      - choice
+      - preference_evidence
+      - recommendation
+      - real_world_outcome
+      - human_confirmed_graph_update
+    admission_rule: >-
+      No broader Quirk Beauty proposal, runtime, or product claim may be
+      promoted on the authority of this boundary alone.
+    real_world_required: true
+    synthetic_proof_sufficient: false
