@@ -42,7 +42,8 @@ jobs:
 
       - name: Verify and apply bounded compatibility patch
         run: |
-          echo "543e838af84794e2d248883339a3545b240be162025956599a80aca9bb43a20d  .bootstrap/qdm-task2-parent-compat.patch" | sha256sum --check -
+          echo "88b16bb1e67872dd9e786d1ec872599aba8c39af337812e6f329776b5a8ea226  .bootstrap/qdm-task2-parent-compat.patch" | sha256sum --check -
+          cp .github/workflows/apply-qdm-task2-parent-compat.yml /tmp/apply-qdm-task2-parent-compat.yml
           git apply --check --whitespace=error-all .bootstrap/qdm-task2-parent-compat.patch
           git apply .bootstrap/qdm-task2-parent-compat.patch
           rm -f .bootstrap/qdm-task2-parent-compat.patch
@@ -58,10 +59,13 @@ jobs:
           python -m unittest tests.test_daily_move_io -v
           python -m unittest tests.test_daily_move_io_workflow -v
 
-      - name: Publish clean compatibility commit
+      - name: Publish ordinary compatibility commit
         run: |
+          mkdir -p .github/workflows
+          cp /tmp/apply-qdm-task2-parent-compat.yml .github/workflows/apply-qdm-task2-parent-compat.yml
           git config user.name "Quirk Task 2 Builder"
           git config user.email "noreply@quirk.systems"
-          git add -A
+          git add scripts/validate_daily_move_fixtures.py tests/test_daily_move_task1_compatibility.py
+          git add -u .bootstrap/qdm-task2-parent-compat.patch
           git commit -m "test: classify Daily Move IO as contract-only evidence"
           git push origin HEAD:agent/quirk-daily-move-io-schemas
