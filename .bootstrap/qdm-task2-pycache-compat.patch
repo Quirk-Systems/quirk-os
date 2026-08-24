@@ -15,7 +15,7 @@
          return (
 --- a/tests/test_daily_move_task1_compatibility.py
 +++ b/tests/test_daily_move_task1_compatibility.py
-@@ -2,6 +2,7 @@
+@@ -2,5 +2,6 @@
  
  import ast
 +import subprocess
