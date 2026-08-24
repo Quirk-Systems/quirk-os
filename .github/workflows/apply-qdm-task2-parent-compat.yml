@@ -21,6 +21,8 @@ jobs:
   apply:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - name: Checkout Task 2 branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -40,7 +42,7 @@ jobs:
 
       - name: Verify and apply bounded compatibility patch
         run: |
-          echo "faa6b9b1ac8dafe12f1caaac06a0896e10864c18d988c3e4f81e8c9a11d8cd8d  .bootstrap/qdm-task2-parent-compat.patch" | sha256sum --check -
+          echo "543e838af84794e2d248883339a3545b240be162025956599a80aca9bb43a20d  .bootstrap/qdm-task2-parent-compat.patch" | sha256sum --check -
           git apply --check --whitespace=error-all .bootstrap/qdm-task2-parent-compat.patch
           git apply .bootstrap/qdm-task2-parent-compat.patch
           rm -f .bootstrap/qdm-task2-parent-compat.patch
@@ -50,11 +52,11 @@ jobs:
       - name: Verify parent fixture gate and Task 2 contracts
         run: |
           python scripts/validate_daily_move_fixtures.py --require-pass
-          python scripts/validate_daily_move_io.py --require-pass --report /tmp/daily-move-io-conformance.json
           python -m unittest tests.test_daily_move_fixtures -v
+          python -m unittest tests.test_daily_move_task1_compatibility -v
+          python scripts/validate_daily_move_io.py --require-pass --report /tmp/daily-move-io-conformance.json
           python -m unittest tests.test_daily_move_io -v
           python -m unittest tests.test_daily_move_io_workflow -v
-          python -m unittest tests.test_daily_move_task1_compatibility -v
 
       - name: Publish clean compatibility commit
         run: |
