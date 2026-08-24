@@ -1166,11 +1166,23 @@ def _implementation_markers(root: Path) -> list[str]:
     markers: set[str] = set()
     allowed = {
         ".github/workflows/daily-move-fixtures.yml",
+        ".github/workflows/daily-move-io-conformance.yml",
+        "docs/superpowers/plans/2026-08-21-quirk-daily-move-io.md",
+        "docs/superpowers/specs/2026-08-21-quirk-daily-move-io-design.md",
         "scripts/validate_daily_move_fixtures.py",
+        "scripts/validate_daily_move_io.py",
         "tests/test_daily_move_fixtures.py",
+        "tests/test_daily_move_io.py",
+        "tests/test_daily_move_io_workflow.py",
+        "tests/test_daily_move_task1_compatibility.py",
         "evals/daily-move/README.md",
         "evals/daily-move/fixtures.json",
         "evals/daily-move/conformance-results.json",
+        "evals/daily-move/io-cases/invalid-cases.json",
+        "evals/daily-move/io-cases/valid-input.json",
+        "evals/daily-move/io-cases/valid-output.json",
+        "schemas/daily-move-input.schema.json",
+        "schemas/daily-move-output.schema.json",
         *(f"evals/daily-move/cases/{case_id}.json" for case_id in EXPECTED_IDS),
     }
 
