@@ -1,6 +1,12 @@
 name: Apply QDM Task 2 Parent Compatibility
 
 on:
+  pull_request:
+    branches:
+      - agent/quirk-daily-move-fixture-corpus
+    paths:
+      - '.github/workflows/apply-qdm-task2-parent-compat.yml'
+      - '.bootstrap/qdm-task2-parent-compat.patch'
   push:
     branches:
       - agent/quirk-daily-move-io-schemas
