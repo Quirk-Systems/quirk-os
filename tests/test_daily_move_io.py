@@ -122,9 +122,30 @@ class DailyMoveSemanticTests(unittest.TestCase):
         self.input_doc["timezone"] = "Mars/Olympus_Mons"
         self.assertIn("INVALID_TIMEZONE", validate_daily_move_pair(self.input_doc, self.output_doc))
 
+    def test_invalid_calendar_date_fails_input_schema_validation(self):
+        self.input_doc["local_date"] = "2026-02-30"
+        self.assertIn("INPUT_SCHEMA_INVALID", validate_daily_move_pair(self.input_doc, self.output_doc))
+
     def test_weekday_mismatch_fails(self):
         self.output_doc["weekday"] = "Thursday"
         self.assertIn("WEEKDAY_MISMATCH", validate_daily_move_pair(self.input_doc, self.output_doc))
+
+    def test_non_mapping_documents_fail_closed_without_exception(self):
+        input_findings = validate_daily_move_pair([], self.output_doc)
+        self.assertIn("INPUT_SCHEMA_INVALID", input_findings)
+        self.assertIn("NO_SPINE", input_findings)
+
+        output_findings = validate_daily_move_pair(self.input_doc, [])
+        self.assertIn("OUTPUT_SCHEMA_INVALID", output_findings)
+        self.assertIn("CONTENT_HASH_MISMATCH", output_findings)
+
+    def test_schema_invalid_reference_items_fail_closed_without_exception(self):
+        self.input_doc["source_refs"] = [{"not": "hashable"}]
+        self.output_doc["source_refs"] = [{"not": "hashable"}]
+        rehash(self.output_doc)
+        findings = validate_daily_move_pair(self.input_doc, self.output_doc)
+        self.assertIn("INPUT_SCHEMA_INVALID", findings)
+        self.assertIn("OUTPUT_SCHEMA_INVALID", findings)
 
     def test_each_outcome_spine_identity_mutation_fails_with_field_specific_code(self):
         expected_codes = {
@@ -213,7 +234,6 @@ class DailyMoveSemanticTests(unittest.TestCase):
         rehash(candidate)
         self.assertIn("UNSUPPORTED_ARCHITECTURE", validate_daily_move_pair(self.input_doc, candidate))
 
-
     def test_unseen_spine_id_is_valid_for_uniqueness(self):
         self.assertNotIn(
             "DUPLICATE_SPINE_ID",
@@ -236,14 +256,12 @@ class DailyMoveSemanticTests(unittest.TestCase):
             validate_daily_move_pair(self.input_doc, self.output_doc, observed),
         )
 
-
     def test_duplicate_validation_does_not_mutate_observed_spines(self):
         spine_id = self.input_doc["outcome_spine"]["spine_id"]
         observed = {spine_id: "0" * 64}
         before = copy.deepcopy(observed)
         validate_daily_move_pair(self.input_doc, self.output_doc, observed)
         self.assertEqual(before, observed)
-
 
     def test_invalid_case_corpus_contract_is_unique_and_complete(self):
         cases = load_json(INVALID_CASES_PATH)
@@ -269,7 +287,6 @@ class DailyMoveSemanticTests(unittest.TestCase):
             findings = validate_daily_move_pair(input_doc, output_doc, observed)
             self.assertIn(case["expected_code"], findings, case["case_id"])
 
-
     def test_conformance_report_is_valid_candidate_evidence_only(self):
         report = conformance_report(ROOT)
         self.assertTrue(report["valid_pair"])
@@ -277,7 +294,6 @@ class DailyMoveSemanticTests(unittest.TestCase):
         self.assertEqual("propose", report["authority_ceiling"])
         self.assertEqual(0, report["external_writes"])
         self.assertEqual(report["output_content_hash"], report["expected_output_hash"])
-
 
     def test_conformance_report_uses_requested_root_for_schemas(self):
         with tempfile.TemporaryDirectory() as temporary:
