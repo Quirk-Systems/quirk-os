@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quirk://schemas/beauty/taste-context/0.1.0",
+  "title": "TasteContext",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "realm": { "const": "beauty" },
+    "purpose": { "type": "string", "minLength": 1 },
+    "attributes": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }]
+      }
+    }
+  },
+  "required": ["id", "realm", "purpose", "attributes"]
+}

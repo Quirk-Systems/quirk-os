@@ -1,0 +1,9 @@
+/docs/canon/QUIRK-BEAUTY-DOMAIN-BOUNDARY.yaml @bryansayler
+/docs/canon/QUIRK-BEAUTY-DOMAIN-BOUNDARY.payload.json @bryansayler
+/decisions/ADR-0002-quirk-beauty-domain-boundary.md @bryansayler
+/domains/beauty/ @bryansayler
+/supabase/migrations/20260821090000_quirk_beauty_taste_engine_candidate.sql @bryansayler
+/supabase/tests/quirk_beauty_taste_engine_rls.sql @bryansayler
+/.github/CODEOWNERS @bryansayler
+/.github/workflows/quirk-beauty-domain-pack.yml @bryansayler
+/docs/canon/README.md @bryansayler

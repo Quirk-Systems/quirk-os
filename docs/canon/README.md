@@ -1,4 +1,14 @@
-# Quirk Canon Candidate Index
+# Quirk Canon Index
+
+This index distinguishes **human-admitted boundaries** from reusable **canon candidates**. Repository presence alone does not promote a candidate, activate a runtime, or grant execution authority.
+
+## Human-admitted boundaries
+
+| Boundary | Status | Purpose |
+| --- | --- | --- |
+| [Quirk Beauty Domain Boundary](QUIRK-BEAUTY-DOMAIN-BOUNDARY.yaml) | **ADMITTED — 2026-08-21** | Owns only beauty-specific taste semantics and experiences; delegates identity, authority, generic Preference Graph infrastructure, effects, and commerce truth. The bound [sorted-JSON payload](QUIRK-BEAUTY-DOMAIN-BOUNDARY.payload.json) is the hash basis. |
+
+## Canon candidates
 
 These files establish reusable candidate contracts. They are not admitted Canon until a human decision records that status.
 

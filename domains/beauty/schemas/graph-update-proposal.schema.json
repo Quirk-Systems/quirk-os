@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quirk://schemas/beauty/graph-update-proposal/0.1.0",
+  "title": "GraphUpdateProposal",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "actorId": { "type": "string" },
+    "purpose": { "type": "string" },
+    "expectedGraphRevision": { "type": "integer", "minimum": 0 },
+    "recommendationId": { "type": "string" },
+    "outcomeId": { "type": "string" },
+    "deltas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feature": { "type": "string" },
+          "delta": { "type": "number", "minimum": -1, "maximum": 1 },
+          "setStrength": { "type": "number", "minimum": -1, "maximum": 1 },
+          "evidenceIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+        },
+        "required": ["feature", "delta", "evidenceIds"]
+      }
+    },
+    "autoApply": { "const": false },
+    "truthStatus": { "const": "candidate" },
+    "proposedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["id", "actorId", "purpose", "expectedGraphRevision", "recommendationId", "outcomeId", "deltas", "autoApply", "truthStatus", "proposedAt", "expiresAt"]
+}
