@@ -1,8 +1,10 @@
 # Verification Report
 
-**Evidence date:** 2026-08-21  
-**Local environment:** Node `v22.16.0`, npm `10.9.2`  
-**Canonical CI target:** Node 24, with Node 22 compatibility evidence
+**Evidence date:** 2026-08-25
+
+**Local receipt environment:** Node `v24.19.0`, npm `11.9.0`
+
+**Compatibility evidence:** This local receipt is Node 24 only. The pull-request matrix supplies Node 22 compatibility evidence.
 
 This file records local deterministic evidence. GitHub branch, pull-request, and check state remain external repository evidence and are not hardcoded here.
 
@@ -10,7 +12,7 @@ This file records local deterministic evidence. GitHub branch, pull-request, and
 
 ```text
 npm test
-19 tests passed
+24 tests passed
 0 tests failed
 ```
 
@@ -31,15 +33,13 @@ Coverage includes:
 
 ```text
 npm run validate
-PACK VALID: 14 required files present
-canon ceiling intact
-boundary hash matched
+PACK VALID: 19 required files present; canon ceiling intact; source lineage bound; Cloudflare receipt gate fail-closed; boundary hash sha256:264c636c364db2caa08b2d4370eb10618c721d74f2588f8359546d8a9b45fb21.
 ```
 
 Boundary digest:
 
 ```text
-sha256:e22c575b17d3a196e28c0a178e70a6dcfbd337218e105736fa2a5b5f1f117467
+sha256:264c636c364db2caa08b2d4370eb10618c721d74f2588f8359546d8a9b45fb21
 ```
 
 ```text

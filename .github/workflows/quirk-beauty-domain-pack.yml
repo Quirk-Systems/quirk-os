@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "docs/canon/QUIRK-BEAUTY-DOMAIN-BOUNDARY.*"
+      - "docs/canon/README.md"
       - "decisions/ADR-0002-quirk-beauty-domain-boundary.md"
       - "domains/beauty/**"
       - "supabase/migrations/20260821090000_quirk_beauty_taste_engine_candidate.sql"
