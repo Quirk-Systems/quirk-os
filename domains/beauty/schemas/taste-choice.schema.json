@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quirk://schemas/beauty/taste-choice/0.1.0",
+  "title": "TasteChoice",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "sessionId": { "type": "string" },
+    "actorId": { "type": "string" },
+    "context": { "$ref": "taste-context.schema.json" },
+    "presentedOptionIds": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string" } },
+    "selectedOptionId": { "type": ["string", "null"] },
+    "abstained": { "type": "boolean" },
+    "sourceType": { "const": "explicit_human_choice" },
+    "capturedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["id", "sessionId", "actorId", "context", "presentedOptionIds", "selectedOptionId", "abstained", "sourceType", "capturedAt"]
+}

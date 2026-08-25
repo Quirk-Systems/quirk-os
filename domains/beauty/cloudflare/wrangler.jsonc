@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "quirk-beauty-edge-candidate",
+  "main": "src/index.mjs",
+  "compatibility_date": "2026-08-25",
+  "workers_dev": false,
+  "vars": { "QUIRK_RUNTIME_STATE": "candidate_disabled" },
+  "services": [
+    { "binding": "AUTHORITY_VERIFIER", "service": "quirk-authority-verifier-candidate" },
+    { "binding": "EXPLANATION_SERVICE", "service": "quirk-beauty-explanation-candidate" }
+  ]
+}

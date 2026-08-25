@@ -1,0 +1,19 @@
+{
+  "proofId": "REPLACE_WITH_STABLE_PROOF_ID",
+  "domainBoundaryRef": "quirk.products.beauty",
+  "synthetic": false,
+  "participantConsent": false,
+  "purpose": "personal_beauty_recommendation",
+  "actorId": "REPLACE_WITH_SCOPED_ACTOR_REFERENCE",
+  "startedAt": "REPLACE_WITH_ISO_DATETIME",
+  "completedAt": "REPLACE_WITH_ISO_DATETIME",
+  "choice": {},
+  "preferenceEvidence": [],
+  "recommendation": {},
+  "realWorldOutcome": {},
+  "graphUpdateProposal": {},
+  "humanDecision": {},
+  "graphUpdateReceipt": {},
+  "artifactDigests": {},
+  "operatorAttestation": "REPLACE_AFTER_INSPECTING_THE_COMPLETE_REAL_WORLD_RUN"
+}
