@@ -1,0 +1,67 @@
+{
+  "schema_version": "quirk.arcade-assurance-manifest/0.1",
+  "suite_id": "eval.quirk-arcade.receipt-run.v0.1",
+  "status": "CANDIDATE_EVALS",
+  "fixture_path": "evals/quirk-arcade-receipt-run/cases/COSPLAY_TWIN_CHECKOUT.json",
+  "cases": [
+    {
+      "case_id": "QA-AUTH-001",
+      "evaluator": "unknown_structured_permission_fields_rejected",
+      "expected": "PASS"
+    },
+    {
+      "case_id": "QA-AUTH-002",
+      "evaluator": "protected_effects_denied",
+      "expected": "PASS"
+    },
+    {
+      "case_id": "QA-ID-002",
+      "evaluator": "representational_identity_non_authorizing",
+      "expected": "PASS"
+    },
+    {
+      "case_id": "QA-ID-003",
+      "evaluator": "delegation_denied_without_transitive_authority",
+      "expected": "PASS"
+    },
+    {
+      "case_id": "QA-LIFE-001",
+      "evaluator": "terminal_vocabulary_candidate_only",
+      "expected": "PASS"
+    },
+    {
+      "case_id": "QA-PAY-001",
+      "evaluator": "payment_attempt_cannot_unlock_authority",
+      "expected": "PASS"
+    },
+    {
+      "case_id": "QA-SCORE-001",
+      "evaluator": "gameplay_cannot_promote_lifecycle",
+      "expected": "PASS"
+    },
+    {
+      "case_id": "QA-DIGEST-001",
+      "evaluator": "dependency_digest_drift_rejected",
+      "expected": "PASS"
+    },
+    {
+      "case_id": "QA-PLAY-001",
+      "evaluator": "no_op_ablation_changes_terminal_state",
+      "expected": "PASS"
+    },
+    {
+      "case_id": "QA-PLAY-005",
+      "evaluator": "byte_identical_replay",
+      "expected": "PASS"
+    }
+  ],
+  "critical_failure_policy": "one failure fails the suite; no averaging",
+  "claims_withheld": [
+    "independent review",
+    "playable UI",
+    "Deck compilation",
+    "runtime activation",
+    "admission",
+    "Canon promotion"
+  ]
+}
