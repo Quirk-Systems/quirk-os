@@ -15,7 +15,7 @@ Status: **candidate / non-operative**. This architecture does not admit a skill,
 
 ## Four products, kept separate
 
-1. **Portable source package** — `SKILL.md`, `manifest.json`, examples, and eval references.
+1. **Portable source package** — `SKILL.md`, package metadata, examples, and attributable eval references.
 2. **Canonical admission record** — a separately accountable decision about one immutable digest.
 3. **Runtime enforcement** — loader, grant validation, tool scoping, and receipts.
 4. **Projection** — registries, dashboards, Airtable/Notion/Drive views, and analytics that can be rebuilt.
@@ -25,20 +25,22 @@ No layer inherits another layer’s authority. A projection cannot become Canon 
 ## Repository ownership
 
 - `quirk-core`: admitted semantic definitions, invariants, and governance contracts.
-- `quirk-os`: runtime loader, routing, enforcement, receipts, and private projections.
-- future `quirk-skills`: portable skill packages after three independent consumers justify extraction.
-- future `quirk-evals`: reusable cross-repository conformance and adversarial suites after duplication exists.
+- `quirk-skills`: portable Skill candidate source packages and their attributable package-local evaluation evidence. It is a candidate source repository and does not admit, activate, deploy, canonize, publish, or grant runtime authority.
+- `quirk-os`: runtime loader, routing, enforcement, receipts, runtime-facing projections, and legacy/local Skill candidates that have not yet received an explicit migration disposition.
+- future `quirk-evals`: reusable cross-repository conformance and adversarial suites only after duplication and independent consumers justify extraction.
 - `quirk-generator`: scaffolds candidate packages; generated output defaults to candidate.
 - `quirk-data`: rebuildable quality, usage, and evaluation projections only.
-- `.github`: reusable organization workflows after the contract is proven here.
+- `.github`: organization governance, portfolio truth, and reusable workflows after contracts are proven.
 
-Extraction is a product decision, not an aesthetic preference for more repositories.
+`quirk-skills` existing as a repository does not automatically move, admit, or reclassify the local packages under `quirk-os/skills/*`. Those packages remain where they are until a separate, explicit migration decision is bound to exact source and destination states.
+
+Extraction remains a product decision, not an aesthetic preference for more repositories.
 
 ## Skill package contract
 
 Every package defines identity, version, maturity, family, purpose, trigger boundaries, typed inputs and outputs, invariants, failure and stop conditions, method sequence, decisions, approvals, resources, tools, quality gates, learning rules, compatibility, provenance, and integrity.
 
-`integrity.source_blob_sha` binds the manifest to the exact `SKILL.md` bytes using Git blob SHA-1. `integrity.manifest_sha256` binds the canonical JSON form of the manifest while excluding only its self-digest field.
+Where a package uses `manifest.json`, `integrity.source_blob_sha` binds the manifest to the exact `SKILL.md` bytes using Git blob SHA-1 and `integrity.manifest_sha256` binds the canonical JSON form of the manifest while excluding only its self-digest field. Other candidate package formats must provide an equivalently explicit immutable source binding before evidence can be treated as version-specific.
 
 ## Runtime admission sequence
 
@@ -63,4 +65,4 @@ A running skill never rewrites itself. Historical versions remain addressable. F
 
 ## Admission
 
-A version must separately pass applicable Quirk Approval, Procedures, Processes, Profiling, Interoperability, Security, Statistical, Lexical, and Quirk Pedantry testing. This PR supplies machine-verifiable package, integrity, runtime-boundary, and eval evidence. Human admission remains external by design.
+A version must separately pass applicable Quirk Approval, Procedures, Processes, Profiling, Interoperability, Security, Statistical, Lexical, and Quirk Pedantry testing. Package-local evidence may support a bounded review disposition; human admission remains external by design.

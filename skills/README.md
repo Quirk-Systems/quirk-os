@@ -2,6 +2,12 @@
 
 Status: **candidate / non-operative**.
 
+## Source ownership note
+
+`Quirk-Systems/quirk-skills` now owns new portable Skill candidate source packages and their attributable package-local evaluation evidence. The packages in this `quirk-os/skills/*` tree remain legacy/local candidates pending explicit migration decisions; their presence here does not grant admission, runtime authority, Canon status, or ownership over new portable candidates.
+
+This repository continues to own runtime loading, routing, grant enforcement, receipts, and runtime-facing Skill projections. `skills/registry.json` remains a rebuildable local candidate inventory and is not automatically extended when a candidate is created in `quirk-skills`.
+
 The manifest registry now contains 12 candidate Skill packages. Eleven retain the Skills v0.2 shared conformance suite; `quirk-applause-gate` joins through a bounded v0.3 registry extension with its own four-case shared conformance slice. Every package remains evidence-only until separately admitted.
 
 Each manifested package contains:
