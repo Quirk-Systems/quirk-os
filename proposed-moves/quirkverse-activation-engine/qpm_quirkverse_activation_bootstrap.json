@@ -1,0 +1,34 @@
+{
+  "schema_version": "quirk.proposed-move/0.1",
+  "move_id": "qpm.quirkverse-activation-engine.bootstrap",
+  "title": "Bootstrap Quirkverse Activation Engine candidate",
+  "status": "PROPOSED",
+  "authority_effect": "none",
+  "objective": "Create and independently test one candidate Narrative Systems contract that routes signals into governed, proof-producing Quirkverse activations.",
+  "owner": "Bryan",
+  "canonical_owner": "Quirk Narrative Systems within quirk-os",
+  "inputs": [
+    "docs/narrative-systems/quirkverse-activation-engine.md",
+    "schemas/quirkverse-activation.schema.json",
+    "schemas/quirkverse-receipt.schema.json",
+    "schemas/quirkverse-world-state-delta.schema.json",
+    "evals/quirkverse-activation/fixtures.json"
+  ],
+  "outputs": [
+    "one real two-format bakeoff",
+    "one independently reviewed receipt",
+    "one win or loss disposition",
+    "one approved world-state delta or explicit no-change",
+    "projection issues for Quirk Town, Memory, Skills, and Music"
+  ],
+  "non_goals": [
+    "runtime activation",
+    "Canon promotion",
+    "publishing lore as fact",
+    "granting residents operational authority",
+    "creating a universal UI before the contracts survive a real run"
+  ],
+  "cheapest_disproof": "Run one real signal as both a plain bounded task and a Quirkverse activation. Reject the engine if narrative routing does not materially improve judgment, memory, participation, proof quality, or reuse.",
+  "required_human_gate": "Bryan exact-head candidate review",
+  "next_transition": "AUTHORIZE_CANDIDATE_BAKEOFF"
+}

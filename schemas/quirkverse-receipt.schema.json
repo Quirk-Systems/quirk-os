@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/quirkverse-receipt.schema.json",
+  "title": "Quirkverse Activation Evidence Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "receipt_id", "activation_ref", "recorded_at", "result_state", "origin", "authority", "execution", "independent_proof", "outcome", "disposition", "final_human_owner"],
+  "properties": {
+    "schema_version": {"const": "quirk.quirkverse-receipt/0.1"},
+    "receipt_id": {"type": "string", "pattern": "^receipt\\.activation\\.[a-z0-9._-]+$"},
+    "activation_ref": {"type": "string", "pattern": "^activation\\.[a-z0-9._-]+$"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "result_state": {"enum": ["FAILED", "INTERESTING", "CANDIDATE", "TESTED", "ADMITTED", "CANON", "BONEYARD", "PRESERVED_AS_LINEAGE"]},
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signal_refs", "initiator"],
+      "properties": {
+        "signal_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "initiator": {"type": "string"},
+        "conversation_ref": {"type": ["string", "null"]}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grant_ref", "effect_class", "scope_fingerprint", "scope_delta_state"],
+      "properties": {
+        "grant_ref": {"type": "string"},
+        "effect_class": {"enum": ["READ", "INFER", "RECOMMEND", "PREPARE", "MUTATE_DIGITAL_STATE", "COMMIT_MONEY", "MOVE_PHYSICAL_STATE", "CREATE_IRREVERSIBLE_CONSEQUENCE"]},
+        "scope_fingerprint": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "scope_delta_state": {"enum": ["UNCHANGED", "IMPLEMENTATION_DETAIL", "MATERIAL_SCOPE_CHANGE", "AUTHORITY_CHANGE"]},
+        "reauthorization_ref": {"type": ["string", "null"]}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_refs", "actions_taken", "stop_conditions_triggered"],
+      "properties": {
+        "artifact_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "actions_taken": {"type": "array", "items": {"type": "string"}},
+        "stop_conditions_triggered": {"type": "array", "items": {"type": "string"}},
+        "runtime_receipt_refs": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "independent_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewer", "rubric_ref", "fixture_results", "claims_withheld"],
+      "properties": {
+        "reviewer": {"type": "string"},
+        "rubric_ref": {"type": "string"},
+        "fixture_results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["fixture_ref", "result"],
+            "properties": {
+              "fixture_ref": {"type": "string"},
+              "result": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+              "evidence_ref": {"type": ["string", "null"]}
+            }
+          }
+        },
+        "claims_withheld": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["real_world_change", "value_evidence", "harm_or_externality", "admitted_work"],
+      "properties": {
+        "real_world_change": {"type": "string"},
+        "value_evidence": {"type": "array", "items": {"type": "string"}},
+        "harm_or_externality": {"type": "array", "items": {"type": "string"}},
+        "admitted_work": {"type": "boolean"}
+      }
+    },
+    "disposition": {"enum": ["FAILED", "INTERESTING", "CANDIDATE", "TESTED", "ADMITTED", "CANON", "BONEYARD", "PRESERVED_AS_LINEAGE"]},
+    "continuity_delta_ref": {"type": ["string", "null"]},
+    "final_human_owner": {"type": "string"},
+    "authority_effect": {"enum": ["none", "candidate_only", "admission", "canon"], "default": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}

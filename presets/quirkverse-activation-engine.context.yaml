@@ -1,0 +1,81 @@
+schema_version: quirk.context-window/0.1
+window_id: context.quirkverse-activation-engine.2026-08-28
+title: Quirkverse Activation Engine — founding context window
+status: CANDIDATE_CONTEXT
+purpose: Preserve the current concept, recent decisions, open-world edges, and refresh triggers without promoting memory into truth or authority.
+owner: Bryan
+opened_at: 2026-08-28T00:00:00-05:00
+refresh_triggers:
+  - candidate PR changes
+  - first real activation run
+  - activation format added or removed
+  - continuity-delta dispute
+  - Canon or authority decision
+expires_when:
+  - superseded by reviewed context window
+  - candidate is rejected or boneyarded
+
+core_sequence:
+  - SIGNAL
+  - WORLD ROUTING
+  - CAST
+  - LOCATION
+  - STORY PRESSURE
+  - FORMAT
+  - CAPABILITY PURSUIT
+  - GOVERNED MOVE
+  - ARTIFACT
+  - EVIDENCE RECEIPT
+  - WORLD-STATE CHANGE
+
+resident_context:
+  Bryan: ground truth, ownership, final human authority
+  Brayn: architecture, ontology, systems coherence
+  BryMinn: performance, emotional consequence, culture, music
+  Brayk: seams, contradictions, exploit paths, broken assumptions
+
+location_context:
+  - Aperture
+  - Foundry
+  - Constellation
+  - Gallery
+  - Tribunal
+  - Control Booth
+  - Quirk Town
+  - Quirk Arcade
+  - Quirk Museum
+
+recent_wins:
+  - The universal compiler now routes signals beyond AI prompts into residents, locations, events, competitions, performances, commerce, and communication.
+  - Proof objects, receipts, lineage, and continuity deltas are mandatory rather than decorative.
+  - Candidate-before-Canon and capability-does-not-imply-authority remain intact.
+
+recent_losses_or_scars:
+  - Prompt-only routing was too narrow for the Quirkverse.
+  - Lore-only worldbuilding risks becoming decorative architecture without proof.
+  - Multiplayer or popularity signals can create false authority and scope creep.
+  - Copies across tools can create competing sources of truth.
+
+open_world:
+  active_capability_pursuits:
+    - Universal Quirkverse Move Compiler
+    - Quirkverse Activation Receipt
+    - World-State Delta contract
+    - Context Window registry
+  unresolved_questions:
+    - Which repository paths become the reviewed long-term Narrative Systems home?
+    - Which two activation formats should run the first controlled bakeoff?
+    - What is the smallest operator UI that shows world route, gates, proof, and continuity?
+    - Which lore objects deserve candidate projection into Quirk Town?
+  watched_failures:
+    - spectacle without substance
+    - lore promoted as evidence
+    - popularity mistaken for authority
+    - fake tournament
+    - artifact without outcome
+    - projection promoted into Canon
+
+non_authoritative_statements:
+  - This context window does not authorize runtime execution.
+  - This context window does not promote any resident, location, storyline, capability, or artifact into Canon.
+  - Recency does not imply truth.
