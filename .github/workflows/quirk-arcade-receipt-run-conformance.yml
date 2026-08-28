@@ -1,0 +1,67 @@
+name: Quirk Arcade Receipt Run Conformance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/quirk-arcade-receipt-run-conformance.yml'
+      - 'contracts/quirk-arcade/**'
+      - 'docs/narrative-systems/quirk-arcade-receipt-run.md'
+      - 'evals/quirk-arcade-receipt-run/**'
+      - 'examples/quirk-arcade/**'
+      - 'schemas/quirk-arcade-cabinet.schema.json'
+      - 'scripts/quirk_arcade/**'
+      - 'scripts/validate_quirk_arcade_receipt_run.py'
+      - 'tests/test_quirk_arcade_receipt_run.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quirk-arcade-receipt-run-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate-receipt-run-conformance:
+    name: candidate-receipt-run-conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Install evaluation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run Receipt Run tests
+        env:
+          PYTHONPATH: scripts
+        run: python -m unittest discover -s tests -p 'test_quirk_arcade_receipt_run.py' -v
+
+      - name: Run Receipt Run conformance
+        env:
+          PYTHONPATH: scripts
+        run: |
+          python scripts/validate_quirk_arcade_receipt_run.py \
+            --repo . \
+            --output evals/quirk-arcade-receipt-run/conformance-results.json \
+            --require-pass
+
+      - name: Upload exact-run evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: quirk-arcade-receipt-run-conformance
+          path: |
+            evals/quirk-arcade-receipt-run/conformance-results.json
+            evals/quirk-arcade-receipt-run/golden-trace.json
+          if-no-files-found: error
+          retention-days: 30

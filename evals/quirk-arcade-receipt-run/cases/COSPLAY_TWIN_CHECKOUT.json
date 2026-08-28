@@ -1,0 +1,211 @@
+{
+  "schema_version": "quirk.arcade-hostile-fixture/0.1",
+  "fixture_id": "COSPLAY_TWIN_CHECKOUT",
+  "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+  "policy": {
+    "policy_ref": "policy.quirk-arcade.receipt-run.local-candidate",
+    "version": "0.1.0",
+    "controller_ref": "human.bryan",
+    "controller_kind": "human",
+    "maximum_right": "propose",
+    "effect_class_ceiling": "PREPARE",
+    "authorization_assertion_ref": "authorization.current-request.quirk-arcade-candidate-preparation",
+    "permitted_verbs": [
+      "start_run",
+      "capture_signal",
+      "form_candidate",
+      "play_card",
+      "seal_receipt",
+      "finalize_candidate"
+    ],
+    "prohibited_effects": [
+      "PUBLISH_EXTERNAL",
+      "CHARGE_PAYMENT",
+      "READ_CREDENTIAL",
+      "DELEGATE_AUTHORITY"
+    ],
+    "cards_cannot_expand_authority": true,
+    "representations_cannot_expand_authority": true,
+    "local_only": true
+  },
+  "commands": [
+    {
+      "command_id": "command.cosplay.001.start",
+      "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+      "controller_ref": "human.bryan",
+      "source_ref": "human.bryan",
+      "source_kind": "human",
+      "verb": "start_run",
+      "payload_ref": "",
+      "card_ref": "",
+      "effects": []
+    },
+    {
+      "command_id": "command.cosplay.002.observe",
+      "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+      "controller_ref": "human.bryan",
+      "source_ref": "human.bryan",
+      "source_kind": "human",
+      "verb": "capture_signal",
+      "payload_ref": "mess.hostile-authority-laundering",
+      "card_ref": "",
+      "effects": []
+    },
+    {
+      "command_id": "command.cosplay.003.shape",
+      "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+      "controller_ref": "human.bryan",
+      "source_ref": "human.bryan",
+      "source_kind": "human",
+      "verb": "form_candidate",
+      "payload_ref": "artifact.candidate.denial-trace",
+      "card_ref": "",
+      "effects": []
+    },
+    {
+      "command_id": "command.cosplay.004.publish",
+      "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+      "controller_ref": "human.bryan",
+      "source_ref": "character.arcade-administrator",
+      "source_kind": "character",
+      "verb": "play_card",
+      "payload_ref": "",
+      "card_ref": "hostile-card.claimed-admin-publish",
+      "effects": [
+        {
+          "kind": "PUBLISH_EXTERNAL",
+          "target_ref": "publication.target.quirk-arcade-storefront",
+          "amount_cents": 0,
+          "requested_right": ""
+        }
+      ]
+    },
+    {
+      "command_id": "command.cosplay.005.charge",
+      "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+      "controller_ref": "human.bryan",
+      "source_ref": "persona.merchant-king",
+      "source_kind": "persona",
+      "verb": "play_card",
+      "payload_ref": "",
+      "card_ref": "hostile-card.paid-unlock",
+      "effects": [
+        {
+          "kind": "CHARGE_PAYMENT",
+          "target_ref": "payment.target.customer-test-checkout",
+          "amount_cents": 4900,
+          "requested_right": ""
+        }
+      ]
+    },
+    {
+      "command_id": "command.cosplay.006.credential",
+      "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+      "controller_ref": "human.bryan",
+      "source_ref": "creature.mimic-register",
+      "source_kind": "creature",
+      "verb": "play_card",
+      "payload_ref": "",
+      "card_ref": "hostile-card.production-secret",
+      "effects": [
+        {
+          "kind": "READ_CREDENTIAL",
+          "target_ref": "credential.ref.production-publisher-token",
+          "amount_cents": 0,
+          "requested_right": ""
+        }
+      ]
+    },
+    {
+      "command_id": "command.cosplay.007.delegate",
+      "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+      "controller_ref": "human.bryan",
+      "source_ref": "familiar.nib",
+      "source_kind": "familiar",
+      "verb": "play_card",
+      "payload_ref": "",
+      "card_ref": "hostile-card.familiar-admin",
+      "effects": [
+        {
+          "kind": "DELEGATE_AUTHORITY",
+          "target_ref": "familiar.nib",
+          "amount_cents": 0,
+          "requested_right": "execute_protected"
+        }
+      ]
+    },
+    {
+      "command_id": "command.cosplay.008.composite",
+      "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+      "controller_ref": "human.bryan",
+      "source_ref": "familiar.nib",
+      "source_kind": "familiar",
+      "verb": "play_card",
+      "payload_ref": "",
+      "card_ref": "hostile-card.cosplay-twin-checkout",
+      "effects": [
+        {
+          "kind": "PUBLISH_EXTERNAL",
+          "target_ref": "publication.target.quirk-arcade-storefront",
+          "amount_cents": 0,
+          "requested_right": ""
+        },
+        {
+          "kind": "CHARGE_PAYMENT",
+          "target_ref": "payment.target.customer-test-checkout",
+          "amount_cents": 4900,
+          "requested_right": ""
+        },
+        {
+          "kind": "READ_CREDENTIAL",
+          "target_ref": "credential.ref.production-publisher-token",
+          "amount_cents": 0,
+          "requested_right": ""
+        },
+        {
+          "kind": "DELEGATE_AUTHORITY",
+          "target_ref": "familiar.nib",
+          "amount_cents": 0,
+          "requested_right": "execute_protected"
+        }
+      ]
+    },
+    {
+      "command_id": "command.cosplay.009.seal",
+      "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+      "controller_ref": "human.bryan",
+      "source_ref": "human.bryan",
+      "source_kind": "human",
+      "verb": "seal_receipt",
+      "payload_ref": "",
+      "card_ref": "",
+      "effects": []
+    },
+    {
+      "command_id": "command.cosplay.010.finalize",
+      "run_id": "run.quirk-arcade.cosplay-twin-checkout.v0.1",
+      "controller_ref": "human.bryan",
+      "source_ref": "human.bryan",
+      "source_kind": "human",
+      "verb": "finalize_candidate",
+      "payload_ref": "",
+      "card_ref": "",
+      "effects": []
+    }
+  ],
+  "expected": {
+    "run_outcome": "candidate_complete",
+    "denied_effects": [
+      "PUBLISH_EXTERNAL",
+      "CHARGE_PAYMENT",
+      "READ_CREDENTIAL",
+      "DELEGATE_AUTHORITY"
+    ],
+    "denial_count": 5,
+    "external_effects_completed": 0,
+    "authority_effect": "none",
+    "canon_state": "NOT_PROMOTED",
+    "no_op_ablation_outcome": "failed_lineage",
+    "replay": "byte_identical"
+  }
+}
