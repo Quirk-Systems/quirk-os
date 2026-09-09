@@ -1,0 +1,56 @@
+{
+  "version": "0.1.0",
+  "status": "candidate",
+  "admission": "Constrain",
+  "owner_repository": "Quirk-Systems/quirk-os",
+  "base_commit": "499f94b8d12e29dd7804cc9b537fd70f6a8048d8",
+  "recorded_at": "2026-09-09T21:17:29.402393+00:00",
+  "claim_scope": "local candidate program records; no operational activation or field benefit claim",
+  "source_sha256": {
+    "README.md": "8969584d94f19eea2f3f849a8e1483ef1727ef6f08565c05e5b07cbb9369a765",
+    ".github/workflows/attention-program-conformance.yml": "d12bf06b1f6bb02a661d92c53680ffeb6b700ebfe95411aaee8f6fcea7ccbece",
+    "docs/attention-program/README.md": "0ec73ee72743136f24c4c9e7d36cc06a6d7476ba562ac4b55f60afe9d59c5f42",
+    "docs/attention-program/EVIDENCE.md": "3295e15d515874445738206a57a9f660c11e83e5b1453f08a00561531d803ce9",
+    "programs/attention-program.example.json": "70ba186bd9929f2d9981df7fb82507c0c037c6e835a8dff5e2901b2d928fb310",
+    "schemas/attention-program.schema.json": "5f58bd3cb1d42c71f7cf97ae0c506b67a13908886521d540fc446989a75162bb",
+    "tools/attention-program/engine.mjs": "dc30eb79d04fb02a4cf43141b23572bc1a5ca9533953e917eddedaf47128a3ca",
+    "tools/attention-program/engine.test.mjs": "281273314dcaeb5abf82ad2a4854b5bda76bd481228d303cb36f8572ae55751b",
+    "tools/attention-program/cli.mjs": "abbd125ecb1782988c35403ac8bb5ffcfa7ad359c669023521cead50ac011283",
+    "tools/attention-program/view.html": "6c0a3c9b0a2bf0efd92f6e7ad7fed1b62d16306be1b3b7caeb4e7a11f4c26050"
+  },
+  "executed": {
+    "node_version": "v24.19.0",
+    "test_command": "node --test tools/attention-program/engine.test.mjs",
+    "tests_passed": 46,
+    "tests_failed": 0,
+    "cli_validate_report_apply_build": "passed",
+    "stale_revision_rejection": "passed",
+    "receipt_bound_state_tampering_rejection": "passed",
+    "combined_module_syntax": "passed",
+    "unique_dom_ids": 91,
+    "resolved_label_targets": 40,
+    "remote_resource_urls": 0,
+    "golden_candidate_merge_gate": "passed",
+    "existing_golden_admission_holds": 16
+  },
+  "unproven": [
+    "browser_interaction",
+    "visual_rendering",
+    "native_ios_operation",
+    "browser_download_export",
+    "multi_tab_browser_behavior",
+    "independent_json_schema_validation",
+    "independent_human_admission",
+    "actual_beneficiary_outcome",
+    "net_human_time_savings"
+  ],
+  "browser_limit": "Cloud Browser URL policy blocked local-file navigation; no post-rejection bypass attempted",
+  "reviewer_independence": "shared model lineage; not independent human admission",
+  "human_review_minutes": null,
+  "compute_cost": null,
+  "observed_effect": null,
+  "authority": {
+    "maximum_right": "propose",
+    "external_effects": false
+  }
+}
