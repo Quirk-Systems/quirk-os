@@ -1,0 +1,84 @@
+{
+  "format": "quirk-candidate-work-breakdown/v1",
+  "status": "candidate",
+  "owner": "human.bryan",
+  "owning_repository": "Quirk-Systems/quirk-os",
+  "parent_candidate": "https://github.com/Quirk-Systems/quirk-os/pull/79",
+  "objective": "Turn a selected mixed-media brief into a traceable, bounded, resumable preparation package without self-authorizing production.",
+  "authority": "CANDIDATE_PREPARE",
+  "replaces_portfolio_priorities": false,
+  "production_authorized": false,
+  "work_packages": [
+    {
+      "id": "media.contract",
+      "state": "implemented_local",
+      "output": "schemas/mixed-media-brief.v1.schema.json",
+      "acceptance": "Closed nested metadata, fixed authority and bounded settings; invalid nested authority rejected."
+    },
+    {
+      "id": "media.compile",
+      "state": "implemented_local",
+      "depends_on": [
+        "media.contract"
+      ],
+      "output": "scripts/mixed_media_candidate.py",
+      "acceptance": "Compile a stable DAG; reject missing references/cycles and propagate rights blockers without changing originals."
+    },
+    {
+      "id": "media.revalidate",
+      "state": "implemented_local",
+      "depends_on": [
+        "media.compile"
+      ],
+      "acceptance": "A changed source marks only dependent stages for revalidation; returns no repair dispatch."
+    },
+    {
+      "id": "media.prepare",
+      "state": "implemented_local",
+      "depends_on": [
+        "media.compile"
+      ],
+      "acceptance": "Preserve a local review package and parent-compatible loop specification / prepare_candidate arguments; no grant created."
+    },
+    {
+      "id": "media.consumer",
+      "state": "pending_integration",
+      "depends_on": [
+        "media.prepare"
+      ],
+      "owner_role": "Studio / Now consumer maintainer",
+      "acceptance": "Import and reopen one package with visible original evidence, blockers and changed-source context.",
+      "blocker": "Exact consumer target and its interface must be inspected before an integration edit."
+    },
+    {
+      "id": "media.adapters",
+      "state": "not_activated",
+      "depends_on": [
+        "media.prepare"
+      ],
+      "owner_role": "Runtime and custody maintainers",
+      "acceptance": "Bind one authorized media adapter with isolation, fresh authorization, postcondition and uncertain-effect recovery.",
+      "blocker": "No provider effect is permitted by this candidate; read/prepare schema must not be widened silently."
+    },
+    {
+      "id": "media.human-trial",
+      "state": "unmeasured",
+      "depends_on": [
+        "media.consumer"
+      ],
+      "owner_role": "Accountable human operator",
+      "acceptance": "Record usefulness, craft acceptance and setup/supervision/cleanup effort for a real selected production brief."
+    },
+    {
+      "id": "media.delivery",
+      "state": "not_authorized",
+      "depends_on": [
+        "media.adapters",
+        "media.human-trial"
+      ],
+      "owner_role": "Accountable release owner",
+      "acceptance": "Approved release digest, rights, destination and verified delivery receipt.",
+      "blocker": "No publication authority or production admission inferred from this work."
+    }
+  ]
+}
