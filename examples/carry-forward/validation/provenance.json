@@ -1,0 +1,24 @@
+{
+  "status": "candidate",
+  "source_locator": "compound-quirk-systems/scripts/validate_evidence_bundle.py",
+  "source_sha256": "9aee33817d58bdcedef8e615ffe140d6f1dba62215279fe083b1067ee4bd9131",
+  "source_reference_contract": "compound-quirk-systems/references/contracts.md",
+  "candidate_sha256": "8980d50253e71c632c22121683917415aaeeec625267bdec9496d87364b3ffce",
+  "installed_source_unchanged": true,
+  "scope": "Strict booleans, declared nested containers, fixed supported action vocabulary, structured parse and traversal errors",
+  "limits": [
+    "No actual authority verification",
+    "No remote deployment or installed skill replacement",
+    "Unknown extension fields preserved but not validated as authorities",
+    "Container validation does not establish source identity, truth, or schema version compatibility"
+  ],
+  "supported_action_vocabulary": {
+    "sources": [
+      "references/control-kernel.md authority rights",
+      "original helper PROTECTED_ACTIONS",
+      "existing consumer receipt: local_candidate_build"
+    ],
+    "unknown_actions": "unsupported, invalid even when explicit_authority is true",
+    "bundle_can_extend_vocabulary": false
+  }
+}
