@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+from contextlib import contextmanager
 import hashlib
 import html
 import json
@@ -19,12 +20,13 @@ import zipfile
 import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.1.0"
+VERSION = "0.2.0"
+READABLE_VERSIONS = {"0.1.0", "0.2.0"}
 MAX_FILE = 64 * 1024 * 1024
 MAX_TOTAL = 128 * 1024 * 1024
 MAX_JSON = 1024 * 1024
 MAX_MEMBERS = 66
-EXTENSIONS = {".txt", ".md", ".json", ".srt", ".vtt", ".pdf", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".wav", ".mp3", ".m4a", ".flac", ".ogg", ".mp4", ".webm", ".mov"}
+EXTENSIONS = {".txt", ".md", ".json", ".srt", ".vtt", ".pdf", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".tif", ".tiff", ".heic", ".heif", ".avif", ".wav", ".mp3", ".m4a", ".flac", ".ogg", ".aac", ".aiff", ".mp4", ".webm", ".mov", ".pptx", ".odp"}
 SCHEMA_FILES = ("media-kit-project.schema.json", "media-derivative.schema.json")
 AUTHORITY = {"ceiling": "candidate", "publish_allowed": False, "graph_application_allowed": False, "training_allowed": False, "canon_promotion_allowed": False}
 
@@ -61,10 +63,10 @@ def parse_json(data: bytes, label: str) -> Any:
 
 
 def validate_shape(value: Any, schema: dict, schemas: dict, where: str = "project") -> None:
-    """Enforce the audited subset used by these two schemas; fail on new keywords.
+    """Enforce the audited subset used by the supplied schemas; fail on new keywords.
 
-    This is not a general JSON Schema engine. References resolve only to the two
-    bundled files. A future schema feature needs implementation and fixtures.
+    This is not a general JSON Schema engine. References resolve only to supplied
+    local schemas. A future schema feature needs implementation and fixtures.
     """
     supported = {"$schema", "$id", "$ref", "title", "description", "type", "properties", "required", "additionalProperties", "items", "minItems", "maxItems", "uniqueItems", "minLength", "maxLength", "pattern", "enum", "const"}
     unknown = set(schema) - supported
@@ -119,7 +121,7 @@ def safe_relative(path: str) -> PurePosixPath:
         raise KitError(f"Unsafe relative file path: {path!r}")
     parsed = PurePosixPath(path)
     if parsed.suffix.lower() not in EXTENSIONS:
-        raise KitError(f"Unsupported file type: {path}. Use a media, text, caption, JSON, or PDF file.")
+        raise KitError(f"Unsupported file type: {path}. Use a listed media, presentation, text, caption, JSON, or PDF file.")
     return parsed
 
 
@@ -213,7 +215,7 @@ header{{display:flex;align-items:center;justify-content:space-between;gap:20px;b
 <section id="choice" class="choice"><div class="eyebrow">THE CHOICE THAT TRAVELS WITH THE FILES</div><h2>{esc(selection['derivative_id'])}</h2><p>{esc(selection['rationale'])}</p><p><strong>Finished when:</strong> {esc(selection['completion_condition'])}</p><p>Recorded by {esc(selection['actor']['id'])} · {esc(selection['actor']['type'])} · self-declared and unsigned.</p></section>
 <section id="sources"><h2>Where did this come from?</h2><p class="muted">Included source files, pinned versions, and capture references. Status and rights notes are declarations.</p><div class="grid">{''.join(source_cards)}</div></section>
 <section id="versions"><h2>What came from it?</h2><div class="grid">{''.join(derivative_cards)}</div></section>
-<section class="foot"><h2>Reopen with the whole kit</h2><p>Extract the ZIP into one folder and keep this page beside <code>assets/</code> and <code>kit-manifest.json</code>. The file links work offline. Downloads may open in your device’s file viewer.</p><p>After transfer, run <code>python3 scripts/media_kit.py verify PATH_TO_KIT.zip</code> from the Quirk OS checkout. This checks the included bytes and selection record against the manifest; the unsigned manifest does not authenticate an author or approve a release.</p><p>Publishing, Preference Graph application, training, and canon promotion remain disabled. Human benefit has not been observed by this packer.</p><details><summary>Kit fingerprint</summary><p><code>{esc(manifest['content_sha256'])}</code></p><p>Quirk Media Kit {VERSION} · {esc(project['id'])}</p></details></section>
+<section class="foot"><h2>Reopen with the whole kit</h2><p>Extract the ZIP into one folder and keep this page beside <code>assets/</code> and <code>kit-manifest.json</code>. The file links work offline. Downloads may open in your device’s file viewer.</p><p>After transfer, run <code>python3 scripts/media_kit.py verify PATH_TO_KIT.zip</code> from the Quirk OS checkout. This checks the included bytes and selection record against the manifest; the unsigned manifest does not authenticate an author or approve a release.</p><p>Publishing, Preference Graph application, training, and canon promotion remain disabled. Human benefit has not been observed by this packer.</p><details><summary>Kit fingerprint</summary><p><code>{esc(manifest['content_sha256'])}</code></p><p>Quirk Media Kit {manifest['tool_version']} · {esc(project['id'])}</p></details></section>
 </main></body></html>'''
     return output.encode("utf-8")
 
@@ -263,7 +265,9 @@ def pack(project: dict, root: Path, output: Path) -> dict:
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="quirk-media-", dir=output.parent) as temporary:
         pending = Path(temporary) / "kit.zip"
-        with zipfile.ZipFile(pending, "w", compression=zipfile.ZIP_STORED) as archive:
+        # The outer ZIP is private to its creator on POSIX, regardless of umask.
+        # This is not encryption or a promise about permissions after transfer.
+        with os.fdopen(os.open(pending, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600), "wb") as handle, zipfile.ZipFile(handle, "w", compression=zipfile.ZIP_STORED) as archive:
             for name, data in sorted(payloads.items()):
                 info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
                 info.create_system = 3
@@ -275,7 +279,9 @@ def pack(project: dict, root: Path, output: Path) -> dict:
     return {**verified, "operation": "pack"}
 
 
-def verify(path: Path) -> dict:
+@contextmanager
+def verified_archive(path: Path):
+    """Keep one archive handle open across verification and read-only inspection."""
     if path.stat().st_size > MAX_TOTAL + 4 * MAX_JSON:
         raise KitError("ZIP exceeds the bounded archive size")
     try:
@@ -303,7 +309,7 @@ def verify(path: Path) -> dict:
             fields = {"schema_version", "tool_version", "project", "project_sha256", "files", "content_sha256"}
             if type(manifest) is not dict or set(manifest) != fields:
                 raise KitError("Invalid manifest fields")
-            if manifest["schema_version"] != "media-kit.v1" or manifest["tool_version"] != VERSION:
+            if manifest["schema_version"] != "media-kit.v1" or type(manifest["tool_version"]) is not str or manifest["tool_version"] not in READABLE_VERSIONS:
                 raise KitError("Unsupported kit/tool version; use its matching verifier")
             project = manifest["project"]
             validate_project(project)
@@ -338,9 +344,14 @@ def verify(path: Path) -> dict:
                 raise KitError("Missing or unlisted ZIP members")
             if archive.read("index.html") != render_index(manifest):
                 raise KitError("Readable index differs from the verified manifest")
+            yield manifest, archive
     except (zipfile.BadZipFile, KeyError, RuntimeError, NotImplementedError, EOFError, zlib.error) as exc:
         raise KitError(f"Unreadable or incomplete ZIP: {exc}") from exc
-    return receipt(manifest, "verify")
+
+
+def verify(path: Path) -> dict:
+    with verified_archive(path) as (manifest, _archive):
+        return receipt(manifest, "verify")
 
 
 def main(argv: list[str] | None = None) -> int:

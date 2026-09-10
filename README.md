@@ -29,6 +29,8 @@ candidate workflow preserves the existing media contract and grants no release a
 
 Try it: [`docs/media-kit/README.md`](docs/media-kit/README.md)
 
+Toolkit 0.2.0 also provides [asset names, care inspection, and craft guidance](docs/media-kit/CARE.md), while preserving the original kit format and candidate authority.
+
 ## Core laws
 
 - Every consequential mutation owes a receipt.

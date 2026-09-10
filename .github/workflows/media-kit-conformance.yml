@@ -3,24 +3,26 @@ name: Media Kit Conformance
 on:
   pull_request:
     paths:
-      - 'scripts/media_kit.py'
+      - 'scripts/media_*.py'
+      - 'schemas/media-care.schema.json'
       - 'schemas/media-kit-project.schema.json'
       - 'schemas/media-derivative.schema.json'
       - 'examples/media-kit/**'
       - 'docs/media-kit/**'
       - 'docs/golden-project-pack/MULTIMEDIA-MULTIPLIZIERT.md'
-      - 'tests/test_media_kit.py'
+      - 'tests/test_media_*.py'
       - '.github/workflows/media-kit-conformance.yml'
   push:
     branches: [main]
     paths:
-      - 'scripts/media_kit.py'
+      - 'scripts/media_*.py'
+      - 'schemas/media-care.schema.json'
       - 'schemas/media-kit-project.schema.json'
       - 'schemas/media-derivative.schema.json'
       - 'examples/media-kit/**'
       - 'docs/media-kit/**'
       - 'docs/golden-project-pack/MULTIMEDIA-MULTIPLIZIERT.md'
-      - 'tests/test_media_kit.py'
+      - 'tests/test_media_*.py'
       - '.github/workflows/media-kit-conformance.yml'
 
 permissions:
@@ -38,8 +40,9 @@ jobs:
         with:
           python-version: '3.13'
       - name: Check portable kit behavior
-        run: python3 -m unittest discover -s tests -p 'test_media_kit.py' -v
+        run: python3 -m unittest discover -s tests -p 'test_media_*.py' -v
       - name: Pack and reopen the candidate example
         run: |
           python3 scripts/media_kit.py pack --project examples/media-kit/project.json --root . --output "$RUNNER_TEMP/quirk-media-kit.zip"
           python3 scripts/media_kit.py verify "$RUNNER_TEMP/quirk-media-kit.zip"
+          python3 scripts/media_care.py inspect "$RUNNER_TEMP/quirk-media-kit.zip" --care examples/media-kit/care.json --as-of 2026-09-10 --html "$RUNNER_TEMP/quirk-media-care.html"

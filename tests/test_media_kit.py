@@ -307,6 +307,10 @@ class MediaKitTests(unittest.TestCase):
         target = self.rewrite(mutate_manifest=lambda m: m.update(schema_version="media-kit.v9000"))
         with self.assertRaisesRegex(kit.KitError, "Unsupported kit/tool version"):
             kit.verify(target)
+        for version in ["0.3.0", "", [], {}]:
+            target = self.rewrite(mutate_manifest=lambda m: m.update(tool_version=version))
+            with self.subTest(version=version), self.assertRaisesRegex(kit.KitError, "Unsupported kit/tool version"):
+                kit.verify(target)
         invalid = self.directory / "invalid.zip"
         invalid.write_bytes(b"not a zip")
         with self.assertRaisesRegex(kit.KitError, "Unreadable"):

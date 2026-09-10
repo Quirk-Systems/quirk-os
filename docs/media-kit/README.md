@@ -6,6 +6,8 @@ Carry a source, its candidate derivatives, and one unsigned version choice in a 
 
 This is one implementation slice of [Multimedia Multipliziert](../golden-project-pack/MULTIMEDIA-MULTIPLIZIERT.md). It uses the existing `media-derivative.v1` shape. The kit adds file custody and a portable choice; it does not implement rendering, release authorization, or provider integrations.
 
+Toolkit **0.2.0** adds [names, care, and craft](CARE.md): a classification/service registry and an optional care record tied to the exact kit. Its inspector checks readable names, review dates, source/companion dependencies, sensitivity, and review material. The original 0.1.0 example remains a byte-preserved compatibility fixture.
+
 ## Try the included example
 
 Python 3.10+ and its standard library are sufficient. Run from this repository:
@@ -43,7 +45,7 @@ python3 -c 'import hashlib,pathlib; p=pathlib.Path("PATH_TO_FILE"); print(hashli
 
 That convenience command requires Python 3.11+; on Python 3.10 use `hashlib.sha256(p.read_bytes()).hexdigest()` instead.
 
-Use relative paths with letters, numbers, spaces, dots, underscores, hyphens, and `/`. The packer rejects traversal, symlinks, URLs, drive paths, active HTML/SVG/script files, duplicate IDs, and repeated paths. It accepts common image/audio/video formats, text, Markdown, JSON, captions, and PDF. It does not inspect the semantic contents or safety of the included media.
+Use relative paths with letters, numbers, spaces, dots, underscores, hyphens, and `/`. The packer rejects traversal, symlinks, URLs, drive paths, active HTML/SVG/script files, duplicate IDs, and repeated paths. It accepts the image/audio/video formats listed in [the registry](classification.v1.json), PPTX/ODP, text, Markdown, JSON, captions, and PDF. Files are carried opaquely; their decoding, semantic contents, embedded behavior, and safety are not inspected.
 
 ## Contract and lifecycle
 
@@ -53,12 +55,14 @@ Use relative paths with letters, numbers, spaces, dots, underscores, hyphens, an
 | `media-derivative.v1` | Existing repository contract, retained without changes. The kit accepts only `draft` or `review`, and rejects a `release_receipt_ref`. |
 | `media-kit.v1` | ZIP manifest containing the complete input and exact included-file inventory, with project and content fingerprints. |
 | `media-kit-check.v1` | A local pack/verify result. Success means package consistency only. It records open rights/accessibility reviews and leaves human benefit unobserved. |
+| `media-care.v1` | Optional candidate declarations for the exact kit: names, classifications, maintenance, sensitivity, companions, and artistic intent. |
+| `media-care-check.v1` | Read-only inspection findings, with fingerprints of the kit, care record, and classification registry. No release authority. |
 
 The inherited field name `canonical_source` is preserved for compatibility. **It does not make the source canonical.** `source_status` is an explicit declaration, and neither it nor `source_permissions_verified` authenticates authority or rights. Source version references are checked for internal agreement, not against a remote repository’s latest head. No external URLs are fetched.
 
 Opaque receipt, license, evaluation, and accessibility references are retained in the metadata; their targets are not automatically bundled or resolved. Included source bytes and their pins can be inspected offline. Full transitive receipt/rights verification remains a separate obligation.
 
-Each derivative has one primary source in v1. Multi-source derivatives, source revocation monitoring, distributed signatures, render jobs, caption verification, and integration with Quirk Now or a custody service remain open. Unknown kit/tool versions are rejected; future format or meaning changes need explicit migration and replay fixtures. Existing kits are never silently rewritten.
+Each derivative has one primary source in v1. Multi-source derivatives, source revocation monitoring, distributed signatures, render jobs, caption quality verification, and integration with Quirk Now or a custody service remain open. Toolkit 0.2.0 explicitly reads kits from 0.1.0 and 0.2.0 and rejects other kit/tool versions. Future format or meaning changes need explicit migration and replay fixtures. Existing kits are never silently rewritten.
 
 The local shape checker enforces only the audited JSON Schema subset used by the two bundled schemas. It resolves their known local reference and rejects unsupported encountered keywords/references. It is deliberately not offered as a general JSON Schema validator. The media-kit profile additionally bounds strings and arrays and requires nonblank required text. No package installation or remote schema resolution is involved.
 
@@ -69,6 +73,7 @@ The local shape checker enforces only the audited JSON Schema subset used by the
 - The verifier never extracts or executes archive contents. It checks the inventory, byte pins, source bindings, selected derivative, and regenerated HTML before returning success.
 - Identical inputs produce byte-identical ZIPs. Fingerprints bind the choice and files together, but an unsigned kit can be coherently rewritten and rehashed by another party. **Integrity is not authenticated authorship.**
 - The local file guard prevents ordinary path escapes and symlink capture. It is not a sandbox against another process actively replacing filesystem components during a run.
+- New outer ZIPs and care HTML reports use owner-only POSIX permissions. This is not encryption, authentication, or an access-control guarantee after transfer or extraction.
 - Errors return a nonzero status and an actionable message. Failed pack attempts leave no final ZIP; existing kits are never replaced. Retry with corrected inputs and a new output name. Rollback is discarding the new local candidate ZIP or reverting the candidate implementation commit.
 - Runtime authority remains candidate-only: no publishing, Preference Graph application, training permission, or canon promotion. Successful tests do not resolve the Golden Pack’s admission holds.
 
@@ -83,8 +88,8 @@ The first intended beneficiary is Bryan assembling and reopening media work; the
 ## Verification and learning
 
 ```bash
-python3 -m unittest discover -s tests -p 'test_media_kit.py' -v
+python3 -m unittest discover -s tests -p 'test_media_*.py' -v
 python3 scripts/validate_golden_pack.py
 ```
 
-The focused CI workflow runs the kit tests and packs/reopens the repository example. The existing Golden gate remains separate. See [the receipt](RECEIPT.md) for inspected sources, evidence, unresolved work, and the reusable method.
+The focused CI workflow runs the kit/care tests and packs, reopens, and inspects the repository example. The existing Golden gate remains separate. See [the original receipt](RECEIPT.md) and [the care refinement receipt](CARE-RECEIPT.md) for inspected sources, evidence, unresolved work, and the reusable method.
