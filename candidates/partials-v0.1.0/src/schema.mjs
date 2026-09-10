@@ -48,3 +48,29 @@ export const reviewResultSchema = {
     receipt:object({capability_ref:{const:'capability.partials-source-review/v0.1.0'},transform_version:{const:'0.1.0'},output_digest:digest,observed_human_benefit:{type:'null'},human_review_minutes:{type:'null'},compute_cost:{type:'null'},limitations:strings})
   })
 };
+
+const nullableText={anyOf:[text,{type:'null'}]};
+const reviewState=object({input_digest:digest,disposition:reviewResultSchema.properties.rows.items.properties.disposition,reason:reviewResultSchema.properties.rows.items.properties.reason,duplicate_source_ref:nullableText});
+export const reviewChangesSchema={
+  $schema:recordSchema.$schema,$id:'urn:quirk:partials-review-changes:v1alpha1',
+  ...object({
+    schema_version:{const:'quirk.partials-review-changes/v1alpha1'},status:{const:'candidate'},
+    before_request_digest:digest,after_request_digest:digest,
+    before_captured_at:{type:'string',format:'date-time'},after_captured_at:{type:'string',format:'date-time'},
+    context_changes:{type:'array',uniqueItems:true,items:choice('captured_at','max_age_seconds')},
+    rows:{type:'array',minItems:1,maxItems:64,items:object({
+      source_ref:text,change:choice('unchanged','added','removed','replaced','changed'),
+      before:{anyOf:[reviewState,{type:'null'}]},after:{anyOf:[reviewState,{type:'null'}]},
+      changed_fields:{type:'array',uniqueItems:true,items:choice('record','record.id','subject','scope','knowledge','evidence','work','availability','authority','provenance','revision','supersedes_digest','expectation','max_count','review_accounting','max_age_seconds')},
+      before_count:nullableText,after_count:nullableText,
+      claims_requiring_revalidation:strings,removed_holds:strings,added_holds:strings,
+      proposed_repair:{anyOf:[{type:'null'},object({
+        status:{const:'candidate'},action:choice('repair_native_input','account_for_removed_source','review_hold_removal','obtain_source_expectation','reconcile_identity','reinspect_source','review_policy_change','verify_recapture','revalidate_source_claims','review_added_source','review_record_change'),
+        target_ref:text,evidence_refs:{...strings,minItems:1},acceptance_criteria:{...strings,minItems:1},maximum_right:{const:'propose'},effect_execution_allowed:{const:false},human_review_required:{const:true}
+      })]}
+    })},
+    counts:object({sources:{type:'integer',minimum:1,maximum:64},unchanged:{type:'integer',minimum:0},added:{type:'integer',minimum:0},removed:{type:'integer',minimum:0},replaced:{type:'integer',minimum:0},changed:{type:'integer',minimum:0},proposed_repairs:{type:'integer',minimum:0}}),
+    authority:recordSchema.properties.authority,
+    receipt:object({capability_ref:{const:'capability.partials-change-review/v0.1.0'},transform_version:{const:'0.1.0'},output_digest:digest,observed_human_benefit:{type:'null'},human_review_minutes:{type:'null'},compute_cost:{type:'null'},limitations:strings})
+  })
+};

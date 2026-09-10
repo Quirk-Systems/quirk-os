@@ -1,472 +1,574 @@
 TAP version 13
-# Subtest: unknown is never silently zero
-ok 1 - unknown is never silently zero
+# Subtest: comparison CLI replays retained requests, renders, refuses overwrite and reversed time
+ok 1 - comparison CLI replays retained requests, renders, refuses overwrite and reversed time
   ---
-  duration_ms: 5.01499
+  duration_ms: 1084.042331
+  type: 'test'
+  ...
+# Subtest: unchanged requests reproduce exactly without changing inputs or claiming benefit
+ok 2 - unchanged requests reproduce exactly without changing inputs or claiming benefit
+  ---
+  duration_ms: 48.709725
+  type: 'test'
+  ...
+# Subtest: changed source binding carries claim labels only as assertions requiring revalidation
+ok 3 - changed source binding carries claim labels only as assertions requiring revalidation
+  ---
+  duration_ms: 2.107309
+  type: 'test'
+  ...
+# Subtest: record identity and complete scope changes are replacements even with unchanged source digest
+ok 4 - record identity and complete scope changes are replacements even with unchanged source digest
+  ---
+  duration_ms: 10.18028
+  type: 'test'
+  ...
+# Subtest: exact-ref rename yields removed and added sources without declaring work completed
+ok 5 - exact-ref rename yields removed and added sources without declaring work completed
+  ---
+  duration_ms: 2.445227
+  type: 'test'
+  ...
+# Subtest: expectation reference, binding, and absence are explicit even when record bytes do not change
+ok 6 - expectation reference, binding, and absence are explicit even when record bytes do not change
+  ---
+  duration_ms: 6.362737
+  type: 'test'
+  ...
+# Subtest: count and age policy changes remain policy assertions despite improved review disposition
+ok 7 - count and age policy changes remain policy assertions despite improved review disposition
+  ---
+  duration_ms: 4.624433
+  type: 'test'
+  ...
+# Subtest: time passage changes freshness and recapture does not establish newly verified evidence
+ok 8 - time passage changes freshness and recapture does not establish newly verified evidence
+  ---
+  duration_ms: 3.434978
+  type: 'test'
+  ...
+# Subtest: knowledge evidence work and availability changes are separate and cannot upgrade authority
+ok 9 - knowledge evidence work and availability changes are separate and cannot upgrade authority
+  ---
+  duration_ms: 7.232721
+  type: 'test'
+  ...
+# Subtest: removed holds stay in aggregate authority and added holds remain visible
+ok 10 - removed holds stay in aggregate authority and added holds remain visible
+  ---
+  duration_ms: 2.659273
+  type: 'test'
+  ...
+# Subtest: invalid records remain opaque while prior valid holds and unknown obligations remain unresolved
+ok 11 - invalid records remain opaque while prior valid holds and unknown obligations remain unresolved
+  ---
+  duration_ms: 4.638544
+  type: 'test'
+  ...
+# Subtest: disjoint maximum-size requests preserve all 64 source rows without summing domain counts
+ok 12 - disjoint maximum-size requests preserve all 64 source rows without summing domain counts
+  ---
+  duration_ms: 72.855509
+  type: 'test'
+  ...
+# Subtest: temporal regression rejects comparison and future capture remains quarantined
+ok 13 - temporal regression rejects comparison and future capture remains quarantined
+  ---
+  duration_ms: 3.93142
+  type: 'test'
+  ...
+# Subtest: prototype-like refs stay literal, HTML is escaped, and accessor data is rejected without invocation
+ok 14 - prototype-like refs stay literal, HTML is escaped, and accessor data is rejected without invocation
+  ---
+  duration_ms: 10.216944
+  type: 'test'
+  ...
+# Subtest: receipt row authority and repair tampering fails full request replay
+ok 15 - receipt row authority and repair tampering fails full request replay
+  ---
+  duration_ms: 26.195989
+  type: 'test'
+  ...
+# Subtest: duplicate reordering compares representative refs rather than positional indices
+ok 16 - duplicate reordering compares representative refs rather than positional indices
+  ---
+  duration_ms: 11.885815
+  type: 'test'
+  ...
+# Subtest: conflicting duplicates remain quarantined and disappearance does not approve the survivor
+ok 17 - conflicting duplicates remain quarantined and disappearance does not approve the survivor
+  ---
+  duration_ms: 2.783927
+  type: 'test'
+  ...
+# Subtest: unknown is never silently zero
+ok 18 - unknown is never silently zero
+  ---
+  duration_ms: 8.239666
   type: 'test'
   ...
 # Subtest: six known is useful without a fabricated total
-ok 2 - six known is useful without a fabricated total
+ok 19 - six known is useful without a fabricated total
   ---
-  duration_ms: 1.078571
+  duration_ms: 2.303098
   type: 'test'
   ...
 # Subtest: known identities imply lower bound even when none supplied
-ok 3 - known identities imply lower bound even when none supplied
+ok 20 - known identities imply lower bound even when none supplied
   ---
-  duration_ms: 0.459438
+  duration_ms: 0.566696
   type: 'test'
   ...
 # Subtest: explicit confirmed zero stays scoped and grants no authority
-ok 4 - explicit confirmed zero stays scoped and grants no authority
+ok 21 - explicit confirmed zero stays scoped and grants no authority
   ---
-  duration_ms: 1.224447
+  duration_ms: 0.972144
   type: 'test'
   ...
 # Subtest: bounds cannot contradict known identities or exactness
-ok 5 - bounds cannot contradict known identities or exactness
+ok 22 - bounds cannot contradict known identities or exactness
   ---
-  duration_ms: 4.255509
+  duration_ms: 1.859213
   type: 'test'
   ...
 # Subtest: all four axes remain independent
-ok 6 - all four axes remain independent
+ok 23 - all four axes remain independent
   ---
-  duration_ms: 0.598153
+  duration_ms: 0.518315
   type: 'test'
   ...
 # Subtest: contradiction survives and cannot be labeled supported
-ok 7 - contradiction survives and cannot be labeled supported
+ok 24 - contradiction survives and cannot be labeled supported
   ---
-  duration_ms: 0.369605
+  duration_ms: 0.507389
   type: 'test'
   ...
 # Subtest: empty partial axes are rejected
-ok 8 - empty partial axes are rejected
+ok 25 - empty partial axes are rejected
   ---
-  duration_ms: 0.574017
+  duration_ms: 1.24685
   type: 'test'
   ...
 # Subtest: inconsistent completion and availability fail
-ok 9 - inconsistent completion and availability fail
+ok 26 - inconsistent completion and availability fail
   ---
-  duration_ms: 0.521709
+  duration_ms: 0.866628
   type: 'test'
   ...
 # Subtest: all authority escalation and unknown properties fail closed
-ok 10 - all authority escalation and unknown properties fail closed
+ok 27 - all authority escalation and unknown properties fail closed
   ---
-  duration_ms: 3.386907
+  duration_ms: 3.434617
   type: 'test'
   ...
 # Subtest: canonical digest is key-order independent and rejects non-JSON
-ok 11 - canonical digest is key-order independent and rejects non-JSON
+ok 28 - canonical digest is key-order independent and rejects non-JSON
   ---
-  duration_ms: 0.316166
+  duration_ms: 0.765339
   type: 'test'
   ...
 # Subtest: inherited required fields cannot pass serialization
-ok 12 - inherited required fields cannot pass serialization
+ok 29 - inherited required fields cannot pass serialization
   ---
-  duration_ms: 0.382745
+  duration_ms: 0.454611
   type: 'test'
   ...
 # Subtest: timestamps reject rollover dates
-ok 13 - timestamps reject rollover dates
+ok 30 - timestamps reject rollover dates
   ---
-  duration_ms: 0.350076
+  duration_ms: 0.336246
   type: 'test'
   ...
 # Subtest: revision is explicit, append-only, and cannot erase upstream holds
-ok 14 - revision is explicit, append-only, and cannot erase upstream holds
+ok 31 - revision is explicit, append-only, and cannot erase upstream holds
   ---
-  duration_ms: 1.72829
+  duration_ms: 1.370993
   type: 'test'
   ...
 # Subtest: revision rejects changed source version, digest, or scope
-ok 15 - revision rejects changed source version, digest, or scope
+ok 32 - revision rejects changed source version, digest, or scope
   ---
-  duration_ms: 1.909677
+  duration_ms: 1.75585
   type: 'test'
   ...
 # Subtest: exact pinned OS engine retained
-ok 16 - exact pinned OS engine retained
+ok 33 - exact pinned OS engine retained
   ---
-  duration_ms: 5.287191
+  duration_ms: 12.104028
   type: 'test'
   ...
 # Subtest: native unknown preserved with no input writes
-ok 17 - native unknown preserved with no input writes
+ok 34 - native unknown preserved with no input writes
   ---
-  duration_ms: 24.57399
+  duration_ms: 26.234255
   type: 'test'
   ...
 # Subtest: synthetic partial inventory detects limit without confirming source
-ok 18 - synthetic partial inventory detects limit without confirming source
+ok 35 - synthetic partial inventory detects limit without confirming source
   ---
-  duration_ms: 7.826739
+  duration_ms: 7.533785
   type: 'test'
   ...
 # Subtest: native explicit zero maps exact without authority
-ok 19 - native explicit zero maps exact without authority
+ok 36 - native explicit zero maps exact without authority
   ---
-  duration_ms: 10.384783
+  duration_ms: 23.599398
   type: 'test'
   ...
 # Subtest: tampered receipts and stale sidecars fail closed
-ok 20 - tampered receipts and stale sidecars fail closed
+ok 37 - tampered receipts and stale sidecars fail closed
   ---
-  duration_ms: 5.052646
+  duration_ms: 5.393197
   type: 'test'
   ...
 # Subtest: source authority escalation rejected
-ok 21 - source authority escalation rejected
+ok 38 - source authority escalation rejected
   ---
-  duration_ms: 1.45718
+  duration_ms: 1.899412
   type: 'test'
   ...
 # Subtest: options accessors are rejected without invocation
-ok 22 - options accessors are rejected without invocation
+ok 39 - options accessors are rejected without invocation
   ---
-  duration_ms: 0.782895
+  duration_ms: 0.71868
   type: 'test'
   ...
 # Subtest: paused native trial remains held
-ok 23 - paused native trial remains held
+ok 40 - paused native trial remains held
   ---
-  duration_ms: 3.71387
+  duration_ms: 6.122153
   type: 'test'
   ...
 # Subtest: known outside items cannot overlap inside identity or confirmed count
-ok 24 - known outside items cannot overlap inside identity or confirmed count
+ok 41 - known outside items cannot overlap inside identity or confirmed count
   ---
-  duration_ms: 12.496639
+  duration_ms: 21.555432
   type: 'test'
   ...
 # Subtest: upstream snapshots are byte-identical to GitHub blob identities at pinned head
-ok 25 - upstream snapshots are byte-identical to GitHub blob identities at pinned head
+ok 42 - upstream snapshots are byte-identical to GitHub blob identities at pinned head
   ---
-  duration_ms: 2.658703
+  duration_ms: 2.082172
   type: 'test'
   ...
 # Subtest: real pinned producer and CLI output project with explicit limited evidence
-ok 26 - real pinned producer and CLI output project with explicit limited evidence
+ok 43 - real pinned producer and CLI output project with explicit limited evidence
   ---
-  duration_ms: 233.622757
+  duration_ms: 253.806488
   type: 'test'
   ...
 # Subtest: unresolved parent remains explicit even when event metadata is valid
-ok 27 - unresolved parent remains explicit even when event metadata is valid
+ok 44 - unresolved parent remains explicit even when event metadata is valid
   ---
-  duration_ms: 164.914875
+  duration_ms: 193.956837
   type: 'test'
   ...
 # Subtest: last page does not establish a full export or exact total
-ok 28 - last page does not establish a full export or exact total
+ok 45 - last page does not establish a full export or exact total
   ---
-  duration_ms: 185.123718
+  duration_ms: 219.89792
   type: 'test'
   ...
 # Subtest: empty page preserves unknown full count rather than inventing zero preferences
-ok 29 - empty page preserves unknown full count rather than inventing zero preferences
+ok 46 - empty page preserves unknown full count rather than inventing zero preferences
   ---
-  duration_ms: 234.871817
+  duration_ms: 161.076822
   type: 'test'
   ...
 # Subtest: exact replay is counted once and keeps document-local replay limitation
-ok 30 - exact replay is counted once and keeps document-local replay limitation
+ok 47 - exact replay is counted once and keeps document-local replay limitation
   ---
-  duration_ms: 164.797881
+  duration_ms: 172.944391
   type: 'test'
   ...
 # Subtest: rejected rows remain visible without discarding valid rows
-ok 31 - rejected rows remain visible without discarding valid rows
+ok 48 - rejected rows remain visible without discarding valid rows
   ---
-  duration_ms: 166.178458
+  duration_ms: 187.524372
   type: 'test'
   ...
 # Subtest: all rejected rows do not claim successful preference evidence
-ok 32 - all rejected rows do not claim successful preference evidence
+ok 49 - all rejected rows do not claim successful preference evidence
   ---
-  duration_ms: 175.329088
+  duration_ms: 177.382399
   type: 'test'
   ...
 # Subtest: uninspected sections and further pages are preserved separately
-ok 33 - uninspected sections and further pages are preserved separately
+ok 50 - uninspected sections and further pages are preserved separately
   ---
-  duration_ms: 158.919818
+  duration_ms: 197.940751
   type: 'test'
   ...
 # Subtest: both, neither and skip retain null relation proposals
-ok 34 - both, neither and skip retain null relation proposals
+ok 51 - both, neither and skip retain null relation proposals
   ---
-  duration_ms: 477.42089
+  duration_ms: 468.572468
   type: 'test'
   ...
 # Subtest: missing and contradictory native fields are rejected instead of defaulted
-ok 35 - missing and contradictory native fields are rejected instead of defaulted
+ok 52 - missing and contradictory native fields are rejected instead of defaulted
   ---
-  duration_ms: 166.060313
+  duration_ms: 170.30007
   type: 'test'
   ...
 # Subtest: completion and authority escalation cannot enter through native claims
-ok 36 - completion and authority escalation cannot enter through native claims
+ok 53 - completion and authority escalation cannot enter through native claims
   ---
-  duration_ms: 148.505713
+  duration_ms: 143.615891
   type: 'test'
   ...
 # Subtest: a provenance capture timestamp is required and never fabricated
-ok 37 - a provenance capture timestamp is required and never fabricated
+ok 54 - a provenance capture timestamp is required and never fabricated
   ---
-  duration_ms: 152.495089
+  duration_ms: 141.607494
   type: 'test'
   ...
 # Subtest: non-JSON inputs are rejected before evaluating accessor code
-ok 38 - non-JSON inputs are rejected before evaluating accessor code
+ok 55 - non-JSON inputs are rejected before evaluating accessor code
   ---
-  duration_ms: 139.322024
+  duration_ms: 149.932745
   type: 'test'
   ...
 # Subtest: mobile panel preserves partial count, separate axes, and holds
-ok 39 - mobile panel preserves partial count, separate axes, and holds
+ok 56 - mobile panel preserves partial count, separate axes, and holds
   ---
-  duration_ms: 13.045419
+  duration_ms: 21.26225
   type: 'test'
   ...
 # Subtest: untrusted labels remain escaped inert text
-ok 40 - untrusted labels remain escaped inert text
+ok 57 - untrusted labels remain escaped inert text
   ---
-  duration_ms: 2.951244
+  duration_ms: 4.697551
   type: 'test'
   ...
 # Subtest: CLI validates, reports, adapts and refuses overwrite
-ok 41 - CLI validates, reports, adapts and refuses overwrite
+ok 58 - CLI validates, reports, adapts and refuses overwrite
   ---
-  duration_ms: 1298.12414
+  duration_ms: 1555.519279
   type: 'test'
   ...
 # Subtest: all shared fixtures satisfy structural and semantic contract
-ok 42 - all shared fixtures satisfy structural and semantic contract
+ok 59 - all shared fixtures satisfy structural and semantic contract
   ---
-  duration_ms: 8.467744
+  duration_ms: 8.905489
   type: 'test'
   ...
 # Subtest: CLI inherited adapter names cannot bypass validation
-ok 43 - CLI inherited adapter names cannot bypass validation
+ok 60 - CLI inherited adapter names cannot bypass validation
   ---
-  duration_ms: 522.265008
+  duration_ms: 614.214297
   type: 'test'
   ...
 # Subtest: source-aware review preserves partials, holds, and input bytes
-ok 44 - source-aware review preserves partials, holds, and input bytes
+ok 61 - source-aware review preserves partials, holds, and input bytes
   ---
-  duration_ms: 30.996737
+  duration_ms: 26.570501
   type: 'test'
   ...
 # Subtest: missing expected source never becomes fresh by schema validity
-ok 45 - missing expected source never becomes fresh by schema validity
+ok 62 - missing expected source never becomes fresh by schema validity
   ---
-  duration_ms: 6.279836
+  duration_ms: 9.943
   type: 'test'
   ...
 # Subtest: matched control is preserved while stale source is blocked beyond snapshot validation
-ok 46 - matched control is preserved while stale source is blocked beyond snapshot validation
+ok 63 - matched control is preserved while stale source is blocked beyond snapshot validation
   ---
-  duration_ms: 4.292043
+  duration_ms: 4.648468
   type: 'test'
   ...
 # Subtest: version and digest drift quarantine otherwise valid source
-ok 47 - version and digest drift quarantine otherwise valid source
+ok 64 - version and digest drift quarantine otherwise valid source
   ---
-  duration_ms: 2.593958
+  duration_ms: 6.338962
   type: 'test'
   ...
 # Subtest: source identity mismatch is not rescued by matching digest
-ok 48 - source identity mismatch is not rescued by matching digest
+ok 65 - source identity mismatch is not rescued by matching digest
   ---
-  duration_ms: 2.133107
+  duration_ms: 2.935421
   type: 'test'
   ...
 # Subtest: age gate checks record and expectation timestamps including future
-ok 49 - age gate checks record and expectation timestamps including future
+ok 66 - age gate checks record and expectation timestamps including future
   ---
-  duration_ms: 5.321351
+  duration_ms: 5.494616
   type: 'test'
   ...
 # Subtest: age limit is inclusive at the boundary
-ok 50 - age limit is inclusive at the boundary
+ok 67 - age limit is inclusive at the boundary
   ---
-  duration_ms: 2.518646
+  duration_ms: 2.055373
   type: 'test'
   ...
 # Subtest: one malformed input does not hide valid inputs or invent a record
-ok 51 - one malformed input does not hide valid inputs or invent a record
+ok 68 - one malformed input does not hide valid inputs or invent a record
   ---
-  duration_ms: 4.063106
+  duration_ms: 8.456426
   type: 'test'
   ...
 # Subtest: exact duplicate is accounted for without double counting
-ok 52 - exact duplicate is accounted for without double counting
+ok 69 - exact duplicate is accounted for without double counting
   ---
-  duration_ms: 7.160816
+  duration_ms: 5.602486
   type: 'test'
   ...
 # Subtest: conflicting same-identity records quarantine every version
-ok 53 - conflicting same-identity records quarantine every version
+ok 70 - conflicting same-identity records quarantine every version
   ---
-  duration_ms: 2.687696
+  duration_ms: 2.353142
   type: 'test'
   ...
 # Subtest: contradictory expectations or policy cannot hide behind duplicate data
-ok 54 - contradictory expectations or policy cannot hide behind duplicate data
+ok 71 - contradictory expectations or policy cannot hide behind duplicate data
   ---
-  duration_ms: 3.173372
+  duration_ms: 4.592315
   type: 'test'
   ...
 # Subtest: successful review cannot promote its own authority
-ok 55 - successful review cannot promote its own authority
+ok 72 - successful review cannot promote its own authority
   ---
-  duration_ms: 5.679721
+  duration_ms: 5.562727
   type: 'test'
   ...
 # Subtest: receipt and disposition tampering fails exact request replay
-ok 56 - receipt and disposition tampering fails exact request replay
+ok 73 - receipt and disposition tampering fails exact request replay
   ---
-  duration_ms: 5.165912
+  duration_ms: 8.268419
   type: 'test'
   ...
 # Subtest: request bounds and unknown fields fail closed
-ok 57 - request bounds and unknown fields fail closed
+ok 74 - request bounds and unknown fields fail closed
   ---
-  duration_ms: 11.108902
+  duration_ms: 10.137546
   type: 'test'
   ...
 # Subtest: mobile consumer uses literal escaped labels and omits quarantined cards
-ok 58 - mobile consumer uses literal escaped labels and omits quarantined cards
+ok 75 - mobile consumer uses literal escaped labels and omits quarantined cards
   ---
-  duration_ms: 2.29089
+  duration_ms: 3.563247
   type: 'test'
   ...
 # Subtest: CLI review produces reproducible artifact and refuses overwrite
-ok 59 - CLI review produces reproducible artifact and refuses overwrite
+ok 76 - CLI review produces reproducible artifact and refuses overwrite
   ---
-  duration_ms: 936.833136
+  duration_ms: 1009.779622
   type: 'test'
   ...
 # Subtest: Skills preserves historical expected-negative, unexecuted, and missing-result cases separately
-ok 60 - Skills preserves historical expected-negative, unexecuted, and missing-result cases separately
+ok 77 - Skills preserves historical expected-negative, unexecuted, and missing-result cases separately
   ---
-  duration_ms: 7.077524
+  duration_ms: 9.596749
   type: 'test'
   ...
 # Subtest: Skills intentionally absent artifact remains distinct from unexpected missing and unverified
-ok 61 - Skills intentionally absent artifact remains distinct from unexpected missing and unverified
+ok 78 - Skills intentionally absent artifact remains distinct from unexpected missing and unverified
   ---
-  duration_ms: 0.830806
+  duration_ms: 0.966175
   type: 'test'
   ...
 # Subtest: Skills omitted scenario and artifact inventories stay unknown rather than zero or available
-ok 62 - Skills omitted scenario and artifact inventories stay unknown rather than zero or available
+ok 79 - Skills omitted scenario and artifact inventories stay unknown rather than zero or available
   ---
-  duration_ms: 1.203025
+  duration_ms: 0.870294
   type: 'test'
   ...
 # Subtest: Skills complete scenario enumeration establishes only its count, never complete readiness
-ok 63 - Skills complete scenario enumeration establishes only its count, never complete readiness
+ok 80 - Skills complete scenario enumeration establishes only its count, never complete readiness
   ---
-  duration_ms: 0.829204
+  duration_ms: 0.986115
   type: 'test'
   ...
 # Subtest: Skills empty supplied list needs explicit completeness to establish exact zero
-ok 64 - Skills empty supplied list needs explicit completeness to establish exact zero
+ok 81 - Skills empty supplied list needs explicit completeness to establish exact zero
   ---
-  duration_ms: 2.042363
+  duration_ms: 1.20646
   type: 'test'
   ...
 # Subtest: Skills null inventories cannot become empty, complete, or zero inventories
-ok 65 - Skills null inventories cannot become empty, complete, or zero inventories
+ok 82 - Skills null inventories cannot become empty, complete, or zero inventories
   ---
-  duration_ms: 0.46101
+  duration_ms: 0.422984
   type: 'test'
   ...
 # Subtest: Skills some present files do not imply complete availability
-ok 66 - Skills some present files do not imply complete availability
+ok 83 - Skills some present files do not imply complete availability
   ---
-  duration_ms: 1.845554
+  duration_ms: 1.503538
   type: 'test'
   ...
 # Subtest: Skills RED confirmation cannot be relabeled as current positive or negative pass evidence
-ok 67 - Skills RED confirmation cannot be relabeled as current positive or negative pass evidence
+ok 84 - Skills RED confirmation cannot be relabeled as current positive or negative pass evidence
   ---
-  duration_ms: 1.479002
+  duration_ms: 0.893168
   type: 'test'
   ...
 # Subtest: Skills rejects fabricated evidence attached to an unexecuted scenario
-ok 68 - Skills rejects fabricated evidence attached to an unexecuted scenario
+ok 85 - Skills rejects fabricated evidence attached to an unexecuted scenario
   ---
-  duration_ms: 0.495762
+  duration_ms: 0.41347
   type: 'test'
   ...
 # Subtest: Skills rejects duplicate or orphaned case reports
-ok 69 - Skills rejects duplicate or orphaned case reports
+ok 86 - Skills rejects duplicate or orphaned case reports
   ---
-  duration_ms: 2.718301
+  duration_ms: 3.850191
   type: 'test'
   ...
 # Subtest: Skills rejects erased failures and malformed or mismatched evidence declarations
-ok 70 - Skills rejects erased failures and malformed or mismatched evidence declarations
+ok 87 - Skills rejects erased failures and malformed or mismatched evidence declarations
   ---
-  duration_ms: 0.394883
+  duration_ms: 1.795669
   type: 'test'
   ...
 # Subtest: Skills rejects operative or admission claims rather than laundering them into a safe projection
-ok 71 - Skills rejects operative or admission claims rather than laundering them into a safe projection
+ok 88 - Skills rejects operative or admission claims rather than laundering them into a safe projection
   ---
-  duration_ms: 0.675137
+  duration_ms: 1.096137
   type: 'test'
   ...
 # Subtest: Skills source digest binds the entire supplied input and projection does not mutate it
-ok 72 - Skills source digest binds the entire supplied input and projection does not mutate it
+ok 89 - Skills source digest binds the entire supplied input and projection does not mutate it
   ---
-  duration_ms: 0.923553
+  duration_ms: 2.056254
   type: 'test'
   ...
 # Subtest: Skills rejects unsupported source stage/status and invalid artifact observations
-ok 73 - Skills rejects unsupported source stage/status and invalid artifact observations
+ok 90 - Skills rejects unsupported source stage/status and invalid artifact observations
   ---
-  duration_ms: 0.385409
+  duration_ms: 0.515781
   type: 'test'
   ...
 # Subtest: Skills accepts actual pinned native JSON shapes without treating historical RED reports as pass evidence
-ok 74 - Skills accepts actual pinned native JSON shapes without treating historical RED reports as pass evidence
+ok 91 - Skills accepts actual pinned native JSON shapes without treating historical RED reports as pass evidence
   ---
-  duration_ms: 1.337343
+  duration_ms: 2.038257
   type: 'test'
   ...
 # Subtest: Skills compatibility snapshots retain exact Git blob bytes
-ok 75 - Skills compatibility snapshots retain exact Git blob bytes
+ok 92 - Skills compatibility snapshots retain exact Git blob bytes
   ---
-  duration_ms: 0.393421
+  duration_ms: 0.54913
   type: 'test'
   ...
 # Subtest: Skills projection requires explicit time and attributable provenance without a wallclock default
-ok 76 - Skills projection requires explicit time and attributable provenance without a wallclock default
+ok 93 - Skills projection requires explicit time and attributable provenance without a wallclock default
   ---
-  duration_ms: 0.674656
+  duration_ms: 1.143588
   type: 'test'
   ...
 # Subtest: Skills rejects non-JSON accessors before reading them
-ok 77 - Skills rejects non-JSON accessors before reading them
+ok 94 - Skills rejects non-JSON accessors before reading them
   ---
-  duration_ms: 0.253985
+  duration_ms: 0.309116
   type: 'test'
   ...
-1..77
-# tests 77
+1..94
+# tests 94
 # suites 0
-# pass 77
+# pass 94
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 2842.972241
+# duration_ms 2964.273286

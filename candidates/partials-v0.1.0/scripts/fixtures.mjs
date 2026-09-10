@@ -4,6 +4,7 @@ import {fromOSProgram} from '../adapters/os.mjs';
 import {generatePreferenceFixtures} from './fixture-preference.mjs';
 import {generateSkillsFixtures} from './fixture-skills.mjs';
 import {generateReviewFixtures} from './fixture-review.mjs';
+import {generateChangeFixtures} from './fixture-changes.mjs';
 const root=new URL('../fixtures/',import.meta.url);
 const save=(name,data)=>writeFile(new URL(name,root),JSON.stringify(data,null,2)+'\n');
 const program=JSON.parse(await readFile(new URL('../test/upstream/os/program.example.json',import.meta.url),'utf8'));
@@ -15,3 +16,4 @@ await save('confirmed-zero.json',createRecord({id:'fixture:confirmed-zero',subje
 await generatePreferenceFixtures();
 await generateSkillsFixtures();
 await generateReviewFixtures();
+await generateChangeFixtures();

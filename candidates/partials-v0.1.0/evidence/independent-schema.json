@@ -15,8 +15,9 @@
   "invalid_cases_rejected": 10,
   "review_schemas_and_fixtures_valid": [
     "review-request",
-    "review-result"
+    "review-result",
+    "review-changes"
   ],
-  "review_negatives_rejected": 2,
+  "review_negatives_rejected": 3,
   "scope": "structure and format; not semantic parity, authentication, authority, or human benefit"
 }

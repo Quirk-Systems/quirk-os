@@ -13,7 +13,8 @@
     "./os": "./adapters/os.mjs",
     "./preference": "./adapters/preference.mjs",
     "./skills": "./adapters/skills.mjs",
-    "./review": "./src/review.mjs"
+    "./review": "./src/review.mjs",
+    "./changes": "./src/changes.mjs"
   },
   "scripts": {
     "test": "node --test test/*.test.mjs",

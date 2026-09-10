@@ -54,7 +54,7 @@ for record in invalid:
     assert not validator.is_valid(record), "Independent validator accepted a structural negative"
 registry = Registry().with_resource(schema['$id'], Resource.from_contents(schema))
 review_checks = []
-for name in ['review-request', 'review-result']:
+for name in ['review-request', 'review-result', 'review-changes']:
     shape = json.loads((root / f'schemas/{name}.schema.json').read_text())
     Draft202012Validator.check_schema(shape)
     check = Draft202012Validator(shape, registry=registry, format_checker=formats)
@@ -66,4 +66,4 @@ for name in ['review-request', 'review-result']:
         record['authority']['effect_execution_allowed'] = True
     assert not check.is_valid(record), 'Review structural negative accepted'
     review_checks.append(name)
-print(json.dumps({"validator": "python-jsonschema", "version": version("jsonschema"), "dialect": "2020-12", "valid_fixtures": [name for name, _ in records], "invalid_cases_rejected": len(invalid), "review_schemas_and_fixtures_valid": review_checks, "review_negatives_rejected": 2, "scope": "structure and format; not semantic parity, authentication, authority, or human benefit"}, indent=2))
+print(json.dumps({"validator": "python-jsonschema", "version": version("jsonschema"), "dialect": "2020-12", "valid_fixtures": [name for name, _ in records], "invalid_cases_rejected": len(invalid), "review_schemas_and_fixtures_valid": review_checks, "review_negatives_rejected": len(review_checks), "scope": "structure and format; not semantic parity, authentication, authority, or human benefit"}, indent=2))

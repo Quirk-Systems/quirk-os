@@ -3,25 +3,33 @@
   "package_version": "0.1.0",
   "status": "candidate",
   "disposition": "Constrain",
-  "source_manifest_sha256": "53c76ea997c0ee7a8072b8b33a083059a604a99e6dec19c86ef68f2eb7cc4e24",
+  "source_manifest_sha256": "dc41f6a04e46a46cb45ba5ae780be5342017c32add4586b366a26d707f96d3cf",
   "environment": {
     "node": "v24.19.0",
     "python_validator": "jsonschema 4.26.0 with explicit stdlib datetime checker"
   },
   "checks": {
-    "node_tests": 77,
-    "node_pass": 77,
+    "node_tests": 94,
+    "node_pass": 94,
     "independent_valid_fixtures": 8,
     "independent_negatives_rejected": 10,
     "npm_ci_offline": "passed",
     "fixture_regeneration": "deterministic",
-    "independent_review_fixtures": 2,
-    "independent_review_negatives_rejected": 2
+    "independent_review_fixtures": 3,
+    "independent_review_negatives_rejected": 3,
+    "change_review_api_tests": 16,
+    "change_review_cli_tests": 1
   },
   "human_review": "unverified",
   "browser_interaction": "unverified",
   "real_life_benefit": "unverified",
   "consumer_deployment": "not_performed",
   "authority": "propose_only_no_external_effects",
-  "prior_evidence_head": "d6b5beb7d2329c3fcd69d13585506d3800a39ad7"
+  "prior_evidence_head": "159d0ac1dd89eb75f4c1a36b725628703cf3e280",
+  "validation_run": {
+    "started_at": "2026-09-10T01:57:44.356763+00:00",
+    "completed_at": "2026-09-10T01:57:47.535971+00:00",
+    "validation_latency_ms": 3179,
+    "scope": "Measured conformance commands only; not implementation effort or user effort"
+  }
 }
