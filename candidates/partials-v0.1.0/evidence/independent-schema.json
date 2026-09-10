@@ -1,0 +1,17 @@
+{
+  "validator": "python-jsonschema",
+  "version": "4.26.0",
+  "dialect": "2020-12",
+  "valid_fixtures": [
+    "confirmed-zero.json",
+    "os-partial.json",
+    "os-unknown.json",
+    "preference-empty.json",
+    "preference-lineage.json",
+    "preference-mixed.json",
+    "preference-partial.json",
+    "skills-partial.json"
+  ],
+  "invalid_cases_rejected": 10,
+  "scope": "structure and format; not semantic parity, authentication, authority, or human benefit"
+}

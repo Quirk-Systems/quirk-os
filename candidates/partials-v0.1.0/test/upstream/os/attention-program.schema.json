@@ -1,0 +1,984 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/attention-program.v1alpha1.json",
+  "title": "Candidate Attention Program",
+  "description": "Structural program envelope. Engine adds interval, lifecycle, evidence, identity and receipt integrity checks. This ID is a schema identifier, not a claim that an endpoint is published.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "api_version": {
+      "const": "quirk.dev/attention-program/v1alpha1"
+    },
+    "kind": {
+      "const": "Program"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "const": "0.1.0"
+        },
+        "status": {
+          "const": "candidate"
+        },
+        "owner_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "version",
+        "status",
+        "owner_ref"
+      ]
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maximum_right": {
+          "const": "propose"
+        },
+        "external_effects": {
+          "const": false
+        }
+      },
+      "required": [
+        "maximum_right",
+        "external_effects"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "goal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "beneficiary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "done_when": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "statement",
+        "beneficiary",
+        "done_when"
+      ]
+    },
+    "trial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "end_date": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "phase": {
+          "enum": [
+            "defined",
+            "observing",
+            "trying",
+            "review",
+            "paused",
+            "closed"
+          ]
+        },
+        "disposition": {
+          "enum": [
+            null,
+            "keep",
+            "revise",
+            "pause",
+            "stop"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "start_date",
+        "end_date",
+        "phase",
+        "disposition",
+        "reason"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "closed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "disposition": {
+                "enum": [
+                  "keep",
+                  "revise",
+                  "pause",
+                  "stop"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "disposition": {
+                "type": "null"
+              },
+              "reason": {
+                "const": ""
+              }
+            }
+          }
+        }
+      ]
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wip_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "external_in_progress": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "inventory_confirmed": {
+          "type": "boolean"
+        },
+        "setup_minutes": {
+          "type": "number",
+          "minimum": 0
+        },
+        "maintenance_minutes": {
+          "type": "number",
+          "minimum": 0
+        },
+        "costs_confirmed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "wip_limit",
+        "external_in_progress",
+        "inventory_confirmed",
+        "setup_minutes",
+        "maintenance_minutes",
+        "costs_confirmed"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "inventory_confirmed": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "external_in_progress": {
+                "type": "integer"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "external_in_progress": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "schedule": {
+      "$ref": "#/$defs/schedule"
+    },
+    "initiatives": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/initiative"
+      }
+    },
+    "sessions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/session"
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/observation"
+      }
+    },
+    "receipts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/receipt"
+      }
+    }
+  },
+  "required": [
+    "api_version",
+    "kind",
+    "metadata",
+    "authority",
+    "revision",
+    "goal",
+    "trial",
+    "bounds",
+    "schedule",
+    "initiatives",
+    "sessions",
+    "observations",
+    "receipts"
+  ],
+  "$defs": {
+    "initiative": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "beneficiary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "done_when": {
+          "type": "string",
+          "minLength": 1
+        },
+        "next_move": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "enum": [
+            "queued",
+            "doing",
+            "paused",
+            "done",
+            "stopped"
+          ]
+        },
+        "budget_minutes": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "cluster_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 111
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "beneficiary",
+        "done_when",
+        "next_move",
+        "phase",
+        "budget_minutes",
+        "cluster_ids"
+      ]
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "initiative_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "start": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "duration_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1440
+        },
+        "capacity_confirmed": {
+          "const": true
+        },
+        "phase": {
+          "const": "planned"
+        }
+      },
+      "required": [
+        "id",
+        "initiative_id",
+        "date",
+        "start",
+        "duration_minutes",
+        "capacity_confirmed",
+        "phase"
+      ]
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "initiative_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "mode": {
+          "enum": [
+            "baseline",
+            "trial"
+          ]
+        },
+        "comparison_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "minutes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "operation": {
+              "type": "number",
+              "minimum": 0
+            },
+            "review": {
+              "type": "number",
+              "minimum": 0
+            },
+            "correction": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "operation",
+            "review",
+            "correction"
+          ]
+        },
+        "completed": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "useful": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "protected_displaced": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "source": {
+          "const": "human_report"
+        }
+      },
+      "required": [
+        "id",
+        "initiative_id",
+        "date",
+        "mode",
+        "comparison_key",
+        "minutes",
+        "completed",
+        "useful",
+        "protected_displaced",
+        "note",
+        "source"
+      ]
+    },
+    "schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timezone": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sleep_start": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "sleep_end": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "workdays": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6
+          },
+          "uniqueItems": true
+        },
+        "work_start": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "work_end": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "prep_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 720
+        },
+        "commute_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 720
+        },
+        "weekend_anchor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "weekend_start": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "weekend_end": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        }
+      },
+      "required": [
+        "timezone",
+        "sleep_start",
+        "sleep_end",
+        "workdays",
+        "work_start",
+        "work_end",
+        "prep_minutes",
+        "commute_minutes",
+        "weekend_anchor",
+        "weekend_start",
+        "weekend_end"
+      ]
+    },
+    "command": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "confirm_inventory"
+            },
+            "external_in_progress": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "type",
+            "external_in_progress"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "add_initiative"
+            },
+            "initiative": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "beneficiary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "done_when": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "next_move": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "phase": {
+                  "const": "queued"
+                },
+                "budget_minutes": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "cluster_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 111
+                  },
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "beneficiary",
+                "done_when",
+                "next_move",
+                "phase",
+                "budget_minutes",
+                "cluster_ids"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "initiative"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "set_initiative_phase"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "phase": {
+              "enum": [
+                "queued",
+                "doing",
+                "paused",
+                "done",
+                "stopped"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "id",
+            "phase"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "plan_session"
+            },
+            "session": {
+              "$ref": "#/$defs/session"
+            }
+          },
+          "required": [
+            "type",
+            "session"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "record_observation"
+            },
+            "observation": {
+              "$ref": "#/$defs/observation"
+            }
+          },
+          "required": [
+            "type",
+            "observation"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "set_costs"
+            },
+            "setup_minutes": {
+              "type": "number",
+              "minimum": 0
+            },
+            "maintenance_minutes": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "type",
+            "setup_minutes",
+            "maintenance_minutes"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "set_trial_phase"
+            },
+            "phase": {
+              "enum": [
+                "observing",
+                "trying",
+                "review",
+                "paused"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "phase"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "close_trial"
+            },
+            "disposition": {
+              "enum": [
+                "keep",
+                "revise",
+                "pause",
+                "stop"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "type",
+            "disposition",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "update_schedule"
+            },
+            "schedule": {
+              "$ref": "#/$defs/schedule"
+            }
+          },
+          "required": [
+            "type",
+            "schedule"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "cancel_session"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "type",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "correct_observation"
+            },
+            "observation": {
+              "$ref": "#/$defs/observation"
+            }
+          },
+          "required": [
+            "type",
+            "observation"
+          ]
+        }
+      ]
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "$ref": "#/$defs/command"
+        },
+        "before_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "after_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "previous_receipt_hash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+        },
+        "actor": {
+          "const": "local_operator_self_report"
+        },
+        "previous_value": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/schedule"
+            },
+            {
+              "$ref": "#/$defs/session"
+            },
+            {
+              "$ref": "#/$defs/observation"
+            }
+          ]
+        }
+      },
+      "required": [
+        "command",
+        "before_hash",
+        "after_hash",
+        "previous_receipt_hash",
+        "receipt_hash",
+        "revision",
+        "recorded_at",
+        "actor",
+        "previous_value"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "properties": {
+                  "type": {
+                    "const": "update_schedule"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "previous_value": {
+                "$ref": "#/$defs/schedule"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "properties": {
+                  "type": {
+                    "const": "cancel_session"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "previous_value": {
+                "$ref": "#/$defs/session"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "properties": {
+                  "type": {
+                    "const": "correct_observation"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "previous_value": {
+                "$ref": "#/$defs/observation"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "properties": {
+                  "type": {
+                    "not": {
+                      "enum": [
+                        "update_schedule",
+                        "cancel_session",
+                        "correct_observation"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "previous_value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

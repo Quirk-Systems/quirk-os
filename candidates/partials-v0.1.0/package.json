@@ -1,0 +1,11 @@
+{
+  "name": "@quirk-systems/partials-candidate",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Candidate partial-information contract and inspect-only adapters",
+  "engines": {"node": ">=22"},
+  "exports": {".": "./src/core.mjs", "./projection": "./src/projection.mjs", "./os": "./adapters/os.mjs", "./preference": "./adapters/preference.mjs", "./skills": "./adapters/skills.mjs"},
+  "scripts": {"test": "node --test test/*.test.mjs", "schema": "node scripts/schema.mjs", "fixtures": "node scripts/fixtures.mjs", "check": "node scripts/schema.mjs --check && node --test test/*.test.mjs", "panel": "node scripts/cli.mjs panel"},
+  "dependencies": {"ajv": "8.20.0"}
+}

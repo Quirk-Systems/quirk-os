@@ -1,0 +1,24 @@
+{
+  "candidate": "quirk.partials/v1alpha1",
+  "package_version": "0.1.0",
+  "status": "candidate",
+  "disposition": "Constrain",
+  "source_manifest_sha256": "d2f6e3a320ddc6b69f79353bacd42033286a5fedcc1c7ea8544546aaa7b102c0",
+  "environment": {
+    "node": "v24.19.0",
+    "python_validator": "jsonschema 4.26.0 with explicit stdlib datetime checker"
+  },
+  "checks": {
+    "node_tests": 61,
+    "node_pass": 61,
+    "independent_valid_fixtures": 8,
+    "independent_negatives_rejected": 10,
+    "npm_ci_offline": "passed",
+    "fixture_regeneration": "deterministic"
+  },
+  "human_review": "unverified",
+  "browser_interaction": "unverified",
+  "real_life_benefit": "unverified",
+  "consumer_deployment": "not_performed",
+  "authority": "propose_only_no_external_effects"
+}
