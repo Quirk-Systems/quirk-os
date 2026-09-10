@@ -1,6 +1,6 @@
 # Optional evidence-bundle structural checker
 
-This is an isolated candidate repair derived from the `compound-quirk-systems` helper. It does not replace an installed skill, register a runtime gate, verify actual authority, or perform an external action. Source and candidate SHA-256 fingerprints are in `provenance.json`.
+This is an isolated candidate repair derived from the `compound-quirk-systems` helper. It does not replace an installed skill, register a runtime gate, verify actual authority, or perform an external action. Source and candidate SHA-256 fingerprints are in `candidate-provenance.json`.
 
 The evaluation reproduced malformed permission values being accepted and malformed nested data crashing traversal. Independent review also found padded action names bypassing the protected-action check and very large JSON integers escaping structured parse errors. The candidate validates real booleans, known nested containers and a fixed action vocabulary, rejects padded/unknown actions, and returns structured parse errors. Unknown extension fields remain inert and cannot extend the vocabulary.
 
