@@ -87,6 +87,7 @@ def main() -> int:
         "skill-eval-case.schema.json",
         "skill-runtime-grant.schema.json",
         "skill-run-receipt.schema.json",
+        "skill-run-receipt.v2.schema.json",
     ]
     schemas: dict[str, dict[str, Any]] = {}
     for name in schema_names:
@@ -309,6 +310,8 @@ def main() -> int:
         "status": "pass" if not findings else "fail",
         "evaluated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "skill_count": len(manifests),
+        "schema_count": len(schemas),
+        "expected_schema_count": len(schema_names),
         "core_case_count": len(core_cases),
         "extension_case_count": len(extension_cases),
         "case_count": len(cases),
@@ -335,7 +338,7 @@ def main() -> int:
         print(f"skill conformance failed: {len(findings)} finding(s), {len(manifests)}/12 manifests, {passed_cases}/{len(cases)} cases", file=sys.stderr)
         return 1
 
-    print("validated 12 candidate skills, 12 immutable manifests, 4 schemas, 48 executable cases, registry integrity, and fail-closed runtime boundaries")
+    print(f"validated {len(manifests)} candidate skills, {len(manifests)} digest-checked manifests, {len(schemas)} schemas, {passed_cases} executable cases, registry integrity, and fail-closed runtime boundaries")
     return 0
 
 

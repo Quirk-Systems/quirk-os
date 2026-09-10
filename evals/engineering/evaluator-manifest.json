@@ -1,0 +1,110 @@
+{
+  "schema_version": "quirk-evaluator-selector-manifest/v1",
+  "suite_id": "engineering-regression-v1",
+  "status": "candidate",
+  "selection_mode": "explicit_unittest_selectors",
+  "authority_effect": "none",
+  "digest_scope": "Exact UTF-8 bytes of this manifest file, including its final newline.",
+  "runner": {
+    "path": "evals/engineering/run_regression.py",
+    "command": [
+      ".venv/bin/python",
+      "evals/engineering/run_regression.py"
+    ]
+  },
+  "case_selectors": [
+    {
+      "case_id": "fixture.engineering.01.happy-path-evidenced-candidate",
+      "selectors": [
+        "tests.test_engineering_actions.ActionTests.test_read_is_observed_and_persisted_and_replayed",
+        "tests.test_engineering_loop.LoopTests.test_verified_candidate_is_review_ready_without_claiming_human_benefit"
+      ]
+    },
+    {
+      "case_id": "fixture.engineering.02.changed-digest-invalidates-proof",
+      "selectors": [
+        "tests.test_engineering_graph.GraphTests.test_changed_subject_digest_invalidates_proof"
+      ]
+    },
+    {
+      "case_id": "fixture.engineering.03.contradictions-remain-visible",
+      "selectors": [
+        "tests.test_engineering_graph.GraphTests.test_contradictions_are_preserved"
+      ]
+    },
+    {
+      "case_id": "fixture.engineering.04.forged-receipt-flags-fail",
+      "selectors": [
+        "tests.test_engineering_actions.ActionTests.test_forged_observed_flags_fail_receipt_schema",
+        "tests.test_engineering_actions.ActionTests.test_untrusted_embedded_grant_and_receipt_flags_do_not_authorize"
+      ]
+    },
+    {
+      "case_id": "fixture.engineering.05.revoked-expired-grant-stops",
+      "selectors": [
+        "tests.test_engineering_actions.ActionTests.test_replay_still_checks_revocation_and_source",
+        "tests.test_engineering_pilot.PilotTests.test_expired_grant_pauses_current_reuse_and_preserves_history"
+      ]
+    },
+    {
+      "case_id": "fixture.engineering.06.different-target-rejected",
+      "selectors": [
+        "tests.test_engineering_actions.ActionTests.test_resource_arguments_digest_expiry_revocation_and_ceiling"
+      ]
+    },
+    {
+      "case_id": "fixture.engineering.07.crash-reconciles-no-duplicate",
+      "selectors": [
+        "tests.test_engineering_actions.ActionTests.test_crash_after_possible_effect_preserves_intent_for_reconciliation"
+      ]
+    },
+    {
+      "case_id": "fixture.engineering.08.unchanged-failure-exhausts-repair",
+      "selectors": [
+        "tests.test_engineering_loop.LoopTests.test_repeated_failed_state_stops",
+        "tests.test_engineering_loop.LoopTests.test_repairs_are_bounded_and_partial_is_kept"
+      ]
+    },
+    {
+      "case_id": "fixture.engineering.09.content-cannot-grant-authority",
+      "selectors": [
+        "tests.test_engineering_pilot.PilotTests.test_source_cannot_supply_grant_or_raw_secret"
+      ]
+    },
+    {
+      "case_id": "fixture.engineering.10.cycles-signals-terminate",
+      "selectors": [
+        "tests.test_engineering_graph.GraphTests.test_bounded_cycle_traversal",
+        "tests.test_engineering_loop.LoopTests.test_repeated_interruptions_exhaust_dispatch_budget"
+      ]
+    },
+    {
+      "case_id": "fixture.engineering.11.wrong-disposition-fails",
+      "selectors": [
+        "tests.test_engineering_loop.LoopTests.test_false_outcome_fails_even_when_receipt_says_verified"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "docs/engineering/ADOPTION-SPEC.md": "01eaaa04e27a420f08df8ac899e77a9ba331d10419e47fd0dbf29aabd0fa29aa",
+    "evals/engineering/run_regression.py": "205e184be70b83ace2520b34691d8427441d5d7abafeafaa2f3a849be25a2771",
+    "schemas/action-contract.v1.schema.json": "b271356d17361bd8162086abe7f55584d2387a3d54fbc6e4827b3437967f08f5",
+    "schemas/action-grant.v1.schema.json": "3a8ed8c9f47ccb6d97fc91ddbc57d842b00ea0974c502537354d2b51a9f9d0b2",
+    "schemas/action-receipt.v2.schema.json": "d322c8b332df1dc4800c2541dbba592df0cfe828394e97c5e6010951d210932c",
+    "schemas/engineering-graph-assertion.v1.schema.json": "806c575cdeba7609bb8d2834b2084a98c0d9cd1f899ec00c67c3ee3676d18360",
+    "schemas/engineering-graph-object.v1.schema.json": "cbe7eec68a1f6f14fdd38e9f562f37f689f88f9c0af5e3b7a1318f4a01b2176a",
+    "schemas/ledger-transition.schema.json": "362f6c2b6778c8cd167a1223870cacbcbb86b9dc885392a53378ffa83a16b289",
+    "schemas/loop-spec.v1.schema.json": "8bc2f81653373981ce4851b7ba8e06c334505a2c5543f581daf15977ae63a1c1",
+    "scripts/engineering/actions.py": "2d9fd7a253ed59ee7e18fe79c99e747fd99075d076134b7131a0fbbb4ccecfee",
+    "scripts/engineering/graph.py": "f25a966f5b39326618d7114369dc0874ba372562fc6d1513ecf80dc87959ab74",
+    "scripts/engineering/interoperability.py": "49e7580fc0b2c36c7a4876d0fcc6a93b9bf5f6df6169555fc0fada355f02348c",
+    "scripts/engineering/ledger.py": "a8fb620df0d9e51e76205a5472f1ee229abc4c1c8850bddfe7b5b4d5660f849d",
+    "scripts/engineering/loop.py": "dd9be2d99e22e6071e731b6a1e15c9391e09d0512d009d42634304861b24e583",
+    "scripts/engineering/projections.py": "ff535f364a25e67a548fbbccb8e1bb78190d565bead749da2b7a569f18331703",
+    "scripts/run_engineering_pilot.py": "23d4568fb9840eff6640dae892e13177bd3483ad0c8a8ef2cfe0e58ed1c93934",
+    "tests/test_engineering_actions.py": "4ba808b2e2a0ee93304d6d321b941546fdec6b43ad54102c14c3111905f8183a",
+    "tests/test_engineering_graph.py": "c2cab306358353e6445286f710b5cfcf738ac5f8b4b5efe707fcd5e3bddf6d53",
+    "tests/test_engineering_loop.py": "09f381a5663fb81448087b7c3f43dee44a6739677de937658eeb0a01eeac3d57",
+    "tests/test_engineering_pilot.py": "e5d2b35618740800fba2670785d2970426e1e94229489452a4817c4ec59e163e"
+  }
+}

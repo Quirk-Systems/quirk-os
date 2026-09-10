@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/action-receipt.v2.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "action_id",
+    "idempotency_key",
+    "status",
+    "errors",
+    "output",
+    "evidence",
+    "replayed",
+    "no_authority_escalation",
+    "immutable",
+    "limitations",
+    "grant_id",
+    "skill_id",
+    "skill_version",
+    "skill_manifest_sha256",
+    "action_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "action-receipt/v2"
+    },
+    "action_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "idempotency_key": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "VERIFIED",
+        "REJECTED",
+        "UNCERTAIN"
+      ]
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "output": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "observer",
+          "target",
+          "before_sha256",
+          "after_sha256",
+          "output_sha256",
+          "operation",
+          "resources_observed",
+          "external_writes",
+          "spend",
+          "observed_at",
+          "verifier",
+          "grant_sha256"
+        ],
+        "properties": {
+          "observer": {
+            "const": "local-adapter/v1"
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "before_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "after_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "output_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "operation": {
+            "enum": [
+              "read_resource",
+              "prepare_candidate"
+            ]
+          },
+          "resources_observed": {
+            "const": 1
+          },
+          "external_writes": {
+            "const": 0
+          },
+          "spend": {
+            "const": 0
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "verifier": {
+            "const": "local-postcondition/v1"
+          },
+          "grant_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "replayed": {
+      "type": "boolean"
+    },
+    "no_authority_escalation": {
+      "enum": [
+        true,
+        null
+      ]
+    },
+    "immutable": {
+      "type": "null"
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096
+      }
+    },
+    "grant_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "skill_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "skill_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "skill_manifest_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "action_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "VERIFIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidence": {
+            "minItems": 1
+          },
+          "output": {
+            "type": "object"
+          },
+          "no_authority_escalation": {
+            "const": true
+          },
+          "errors": {
+            "maxItems": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "no_authority_escalation": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

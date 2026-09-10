@@ -1,0 +1,177 @@
+{
+  "schema_version": "engineering-pilot/v1",
+  "mode": "LOCAL_CANDIDATE_SIMULATION",
+  "status": "REVIEW_READY",
+  "current_applicability": {
+    "checked_at": "2026-09-10T08:09:44.494738+00:00",
+    "applicable": true,
+    "status": "VERIFIED",
+    "errors": [],
+    "historical_receipt_preserved": true
+  },
+  "source": {
+    "candidate_id": "candidate.runtime-pr2",
+    "source_url": "https://github.com/Quirk-Systems/quirk-run/pull/2",
+    "head_sha": "850e5718377751d40cff68cde2db7c943b4b7e6b",
+    "observed_at": "2026-09-10T07:58:30.883Z",
+    "reported_build": "passed",
+    "reported_behavior": "not_proven",
+    "authority": "PREPARE"
+  },
+  "loop": {
+    "attempts": 1,
+    "authority": "CANDIDATE_PREPARE",
+    "candidate": {
+      "admission_effect": "none",
+      "authority": "CANDIDATE_PREPARE",
+      "behavioral_proof": "not_observed",
+      "build_proof": "reported_passed",
+      "candidate_id": "candidate.runtime-pr2",
+      "next_proof": "Run the existing behavioral fixtures at the exact source head and attach an observed receipt.",
+      "source_head": "850e5718377751d40cff68cde2db7c943b4b7e6b",
+      "source_ref": "https://github.com/Quirk-Systems/quirk-run/pull/2",
+      "why": "Reported build status does not establish behavioral execution."
+    },
+    "elapsed_seconds": 0.002553786995122209,
+    "human_usefulness": null,
+    "inflight_started_at": null,
+    "last_fingerprint": null,
+    "reasons": [],
+    "run_id": "run.engineering.79106f68ebb156a27b76",
+    "status": "REVIEW_READY",
+    "steps": 1
+  },
+  "action_receipt": {
+    "action_id": "action.79106f68ebb156a27b76",
+    "action_sha256": "6e003b2f225f62f85f6be12209616206b83c87156d2181c4bce9f0e145057bfa",
+    "errors": [],
+    "evidence": [
+      {
+        "after_sha256": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+        "before_sha256": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+        "external_writes": 0,
+        "grant_sha256": "892676dff10d5f48995fa0aa2dd56286f04fb2ea5836f38fb3330f4a03219568",
+        "observed_at": "2026-09-10T08:09:44.496411+00:00",
+        "observer": "local-adapter/v1",
+        "operation": "prepare_candidate",
+        "output_sha256": "ebe53ad54fb75069dc190843d390569f6e3a2093fa1ddccb9f0d28fbb29f9846",
+        "resources_observed": 1,
+        "spend": 0,
+        "target": "resource.candidate.runtime-pr2",
+        "verifier": "local-postcondition/v1"
+      }
+    ],
+    "grant_id": "grant.local-fixture.79106f68ebb156a27b76",
+    "idempotency_key": "run.engineering.79106f68ebb156a27b76:step:0",
+    "immutable": null,
+    "limitations": [
+      "Local candidate boundary only; no skill admission or live authority established.",
+      "SQLite append-only triggers do not enforce immutability against its owner.",
+      "Human usefulness is unmeasured."
+    ],
+    "no_authority_escalation": true,
+    "output": {
+      "candidate": {
+        "body": "{\"admission_effect\":\"none\",\"authority\":\"CANDIDATE_PREPARE\",\"behavioral_proof\":\"not_observed\",\"build_proof\":\"reported_passed\",\"candidate_id\":\"candidate.runtime-pr2\",\"next_proof\":\"Run the existing behavioral fixtures at the exact source head and attach an observed receipt.\",\"source_head\":\"850e5718377751d40cff68cde2db7c943b4b7e6b\",\"source_ref\":\"https://github.com/Quirk-Systems/quirk-run/pull/2\",\"why\":\"Reported build status does not establish behavioral execution.\"}",
+        "title": "Next proof for candidate.runtime-pr2"
+      },
+      "source_sha256": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+      "target": "resource.candidate.runtime-pr2"
+    },
+    "replayed": false,
+    "schema_version": "action-receipt/v2",
+    "skill_id": "quirk-fixture-engineering",
+    "skill_manifest_sha256": "934a04bded289e930ee08b7a9ea6ca311d61b2202d12ba0ceab6cc96dc3083d8",
+    "skill_version": "0.1.0",
+    "status": "VERIFIED"
+  },
+  "action_event_count": 2,
+  "graph_support": {
+    "object_id": "candidate.runtime-pr2",
+    "digest": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+    "supports": [],
+    "contradictions": [],
+    "excluded": [
+      {
+        "assertion_id": "assertion.build-report",
+        "reasons": [
+          "status_declared"
+        ]
+      }
+    ],
+    "truncated": false,
+    "authorization": "not_evaluated"
+  },
+  "context": {
+    "object_id": "candidate.runtime-pr2",
+    "digest": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+    "items": [
+      {
+        "assertion": {
+          "assertion_id": "assertion.build-report",
+          "subject_id": "candidate.runtime-pr2",
+          "subject_digest": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+          "predicate": "supported_by",
+          "object_id": "candidate.runtime-pr2.build-report",
+          "object_digest": "dbad915e4757257def2978239ce41b6884f7ea3ce1efb3205723f6dae0128d15",
+          "source_ref": "candidate.runtime-pr2.source",
+          "source_digest": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+          "observer": "local-pointer-intake/v1",
+          "observed_at": "2026-09-10T07:58:30.883Z",
+          "valid_from": "2026-09-10T07:58:30.883Z",
+          "valid_until": null,
+          "status": "declared"
+        },
+        "applicable": false,
+        "reasons": [
+          "status_declared"
+        ]
+      },
+      {
+        "assertion": {
+          "assertion_id": "assertion.source-dependency",
+          "subject_id": "candidate.runtime-pr2",
+          "subject_digest": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+          "predicate": "depends_on",
+          "object_id": "candidate.runtime-pr2.source",
+          "object_digest": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+          "source_ref": "candidate.runtime-pr2.source",
+          "source_digest": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+          "observer": "local-pointer-intake/v1",
+          "observed_at": "2026-09-10T07:58:30.883Z",
+          "valid_from": "2026-09-10T07:58:30.883Z",
+          "valid_until": null,
+          "status": "observed"
+        },
+        "applicable": true,
+        "reasons": []
+      }
+    ],
+    "truncated": false,
+    "authorization": "not_evaluated"
+  },
+  "revalidation": {
+    "object_id": "candidate.runtime-pr2.source",
+    "affected": [
+      {
+        "object_id": "candidate.runtime-pr2",
+        "digest": "79106f68ebb156a27b762b6e4404c17e3eddbcfd2b4b9b15a232d0d6d4678242",
+        "depth": 1,
+        "via_assertion_id": "assertion.build-report"
+      }
+    ],
+    "truncated": false,
+    "authorization": "not_evaluated",
+    "next_operation": "prepare_candidate",
+    "admission_effect": "none",
+    "dispatch_authorized": false
+  },
+  "evaluator_digest": "1c671d55f5c7f42b651367ee823a061ceb4f2dec7542a0ed4356743370b1a3a9",
+  "admission_effect": "none",
+  "external_writes": 0,
+  "limitations": [
+    "Host fixture grant is not live skill admission",
+    "Reported upstream checks remain declarations",
+    "Human usefulness not measured"
+  ]
+}
