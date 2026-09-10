@@ -1,0 +1,97 @@
+{
+  "schema_version": "mixed-media-brief/v1",
+  "object_id": "production.synthetic-review",
+  "goal": {
+    "outcome": "Prepare a mixed-media review package without dispatching providers.",
+    "audience": "Private operator",
+    "acceptance": [
+      "Originals remain unchanged.",
+      "Changed inputs identify only dependent work.",
+      "Publication remains separately authorized."
+    ]
+  },
+  "assets": [
+    {
+      "object_id": "asset.caption",
+      "revision": "fixture-v1",
+      "content_digest": "030b77e1cd3f9e94cb2aeb633998147949ecf0dffc602099fd66ce5c8a2a3f50",
+      "media_type": "text",
+      "locator": "caption.txt",
+      "rights": {
+        "status": "allowed",
+        "scope": [
+          "inspect",
+          "transform",
+          "deliver"
+        ],
+        "evidence_refs": [
+          "fixture://synthetic-authorship"
+        ]
+      },
+      "classifications": []
+    },
+    {
+      "object_id": "asset.stats",
+      "revision": "fixture-v1",
+      "content_digest": "d42501b14d707189cdc3ad9040ce37ed3eaf60844f2cff55751de3a67effadcd",
+      "media_type": "data",
+      "locator": "stats.json",
+      "rights": {
+        "status": "allowed",
+        "scope": [
+          "inspect",
+          "transform",
+          "deliver"
+        ],
+        "evidence_refs": [
+          "fixture://synthetic-authorship"
+        ]
+      },
+      "classifications": []
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "step.caption",
+      "kind": "classify",
+      "inputs": [
+        "asset.caption"
+      ],
+      "depends_on": [],
+      "output_id": "output.caption",
+      "output_type": "data"
+    },
+    {
+      "step_id": "step.stats",
+      "kind": "analyze",
+      "inputs": [
+        "asset.stats"
+      ],
+      "depends_on": [],
+      "output_id": "output.stats",
+      "output_type": "data"
+    },
+    {
+      "step_id": "step.review",
+      "kind": "package",
+      "inputs": [
+        "output.caption",
+        "output.stats"
+      ],
+      "depends_on": [],
+      "output_id": "output.review",
+      "output_type": "bundle"
+    }
+  ],
+  "settings": {
+    "authority": "CANDIDATE_PREPARE",
+    "max_steps": 12,
+    "max_repairs": 2,
+    "max_seconds": 60,
+    "max_input_bytes": 1048576,
+    "external_effects": false,
+    "publication": false,
+    "graph_writes": false,
+    "preference_updates": false
+  }
+}
