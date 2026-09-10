@@ -1,0 +1,45 @@
+name: Unsigned Rationale Conformance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/unsigned-rationale-conformance.yml'
+      - 'scripts/unsigned_rationale.py'
+      - 'scripts/check_unsigned_rationale.py'
+      - 'tests/test_unsigned_rationale*.py'
+      - 'schemas/unsigned-rationale.schema.json'
+      - 'examples/unsigned-rationale/**'
+      - 'docs/unsigned-rationale/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unsigned-rationale-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate-protocol:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # Existing Golden Gates pin
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # Existing Golden Gates pin
+        with:
+          python-version: '3.13'
+      - name: Verify protocol and record scoped evidence
+        env:
+          PYTHONPATH: scripts
+          QUIRK_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python scripts/check_unsigned_rationale.py --output /tmp/unsigned-rationale-evidence.json
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # Existing Applause Gate pin
+        with:
+          name: unsigned-rationale-${{ github.sha }}
+          path: /tmp/unsigned-rationale-evidence.json
+          if-no-files-found: error
+          retention-days: 30
