@@ -21,6 +21,14 @@ The first project pack defines the accountable machinery beneath Quirk Core:
 
 Start here: [`docs/golden-project-pack/README.md`](docs/golden-project-pack/README.md)
 
+### Quirk Media Kit candidate
+
+Package a source, its derivative files, and an unsigned version choice together;
+reopen the kit with a readable origin view and byte-integrity checks. This private
+candidate workflow preserves the existing media contract and grants no release authority.
+
+Try it: [`docs/media-kit/README.md`](docs/media-kit/README.md)
+
 ## Core laws
 
 - Every consequential mutation owes a receipt.
