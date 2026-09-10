@@ -15,7 +15,8 @@ The shared record is intentionally richer than a boolean and intentionally narro
 | Preference adapter | quirk-preference intake PR #2 | Run pinned producer/inspector, preserve page scope, replay limits, missing lineage, bytes and unsigned source | Implemented and locally tested; consumer wiring pending |
 | Skills adapter | quirk-skills RED-stage candidate | Preserve historical result vs unexecuted vs missing result, artifact absence, candidate holds | Implemented and locally tested; readiness view wiring pending |
 | Shared local review consumer | quirk-os CLI/mobile file | Compare explicit source expectations and age policy; account for stale, conflicting, duplicate and malformed inputs; reproduce receipt | Implemented in `src/review.mjs`; external app wiring and human use pending |
-| Change review consumer | quirk-os CLI/mobile file | Compare retained requests, expose replaced source claims and removed holds, propose bounded repairs, verify replay | Implemented in `src/changes.mjs`; external Inspector integration and observed choice pending |
+| Change review consumer | quirk-os CLI/mobile file | Compare retained requests, expose replaced source claims and removed holds, propose bounded repairs, verify replay | Implemented in `src/changes.mjs`; external application wiring pending |
+| Private decision Inspector | quirk-os CLI/mobile file | Require an explicit selected/revised/deferred response and rationale; retain displayed context and holds; replay unsigned export against retained requests | Implemented in `src/decision.mjs` and `src/inspector.mjs`; actual browser/iPhone interaction and observed real choice pending |
 | Move / Transition | quirk-os chambered workbench | Bind partial effects to exact invocation, receipts and reconciliation before retry; retain per-effect authority | Future adapter; never infer from this record alone |
 | Core / graph / memory | owning repositories | Versioned projection persistence, identity mapping, stale invalidation, lossless readback, no count aggregation across scopes | Future design and conformance proof |
 | Feed / Operator Shell / API surfaces | owning applications | Render shared validated records, preserve unknown fields and holds, fail closed on unsupported schema, observe mobile review and recovery | Future integration and human use |
@@ -31,6 +32,8 @@ These rows are the rollout queue, not a statement that every repository has been
 5. Keep all effect decisions in the existing owning authorization path. No `within`, `complete`, `available` or `supported` state grants a right.
 6. Before consumer rollout, prove native-shape compatibility at its new exact head, side-by-side display, malformed/stale-source rejection, and an observed human review and correction. Record effort and benefit separately from technical tests.
 
+For decision capture, use the [private decision Inspector](DECISION-INSPECTOR.md) or the equivalent CLI. Generate its context from retained requests, require an explicit response, and retain both requests with the unsigned export. Replay with `verifyUnsignedDecision` before consuming the export; the page's shape checks cannot authenticate the context. Full-context replay detects changed displayed options or holds against those inputs, but neither replay nor a selected response authenticates human origin or grants an effect right. Treat external application adoption as a separate integration and human-use gate.
+
 ## Correction, removal and rollback
 
 An existing projection is never edited in place by the CLI. For representation correction of the same source, supply the full replacement and expected old digest to `reviseRecord`; the result is a new record plus reasoned receipt. The CLI saves both as one bundle with an exclusive output path. The source tuple and scope must remain fixed. Retain prior bundles yourself; the candidate provides no durable or authenticated ledger.
@@ -41,4 +44,6 @@ To recover from an invalid input or partial output failure, repair the input and
 
 ## Human-use closure still owed
 
-The smallest next proof is one person reading the partial view for a real existing commitment, identifying a next move and its finish condition, then correcting one mistaken or missing item. Capture the exact build/source record, what changed, whether the commitment finished, and actual operation/review/correction time if known. Preserve unknown timing and incomplete inventory. Browser simulation and automated fixtures do not count as this observation.
+The smallest next proof is one person inspecting a real change for an existing commitment, choosing or revising a next move and finish condition—or explicitly deferring it with a rationale—and exporting the unsigned response. Retain the exact build and before/after requests. Then observe whether the move helped and whether its finish condition was reached; capture actual operation/review/correction time only if known. A decision export does not establish completion or benefit. Preserve unknown timing and incomplete inventory.
+
+Actual browser and iPhone use remain unverified. The environment blocked the local-file browser interaction check; contract and controller tests do not replace that observation. No public fixture contains a real schedule or personal work inventory.

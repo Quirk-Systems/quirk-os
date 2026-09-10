@@ -1,0 +1,187 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-BDr3azue/FNWOTZr9o6pTg8t8ON3Jme78RoRVmITmIw='; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'"><title>Quirk · Choose one next move</title><style>
+:root{color-scheme:light;--ink:#202c2a;--muted:#52665c;--line:#c9d1c5;--accent:#245c43;--paper:#f5f3e9}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 system-ui,sans-serif}main{max-width:1160px;margin:auto;padding:28px 20px 72px}header{max-width:730px;margin-bottom:32px}.eyebrow,.tag{font-size:.75rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}h1{font-size:clamp(2.2rem,6vw,3.8rem);line-height:1.06;letter-spacing:-.05em;margin:12px 0 20px}h2{font-size:1.35rem;line-height:1.3;margin:0 0 16px}h3{font-size:.95rem;margin-bottom:8px}.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px}.source-card,.editor,.receipt{border:1px solid var(--line);border-radius:16px;background:#fff;margin-bottom:14px}.source-choice{display:flex;gap:12px;padding:18px;cursor:pointer;min-height:72px}.source-choice strong,.source-ref,.tag{display:block}.source-ref{font-size:.8rem;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}input[type=radio]{width:20px;height:20px;flex-shrink:0;accent-color:var(--accent)}.source-card:has(input:checked){outline:3px solid var(--accent);outline-offset:1px}details{padding:0 18px 14px}summary{cursor:pointer;padding:10px 0;min-height:44px}details p,li,dd{overflow-wrap:anywhere}dl{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:.9rem}dt{color:var(--muted)}dd{margin:0}.editor{padding:22px;align-self:start;position:sticky;top:20px}fieldset{border:0;margin:0;padding:0}fieldset:disabled{opacity:.65}legend{font-weight:650;margin-bottom:12px}.response-options{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 20px}.response-options label{border:1px solid var(--line);border-radius:10px;padding:9px;display:flex;align-items:center;gap:6px;cursor:pointer;min-height:44px}label.field{display:block;margin:18px 0 6px;font-weight:600}textarea{width:100%;min-height:100px;padding:12px;border:1px solid #899b8e;border-radius:10px;font:inherit;color:inherit;background:#fff;resize:vertical}textarea[readonly]{background:#f5f7f2}button{font:inherit;font-weight:650;padding:13px 18px;min-height:48px;border-radius:10px;border:0;background:var(--accent);color:white;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}:focus-visible{outline:3px solid #b45e20;outline-offset:3px}.muted,.help{color:var(--muted);font-size:.9rem}.notice{padding:14px;border-left:3px solid #b45e20;background:#fff7e8;font-size:.9rem}#status{min-height:48px;overflow-wrap:anywhere}#decision-json{font:12px/1.5 ui-monospace,monospace;height:240px}.receipt{padding:20px;margin-top:30px}.digest{font:12px ui-monospace,monospace;overflow-wrap:anywhere}.receipt details{padding:0}[hidden]{display:none!important}#preview{border-top:1px solid var(--line);margin-top:22px;padding-top:22px}@media(max-width:760px){main{padding:22px 16px 48px}.layout{grid-template-columns:1fr;gap:12px}.editor{position:static;padding:18px}h1{font-size:2.6rem}.response-options{display:grid;grid-template-columns:1fr}.response-options label{min-height:48px}}
+</style></head><body><main><header><p class="eyebrow">Quirk Systems / Private decision Inspector</p><h1>One move.<br>Keep the loose ends.</h1><p>Inspect a source change, choose what to do next, and take your reasoning with you.</p><p class="notice">This saved file works on the displayed comparison. Your response stays in this page until you export it. It does not perform repairs or grant permission to act.</p><noscript><p>This viewer does not run the interactive script. Open the saved HTML in a browser that supports JavaScript, or use the documented CLI decision command.</p></noscript></header><div class="layout"><section aria-labelledby="source-heading"><h2 id="source-heading">1. Choose a proposed repair</h2><div class="source-card"><label class="source-choice" for="source-0"><input id="source-0" type="radio" name="source" value="fixture:review:malformed"><span><span class="tag">unchanged</span><strong>Repair the source input</strong><span class="source-ref">fixture:review:malformed</span></span></label><details><summary>Inspect the change and its limits</summary><dl><dt>Count before</dt><dd>Unknown or invalid</dd><dt>Count after</dt><dd>Unknown or invalid</dd></dl><h3>Changed fields</h3><p class="muted">None recorded.</p><h3>Proposed finish condition</h3><ul><li>Repair the owning input and rerun its adapter; retain the malformed source for inspection.</li><li>Preserve uncertainty and all existing authority obligations.</li></ul></details></div><div class="source-card"><label class="source-choice" for="source-1"><input id="source-1" type="radio" name="source" value="fixture:review:os"><span><span class="tag">changed</span><strong>Recheck the source</strong><span class="source-ref">fixture:review:os</span></span></label><details><summary>Inspect the change and its limits</summary><dl><dt>Count before</dt><dd>At least 6; total unknown</dd><dt>Count after</dt><dd>At least 6; total unknown</dd></dl><h3>Changed fields</h3><ul><li>expectation</li><li>review_accounting</li></ul><h3>Proposed finish condition</h3><ul><li>Inspect the owning source and rerun its adapter; do not edit timestamps solely to pass freshness checks.</li><li>Preserve uncertainty and all existing authority obligations.</li></ul></details></div><div class="source-card"><label class="source-choice" for="source-2"><input id="source-2" type="radio" name="source" value="fixture:review:preference"><span><span class="tag">replaced</span><strong>Recheck carried claims</strong><span class="source-ref">fixture:review:preference</span></span></label><details><summary>Inspect the change and its limits</summary><dl><dt>Count before</dt><dd>At least 1; total unknown</dd><dt>Count after</dt><dd>At least 1; total unknown</dd></dl><h3>Changed fields</h3><ul><li>subject</li><li>expectation</li></ul><h3>Proposed finish condition</h3><ul><li>Recheck source-bound claims against the new subject and scope; carried labels are unverified assertions.</li><li>Preserve uncertainty and all existing authority obligations.</li></ul><h3>Claims to recheck</h3><ul><li>inspection_shape_and_counts_consistent</li></ul></details></div><div class="source-card"><label class="source-choice" for="source-3"><input id="source-3" type="radio" name="source" value="fixture:review:skills"><span><span class="tag">removed</span><strong>Account for a removed source</strong><span class="source-ref">fixture:review:skills</span></span></label><details><summary>Inspect the change and its limits</summary><dl><dt>Count before</dt><dd>At least 2; total unknown</dd><dt>Count after</dt><dd>Unknown or invalid</dd></dl><h3>Changed fields</h3><p class="muted">None recorded.</p><h3>Proposed finish condition</h3><ul><li>Explain where the source went; do not treat absence as completed work or released obligations.</li><li>Preserve uncertainty and all existing authority obligations.</li></ul><h3>Removed from record; still unresolved</h3><ul><li>skills:candidate-only</li><li>skills:current-version-evaluation-required</li><li>skills:independent-qa-required</li><li>skills:no-admission-or-submission-grant</li></ul></details></div></section><section class="editor" aria-labelledby="response-heading"><h2 id="response-heading">2. Make the next move yours</h2><p id="chosen-source" class="source-ref">No source selected</p><form id="decision-form"><fieldset id="decision-fields" disabled><legend>Your response</legend><div class="response-options"><label><input type="radio" name="response" value="selected">Use this move</label><label><input type="radio" name="response" value="revised">Revise it</label><label><input type="radio" name="response" value="deferred">Defer it</label></div><label class="field" for="rationale">Why this response?</label><p class="help">Up to 2,000 characters; checked when you preview.</p><textarea id="rationale" placeholder="What makes this the useful next move—or why should it wait?"></textarea><div id="move-fields"><p id="move-help" class="help">Choose a response to continue.</p><label class="field" for="next-move">Next move</label><textarea id="next-move" readonly></textarea><label class="field" for="finish-condition">Finished when</label><textarea id="finish-condition" readonly></textarea></div></fieldset><p id="status" role="status" aria-live="polite">Preparing this saved comparison…</p><button id="prepare" type="submit">Preview unsigned decision</button></form><section id="preview" hidden aria-labelledby="preview-heading"><h2 id="preview-heading" tabindex="-1">3. Keep your unsigned record</h2><p class="help">Export includes all displayed repair options and holds, plus your chosen response. It contains no raw source requests. A decision does not prove that work happened.</p><button id="download" type="button" disabled>Download JSON</button><label class="field" for="decision-json">JSON preview / copy fallback</label><textarea id="decision-json" readonly></textarea></section></section></div><section class="receipt"><details><summary>Source binding and retained holds</summary><p class="help">Expectations are caller supplied. Current source state and human origin are not independently authenticated.</p><p class="digest">Comparison: sha256:9bb53ad7ece27d995dc9702aef772218ed922e69932cbdd0aeaebade4ffbe976</p><p class="digest">Context: sha256:6254c4daa5b0bb92b507530b908a581155ff846338b0af389d8517773b3e0e75</p><ul><li>changes:human_review_open</li><li>changes:invalid_input_unresolved</li><li>changes:no_automatic_repair</li><li>os:inventory_unknown</li><li>os:no_runtime_or_calendar_authority</li><li>os:protected_schedule</li><li>preference:human_review_open</li><li>preference:no_graph_application</li><li>preference:no_model_training</li><li>preference:unsigned_source</li><li>review:expectations_are_caller_supplied</li><li>review:human_review_open</li><li>skills:candidate-only</li><li>skills:current-version-evaluation-required</li><li>skills:independent-qa-required</li><li>skills:no-admission-or-submission-grant</li></ul></details></section></main><script type="module">/** Browser-safe unsigned data capture. No hashing, source authentication, or effects. */
+export const DECISION_ACTIONS = Object.freeze(['repair_native_input','account_for_removed_source','review_hold_removal','obtain_source_expectation','reconcile_identity','reinspect_source','review_policy_change','verify_recapture','revalidate_source_claims','review_added_source','review_record_change']);
+export const DECISION_CHANGED_FIELDS = Object.freeze(['record','record.id','subject','scope','knowledge','evidence','work','availability','authority','provenance','revision','supersedes_digest','expectation','max_count','review_accounting','max_age_seconds']);
+export const DECISION_LIMITS = Object.freeze({text:4000,rationale:2000,options:64,items:1024,criteria:16,bytes:8*1024*1024});
+const demand=(ok,message)=>{if(!ok)throw new Error(message);};
+
+/** Inspect property descriptors before reading data, so accessors are never invoked. */
+function assertPlainJSON(value,path='$',seen=new WeakSet(),depth=0) {
+  demand(depth<=32,`${path}: excessive JSON nesting`);
+  if(value===null||['string','boolean'].includes(typeof value))return;
+  if(typeof value==='number'){demand(Number.isFinite(value),`${path}: finite JSON number required`);return;}
+  demand(typeof value==='object',`${path}: JSON data required`);
+  demand(!seen.has(value),`${path}: cyclic JSON`);
+  const array=Array.isArray(value),prototype=Object.getPrototypeOf(value);
+  demand(array?prototype===Array.prototype:[Object.prototype,null].includes(prototype),`${path}: plain JSON data required`);
+  demand(Object.getOwnPropertySymbols(value).length===0,`${path}: symbol properties forbidden`);
+  const keys=Object.getOwnPropertyNames(value).filter(key=>!(array&&key==='length'));
+  if(array)demand(keys.length===value.length&&keys.every(key=>/^(0|[1-9][0-9]*)$/.test(key)&&Number(key)<value.length),`${path}: dense JSON array required`);
+  seen.add(value);
+  for(const key of keys){
+    const descriptor=Object.getOwnPropertyDescriptor(value,key);
+    demand(Object.hasOwn(descriptor,'value')&&descriptor.enumerable,`${path}.${key}: JSON data property required`);
+    assertPlainJSON(descriptor.value,`${path}.${key}`,seen,depth+1);
+  }
+  seen.delete(value);
+}
+function object(value,keys,path) {
+  demand(value!==null&&typeof value==='object'&&!Array.isArray(value),`${path}: object required`);
+  demand(Object.keys(value).length===keys.length&&keys.every(key=>Object.hasOwn(value,key)),`${path}: missing or unknown fields`);
+}
+function text(value,path,max=DECISION_LIMITS.text) {demand(typeof value==='string'&&value.trim().length>0&&[...value].length<=max,`${path}: nonempty text of at most ${max} characters required`);}
+function digest(value,path){demand(typeof value==='string'&&/^sha256:[a-f0-9]{64}$/.test(value),`${path}: SHA256 digest required`);}
+function dateTime(value,path) {
+  demand(typeof value==='string'&&value.length<=64&&/^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.test(value),`${path}: explicit date-time required`);
+  const date=value.slice(0,10);
+  demand(Number.isFinite(Date.parse(value))&&new Date(`${date}T00:00:00Z`).toISOString().slice(0,10)===date,`${path}: valid date-time required`);
+}
+function strings(value,path,{min=0,max=DECISION_LIMITS.items,allowed=null}={}) {
+  demand(Array.isArray(value)&&value.length>=min&&value.length<=max,`${path}: bounded array required`);
+  for(const item of value){text(item,path);if(allowed)demand(allowed.includes(item),`${path}: unknown value`);}
+  demand(new Set(value).size===value.length,`${path}: duplicate value`);
+}
+function authority(value,path) {
+  object(value,['maximum_right','effect_execution_allowed','calendar_write_allowed','canon_promotion_allowed','graph_application_allowed','training_allowed','human_review_required','upstream_hold_refs'],path);
+  demand(value.maximum_right==='propose'&&value.human_review_required===true,`${path}: candidate authority required`);
+  for(const key of ['effect_execution_allowed','calendar_write_allowed','canon_promotion_allowed','graph_application_allowed','training_allowed'])demand(value[key]===false,`${path}.${key}: authority escalation forbidden`);
+  strings(value.upstream_hold_refs,`${path}.upstream_hold_refs`);
+}
+function proposal(value,path) {
+  object(value,['status','action','target_ref','evidence_refs','acceptance_criteria','maximum_right','effect_execution_allowed','human_review_required'],path);
+  demand(value.status==='candidate'&&value.maximum_right==='propose'&&value.effect_execution_allowed===false&&value.human_review_required===true,`${path}: candidate proposal required`);
+  demand(DECISION_ACTIONS.includes(value.action),`${path}.action: unknown action`);
+  text(value.target_ref,`${path}.target_ref`);
+  strings(value.evidence_refs,`${path}.evidence_refs`,{min:1});value.evidence_refs.forEach(ref=>digest(ref,`${path}.evidence_refs`));
+  strings(value.acceptance_criteria,`${path}.acceptance_criteria`,{min:1,max:DECISION_LIMITS.criteria});
+  text(value.acceptance_criteria.join(' '),`${path}.combined_acceptance_criteria`);
+}
+
+/** Shape and internal consistency only; the supplied context is still unauthenticated. */
+export function assertDecisionContext(context) {
+  assertPlainJSON(context);
+  object(context,['schema_version','context_digest','comparison_digest','before_request_digest','after_request_digest','after_captured_at','authority','options'],'context');
+  demand(context.schema_version==='quirk.partials-decision-context/v1alpha1','context: unknown schema version');
+  for(const field of ['context_digest','comparison_digest','before_request_digest','after_request_digest'])digest(context[field],`context.${field}`);
+  dateTime(context.after_captured_at,'context.after_captured_at');authority(context.authority,'context.authority');
+  for(const hold of ['changes:human_review_open','changes:no_automatic_repair'])demand(context.authority.upstream_hold_refs.includes(hold),'context: required review obligation missing');
+  demand(Array.isArray(context.options)&&context.options.length<=DECISION_LIMITS.options,'context.options: at most 64 options required');
+  const refs=new Set();
+  for(const option of context.options){
+    object(option,['source_ref','change','before_count','after_count','changed_fields','claims_requiring_revalidation','removed_holds','added_holds','proposed_repair'],'context.option');
+    text(option.source_ref,'context.option.source_ref');
+    demand(!refs.has(option.source_ref),'context.options: duplicate source reference');refs.add(option.source_ref);
+    demand(['unchanged','added','removed','replaced','changed'].includes(option.change),'context.option.change: unknown change');
+    for(const key of ['before_count','after_count'])if(option[key]!==null)text(option[key],`context.option.${key}`);
+    strings(option.changed_fields,'context.option.changed_fields',{allowed:DECISION_CHANGED_FIELDS});
+    for(const key of ['claims_requiring_revalidation','removed_holds','added_holds'])strings(option[key],`context.option.${key}`);
+    proposal(option.proposed_repair,'context.option.proposed_repair');
+    demand(option.proposed_repair.target_ref===option.source_ref,'context.option: proposal target mismatch');
+    demand([context.before_request_digest,context.after_request_digest].every(ref=>option.proposed_repair.evidence_refs.includes(ref)),'context.option: proposal request binding missing');
+    demand([...option.removed_holds,...option.added_holds].every(hold=>context.authority.upstream_hold_refs.includes(hold)),'context.option: authority obligations omitted');
+  }
+  return context;
+}
+
+/** Explicit capture only. Selecting or revising a proposal never executes its action. */
+export function buildUnsignedDecision(context,answer) {
+  assertDecisionContext(context);assertPlainJSON(answer);
+  object(answer,['source_ref','response','rationale','next_move','finish_condition','captured_at'],'answer');
+  text(answer.source_ref,'answer.source_ref');
+  const chosen=context.options.find(option=>option.source_ref===answer.source_ref);
+  demand(chosen!==undefined,'answer.source_ref: choose an existing proposed repair');
+  demand(['selected','revised','deferred'].includes(answer.response),'answer.response: explicit selected, revised, or deferred response required');
+  text(answer.rationale,'answer.rationale',DECISION_LIMITS.rationale);dateTime(answer.captured_at,'answer.captured_at');
+  demand(Date.parse(answer.captured_at)>=Date.parse(context.after_captured_at),'answer.captured_at: capture precedes reviewed source');
+  if(answer.response==='deferred')demand(answer.next_move===null&&answer.finish_condition===null,'answer: deferred response must have no next move or finish condition');
+  else {
+    text(answer.next_move,'answer.next_move');text(answer.finish_condition,'answer.finish_condition');
+    if(answer.response==='selected')demand(answer.next_move===chosen.proposed_repair.acceptance_criteria[0]&&answer.finish_condition===chosen.proposed_repair.acceptance_criteria.join(' '),'answer: selected response must retain the proposed move and finish condition; use revised for edits');
+  }
+  const decision={schema_version:'quirk.partials-unsigned-decision/v1alpha1',status:'candidate',
+    context_digest:context.context_digest,comparison_digest:context.comparison_digest,before_request_digest:context.before_request_digest,after_request_digest:context.after_request_digest,
+    context,source_ref:answer.source_ref,proposed_repair:chosen.proposed_repair,response:answer.response,rationale:answer.rationale,next_move:answer.next_move,finish_condition:answer.finish_condition,captured_at:answer.captured_at,
+    signature:null,human_origin:'claim_only',executed:false,observed_benefit:null,authority:context.authority};
+  // The portable schema bounds fields; this semantic check bounds the whole UTF-8
+  // export, including the two-space formatting and newline used by the UI/CLI.
+  const serialized=JSON.stringify(decision,null,2)+'\n';
+  demand(new TextEncoder().encode(serialized).byteLength<=DECISION_LIMITS.bytes,'decision: serialized export exceeds the 8 MiB byte limit');
+  return JSON.parse(serialized);
+}
+
+/** Browser/DOM controller. Dependencies are injected so the same handlers can be tested locally. */
+export function mountDecisionInspector(document, context, api) {
+  const get=id=>document.getElementById(id);
+  const form=get('decision-form'),status=get('status'),preview=get('preview'),output=get('decision-json'),download=get('download');
+  const sources=[...document.querySelectorAll('input[name="source"]')];
+  const responses=[...document.querySelectorAll('input[name="response"]')];
+  const rationale=get('rationale'),nextMove=get('next-move'),finish=get('finish-condition');
+  const drafts=new Map();let sourceRef=null,prepared=null;
+  const say=text=>{status.textContent=text;};
+  const invalidate=()=>{prepared=null;download.disabled=true;preview.hidden=true;output.value='';};
+  try{api.assertDecisionContext(context);}catch{say('This comparison context is invalid. Rebuild it from the retained requests.');get('decision-fields').disabled=true;get('prepare').disabled=true;return;}
+  if(!context.options.length){say('No proposed repairs are available in this comparison.');get('decision-fields').disabled=true;get('prepare').disabled=true;return;}
+  const option=()=>context.options.find(x=>x.source_ref===sourceRef);
+  const draft=()=>drafts.get(sourceRef);
+  function remember() {
+    if(sourceRef===null)return;
+    const d=draft();d.rationale=rationale.value;
+    if(d.response==='revised'){d.next=nextMove.value;d.finish=finish.value;}
+  }
+  function render() {
+    const selected=option(),d=draft();
+    get('decision-fields').disabled=!selected;
+    if(!selected)return;
+    get('chosen-source').textContent=selected.source_ref;
+    responses.forEach(input=>{input.checked=input.value===d.response;});
+    rationale.value=d.rationale;
+    const deferred=d.response==='deferred';
+    get('move-fields').hidden=deferred;
+    nextMove.disabled=deferred;finish.disabled=deferred;
+    nextMove.readOnly=d.response!=='revised';finish.readOnly=d.response!=='revised';
+    nextMove.value=d.response==='revised'?d.next:selected.proposed_repair.acceptance_criteria[0];
+    finish.value=d.response==='revised'?d.finish:selected.proposed_repair.acceptance_criteria.join(' ');
+    get('move-help').textContent=d.response==='revised'?'Write the next move and what finished means.':'The proposed move is shown below. Choose “Revise it” to edit.';
+    say('Choose your response, add a rationale, then preview the unsigned record.');
+  }
+  sources.forEach(input=>input.addEventListener('change',()=>{
+    if(!input.checked)return;
+    if(!context.options.some(row=>row.source_ref===input.value)){invalidate();say('That repair is not in this saved comparison. Rebuild the panel.');return;}
+    remember();sourceRef=input.value;
+    if(!drafts.has(sourceRef))drafts.set(sourceRef,{response:null,rationale:'',next:option().proposed_repair.acceptance_criteria[0],finish:option().proposed_repair.acceptance_criteria.join(' ')});
+    invalidate();render();
+  }));
+  responses.forEach(input=>input.addEventListener('change',()=>{
+    if(sourceRef===null||!input.checked)return;
+    remember();draft().response=input.value;invalidate();render();
+  }));
+  for(const input of [rationale,nextMove,finish])input.addEventListener('input',()=>{remember();invalidate();say('Draft changed. Preview it again before exporting.');});
+  form.addEventListener('submit',event=>{
+    event.preventDefault();invalidate();
+    if(sourceRef===null){say('Choose one proposed repair first.');sources[0].focus();return;}
+    remember();const d=draft();
+    if(!d.response){say('Choose whether to use, revise, or defer this move.');responses[0].focus();return;}
+    try {
+      prepared=api.buildUnsignedDecision(context,{source_ref:sourceRef,response:d.response,rationale:d.rationale,next_move:d.response==='deferred'?null:nextMove.value,finish_condition:d.response==='deferred'?null:finish.value,captured_at:api.now()});
+      output.value=JSON.stringify(prepared,null,2);preview.hidden=false;download.disabled=false;
+      say('Ready to export. This is an unsigned decision, not execution or approval.');
+      get('preview-heading').focus();
+    } catch(error){
+      const fields=[['answer.rationale',rationale,'Add a rationale of 1–2,000 characters.'],['answer.next_move',nextMove,'Write a next move of 1–4,000 characters.'],['answer.finish_condition',finish,'Write a finish condition of 1–4,000 characters.']];
+      const field=fields.find(([key])=>error.message.startsWith(key+':'));
+      if(field){say(field[2]);field[1].focus();}
+      else if(error.message.startsWith('answer.captured_at:'))say('The capture time is invalid or precedes the source. Check your device clock and preview again.');
+      else say(error.message);
+    }
+  });
+  download.addEventListener('click',()=>{
+    if(!prepared)return;
+    try{api.download(JSON.stringify(prepared,null,2)+'\n');say('Download requested. If your viewer blocks it, copy the JSON below.');}
+    catch{say('This viewer could not download the file. Copy the JSON below instead.');}
+  });
+  say('Choose one proposed repair. Nothing is selected yet.');
+}
+
+const decisionContext={"schema_version":"quirk.partials-decision-context/v1alpha1","comparison_digest":"sha256:9bb53ad7ece27d995dc9702aef772218ed922e69932cbdd0aeaebade4ffbe976","before_request_digest":"sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc","after_request_digest":"sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a","after_captured_at":"2026-09-10T00:30:00.000Z","authority":{"maximum_right":"propose","effect_execution_allowed":false,"calendar_write_allowed":false,"canon_promotion_allowed":false,"graph_application_allowed":false,"training_allowed":false,"human_review_required":true,"upstream_hold_refs":["changes:human_review_open","changes:invalid_input_unresolved","changes:no_automatic_repair","os:inventory_unknown","os:no_runtime_or_calendar_authority","os:protected_schedule","preference:human_review_open","preference:no_graph_application","preference:no_model_training","preference:unsigned_source","review:expectations_are_caller_supplied","review:human_review_open","skills:candidate-only","skills:current-version-evaluation-required","skills:independent-qa-required","skills:no-admission-or-submission-grant"]},"options":[{"source_ref":"fixture:review:malformed","change":"unchanged","before_count":null,"after_count":null,"changed_fields":[],"claims_requiring_revalidation":[],"removed_holds":[],"added_holds":[],"proposed_repair":{"status":"candidate","action":"repair_native_input","target_ref":"fixture:review:malformed","evidence_refs":["sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc","sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a","sha256:4b0e524a2429e658a8fb44dd8156843b31213fe70294e69c1dd5ae826df23b68"],"acceptance_criteria":["Repair the owning input and rerun its adapter; retain the malformed source for inspection.","Preserve uncertainty and all existing authority obligations."],"maximum_right":"propose","effect_execution_allowed":false,"human_review_required":true}},{"source_ref":"fixture:review:os","change":"changed","before_count":"At least 6; total unknown","after_count":"At least 6; total unknown","changed_fields":["expectation","review_accounting"],"claims_requiring_revalidation":[],"removed_holds":[],"added_holds":[],"proposed_repair":{"status":"candidate","action":"reinspect_source","target_ref":"fixture:review:os","evidence_refs":["sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc","sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a","sha256:901722bf755a27861fdf932a7902b61708c0fbdfc00517aed31cbc6bf4c42c8d"],"acceptance_criteria":["Inspect the owning source and rerun its adapter; do not edit timestamps solely to pass freshness checks.","Preserve uncertainty and all existing authority obligations."],"maximum_right":"propose","effect_execution_allowed":false,"human_review_required":true}},{"source_ref":"fixture:review:preference","change":"replaced","before_count":"At least 1; total unknown","after_count":"At least 1; total unknown","changed_fields":["subject","expectation"],"claims_requiring_revalidation":["inspection_shape_and_counts_consistent"],"removed_holds":[],"added_holds":[],"proposed_repair":{"status":"candidate","action":"revalidate_source_claims","target_ref":"fixture:review:preference","evidence_refs":["sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc","sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a","sha256:24b9c414e4a37eb6d8e7da2a294012be138387137291ba3cc4e8085a7f6cb69d","sha256:0fb9854d73f866697bd097bc896e0f2c35cb410770e1c1c55c1b8a7b4a4280ea"],"acceptance_criteria":["Recheck source-bound claims against the new subject and scope; carried labels are unverified assertions.","Preserve uncertainty and all existing authority obligations."],"maximum_right":"propose","effect_execution_allowed":false,"human_review_required":true}},{"source_ref":"fixture:review:skills","change":"removed","before_count":"At least 2; total unknown","after_count":null,"changed_fields":[],"claims_requiring_revalidation":[],"removed_holds":["skills:candidate-only","skills:current-version-evaluation-required","skills:independent-qa-required","skills:no-admission-or-submission-grant"],"added_holds":[],"proposed_repair":{"status":"candidate","action":"account_for_removed_source","target_ref":"fixture:review:skills","evidence_refs":["sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc","sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a","sha256:0015b5e7a4f51593768d7b29fa656a5fc9dc9b19bf14e1d207f6b016684ab558"],"acceptance_criteria":["Explain where the source went; do not treat absence as completed work or released obligations.","Preserve uncertainty and all existing authority obligations."],"maximum_right":"propose","effect_execution_allowed":false,"human_review_required":true}}],"context_digest":"sha256:6254c4daa5b0bb92b507530b908a581155ff846338b0af389d8517773b3e0e75"};
+mountDecisionInspector(document,decisionContext,{assertDecisionContext,buildUnsignedDecision,now:()=>new Date().toISOString(),download:text=>{const blob=new Blob([text],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='Quirk-Unsigned-Decision.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}});</script></body></html>

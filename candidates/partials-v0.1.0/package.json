@@ -14,7 +14,9 @@
     "./preference": "./adapters/preference.mjs",
     "./skills": "./adapters/skills.mjs",
     "./review": "./src/review.mjs",
-    "./changes": "./src/changes.mjs"
+    "./changes": "./src/changes.mjs",
+    "./decision": "./src/decision.mjs",
+    "./inspector": "./src/inspector.mjs"
   },
   "scripts": {
     "test": "node --test test/*.test.mjs",

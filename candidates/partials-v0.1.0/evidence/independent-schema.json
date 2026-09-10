@@ -19,5 +19,10 @@
     "review-changes"
   ],
   "review_negatives_rejected": 3,
+  "decision_schemas_and_fixtures_valid": [
+    "decision-context",
+    "unsigned-decision"
+  ],
+  "decision_negatives_rejected": 9,
   "scope": "structure and format; not semantic parity, authentication, authority, or human benefit"
 }

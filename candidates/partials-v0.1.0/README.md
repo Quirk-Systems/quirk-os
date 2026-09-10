@@ -1,6 +1,6 @@
 # Quirk partials foundation — candidate v0.1.0
 
-This package represents useful incomplete information without converting unknowns into zeros, unfinished work into success, or available capability into authority. It provides an executable common record, three source adapters, a CLI, and a saved mobile review panel.
+This package represents useful incomplete information without converting unknowns into zeros, unfinished work into success, or available capability into authority. It provides an executable common record, three source adapters, a CLI, saved review panels, and a private decision Inspector.
 
 **Status: candidate, propose only.** Owning candidate repository: `Quirk-Systems/quirk-os`. This is the shared foundation stage. Adapters execute locally against pinned input shapes; consumers have not been deployed or migrated. No runtime, calendar, Canon, preference graph, training, admission, or submission grant exists.
 
@@ -18,13 +18,24 @@ node scripts/cli.mjs panel fixtures/os-partial.json fixtures/preference-partial.
 
 The report says the known lower bound exceeds 2 while the total remains unknown. The panel is a static HTML file with no scripts, network resources, connections, forms, or effect controls. Open [Example-Panel.html](docs/Example-Panel.html) as a saved file for a synthetic example. An actual iPhone task and browser interaction remain unverified.
 
-For independent structural checking, install `jsonschema==4.26.0` in a Python environment and run `python scripts/independent_schema.py`. The script explicitly registers a stdlib date-time checker because optional format dependencies must not silently skip invalid dates. It validates the schema and eight fixtures and rejects ten structural negatives. `assertRecord` adds cross-field semantics; a schema-only pass is insufficient for consuming records.
+For independent structural checking, install `jsonschema==4.26.0` in a Python environment and run `python scripts/independent_schema.py`. The script explicitly registers a stdlib date-time checker because optional format dependencies must not silently skip invalid dates. It validates six schemas, eight partial fixtures and five review/decision fixtures, and rejects 22 structural negatives. The executable APIs add cross-field semantics and retained-request replay; schema-only checks are insufficient for consuming records.
 
 ## Contract and APIs
 
 For bounded source-aware consumption, use the new [source review capability](docs/SOURCE-REVIEW.md). It compares explicit expected subject versions/digests, checks capture age, accounts for every input, and quarantines mismatches before rendering. `review-panel` is the first shared local consumer; external application wiring remains pending.
 
 To inspect changes between two retained requests, use [change review](docs/CHANGE-REVIEW.md): `compare` produces a replay-verifiable result and `compare-panel` renders changes, carried claims and proposed repairs. Prior valid holds remain visible; no repair is executed.
+
+To decide what happens next, use the [private decision Inspector](docs/DECISION-INSPECTOR.md). Its self-contained interactive page requires an explicit choice, revision or deferral with a rationale; it previews an unsigned export and preserves unresolved holds. The shared contract also supports CLI capture and verification against retained requests:
+
+```sh
+mkdir -p private
+node scripts/cli.mjs inspector fixtures/review-request.json fixtures/review-next-request.json private/next-move.html
+node scripts/cli.mjs decide fixtures/review-request.json fixtures/review-next-request.json fixtures/decision-answer.json private/unsigned-decision.json
+node scripts/cli.mjs verify-decision fixtures/review-request.json fixtures/review-next-request.json private/unsigned-decision.json
+```
+
+Open [Decision-Inspector.html](docs/Decision-Inspector.html) for the synthetic example. Unlike the static review panels, the Inspector uses a hash-bound local script. It has no network or persistent browser storage. Browser/iPhone interaction and observed usefulness remain unverified.
 
 | Dimension | Meaning | Does not imply |
 | --- | --- | --- |
@@ -34,7 +45,7 @@ To inspect changes between two retained requests, use [change review](docs/CHANG
 | `availability` | Present, missing, unverified inputs | Permission to use an input |
 | `authority` | Fixed propose-only ceiling plus retained upstream holds | Any executable grant |
 
-`src/schema.mjs` is the one schema source; `schemas/partial-record.schema.json` is generated. `createRecord(overrides)` constructs a full record with unknown defaults for the four dimensions. `assertRecord(record)` rejects non-JSON, structural and semantic violations. `digestJSON(value)` uses sorted object keys, preserved array order and SHA-256; it is a local content identity, not a signature or a claim of RFC 8785 conformance. Records name a subject version/digest, scope, explicit capture time and source references.
+`src/schema.mjs` defines record and review schemas; `src/decision-schema.mjs` defines decision schemas. `npm run schema` generates their portable projections in `schemas/`. `createRecord(overrides)` constructs a full record with unknown defaults for the four dimensions. `assertRecord(record)` rejects non-JSON, structural and semantic violations. `digestJSON(value)` uses sorted object keys, preserved array order and SHA-256; it is a local content identity, not a signature or a claim of RFC 8785 conformance. Records name a subject version/digest, scope, explicit capture time and source references.
 
 `evaluate(record, {maxCount})` returns information and holds, always with `effectExecutionAllowed:false`. Bounds and counts only apply to that record's scope; comparing an OS initiative count with a Preference event count is invalid. Counts are never summed across adapters. A source-declared exact count remains a source assertion.
 

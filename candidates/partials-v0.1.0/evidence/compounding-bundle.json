@@ -5,9 +5,9 @@
     "candidates": [
       {
         "source_ref": "candidate:partials-foundation/source-manifest",
-        "fingerprint": "sha256:dc41f6a04e46a46cb45ba5ae780be5342017c32add4586b366a26d707f96d3cf",
+        "fingerprint": "sha256:5d0784471ac7b1e56b781ad7f37bd8fae47a89e4967d872534f304215383186e",
         "classification_reason": "Version-bound local candidate code and contract files",
-        "purpose": "Reproduce source-change comparison and proposed repairs",
+        "purpose": "Reproduce private unsigned-decision capture and full-context replay",
         "rights": "propose only; no external effects"
       }
     ],
@@ -64,20 +64,21 @@
     }
   ],
   "run_receipt": {
-    "run_id": "run.partials-change-review.dc41f6a04e46",
-    "trace_id": "trace.pr75-change-review",
+    "run_id": "run.partials-decision-inspector.5d0784471ac7",
+    "trace_id": "trace.pr75-decision-inspector",
     "skill_ref": "compound-quirk-systems",
-    "capability_ref": "capability.partials-change-review/v0.1.0",
+    "capability_ref": "capability.partials-decision-inspector/v0.1.0",
     "actor_ref": "assistant.builder",
     "authority_ref": "candidate.propose-only",
     "inputs": {
       "source_refs": [
         "candidate:partials-foundation/source-manifest",
         "fixtures/review-request.json",
-        "fixtures/review-next-request.json"
+        "fixtures/review-next-request.json",
+        "fixtures/decision-answer.json"
       ],
       "fingerprints": [
-        "sha256:dc41f6a04e46a46cb45ba5ae780be5342017c32add4586b366a26d707f96d3cf"
+        "sha256:5d0784471ac7b1e56b781ad7f37bd8fae47a89e4967d872534f304215383186e"
       ]
     },
     "execution": {
@@ -86,41 +87,48 @@
         "python-jsonschema 4.26.0"
       ],
       "workflow_version": "0.1.0",
-      "started_at": "2026-09-10T01:57:44.356763+00:00",
-      "completed_at": "2026-09-10T01:57:47.535971+00:00",
-      "timing_scope": "Measured conformance commands only; not implementation effort or user effort"
+      "started_at": "2026-09-10T02:20:15.506687+00:00",
+      "completed_at": "2026-09-10T02:20:21.504542+00:00",
+      "timing_scope": "Measured validation commands, including offline installation and fixture regeneration; not implementation or user effort"
     },
     "outputs": {
       "object_refs": [
-        "src/changes.mjs",
-        "schemas/review-changes.schema.json",
-        "fixtures/review-changes.json",
-        "docs/Changes-Panel.html"
+        "src/decision-model.mjs",
+        "src/decision.mjs",
+        "src/inspector.mjs",
+        "schemas/decision-context.schema.json",
+        "schemas/unsigned-decision.schema.json",
+        "fixtures/unsigned-decision.json",
+        "docs/Decision-Inspector.html"
       ],
       "output_hashes": [
-        "sha256:dc41f6a04e46a46cb45ba5ae780be5342017c32add4586b366a26d707f96d3cf"
+        "sha256:5d0784471ac7b1e56b781ad7f37bd8fae47a89e4967d872534f304215383186e"
       ]
     },
     "quality": {
       "contract_valid": true,
       "eval_scores": {
-        "node_tests_passed": 94,
-        "new_change_review_tests_passed": 17,
-        "independent_valid_fixtures": 11,
-        "independent_structural_negatives_rejected": 13
+        "node_tests_passed": 118,
+        "new_decision_contract_tests_passed": 16,
+        "new_inspector_controller_and_markup_tests_passed": 7,
+        "new_decision_cli_tests_passed": 1,
+        "independent_valid_fixtures": 13,
+        "independent_structural_negatives_rejected": 22
       },
       "warnings": [
         "No independent human review",
-        "No browser/iPhone use",
-        "No external consumer wiring",
-        "Expectations are caller supplied"
+        "Local-file browser interaction blocked by browser security policy; browser/iPhone behavior unverified",
+        "Event-handler harness is not browser evidence",
+        "No external application wiring",
+        "Retained requests and claimed human origin remain unauthenticated",
+        "No observed commitment completion or measured benefit"
       ]
     },
     "economics": {
-      "latency_ms": 3179,
+      "latency_ms": 5998,
       "compute_cost": null,
       "human_review_minutes": null,
-      "measurement_scope": "Measured conformance commands only; not implementation effort or user effort"
+      "measurement_scope": "Measured validation commands, including offline installation and fixture regeneration; not implementation or user effort"
     },
     "outcome": {
       "accepted": false,
@@ -129,64 +137,67 @@
     },
     "lineage": {
       "parent_run_ids": [
-        "run.partials-source-review.53c76ea997c0"
+        "run.partials-change-review.dc41f6a04e46"
       ],
       "transformation_refs": [
-        "retained before/after requests -> repeated source review -> exact reference comparison -> carried-claim/hold accounting -> proposed repair -> comparison receipt -> static panel"
+        "retained before/after requests -> comparison -> bounded displayed context -> explicit selected/revised/deferred answer -> unsigned candidate export -> full retained-request replay"
       ],
-      "prior_candidate_head": "159d0ac1dd89eb75f4c1a36b725628703cf3e280"
+      "prior_candidate_head": "328f0b361676ab28667503ccd48e752031c6e69a"
     }
   },
   "proposed_moves": [
     {
-      "id": "proposed_move.partials-inspector-integration",
+      "id": "proposed_move.partials-one-real-decision",
       "status": "candidate",
-      "requested_change": "Connect one existing Inspector to change review and observe a real source-change decision",
+      "requested_change": "Use the private Inspector for one existing commitment and observe its next-move finish condition",
       "target_refs": [
-        "capability.partials-change-review/v0.1.0"
+        "capability.partials-decision-inspector/v0.1.0"
       ],
       "evidence_refs": [
-        "sha256:dc41f6a04e46a46cb45ba5ae780be5342017c32add4586b366a26d707f96d3cf",
+        "sha256:5d0784471ac7b1e56b781ad7f37bd8fae47a89e4967d872534f304215383186e",
         "evidence/node-tests.tap"
       ],
-      "authority_required": "separate consumer-specific authorization",
+      "authority_required": "Voluntary human response; any effect still requires its existing owning authorization",
       "proposer_maximum_right": "propose",
-      "reversibility": "remove consumer import; preserve native inputs",
-      "blast_radius": "one candidate Inspector",
+      "reversibility": "Discard local draft or export; source requests are unchanged",
+      "blast_radius": "one private candidate comparison",
       "acceptance_criteria": [
-        "Show the exact changed source and retained holds",
-        "Person chooses or corrects one proposed repair",
-        "Record what the view helped finish; leave unmeasured effort and benefit unknown"
+        "Retain exact build and real before/after requests privately",
+        "Person inspects a source change and exports one explicit response with rationale",
+        "Verify full export against the retained pair",
+        "Observe whether the finish condition was reached; leave unmeasured effort and benefit unknown"
       ],
       "blockers": [
-        "independent human review",
-        "external consumer not wired"
+        "actual browser/iPhone interaction unverified",
+        "real decision and finish-condition outcome not observed"
       ],
-      "rollback_ref": "docs/CHANGE-REVIEW.md"
+      "rollback_ref": "docs/DECISION-INSPECTOR.md"
     }
   ],
   "system_dividend": {
-    "primary_outcome": "Implemented bounded change-review consumer over the existing source-review contract",
+    "primary_outcome": "Implemented shared unsigned-decision contract with CLI capture, full-context replay and a private interactive Inspector",
     "evidence_receipt_ref": "evidence/receipt.json",
     "structured_data_updates": [
-      "review-changes/v1alpha1"
+      "partials-decision-context/v1alpha1",
+      "partials-unsigned-decision/v1alpha1"
     ],
     "quality_delta": {
-      "observed_fixture_change": "Source replacements cannot silently transfer claims; removed holds remain aggregate obligations; invalid inputs stay opaque; 64-source unions accounted for",
+      "observed_fixture_change": "One explicit response retains its original proposal, full displayed context and holds; edits invalidate previews; altered sources or context fail replay; all authority ceilings remain fixed",
       "human_benefit": null
     },
     "reusable_move_candidates": [
-      "Compare retained reviews and select one bounded proposed repair with acceptance condition"
+      "Capture selected/revised/deferred responses through one shared model and verify before downstream consumption"
     ],
     "skill_or_capability_candidates": [
       "capability.partials-source-review/v0.1.0",
-      "capability.partials-change-review/v0.1.0"
+      "capability.partials-change-review/v0.1.0",
+      "capability.partials-decision-inspector/v0.1.0"
     ],
     "cleanup_or_mapping_proposals": [
-      "Use source-aware consumer where basic snapshot rendering was insufficient"
+      "Reuse the decision model in future application adapters instead of reimplementing response semantics"
     ],
     "next_proposed_moves": [
-      "proposed_move.partials-inspector-integration"
+      "proposed_move.partials-one-real-decision"
     ]
   }
 }

@@ -66,4 +66,22 @@ for name in ['review-request', 'review-result', 'review-changes']:
         record['authority']['effect_execution_allowed'] = True
     assert not check.is_valid(record), 'Review structural negative accepted'
     review_checks.append(name)
-print(json.dumps({"validator": "python-jsonschema", "version": version("jsonschema"), "dialect": "2020-12", "valid_fixtures": [name for name, _ in records], "invalid_cases_rejected": len(invalid), "review_schemas_and_fixtures_valid": review_checks, "review_negatives_rejected": len(review_checks), "scope": "structure and format; not semantic parity, authentication, authority, or human benefit"}, indent=2))
+decision_checks = []
+decision_negatives = 0
+for name in ['decision-context', 'unsigned-decision']:
+    shape = json.loads((root / f'schemas/{name}.schema.json').read_text())
+    Draft202012Validator.check_schema(shape)
+    check = Draft202012Validator(shape, format_checker=formats)
+    record = json.loads((root / f'fixtures/{name}.json').read_text())
+    check.validate(record)
+    mutations = [('authority', 'effect_execution_allowed', True)]
+    if name == 'unsigned-decision':
+        mutations += [(None, 'signature', 'forged'), (None, 'human_origin', 'verified'), (None, 'executed', True), (None, 'observed_benefit', 'helpful'), (None, 'response', 'approved'), (None, 'response', 'deferred'), (None, 'rationale', '')]
+    for parent, key, value in mutations:
+        bad = copy.deepcopy(record)
+        target = bad if parent is None else bad[parent]
+        target[key] = value
+        assert not check.is_valid(bad), 'Decision structural negative accepted'
+        decision_negatives += 1
+    decision_checks.append(name)
+print(json.dumps({"validator": "python-jsonschema", "version": version("jsonschema"), "dialect": "2020-12", "valid_fixtures": [name for name, _ in records], "invalid_cases_rejected": len(invalid), "review_schemas_and_fixtures_valid": review_checks, "review_negatives_rejected": len(review_checks), "decision_schemas_and_fixtures_valid": decision_checks, "decision_negatives_rejected": decision_negatives, "scope": "structure and format; not semantic parity, authentication, authority, or human benefit"}, indent=2))

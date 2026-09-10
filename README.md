@@ -36,5 +36,5 @@ This repository is early and intentionally contract-first. Canonical definitions
 
 ## Candidate partial-information support
 
-The [partials foundation](candidates/partials-v0.1.0/README.md) supplies a shared executable record, inspect-only OS/Preference/Skills adapters, and a saved mobile review panel. It preserves incomplete knowledge, evidence, work and availability independently, with a fixed propose-only authority ceiling. Consumer rollout and independent human-use proof remain pending.
+The [partials foundation](candidates/partials-v0.1.0/README.md) supplies a shared executable record, inspect-only OS/Preference/Skills adapters, saved review panels, and a private decision Inspector with an unsigned, replay-verifiable export. It preserves incomplete knowledge, evidence, work and availability independently, with a fixed propose-only authority ceiling. Consumer rollout and independent human-use proof remain pending.
 

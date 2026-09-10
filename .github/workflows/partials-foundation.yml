@@ -38,4 +38,4 @@ jobs:
       - name: Verify deterministic fixture projections
         run: |
           npm run fixtures
-          git diff --exit-code -- fixtures schemas docs/Review-Panel.html docs/Changes-Panel.html
+          git diff --exit-code -- fixtures schemas docs/Review-Panel.html docs/Changes-Panel.html docs/Decision-Inspector.html
