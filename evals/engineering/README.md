@@ -35,7 +35,7 @@ The selector manifest is evaluator-manifest.json. It pins SHA-256 hashes for
 the selected tests, their implementation modules and schemas, the section 9
 specification, and the integrity runner. Its SHA-256 is:
 
-    755642b9af869a2a4a2104cab7d5a61d0afa162607d276d677f10e5480889c35
+    c5616214ab0f1993cd855bb3319a544322218bf46d16f00e10802f504fc86d18
 
 The digest covers the exact UTF-8 file bytes, including the final newline. Every
 JSONL row pins that value. The caller supplying this digest to comparison code

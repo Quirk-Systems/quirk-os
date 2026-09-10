@@ -88,9 +88,9 @@
   "source_sha256": {
     "docs/engineering/ADOPTION-SPEC.md": "01eaaa04e27a420f08df8ac899e77a9ba331d10419e47fd0dbf29aabd0fa29aa",
     "evals/engineering/run_regression.py": "205e184be70b83ace2520b34691d8427441d5d7abafeafaa2f3a849be25a2771",
-    "schemas/action-contract.v1.schema.json": "b271356d17361bd8162086abe7f55584d2387a3d54fbc6e4827b3437967f08f5",
-    "schemas/action-grant.v1.schema.json": "3a8ed8c9f47ccb6d97fc91ddbc57d842b00ea0974c502537354d2b51a9f9d0b2",
-    "schemas/action-receipt.v2.schema.json": "d322c8b332df1dc4800c2541dbba592df0cfe828394e97c5e6010951d210932c",
+    "schemas/action-contract.v1.schema.json": "43961545592e7e4f71d179d9e7f9957c4f773eed479c9dcfa3c0603c97606178",
+    "schemas/action-grant.v1.schema.json": "0cac9f1e9445d1de60018f3fdcc4992b2a492e8acb87fe6db78cbea8304f1b9d",
+    "schemas/action-receipt.v2.schema.json": "66485d06fa3d8c6f841a0b4d4e49cd828f197112a712a43aef8bcd7a0f9f1856",
     "schemas/engineering-graph-assertion.v1.schema.json": "806c575cdeba7609bb8d2834b2084a98c0d9cd1f899ec00c67c3ee3676d18360",
     "schemas/engineering-graph-object.v1.schema.json": "cbe7eec68a1f6f14fdd38e9f562f37f689f88f9c0af5e3b7a1318f4a01b2176a",
     "schemas/ledger-transition.schema.json": "362f6c2b6778c8cd167a1223870cacbcbb86b9dc885392a53378ffa83a16b289",

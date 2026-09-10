@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.quirk.systems/action-receipt.v2.schema.json",
+  "title": "Quirk Observed Action Receipt v2",
   "type": "object",
   "additionalProperties": false,
   "required": [

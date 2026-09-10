@@ -19,6 +19,7 @@ Commands below ran from the candidate repository using Python 3.12.13, jsonschem
 | Integrated candidate | `python -m unittest discover -s tests -p 'test_*.py'` | 153 tests passed at the integration checkpoint; final GitHub check records the published head |
 | Engineering contracts | `python scripts/validate_engineering.py --repo .` | 7 schemas and 39 loop compatibility cases passed |
 | Frozen regression pack | `python evals/engineering/run_regression.py` | 20 source hashes verified; 11 synthetic cases mapped to 16 passing executable tests |
+| Existing Golden structure gate | `python scripts/validate_golden_pack.py` in a clean source export | Passed after adding three required schema titles; all 16 existing admission holds remain |
 | Skill compatibility | `python scripts/validate_skills.py --repo .` | 12 skills, 12 digest-checked manifests, 5 schemas and 48 executable cases passed |
 | PostgreSQL projection | `npm ci --prefix supabase/tests --ignore-scripts` then `npm run --prefix supabase/tests test:engineering` | 14 behavior groups passed on PostgreSQL 18.3 via PGlite 0.5.8 |
 | Real-pointer local pilot | `python scripts/run_engineering_pilot.py --input examples/engineering/runtime-pr2.json --state-dir /tmp/quirk-engineering-pilot --output /tmp/quirk-engineering-pilot-result.json` | `REVIEW_READY`, two persisted action events, current applicability checked, no admission effect, human usefulness unknown |
@@ -43,6 +44,8 @@ Independent task and integration reviews exercised the production code paths wit
 - Projection credential-bearing references, nested authority content and human-metric provenance gaps. Structured candidate exports reject these malformed inputs. Human metrics require attributed observation references supplied by a trusted collector; the comparator does not authenticate those observations.
 
 The eight local interoperability cases independently passed. MCP-shaped and A2A-shaped envelopes preserve exact action fields and shared idempotency while using the same trusted executor. This is local compatibility evidence, not protocol-server certification.
+
+The first hosted Quirk OS run passed the new engineering, skill and sync checks. Golden Gates correctly rejected three missing schema titles. The repair adds title metadata only, preserves the existing gate, refreshes the three pinned schema hashes and regression digest, and passes the same structural check in a clean export. Installed local dependencies are excluded from that source export, matching hosted checkout behavior.
 
 Red/green evidence includes 13 host failures before runtime repair, a reproduced concurrent workerd mismatch before receipt binding, and targeted failing regression cases before each review repair. Agent review does not stand in for a human usefulness decision.
 
