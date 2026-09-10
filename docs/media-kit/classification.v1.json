@@ -1,0 +1,32 @@
+{
+  "schema_version": "media-classification.v1",
+  "status": "candidate",
+  "umbrella": "Quirk Media",
+  "identity_rule": "Keep existing source and derivative IDs. Workspaces, modes, titles, and filenames do not mint new asset identities.",
+  "workspaces": [
+    {"id": "visuals", "name": "Quirk Visuals", "families": ["image"], "aliases": ["Quirk Images", "Quirk Pics", "Quirk Photos"], "modes": [{"id": "quick_picks", "name": "Quick Picks", "purpose": "Collect, compare, and select existing visuals."}, {"id": "photography", "name": "Photography", "purpose": "Review captured photographs and their edits; capture origin must be declared."}]},
+    {"id": "video", "name": "Quirk Video", "families": ["video"], "aliases": ["Quirk Videos"], "modes": []},
+    {"id": "presentations", "name": "Quirk Presentations", "families": ["presentation"], "aliases": [], "modes": []},
+    {"id": "audio", "name": "Quirk Audio", "families": ["audio"], "aliases": ["Quirk Podcasts"], "modes": [{"id": "podcasts", "name": "Podcasts", "purpose": "Work with episodes, segments, and transcripts; an audio extension does not establish an episode."}]}
+  ],
+  "format_support": "File custody and byte verification only. Extension evidence does not verify file type, decoding, safety, origin, or artistic merit.",
+  "families": {
+    "image": {"extensions": [".png", ".jpg", ".jpeg", ".webp", ".gif", ".tif", ".tiff", ".heic", ".heif", ".avif"], "review_material": ["alt_text"]},
+    "video": {"extensions": [".mp4", ".webm", ".mov"], "review_material": ["captions", "transcript"]},
+    "audio": {"extensions": [".wav", ".mp3", ".m4a", ".flac", ".ogg", ".aac", ".aiff"], "review_material": ["transcript"]},
+    "presentation": {"extensions": [".pptx", ".odp"], "review_material": ["speaker_notes"]},
+    "document": {"extensions": [".txt", ".md", ".srt", ".vtt", ".pdf"], "review_material": []},
+    "data": {"extensions": [".json"], "review_material": []},
+    "unknown": {"extensions": [], "review_material": []}
+  },
+  "services": [
+    {"id": "pack", "name": "Package", "status": "implemented_local", "entrypoint": "scripts/media_kit.py pack", "effect": "Create a new candidate ZIP."},
+    {"id": "verify", "name": "Verify", "status": "implemented_local", "entrypoint": "scripts/media_kit.py verify", "effect": "Read a ZIP and report internal consistency."},
+    {"id": "inspect", "name": "Inspect care", "status": "implemented_local", "entrypoint": "scripts/media_care.py inspect", "effect": "Read a verified kit and care record; emit findings and optionally a local report."},
+    {"id": "craft_review", "name": "Craft review", "status": "human_review", "effect": "A person judges intent, form, fidelity, accessibility, and usefulness; evidence is recorded separately."},
+    {"id": "edit_render", "name": "Create, edit, and render", "status": "proposed", "effect": "No editor or rendering provider is implemented by this kit."},
+    {"id": "transcribe", "name": "Transcribe and caption", "status": "proposed", "effect": "Companions can be linked and inspected; generation and synchronization checks are not implemented."},
+    {"id": "catalog", "name": "Catalog and schedule care", "status": "proposed", "effect": "No persistent index, background monitor, or automatic maintenance is implemented."},
+    {"id": "deliver", "name": "Publish and deliver", "status": "proposed", "effect": "No delivery integration or publishing authority is implemented."}
+  ]
+}
