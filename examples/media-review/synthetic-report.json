@@ -1,0 +1,141 @@
+{
+  "schema_version": "media-care-check.v1",
+  "tool_version": "0.2.0",
+  "as_of": "2026-09-10",
+  "kit_id": "qmk_synthetic",
+  "kit_content_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+  "care_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+  "classification_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+  "integrity": "verified",
+  "status": "needs_attention",
+  "authority": {
+    "ceiling": "candidate",
+    "publish_allowed": false,
+    "graph_application_allowed": false,
+    "training_allowed": false,
+    "canon_promotion_allowed": false
+  },
+  "human_benefit": "unobserved",
+  "scope": "Synthetic unsigned report; not permission.",
+  "maintenance_owner": "unassigned",
+  "owner_acceptance": "unverified",
+  "proposed_by": "fixture.agent",
+  "selection": {
+    "asset_ref": "selected",
+    "needs_attention": true,
+    "review_refs": [
+      "selected",
+      "source"
+    ],
+    "actor_type": "agent",
+    "signature_status": "unsigned"
+  },
+  "assets": [
+    {
+      "asset_ref": "source",
+      "title": "Synthetic source",
+      "archive_path": "assets/source.txt",
+      "provenance_role": "source",
+      "family": "document",
+      "extension_family": "document",
+      "origin": "unknown",
+      "use_role": "reference",
+      "sensitivity": "private",
+      "state": "candidate",
+      "state_reason": "Synthetic test record only",
+      "review_on": "2026-09-17",
+      "replacement_ref": null,
+      "selected": false,
+      "depends_on": [],
+      "alt_text_presence": "absent",
+      "companions": {}
+    },
+    {
+      "asset_ref": "selected",
+      "title": "Synthetic selected",
+      "archive_path": "assets/selected.txt",
+      "provenance_role": "derivative",
+      "family": "document",
+      "extension_family": "document",
+      "origin": "generated",
+      "use_role": "working",
+      "sensitivity": "private",
+      "state": "candidate",
+      "state_reason": "Synthetic test record only",
+      "review_on": "2026-09-17",
+      "replacement_ref": null,
+      "selected": true,
+      "depends_on": [
+        "source"
+      ],
+      "alt_text_presence": "absent",
+      "companions": {}
+    },
+    {
+      "asset_ref": "alternative",
+      "title": "Synthetic alternative",
+      "archive_path": "assets/alternative.txt",
+      "provenance_role": "derivative",
+      "family": "document",
+      "extension_family": "document",
+      "origin": "generated",
+      "use_role": "working",
+      "sensitivity": "private",
+      "state": "candidate",
+      "state_reason": "Synthetic test record only",
+      "review_on": "2026-09-17",
+      "replacement_ref": null,
+      "selected": false,
+      "depends_on": [
+        "source"
+      ],
+      "alt_text_presence": "absent",
+      "companions": {}
+    }
+  ],
+  "findings": [
+    {
+      "code": "owner_needed",
+      "asset_ref": null,
+      "message": "Record owner acceptance."
+    },
+    {
+      "code": "origin_unknown",
+      "asset_ref": "source",
+      "message": "Inspect source origin."
+    },
+    {
+      "code": "rights_review_open",
+      "asset_ref": "selected",
+      "message": "Review rights."
+    },
+    {
+      "code": "accessibility_review_open",
+      "asset_ref": "selected",
+      "message": "Review accessibility."
+    },
+    {
+      "code": "rights_review_open",
+      "asset_ref": "alternative",
+      "message": "Review rights."
+    },
+    {
+      "code": "accessibility_review_open",
+      "asset_ref": "alternative",
+      "message": "Review accessibility."
+    }
+  ],
+  "art_direction": {
+    "intent": "Synthetic review.",
+    "preserve": [
+      "The source"
+    ],
+    "avoid": [
+      "False approval"
+    ],
+    "craft_questions": [
+      "Useful?"
+    ],
+    "human_judgment": "unobserved"
+  }
+}

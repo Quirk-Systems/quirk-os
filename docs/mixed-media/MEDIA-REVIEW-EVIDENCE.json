@@ -1,0 +1,43 @@
+{
+  "schema_version": "media-review-evaluation.v1",
+  "status": "candidate",
+  "evaluated_at": "2026-09-10T14:37:49.194441+00:00",
+  "python_version": "3.13.5",
+  "scope": "new adapter focused local suite; exact native graph/schema snapshots",
+  "parent_commit": "d3d44e461929c0446d1d8de8794e828ea71d180b",
+  "graph_parent_commit": "e6344a1a13f359bf8e485a6d2b4d3143749c2600",
+  "upstream_git_blobs_verified": {
+    "scripts/engineering/graph.py": "388ae4232a164f4e789cd420df0a7fb8f455806a",
+    "schemas/engineering-graph-object.v1.schema.json": "db53086eb441a852b0047b127d25141b96ee3761",
+    "schemas/engineering-graph-assertion.v1.schema.json": "33c1ccc1512bae9fb6d09862788830a96970774e",
+    "schemas/projection-envelope.schema.json": "e355804f7c5d7c0b65e74a1328601077816d89e3"
+  },
+  "focused_tests": 30,
+  "exit_code": 0,
+  "red_gate_observed": "test_existing_projection_and_native_graph failed: None is not an instance of dict, before implementation",
+  "sha256": {
+    "scripts/prepare_media_review.py": "7647362c140a6eb0eef33d7b2cff2e00f1814b90e9007c7813bb661d31b4ea39",
+    "tests/test_media_review.py": "5ad575259113fad553f50eef17e8d2eff691662937c444f1334d31e684d85211",
+    "examples/media-review/synthetic-report.json": "e9ed13ab9764d25888580058b5fe23f5be11bf40c01da6a2b87bc001614ea41d",
+    "evals/media-review/regression-catalog.jsonl": "d5dd6e68487ccbf7043d67b27e01306af2d0c25ae6ecad4c343361c8860d6cfc"
+  },
+  "plugin_eval_cli": {
+    "available": false,
+    "executed": false,
+    "score": null
+  },
+  "independent_reviewer": false,
+  "parent_full_suite_locally_rerun": false,
+  "hosted_ci_at_new_head": "not_yet_observed",
+  "human_usefulness": "unobserved",
+  "live_provider_effects": 0,
+  "production_admission": false,
+  "limitations": [
+    "Tests were authored and run in this session, not independently reviewed.",
+    "Private saved producer report was consumed; producer code was not rerun.",
+    "Graph projection is local; no LoopRunner/ActionExecutor or Studio/Now UI integration.",
+    "Source report statements remain declarations; current freshness and rights are unverified."
+  ],
+  "test_output_summary": "Ran 30 tests; OK; exit 0. Full local log retained in delivery bundle.",
+  "focused_suite_runner": "python -m unittest discover -s tests -p test_media_review.py -v"
+}
