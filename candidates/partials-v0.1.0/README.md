@@ -22,6 +22,8 @@ For independent structural checking, install `jsonschema==4.26.0` in a Python en
 
 ## Contract and APIs
 
+For bounded source-aware consumption, use the new [source review capability](docs/SOURCE-REVIEW.md). It compares explicit expected subject versions/digests, checks capture age, accounts for every input, and quarantines mismatches before rendering. `review-panel` is the first shared local consumer; external application wiring remains pending.
+
 | Dimension | Meaning | Does not imply |
 | --- | --- | --- |
 | `knowledge` | Known identities, lower/upper bounds, explicit exact count within a named scope | Whole-system inventory or capacity |

@@ -3,22 +3,25 @@
   "package_version": "0.1.0",
   "status": "candidate",
   "disposition": "Constrain",
-  "source_manifest_sha256": "d2f6e3a320ddc6b69f79353bacd42033286a5fedcc1c7ea8544546aaa7b102c0",
+  "source_manifest_sha256": "53c76ea997c0ee7a8072b8b33a083059a604a99e6dec19c86ef68f2eb7cc4e24",
   "environment": {
     "node": "v24.19.0",
     "python_validator": "jsonschema 4.26.0 with explicit stdlib datetime checker"
   },
   "checks": {
-    "node_tests": 61,
-    "node_pass": 61,
+    "node_tests": 77,
+    "node_pass": 77,
     "independent_valid_fixtures": 8,
     "independent_negatives_rejected": 10,
     "npm_ci_offline": "passed",
-    "fixture_regeneration": "deterministic"
+    "fixture_regeneration": "deterministic",
+    "independent_review_fixtures": 2,
+    "independent_review_negatives_rejected": 2
   },
   "human_review": "unverified",
   "browser_interaction": "unverified",
   "real_life_benefit": "unverified",
   "consumer_deployment": "not_performed",
-  "authority": "propose_only_no_external_effects"
+  "authority": "propose_only_no_external_effects",
+  "prior_evidence_head": "d6b5beb7d2329c3fcd69d13585506d3800a39ad7"
 }

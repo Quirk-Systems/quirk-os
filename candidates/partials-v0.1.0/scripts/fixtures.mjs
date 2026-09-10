@@ -3,6 +3,7 @@ import {createRecord,digestJSON} from '../src/core.mjs';
 import {fromOSProgram} from '../adapters/os.mjs';
 import {generatePreferenceFixtures} from './fixture-preference.mjs';
 import {generateSkillsFixtures} from './fixture-skills.mjs';
+import {generateReviewFixtures} from './fixture-review.mjs';
 const root=new URL('../fixtures/',import.meta.url);
 const save=(name,data)=>writeFile(new URL(name,root),JSON.stringify(data,null,2)+'\n');
 const program=JSON.parse(await readFile(new URL('../test/upstream/os/program.example.json',import.meta.url),'utf8'));
@@ -13,3 +14,4 @@ await save('os-unknown.json',await fromOSProgram(program,{capturedAt:options.cap
 await save('confirmed-zero.json',createRecord({id:'fixture:confirmed-zero',subject:{system:'synthetic',id:'empty-inventory',version:'1',digest:digestJSON({explicit_confirmation:0})},scope:{id:'synthetic:scoped-empty',description:'A human-confirmed empty synthetic inventory within this scope'},provenance:{kind:'synthetic',source_refs:['fixture:explicit-zero-confirmation'],captured_at:options.capturedAt},knowledge:{status:'complete',known_items:[],lower_bound:0,upper_bound:0,exact:0,completeness_basis:'human_confirmed'}}));
 await generatePreferenceFixtures();
 await generateSkillsFixtures();
+await generateReviewFixtures();

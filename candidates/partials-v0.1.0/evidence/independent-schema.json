@@ -13,5 +13,10 @@
     "skills-partial.json"
   ],
   "invalid_cases_rejected": 10,
+  "review_schemas_and_fixtures_valid": [
+    "review-request",
+    "review-result"
+  ],
+  "review_negatives_rejected": 2,
   "scope": "structure and format; not semantic parity, authentication, authority, or human benefit"
 }

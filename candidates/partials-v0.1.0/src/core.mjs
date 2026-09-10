@@ -28,6 +28,11 @@ ajv.addFormat('date-time', {type:'string',validate:value=>{
   const date=value.slice(0,10); return Number.isFinite(Date.parse(value))&&new Date(`${date}T00:00:00Z`).toISOString().slice(0,10)===date;
 }});
 const validateShape=ajv.compile(recordSchema);
+/** Compile only repository-owned schemas; returned checks never grant authority. */
+export function contractCheck(schema) {
+  const validate=ajv.compile(schema);
+  return value=>{assertJSON(value);if(!validate(value))throw new Error(ajv.errorsText(validate.errors));return value;};
+}
 const demand=(ok,message)=>{if(!ok)throw new Error(message);};
 const disjoint=(a,b)=>a.every(x=>!b.includes(x));
 

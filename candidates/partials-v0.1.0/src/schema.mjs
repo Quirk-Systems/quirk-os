@@ -23,3 +23,28 @@ export const recordSchema = {
     authority:object({maximum_right:{const:'propose'},effect_execution_allowed:{const:false},calendar_write_allowed:{const:false},canon_promotion_allowed:{const:false},graph_application_allowed:{const:false},training_allowed:{const:false},human_review_required:{const:true},upstream_hold_refs:strings})
   })
 };
+
+export const reviewRequestSchema = {
+  $schema:recordSchema.$schema,$id:'urn:quirk:partials-review-request:v1alpha1',
+  ...object({
+    schema_version:{const:'quirk.partials-review-request/v1alpha1'},
+    captured_at:{type:'string',format:'date-time'},
+    max_age_seconds:{type:'integer',minimum:0,maximum:604800},
+    entries:{type:'array',minItems:1,maxItems:32,items:object({
+      source_ref:text,record:{},max_count:count,
+      expectation:{anyOf:[{type:'null'},object({subject:recordSchema.properties.subject,source_ref:text,observed_at:{type:'string',format:'date-time'}})]}
+    })}
+  })
+};
+export const reviewResultSchema = {
+  $schema:recordSchema.$schema,$id:'urn:quirk:partials-review-result:v1alpha1',
+  ...object({
+    schema_version:{const:'quirk.partials-review-result/v1alpha1'},status:{const:'candidate'},
+    captured_at:{type:'string',format:'date-time'},request_digest:digest,
+    rows:{type:'array',minItems:1,maxItems:32,items:object({index:{type:'integer',minimum:0},source_ref:text,input_digest:digest,disposition:choice('matched','quarantined','duplicate'),reason:choice('expectation_matched','invalid_record','expectation_missing','subject_mismatch','stale_capture','future_capture','identity_conflict','exact_replay'),duplicate_of:{type:['integer','null'],minimum:0}})},
+    records:{type:'array',items:object({index:{type:'integer',minimum:0},record:{$ref:recordSchema.$id},max_count:count})},
+    counts:object({inputs:{type:'integer',minimum:1},matched:{type:'integer',minimum:0},quarantined:{type:'integer',minimum:0},duplicates:{type:'integer',minimum:0}}),
+    authority:recordSchema.properties.authority,
+    receipt:object({capability_ref:{const:'capability.partials-source-review/v0.1.0'},transform_version:{const:'0.1.0'},output_digest:digest,observed_human_benefit:{type:'null'},human_review_minutes:{type:'null'},compute_cost:{type:'null'},limitations:strings})
+  })
+};
