@@ -16,6 +16,7 @@ from scripts.plugin_capability_harvest import (
     effective_authority,
     fingerprint_surface,
     forward_carry,
+    mechanism_review_subject,
     promotion_decision,
     run_receipt,
     scan_plugin_root,
@@ -106,36 +107,8 @@ def packet(**updates):
     return value
 
 
-def evidence_bundle(subject="quirk:mechanism.inspect_then_propose"):
-    records = [
-        {
-            "kind": "SourceRightsDecision", "issuer_ref": "quirk:actor.rights_officer",
-            "subject_ref": subject, "observed_at": NOW, "fresh_until": LATER,
-            "rights": "quirk_owned",
-        },
-        {
-            "kind": "CleanRoomReview", "issuer_ref": "quirk:actor.clean_room_reviewer",
-            "subject_ref": subject, "observed_at": NOW, "fresh_until": LATER,
-            "status": "passed", "reviewer_independent": True,
-        },
-        {
-            "kind": "SourceExposureDecision", "issuer_ref": "quirk:actor.clean_room_reviewer",
-            "subject_ref": subject, "observed_at": NOW, "fresh_until": LATER,
-            "prohibited_material_seen": False,
-        },
-    ]
-    registry = {sha256(record): record for record in records}
-    resolver = ReadOnlyEvidenceResolver(
-        registry,
-        {"quirk:actor.rights_officer", "quirk:actor.clean_room_reviewer"},
-        NOW,
-    )
-    return registry, resolver
-
-
 def mechanism(**updates):
-    registry, resolver = evidence_bundle()
-    refs = {record["kind"]: ref for ref, record in registry.items()}
+    source_ref = sha256({"capture": "owned-source-v1"})
     value = {
         "id": "quirk:mechanism.inspect_then_propose", "purpose": "Reduce repeated bounded work",
         "problem": "Useful work is trapped in one-off runs",
@@ -143,16 +116,45 @@ def mechanism(**updates):
         "output_classes": ["candidate_prompt"], "preconditions": ["source identity known"],
         "postconditions": ["candidate only"], "failure_modes": ["missing provenance"],
         "recovery_modes": ["quarantine"], "provider_assumptions": [],
-        "non_capabilities": ["publish", "canon write"], "source_evidence_refs": [refs["SourceRightsDecision"]],
+        "non_capabilities": ["publish", "canon write"], "source_evidence_refs": [source_ref],
+        "source_rights_refs": [],
         "effect_classes": ["none"], "success_metrics": ["positive Forward Carry"],
         "cheapest_disproof": "Replay without conversation memory",
         "authority_boundary_ref": "quirk:authority.propose_only",
         "implementation_actor_ref": "quirk:actor.builder",
         "clean_room_attestation": True, "external_expression_retained": False,
-        "clean_room_review_ref": refs["CleanRoomReview"],
-        "exposure_ledger_refs": [refs["SourceExposureDecision"]],
+        "clean_room_review_ref": "sha256:" + "0" * 64,
+        "exposure_ledger_refs": [],
     }
     value.update(updates)
+    subject = mechanism_review_subject(value)
+    source_set = sha256(sorted(value["source_evidence_refs"]))
+    actor = value["implementation_actor_ref"]
+    records = [
+        {
+            "kind": "SourceRightsDecision", "issuer_ref": "quirk:actor.rights_officer",
+            "subject_ref": source_ref, "implementation_actor_ref": actor,
+            "observed_at": NOW, "fresh_until": LATER, "rights": "quirk_owned",
+        },
+        {
+            "kind": "CleanRoomReview", "issuer_ref": "quirk:actor.clean_room_reviewer",
+            "subject_ref": subject, "implementation_actor_ref": actor,
+            "observed_at": NOW, "fresh_until": LATER, "status": "passed",
+            "reviewer_independent": True, "reviewed_source_set_digest": source_set,
+        },
+        {
+            "kind": "SourceExposureDecision", "issuer_ref": "quirk:actor.clean_room_reviewer",
+            "subject_ref": subject, "implementation_actor_ref": actor,
+            "observed_at": NOW, "fresh_until": LATER,
+            "prohibited_material_seen": False, "reviewed_source_set_digest": source_set,
+        },
+    ]
+    registry = {sha256(record): record for record in records}
+    refs = {record["kind"]: ref for ref, record in registry.items()}
+    value["source_rights_refs"] = [refs["SourceRightsDecision"]]
+    value["clean_room_review_ref"] = refs["CleanRoomReview"]
+    value["exposure_ledger_refs"] = [refs["SourceExposureDecision"]]
+    resolver = ReadOnlyEvidenceResolver(registry, {"quirk:actor.rights_officer", "quirk:actor.clean_room_reviewer"}, NOW)
     return value, resolver
 
 
@@ -234,18 +236,30 @@ class HarvestContractsTest(unittest.TestCase):
             create_mechanism_candidate(spec, resolver)
 
     def test_mechanism_requires_resolved_independent_review(self):
-        spec, _ = mechanism()
-        registry, _ = evidence_bundle()
+        spec, resolver = mechanism()
+        registry = resolver._records
         review_ref = spec["clean_room_review_ref"]
         registry[review_ref]["reviewer_independent"] = False
         with self.assertRaisesRegex(ContractError, "content-bound"):
             ReadOnlyEvidenceResolver(registry, {"quirk:actor.rights_officer", "quirk:actor.clean_room_reviewer"}, NOW)
 
     def test_mechanism_requires_trusted_independent_issuer(self):
-        spec, _ = mechanism()
-        registry, _ = evidence_bundle()
+        spec, resolver = mechanism()
+        registry = resolver._records
         resolver = ReadOnlyEvidenceResolver(registry, {"quirk:actor.rights_officer"}, NOW)
         with self.assertRaisesRegex(ContractError, "independent trust root"):
+            create_mechanism_candidate(spec, resolver)
+
+    def test_review_cannot_be_replayed_after_mechanism_change(self):
+        spec, resolver = mechanism()
+        spec["purpose"] = "materially changed after review"
+        with self.assertRaisesRegex(ContractError, "subject mismatch"):
+            create_mechanism_candidate(spec, resolver)
+
+    def test_rights_decision_is_bound_to_exact_source(self):
+        spec, resolver = mechanism()
+        spec["source_evidence_refs"] = [sha256({"capture": "different-source"})]
+        with self.assertRaisesRegex(ContractError, "subject mismatch|source set mismatch"):
             create_mechanism_candidate(spec, resolver)
 
     def test_child_authority_cannot_expand(self):

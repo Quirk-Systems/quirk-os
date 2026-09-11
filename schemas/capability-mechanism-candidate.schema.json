@@ -3,7 +3,7 @@
   "$id": "https://schemas.quirk.systems/capability-mechanism-candidate.v0.1.schema.json",
   "title": "Clean-room capability mechanism candidate",
   "type": "object",
-  "required": ["api_version", "kind", "version", "status", "id", "purpose", "problem", "input_classes", "transformations", "output_classes", "preconditions", "postconditions", "failure_modes", "recovery_modes", "provider_assumptions", "non_capabilities", "source_evidence_refs", "effect_classes", "success_metrics", "cheapest_disproof", "authority_boundary_ref", "implementation_actor_ref", "clean_room_attestation", "external_expression_retained", "clean_room_review_ref", "exposure_ledger_refs", "fingerprint"],
+  "required": ["api_version", "kind", "version", "status", "id", "purpose", "problem", "input_classes", "transformations", "output_classes", "preconditions", "postconditions", "failure_modes", "recovery_modes", "provider_assumptions", "non_capabilities", "source_evidence_refs", "source_rights_refs", "effect_classes", "success_metrics", "cheapest_disproof", "authority_boundary_ref", "implementation_actor_ref", "clean_room_attestation", "external_expression_retained", "clean_room_review_ref", "exposure_ledger_refs", "fingerprint"],
   "additionalProperties": false,
   "properties": {
     "api_version": {"const": "quirk.capability-harvest/v0.1"}, "kind": {"const": "CapabilityMechanism"},
@@ -12,7 +12,7 @@
     "input_classes": {"$ref": "#/$defs/strings"}, "transformations": {"$ref": "#/$defs/strings"}, "output_classes": {"$ref": "#/$defs/strings"},
     "preconditions": {"$ref": "#/$defs/strings"}, "postconditions": {"$ref": "#/$defs/strings"}, "failure_modes": {"$ref": "#/$defs/strings"},
     "recovery_modes": {"$ref": "#/$defs/strings"}, "provider_assumptions": {"$ref": "#/$defs/strings"}, "non_capabilities": {"$ref": "#/$defs/strings"},
-    "source_evidence_refs": {"$ref": "#/$defs/strings"}, "effect_classes": {"$ref": "#/$defs/strings"}, "success_metrics": {"$ref": "#/$defs/strings"},
+    "source_evidence_refs": {"type": "array", "items": {"$ref": "#/$defs/digest"}, "uniqueItems": true}, "source_rights_refs": {"type": "array", "items": {"$ref": "#/$defs/digest"}, "uniqueItems": true}, "effect_classes": {"$ref": "#/$defs/strings"}, "success_metrics": {"$ref": "#/$defs/strings"},
     "cheapest_disproof": {"type": "string", "minLength": 1}, "authority_boundary_ref": {"type": "string", "minLength": 1}, "implementation_actor_ref": {"type": "string", "pattern": "^quirk:[a-z][a-z0-9_.-]{2,127}$"},
     "clean_room_attestation": {"const": true}, "external_expression_retained": {"const": false},
     "clean_room_review_ref": {"$ref": "#/$defs/digest"}, "exposure_ledger_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/digest"}, "uniqueItems": true},

@@ -10,7 +10,7 @@ It does not retrieve or reconstruct third-party prompts, copy proprietary code o
 
 The observation room emits hashes and structural facts. The prompt compiler accepts only closed fields and bounded `quirk:` or content-addressed references in every packet lane that reaches `PACKET_JSON`; raw external expression is rejected. The re-expression room accepts Quirk-owned Goal, Project, System and person references plus provider-neutral mechanism contracts. Unknown identity or rights is quarantined.
 
-Clean-room and rights decisions are resolved through a host-configured read-only trust root. Registry keys are recomputed from the exact evidence record, records are freshness- and subject-bound, and the issuer must differ from the implementation actor. This verifies the supplied evidence envelope; it does not prove the human review itself occurred.
+Clean-room and rights decisions are resolved through a host-configured read-only trust root. Registry keys are recomputed from the exact evidence record; review and exposure decisions bind the exact mechanism-content digest, exact source-set digest, and implementation actor; each rights decision binds the exact source fingerprint it clears. Records are fresh, and the issuer must differ from the implementation actor. This verifies the supplied evidence envelope; it does not prove the human review itself occurred.
 
 Installation, exposure, registered callability, observed runtime behavior, documented behavior, credentials and authority remain independent facts.
 

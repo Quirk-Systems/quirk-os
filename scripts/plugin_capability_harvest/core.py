@@ -73,16 +73,18 @@ class ReadOnlyEvidenceResolver:
         _reference(ref, "evidence ref")
         _require(ref in self._records, f"unresolved evidence ref {ref}")
         record = deepcopy(self._records[ref])
-        common = {"kind", "issuer_ref", "subject_ref", "observed_at", "fresh_until"}
+        common = {"kind", "issuer_ref", "subject_ref", "implementation_actor_ref", "observed_at", "fresh_until"}
         allowed = {
-            "CleanRoomReview": common | {"status", "reviewer_independent"},
-            "SourceExposureDecision": common | {"prohibited_material_seen"},
+            "CleanRoomReview": common | {"status", "reviewer_independent", "reviewed_source_set_digest"},
+            "SourceExposureDecision": common | {"prohibited_material_seen", "reviewed_source_set_digest"},
             "SourceRightsDecision": common | {"rights"},
         }
         _require(expected_kind in allowed and set(record) == allowed[expected_kind] and record["kind"] == expected_kind, "evidence record shape is invalid")
         _reference(record["issuer_ref"], "evidence issuer")
         _reference(record["subject_ref"], "evidence subject")
+        _reference(record["implementation_actor_ref"], "evidence implementation actor")
         _require(record["issuer_ref"] in self._trusted_issuers and record["issuer_ref"] != implementation_actor_ref, "evidence issuer is not an independent trust root")
+        _require(record["implementation_actor_ref"] == implementation_actor_ref, "evidence implementation actor mismatch")
         _require(record["subject_ref"] == subject_ref, "evidence subject mismatch")
         start = datetime.fromisoformat(_instant(record["observed_at"], "evidence observed_at").replace("Z", "+00:00"))
         end = datetime.fromisoformat(_instant(record["fresh_until"], "evidence fresh_until").replace("Z", "+00:00"))
@@ -285,10 +287,16 @@ def _forbidden_paths(value: Any, path: str = "$") -> list[str]:
     return found
 
 
+def mechanism_review_subject(spec: dict[str, Any]) -> str:
+    """Digest implementation material while excluding evidence decisions about it."""
+    excluded = {"clean_room_review_ref", "exposure_ledger_refs", "source_rights_refs"}
+    return sha256({key: value for key, value in spec.items() if key not in excluded})
+
+
 def create_mechanism_candidate(spec: dict[str, Any], evidence_resolver: ReadOnlyEvidenceResolver) -> dict[str, Any]:
     """Create an original provider-neutral candidate after the observation room."""
     _require(isinstance(spec, dict), "mechanism spec must be an object")
-    allowed = {"id", "purpose", "problem", "input_classes", "transformations", "output_classes", "preconditions", "postconditions", "failure_modes", "recovery_modes", "provider_assumptions", "non_capabilities", "source_evidence_refs", "effect_classes", "success_metrics", "cheapest_disproof", "authority_boundary_ref", "implementation_actor_ref", "clean_room_attestation", "external_expression_retained", "clean_room_review_ref", "exposure_ledger_refs"}
+    allowed = {"id", "purpose", "problem", "input_classes", "transformations", "output_classes", "preconditions", "postconditions", "failure_modes", "recovery_modes", "provider_assumptions", "non_capabilities", "source_evidence_refs", "source_rights_refs", "effect_classes", "success_metrics", "cheapest_disproof", "authority_boundary_ref", "implementation_actor_ref", "clean_room_attestation", "external_expression_retained", "clean_room_review_ref", "exposure_ledger_refs"}
     _require(set(spec) == allowed, "mechanism contains missing or unknown fields")
     contaminated = _forbidden_paths(spec)
     _require(not contaminated, f"prohibited expressive material at {', '.join(contaminated)}")
@@ -299,7 +307,7 @@ def create_mechanism_candidate(spec: dict[str, Any], evidence_resolver: ReadOnly
     for key in (
         "input_classes", "transformations", "output_classes", "preconditions",
         "postconditions", "failure_modes", "recovery_modes", "provider_assumptions",
-        "non_capabilities", "source_evidence_refs", "effect_classes", "success_metrics",
+        "non_capabilities", "source_evidence_refs", "source_rights_refs", "effect_classes", "success_metrics",
     ):
         _strings(spec.get(key), key)
     _require(spec.get("clean_room_attestation") is True, "clean_room_attestation must be true")
@@ -307,15 +315,23 @@ def create_mechanism_candidate(spec: dict[str, Any], evidence_resolver: ReadOnly
     _require(isinstance(evidence_resolver, ReadOnlyEvidenceResolver), "trusted read-only evidence resolver is required")
     _reference(spec.get("clean_room_review_ref"), "clean_room_review_ref")
     exposure_refs = _strings(spec.get("exposure_ledger_refs"), "exposure_ledger_refs", False)
-    for ref in [*exposure_refs, *spec["source_evidence_refs"], spec["clean_room_review_ref"]]:
+    source_refs = spec["source_evidence_refs"]
+    rights_refs = spec["source_rights_refs"]
+    _require(len(source_refs) == len(rights_refs), "each source fingerprint requires one rights decision")
+    _require(all(SHA256_RE.fullmatch(ref) is not None for ref in source_refs), "source evidence must be exact content fingerprints")
+    for ref in [*exposure_refs, *rights_refs, spec["clean_room_review_ref"]]:
         _reference(ref, "mechanism evidence ref")
-    review = evidence_resolver.resolve(spec["clean_room_review_ref"], "CleanRoomReview", spec["id"], spec["implementation_actor_ref"])
+    reviewed_subject = mechanism_review_subject(spec)
+    reviewed_source_set = sha256(sorted(source_refs))
+    review = evidence_resolver.resolve(spec["clean_room_review_ref"], "CleanRoomReview", reviewed_subject, spec["implementation_actor_ref"])
     _require(review.get("kind") == "CleanRoomReview" and review.get("status") == "passed" and review.get("reviewer_independent") is True, "clean-room review is not independently verified")
+    _require(review.get("reviewed_source_set_digest") == reviewed_source_set, "clean-room review source set mismatch")
     for ref in exposure_refs:
-        ledger = evidence_resolver.resolve(ref, "SourceExposureDecision", spec["id"], spec["implementation_actor_ref"])
+        ledger = evidence_resolver.resolve(ref, "SourceExposureDecision", reviewed_subject, spec["implementation_actor_ref"])
         _require(ledger.get("kind") == "SourceExposureDecision" and ledger.get("prohibited_material_seen") is False, "source exposure is contaminated")
-    for ref in spec["source_evidence_refs"]:
-        source = evidence_resolver.resolve(ref, "SourceRightsDecision", spec["id"], spec["implementation_actor_ref"])
+        _require(ledger.get("reviewed_source_set_digest") == reviewed_source_set, "source exposure set mismatch")
+    for source_ref, rights_ref in zip(source_refs, rights_refs):
+        source = evidence_resolver.resolve(rights_ref, "SourceRightsDecision", source_ref, spec["implementation_actor_ref"])
         _require(source.get("rights") in {"quirk_owned", "open_license_verified"}, "source rights do not permit implementation expression")
     _require(all(effect in EFFECTS for effect in spec["effect_classes"]), "invalid effect class")
     result = {"api_version": API_VERSION, "kind": "CapabilityMechanism", "version": "0.1.0", "status": "candidate", **deepcopy(spec)}
