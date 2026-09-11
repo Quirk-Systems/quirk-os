@@ -8,6 +8,7 @@
   "x-quirk-canon-effect": "none",
   "$comment": "The root preserves the existing classifier interface. Successor request/review contracts are explicit $defs until their consumers migrate.",
   "$ref": "#/$defs/legacy_applause_review",
+  "type": "object",
   "$defs": {
     "legacy_applause_review": {
       "type": "object",
