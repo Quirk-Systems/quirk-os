@@ -8,14 +8,16 @@ publication_state: NOT_AUTHORIZED
 
 # Furniture Brief: F3 -> F11 Grounded-to-Banger contract
 
-**Status: candidate, local-only.** This is a new module, not a promoted or
-Canon-admitted one. It grants itself no execution, admission, or publication
-authority. It was written and validated locally in one autonomous session
-and has not been staged, committed, or reviewed. Before it is trusted for
-anything beyond local experimentation it needs the same human plan review
-this repo already requires for other consequential additions (see
-`docs/applause-gate/` for the pattern: an exact-head review naming the
-reviewed commit, before any promotion).
+**Status: committed candidate; non-operative.** Initial source exists in draft
+[PR #83](https://github.com/Quirk-Systems/quirk-os/pull/83) at
+`52d0efc6a6ff61c69fa198aa9b626900dd8b2d60`. It is a new module, not a
+Canon-admitted one. The earlier claim that it had not been committed was stale.
+Independent review and applicable promotion decisions remain separate.
+
+Before further scope expansion, reconcile this contract with the existing
+[Quirk SongBrief candidate](https://github.com/Quirk-Systems/Quirk/pull/5).
+Shared terminology does not establish interchangeability or duplicate implementation.
+No existing plan's grant is inherited merely by citing its review pattern.
 
 ## What this is
 
@@ -48,9 +50,9 @@ generate audio, upload anything, publish anything, or send a message. See
 ## Run it
 
 ```
-pip install jsonschema==4.26.0 pytest==9.1.1   # already declared in requirements-evals.txt
+python3 -m pip install -r requirements-evals.txt
 PYTHONPATH=scripts python3 scripts/validate_furniture_brief.py --require-pass
-PYTHONPATH=scripts python3 -m pytest tests/test_furniture_brief.py -v
+PYTHONPATH=scripts python3 -m unittest discover -s tests -p 'test_furniture_brief*.py' -v
 ```
 
 ## The contract, briefly
@@ -85,7 +87,7 @@ PYTHONPATH=scripts python3 -m pytest tests/test_furniture_brief.py -v
   (concrete measured facts, not prose claims), and explicit
   `non_actions`.
 
-## Refusal categories proven (see `evals/furniture-brief/cases.json`)
+## Authored refusal fixtures (see `evals/furniture-brief/cases.json`)
 
 1. `ADULT_CONSENT_MISSING_OR_AMBIGUOUS` -- missing or ambiguous adult/consent confirmation.
 2. `STORAGE_OR_CONTENT_PERMISSION_MISSING` -- consent to intimacy present, storage permission not.
@@ -94,8 +96,12 @@ PYTHONPATH=scripts python3 -m pytest tests/test_furniture_brief.py -v
 5. `GRIP_BELOW_THRESHOLD` -- Furniture and consent pass, but the total is 6/8.
 6. `LINEAGE_INVALID` -- a child asset references a parent that does not exist in the batch.
 
-Plus, independently: a tampered or reordered or truncated receipt chain is
-detected by `verify_chain()` (`tests/test_furniture_brief.py::ReceiptChainIntegrityTests`).
+Existing tests cover content changes, reordering and deletion from the middle.
+They did not prove tail-truncation detection. A valid prefix passes an unanchored
+hash-chain check. The successor verifier accepts `expected_count` and/or
+`expected_tip` from a separately trusted receipt to detect lost history. Deriving
+those anchors from the chain under inspection defeats that protection. Unkeyed
+hashes do not prove authorship, immutable storage, or resistance to full resealing.
 
 Exactly one fixture (`case-001-success`) reaches `FINALIZE` and produces a
 Song Brief + receipt.
@@ -127,3 +133,12 @@ This module does not claim, and its receipts do not record: legal
 clearance, platform reliability, audio quality, commercial viability, or
 that anything ran outside this local validation. It has made zero
 provider calls, generated zero audio, and published nothing.
+
+## Refresh evidence
+
+The repair corrects committed-source status and uses the repository's existing pinned
+dependencies and unittest runner. It adds bounded count/tip checks and malformed/sequence
+input handling to the receipt verifier. The focused receipt regression suite is runnable
+without jsonschema; the full compiler/schema suite still needs requirements-evals.txt.
+No old fixture pass is transferred to this changed source version. No provider, runtime,
+publication or admission action is performed by these changes.
