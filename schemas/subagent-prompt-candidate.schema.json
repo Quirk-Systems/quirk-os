@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/subagent-prompt-candidate.v0.1.schema.json",
+  "title": "Bounded Quirk subagent prompt candidate",
+  "type": "object",
+  "required": ["api_version", "kind", "version", "status", "packet_fingerprint", "role_id", "prompt_text", "content_sha256", "human_approval_required", "self_activation", "self_promotion"],
+  "additionalProperties": false,
+  "properties": {
+    "api_version": {"const": "quirk.capability-harvest/v0.1"},
+    "kind": {"const": "SubagentPromptCandidate"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "candidate"},
+    "packet_fingerprint": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "role_id": {"enum": ["signal_miner", "goal_binder", "capability_architect", "implementation_planner", "builder", "adversary", "integrator"]},
+    "prompt_text": {"type": "string", "minLength": 1},
+    "content_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "human_approval_required": {"const": true},
+    "self_activation": {"const": false},
+    "self_promotion": {"const": false}
+  }
+}
