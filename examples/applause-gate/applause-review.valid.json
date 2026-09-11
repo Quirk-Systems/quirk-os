@@ -15,27 +15,11 @@
     },
     "evidence_assessments": [
       {
-        "evidence_ref": "preregistration_ref",
-        "evidence_kind": "context",
+        "evidence_ref": "evaluated_version_ref",
+        "evidence_kind": "version",
         "assertion_state": "supports",
         "version_ref": "evaluated_version_ref",
-        "content_digest": "1111111111111111111111111111111111111111111111111111111111111111",
-        "integrity_state": "valid"
-      },
-      {
-        "evidence_ref": "pinned_control_ref",
-        "evidence_kind": "comparison",
-        "assertion_state": "supports",
-        "version_ref": "evaluated_version_ref",
-        "content_digest": "2222222222222222222222222222222222222222222222222222222222222222",
-        "integrity_state": "valid"
-      },
-      {
-        "evidence_ref": "primary_metric_result_ref",
-        "evidence_kind": "primary_outcome",
-        "assertion_state": "supports",
-        "version_ref": "evaluated_version_ref",
-        "content_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+        "content_digest": "5555555555555555555555555555555555555555555555555555555555555555",
         "integrity_state": "valid"
       },
       {
@@ -47,11 +31,27 @@
         "integrity_state": "valid"
       },
       {
-        "evidence_ref": "evaluated_version_ref",
-        "evidence_kind": "version",
+        "evidence_ref": "pinned_control_ref",
+        "evidence_kind": "comparison",
         "assertion_state": "supports",
         "version_ref": "evaluated_version_ref",
-        "content_digest": "5555555555555555555555555555555555555555555555555555555555555555",
+        "content_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "integrity_state": "valid"
+      },
+      {
+        "evidence_ref": "preregistration_ref",
+        "evidence_kind": "context",
+        "assertion_state": "supports",
+        "version_ref": "evaluated_version_ref",
+        "content_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "integrity_state": "valid"
+      },
+      {
+        "evidence_ref": "primary_metric_result_ref",
+        "evidence_kind": "primary_outcome",
+        "assertion_state": "supports",
+        "version_ref": "evaluated_version_ref",
+        "content_digest": "3333333333333333333333333333333333333333333333333333333333333333",
         "integrity_state": "valid"
       }
     ],
