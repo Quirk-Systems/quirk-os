@@ -2,7 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.quirk.systems/furniture-brief-contract.schema.json",
   "title": "Quirk Furniture Brief Contract (F3 -> F11 Grounded-to-Banger)",
-  "description": "Candidate contract (not yet promoted to Canon; no admission/execution/publication authority is granted by conformance to this schema alone). Carries F-cubed provenance, the twelve asset types, load-bearing Furniture, GRIP scoring, and a provider-neutral Song Brief.",
+  "description": "Candidate contract (not yet promoted to Canon; no admission/execution/publication authority is granted by conformance to this schema alone). Carries F-cubed provenance, the twelve asset types, load-bearing Furniture, GRIP scoring, and a provider-neutral Song Brief. This document is a $defs library: consumers validate against one named def (e.g. #/$defs/compile_request) rather than the document root; 'type: object' is declared here only to satisfy the repo-wide Golden Gates structural check that every schemas/*.schema.json file declares $schema/$id/title/type.",
+  "type": "object",
   "$defs": {
     "f_tier": {
       "type": "string",
