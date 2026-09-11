@@ -1,0 +1,26 @@
+{
+  "caveat": "Contract validation is deterministic local evidence only; it is not submission readiness, OpenAI review, approval, attestation, or publication.",
+  "checks": {
+    "all_required_actions_unperformed": true,
+    "current_version_case_evidence": false,
+    "exact_case_counts": false,
+    "field_lengths_evaluated": false,
+    "independent_verdict_present": false,
+    "ledger_vocabulary_valid": true,
+    "negative_case_count": 0,
+    "package_boundary_complete": false,
+    "positive_case_count": 0,
+    "publisher_support_privacy_complete": false,
+    "status_vocabulary_valid": true
+  },
+  "contract_valid": true,
+  "errors": [],
+  "pack_path": "docs/applause-gate/submission-pack.json",
+  "pack_sha256": "034b416c113990d1c11aad6106aca1887bec2063ad76bbfac47ff110eb6b6078",
+  "pack_status": "BLOCKED_INPUT_CONFLICT",
+  "receipt_hash": "3b0e08749ca870c9405dfa783ec42c3e46fffc1d7fda0dcf23a2b09109e62302",
+  "schema_sha256": "bf5d3bb1a2ee8c6244166b6ed359d510964d4e776903297fa66124a1ea22947a",
+  "schema_version": "submission-pack-validation.v1",
+  "submission_ready": false,
+  "validator_sha256": "1c065957a8aa3e1167dba8c2d4ee08338857c54cf51020db983f63250ca47f8d"
+}
