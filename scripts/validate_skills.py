@@ -263,8 +263,8 @@ def main() -> int:
         registry = json.loads(registry_path.read_text(encoding="utf-8"))
         if registry.get("status") != "candidate":
             fail("REGISTRY_AUTHORITY_BREACH", "registry must remain candidate")
-        if registry.get("version") != "0.3.0":
-            fail("REGISTRY_VERSION", "12-skill registry must be version 0.3.0")
+        if registry.get("version") != "0.3.1":
+            fail("REGISTRY_VERSION", "12-skill registry must be version 0.3.1")
         entries = registry.get("skills", [])
         by_id = {entry.get("id"): entry for entry in entries}
         if set(by_id) != EXPECTED_SKILLS or len(entries) != 12:

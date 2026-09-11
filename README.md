@@ -2,6 +2,12 @@
 
 Quirk OS is the operating foundation for a stateful human–agent ecosystem spanning preference, memory, governance, capabilities, creation, evaluation, assets, and control.
 
+## Candidate work and source freshness
+
+The current repair record is [Source-authority refresh](docs/skills/REFRESH-2026-09-11.md).
+It separates approved scope from delivery evidence and records the unresolved portfolio
+work. Open branches are candidates; main inclusion alone is not runtime admission.
+
 ## Active architecture work
 
 ### Quirk Core Golden Project Pack
