@@ -5,12 +5,31 @@ import subprocess
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+
+from applause_gate.classifier import classify_review_request
+from validate_applause_gate import validate
 
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = ROOT / "scripts" / "validate_applause_gate.py"
 
 
 class ApplauseGateConformanceTests(unittest.TestCase):
+    def test_conformance_rejects_schema_invalid_classifier_output(self):
+        def missing_required_field(request):
+            review = classify_review_request(request)
+            del review["required_codes"]
+            return review
+
+        with patch("validate_applause_gate.classify_review_request", missing_required_field):
+            report = validate(ROOT)
+
+        self.assertEqual(report["verdict"], "FAIL")
+        self.assertEqual(report["schema_error_count"], 19)
+        self.assertEqual(report["expected_mismatch_count"], 0)
+        self.assertEqual(report["authority_smuggling_count"], 0)
+        self.assertTrue(all(case["schema_errors"] for case in report["cases"]))
+
     def test_all_visible_fixtures_match_expected_verdicts(self):
         result = subprocess.run(
             [sys.executable, str(VALIDATOR), "--repo", str(ROOT), "--require-pass"],

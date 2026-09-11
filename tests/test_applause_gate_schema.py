@@ -8,6 +8,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator, FormatChecker
 
 from applause_gate.json_io import load_json_strict
+from applause_gate.classifier import classify_review_request, fixture_to_request
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = ROOT / "schemas" / "applause-review.schema.json"
@@ -120,6 +121,43 @@ class ApplauseReviewSchemaTests(unittest.TestCase):
     def test_valid_request_and_review_are_accepted(self):
         self.assert_valid("review_request", self.example["request"])
         self.assert_valid("applause_review", self.example["review"])
+
+    def test_root_contract_preserves_existing_classifier_interface(self):
+        corpus = load_json_strict(
+            (ROOT / "evals/applause-gate/cases.json").read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(self.schema)
+        for case in corpus["cases"]:
+            with self.subTest(case=case["id"]):
+                review = classify_review_request(fixture_to_request(case))
+                self.assertTrue(validator.is_valid(review))
+                for field in review:
+                    incomplete = deepcopy(review)
+                    del incomplete[field]
+                    self.assertFalse(validator.is_valid(incomplete), field)
+
+    def test_root_contract_rejects_malformed_and_authorizing_payloads(self):
+        validator = Draft202012Validator(self.schema)
+        malformed = (None, False, 0, "review", [], {}, {"authority_effect": "admit"})
+        for value in malformed:
+            with self.subTest(value=value):
+                self.assertFalse(validator.is_valid(value))
+
+        corpus = load_json_strict(
+            (ROOT / "evals/applause-gate/cases.json").read_text(encoding="utf-8")
+        )
+        review = classify_review_request(fixture_to_request(corpus["cases"][0]))
+        for field, value in (
+            ("authority_effect", "admit"),
+            ("verdict", "AUTHORIZED_SUCCESS"),
+            ("success_score", 0.99),
+            ("runtime_effect", "activate"),
+            ("required_codes", "not-an-array"),
+        ):
+            with self.subTest(field=field):
+                invalid = deepcopy(review)
+                invalid[field] = value
+                self.assertFalse(validator.is_valid(invalid))
 
     def test_every_required_field_is_enforced(self):
         for definition, example_key, fields in (
