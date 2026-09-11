@@ -1,0 +1,78 @@
+{
+  "authority_effect": "none",
+  "candidate_commit": "73a3d73f6f45f44918bd35ed8a02aa553131650b",
+  "candidate_version": "0.1.0",
+  "case_count": 5,
+  "coverage": [
+    "ambiguous_success",
+    "mixed_guardrails",
+    "weak_causality",
+    "version_drift",
+    "evidence_tampering"
+  ],
+  "evaluator": "copilot-agent/abg07-independent-evaluator",
+  "evaluator_bindings": {
+    "evaluation_cli": {
+      "algorithm": "sha256",
+      "digest": "33ecf4eaa2a48d4fb09a017f7e4604c4290af30947f0d5af93982c023d95abfa",
+      "path": "scripts/evaluate_applause_gate_candidate.py"
+    },
+    "evaluation_harness": {
+      "algorithm": "sha256",
+      "digest": "ed2a6e4ecbcd2ddd54c6df5ed0a4b8f498cc2b4f30d68d4b9ba3a1b29b283b59",
+      "path": "scripts/applause_gate/evaluation.py"
+    },
+    "evaluation_tests": {
+      "algorithm": "sha256",
+      "digest": "7294751d0246123f4545e5150bb6f7b9f591826a592a94173802b0b674ed0a95",
+      "path": "tests/test_applause_gate_evaluation.py"
+    }
+  },
+  "evaluator_key": {
+    "algorithm": "ed25519",
+    "der_sha256": "d8f77318f9d5257c71a7619368780f3937d58081ae671cfd76958899b0a04b3d",
+    "path": "evals/applause-gate/evaluation/evaluator-public-key.pem"
+  },
+  "execution_state": "NOT_EXECUTED",
+  "freeze_bindings": {
+    "classifier": {
+      "algorithm": "sha256",
+      "digest": "49174cf165f010cd8779d683c5397c8bb1e1b82edab10fe0aba83b79661c7d1b",
+      "path": "scripts/applause_gate/classifier.py"
+    },
+    "conformance_validator": {
+      "algorithm": "sha256",
+      "digest": "f43253c8a3f03870a709197f1e44443acef00368cb8d48b4d3e1d83bb6f2bae6",
+      "path": "scripts/validate_applause_gate.py"
+    },
+    "manifest": {
+      "algorithm": "sha256-canonical-json-v1",
+      "digest": "d20de6656de630870d06762e52c22eda9ac3fc0c7e74535428ddb3311180c719",
+      "path": "skills/quirk-applause-gate/manifest.json"
+    },
+    "receipt": {
+      "algorithm": "sha256",
+      "digest": "19db522a552c5dd3e9df24144fd9a87cb1ad3b255c95b0cec3516a98d4257135",
+      "path": "scripts/applause_gate/receipt.py"
+    },
+    "schema": {
+      "algorithm": "sha256",
+      "digest": "7e76ddfbc90255f899f54aa45f159d8a2314cecba35a997f4838f30efe131d99",
+      "path": "schemas/applause-review.schema.json"
+    },
+    "skill_source": {
+      "algorithm": "git-blob-sha1",
+      "digest": "66bcdb29c071dc4c1866941c70a0b8314b768423",
+      "path": "skills/quirk-applause-gate/SKILL.md"
+    },
+    "visible_fixtures": {
+      "algorithm": "sha256",
+      "digest": "987dab65550837b6abe2d5d820f4c6e5fbd8531b3e56f85e015d36c26b65be2f",
+      "path": "evals/applause-gate/cases.json"
+    }
+  },
+  "implementation_author": "copilot-agent/abg07-implementation",
+  "independence_disclosure": "Cases and expectations were sealed before candidate execution, and the evaluator is distinct from the implementation author.",
+  "schema_version": "applause-gate-held-out-seal.v1",
+  "seal_digest": "787df656c3d055476fe1e0c412010b30dc430a34e94e58a93e9cab72a21579e2"
+}

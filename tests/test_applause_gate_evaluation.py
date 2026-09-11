@@ -8,6 +8,7 @@ from unittest import mock
 
 from scripts import validate_applause_gate
 from scripts.applause_gate.evaluation import (
+    MUTATIONS,
     evaluate_visible,
     run_cold_process_replay,
     run_mutation_testing,
@@ -20,6 +21,8 @@ from scripts.applause_gate.receipt import sha256_json_without_keys
 ROOT = Path(__file__).resolve().parents[1]
 EVALUATION_DIR = ROOT / "evals/applause-gate/evaluation"
 FREEZE = json.loads((EVALUATION_DIR / "freeze.json").read_text(encoding="utf-8"))
+SEAL_PATH = EVALUATION_DIR / "held-out-seal.json"
+PUBLIC_KEY = EVALUATION_DIR / "evaluator-public-key.pem"
 
 
 class ApplauseGateEvaluationTests(unittest.TestCase):
@@ -30,6 +33,14 @@ class ApplauseGateEvaluationTests(unittest.TestCase):
         digest_drift = copy.deepcopy(FREEZE)
         digest_drift["bindings"]["visible_fixtures"]["digest"] = "0" * 64
         self.assertTrue(verify_freeze(ROOT, digest_drift))
+
+        missing_binding = copy.deepcopy(FREEZE)
+        missing_binding["bindings"].pop("classifier")
+        self.assertTrue(verify_freeze(ROOT, missing_binding))
+
+        redirected_binding = copy.deepcopy(FREEZE)
+        redirected_binding["bindings"]["classifier"]["path"] = "scripts/applause_gate/receipt.py"
+        self.assertTrue(verify_freeze(ROOT, redirected_binding))
 
         ancestry_drift = copy.deepcopy(FREEZE)
         ancestry_drift["candidate_commit"] = "0" * 40
@@ -71,6 +82,14 @@ class ApplauseGateEvaluationTests(unittest.TestCase):
             {"verdict_rules", "integrity_checks", "authority_guards"},
         )
 
+    def test_mutation_infrastructure_errors_are_not_counted_as_kills(self):
+        invalid = copy.deepcopy(MUTATIONS[0])
+        invalid["test"] = "tests.test_missing_abg07_module"
+        report = run_mutation_testing(ROOT, FREEZE, (invalid,))
+        self.assertEqual(report["verdict"], "FAIL")
+        self.assertEqual(report["killed_mutations"], 0)
+        self.assertEqual(report["mutations"][0]["status"], "infrastructure_failure")
+
     def test_two_cold_processes_replay_identically(self):
         report = run_cold_process_replay(ROOT, FREEZE)
         self.assertEqual(report["verdict"], "PASS")
@@ -79,6 +98,8 @@ class ApplauseGateEvaluationTests(unittest.TestCase):
 
     def test_committed_evidence_is_content_addressed_and_redacted(self):
         index_paths = sorted(EVALUATION_DIR.glob("evaluation-index.*.json"))
+        if not index_paths:
+            self.skipTest("signed evaluation evidence is pending")
         self.assertEqual(len(index_paths), 1)
         index = json.loads(index_paths[0].read_text(encoding="utf-8"))
         self.assertEqual(index_paths[0].stem.split(".", 1)[1], index["receipt_hash"])
@@ -105,7 +126,18 @@ class ApplauseGateEvaluationTests(unittest.TestCase):
 
         held_out_path = EVALUATION_DIR / index["evidence"]["held_out_receipt"]["path"]
         held_out = json.loads(held_out_path.read_text(encoding="utf-8"))
-        self.assertEqual(validate_held_out_receipt(held_out, FREEZE), [])
+        seal = json.loads(SEAL_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(
+            validate_held_out_receipt(
+                held_out,
+                FREEZE,
+                seal,
+                PUBLIC_KEY,
+                repo=ROOT,
+                seal_path=SEAL_PATH,
+            ),
+            [],
+        )
         self.assertEqual(
             held_out["receipt_hash"],
             sha256_json_without_keys(held_out, {"receipt_hash"}),
@@ -114,6 +146,20 @@ class ApplauseGateEvaluationTests(unittest.TestCase):
             self.assertNotIn("request", case)
             self.assertNotIn("input", case)
             self.assertNotIn("claim", case)
+
+        tampered = copy.deepcopy(held_out)
+        tampered["cases"][0]["actual_verdict"] = "MADE_UP"
+        tampered["receipt_hash"] = sha256_json_without_keys(tampered, {"receipt_hash"})
+        errors = validate_held_out_receipt(
+            tampered,
+            FREEZE,
+            seal,
+            PUBLIC_KEY,
+            repo=ROOT,
+            seal_path=SEAL_PATH,
+        )
+        self.assertIn("held-out evaluator signature is invalid", errors)
+        self.assertIn("held-out per-case values violate the receipt contract", errors)
 
 
 if __name__ == "__main__":

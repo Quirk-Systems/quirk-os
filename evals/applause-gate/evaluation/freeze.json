@@ -16,6 +16,11 @@
       "digest": "d20de6656de630870d06762e52c22eda9ac3fc0c7e74535428ddb3311180c719",
       "path": "skills/quirk-applause-gate/manifest.json"
     },
+    "receipt": {
+      "algorithm": "sha256",
+      "digest": "19db522a552c5dd3e9df24144fd9a87cb1ad3b255c95b0cec3516a98d4257135",
+      "path": "scripts/applause_gate/receipt.py"
+    },
     "schema": {
       "algorithm": "sha256",
       "digest": "7e76ddfbc90255f899f54aa45f159d8a2314cecba35a997f4838f30efe131d99",
