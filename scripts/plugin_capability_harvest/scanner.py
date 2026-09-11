@@ -58,18 +58,32 @@ def _safe_read(path: Path, root: Path, limit: int) -> bytes:
         os.close(descriptor)
 
 
-def _identity(plugin_dir: Path, root: Path, limit: int) -> tuple[str | None, str | None, list[str], list[str], dict[Path, bytes]]:
+def _identity(
+    plugin_dir: Path,
+    root: Path,
+    per_file_limit: int,
+    remaining_files: int,
+    remaining_bytes: int,
+) -> tuple[str | None, str | None, list[str], list[str], dict[Path, bytes], int, int]:
     package_id = version = None
     contradictions: list[str] = []
     quarantine: list[str] = []
     seen: list[tuple[str, str, str]] = []
     captured: dict[Path, bytes] = {}
+    files_charged = 0
+    bytes_charged = 0
     for relative in IDENTITY_PATHS:
         path = plugin_dir / relative
         if not path.is_file():
             continue
+        if files_charged >= remaining_files:
+            quarantine.append(f"FILE_LIMIT:{relative}")
+            break
+        files_charged += 1
         try:
-            raw = _safe_read(path, root, limit)
+            read_limit = min(per_file_limit, max(0, remaining_bytes - bytes_charged))
+            raw = _safe_read(path, root, read_limit)
+            bytes_charged += len(raw)
             captured[path] = raw
             data = json.loads(raw.decode("utf-8"))
         except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
@@ -88,7 +102,7 @@ def _identity(plugin_dir: Path, root: Path, limit: int) -> tuple[str | None, str
             contradictions.append(f"version:{name}:{candidate_version}!={version}")
     if package_id is None or version is None:
         quarantine.append("identity_unresolved")
-    return package_id, version, contradictions, quarantine, captured
+    return package_id, version, contradictions, quarantine, captured, files_charged, bytes_charged
 
 
 def _discover_plugin_roots(base: Path, limits: ScanLimits) -> tuple[set[Path], list[dict[str, Any]]]:
@@ -135,7 +149,15 @@ def scan_plugin_root(root: str | Path, limits: ScanLimits = ScanLimits(), observ
         if not _inside(base, resolved_dir):
             quarantine.append({"path": str(plugin_dir), "reason": "PATH_SCOPE_VIOLATION"})
             continue
-        package_id, version, contradictions, identity_quarantine, identity_content = _identity(plugin_dir, base, limits.max_bytes_per_file)
+        package_id, version, contradictions, identity_quarantine, identity_content, identity_files, identity_bytes = _identity(
+            plugin_dir,
+            base,
+            limits.max_bytes_per_file,
+            max(0, limits.max_files - files_seen),
+            max(0, limits.max_total_bytes - total_bytes),
+        )
+        files_seen += identity_files
+        total_bytes += identity_bytes
         for reason in identity_quarantine:
             quarantine.append({"path": str(plugin_dir.relative_to(base)), "reason": reason})
         if contradictions:
@@ -148,22 +170,19 @@ def scan_plugin_root(root: str | Path, limits: ScanLimits = ScanLimits(), observ
         for path in candidates:
             if not path.is_file():
                 continue
-            files_seen += 1
-            if files_seen > limits.max_files:
-                quarantine.append({"path": str(path.relative_to(base)), "reason": "FILE_LIMIT"})
-                break
             if path in identity_content:
                 raw = identity_content[path]
             else:
+                files_seen += 1
+                if files_seen > limits.max_files:
+                    quarantine.append({"path": str(path.relative_to(base)), "reason": "FILE_LIMIT"})
+                    break
                 try:
-                    raw = _safe_read(path, base, limits.max_bytes_per_file)
+                    raw = _safe_read(path, base, min(limits.max_bytes_per_file, max(0, limits.max_total_bytes - total_bytes)))
                 except (OSError, ValueError) as exc:
                     quarantine.append({"path": str(path.relative_to(base)), "reason": str(exc)})
                     continue
-            if total_bytes + len(raw) > limits.max_total_bytes:
-                quarantine.append({"path": str(path.relative_to(base)), "reason": "BYTE_LIMIT"})
-                continue
-            total_bytes += len(raw)
+                total_bytes += len(raw)
             kind = "skill" if path.name == "SKILL.md" else "manifest"
             observations.append({
                 "api_version": API_VERSION,

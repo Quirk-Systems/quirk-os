@@ -4,6 +4,7 @@ import unittest
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.plugin_capability_harvest import (
     ContractError,
@@ -443,6 +444,29 @@ class HarvestContractsTest(unittest.TestCase):
 
 
 class ReadOnlyScannerTest(unittest.TestCase):
+    def test_identity_reads_are_charged_before_conflict_exit(self):
+        with tempfile.TemporaryDirectory() as raw:
+            plugin = Path(raw) / "plugin"
+            plugin.mkdir()
+            (plugin / "manifest.json").write_text(json.dumps({"id": "p", "version": "1.0.0"}), encoding="utf-8")
+            (plugin / "package.json").write_text(json.dumps({"name": "p", "version": "2.0.0", "padding": "x" * 2_000}), encoding="utf-8")
+            import os
+            original_read = os.read
+            bytes_read = 0
+
+            def counted_read(descriptor, size):
+                nonlocal bytes_read
+                chunk = original_read(descriptor, size)
+                bytes_read += len(chunk)
+                return chunk
+
+            with patch("scripts.plugin_capability_harvest.scanner.os.read", side_effect=counted_read):
+                result = scan_plugin_root(raw, ScanLimits(max_files=1, max_total_bytes=1), observed_at=NOW)
+            reasons = {item["reason"].split(":", 1)[0] for item in result["quarantine"]}
+            self.assertTrue({"BYTE_LIMIT", "FILE_LIMIT"} & reasons)
+            self.assertEqual(result["observations"], [])
+            self.assertLessEqual(bytes_read, 1)
+
     def test_directory_discovery_is_bounded(self):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
