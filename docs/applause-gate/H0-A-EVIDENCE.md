@@ -99,7 +99,7 @@ The exact ordered verdict vocabulary is `SIGNAL_ONLY`, `SUPPORTED_DIAGNOSIS`, `V
 
 ## Design and CI review
 
-No `TODO`, `TBD`, `FIXME`, or placeholder marker is present. Symbolic evidence references are fixture requirements, not claims that evidence was collected. Claims are bounded by version, causal, comparison, holdout, and guardrail requirements, with authority capped at `infer`.
+No unresolved work markers or placeholder text are present in the reviewed H0-A source. Symbolic evidence references are fixture requirements, not claims that evidence was collected. Claims are bounded by version, causal, comparison, holdout, and guardrail requirements, with authority capped at `infer`.
 
 Two non-operative design observations are preserved rather than hidden:
 
