@@ -33,9 +33,21 @@
         "callable": {"enum": ["registered", "observed_success", "observed_failure", "not_registered", "unknown"]}
       }
     },
-    "rights": {"type": "object"},
-    "effects": {"type": "object"},
-    "authority": {"type": "object"},
+    "rights": {
+      "type": "object", "required": ["status", "license_ref"], "additionalProperties": false,
+      "properties": {"status": {"enum": ["clear", "restricted", "unclear"]}, "license_ref": {"type": ["string", "null"]}}
+    },
+    "effects": {
+      "type": "object", "required": ["documented", "observed"], "additionalProperties": false,
+      "properties": {
+        "documented": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "observed": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      }
+    },
+    "authority": {
+      "type": "object", "required": ["required", "granted"], "additionalProperties": false,
+      "properties": {"required": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "granted": {"const": false}}
+    },
     "contradictions": {"type": "array", "items": {"type": "string"}},
     "observed_at": {"type": "string", "format": "date-time"},
     "fresh_until": {"type": "string", "format": "date-time"}

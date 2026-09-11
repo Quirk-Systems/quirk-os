@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .core import ContractError, compare_surfaces, compile_prompt_candidate
+from .core import ContractError, compare_surfaces, compile_prompt_candidate, fingerprint_surface
 from .scanner import ScanLimits, scan_plugin_root
 
 
@@ -29,6 +29,8 @@ def build_parser() -> argparse.ArgumentParser:
     diff.add_argument("--observed-at", required=True)
     prompt = commands.add_parser("prompt", help="compile a candidate prompt from owned context")
     prompt.add_argument("packet")
+    fingerprint = commands.add_parser("fingerprint", help="fingerprint separately supplied catalog, registry, app, MCP, documentation, or runtime surfaces")
+    fingerprint.add_argument("surfaces")
     return parser
 
 
@@ -39,8 +41,13 @@ def main(argv: list[str] | None = None) -> int:
             result = scan_plugin_root(args.root, ScanLimits(args.max_files, args.max_bytes_per_file, args.max_total_bytes))
         elif args.command == "diff":
             result = compare_surfaces(_load(args.baseline), _load(args.current), args.observed_at)
-        else:
+        elif args.command == "prompt":
             result = compile_prompt_candidate(_load(args.packet))
+        else:
+            supplied = _load(args.surfaces)
+            if not isinstance(supplied, list):
+                raise ContractError("surfaces input must be a list")
+            result = [fingerprint_surface(item) for item in supplied]
         print(json.dumps(result, indent=2, sort_keys=True))
         if result.get("status") == "BASELINE_UNAVAILABLE":
             return 4

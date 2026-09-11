@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/plugin-harvest-receipt.v0.1.schema.json",
+  "title": "Plugin harvest evidence receipt",
+  "type": "object",
+  "required": ["api_version", "kind", "status", "observation_time", "authority_ceiling_observed", "baseline_receipt_ref", "surface_set_sha256", "delta_dedupe_keys", "quarantine_refs", "prompt_candidate_refs", "effect_observations", "immutable_storage", "receipt_sha256"],
+  "additionalProperties": false,
+  "properties": {
+    "api_version": {"const": "quirk.capability-harvest/v0.1"}, "kind": {"const": "PluginHarvestReceipt"}, "status": {"enum": ["completed", "incomplete"]},
+    "observation_time": {"type": "string", "format": "date-time"}, "authority_ceiling_observed": {"const": "unknown"}, "baseline_receipt_ref": {"type": ["string", "null"]},
+    "surface_set_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "delta_dedupe_keys": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "quarantine_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "prompt_candidate_refs": {"type": "array", "items": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "uniqueItems": true},
+    "effect_observations": {"type": "object", "required": ["external_calls", "authority_escalation", "canon_write"], "additionalProperties": false, "properties": {"external_calls": {"const": "unknown"}, "authority_escalation": {"const": "unknown"}, "canon_write": {"const": "unknown"}}},
+    "immutable_storage": {"const": "unproven"}, "receipt_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}

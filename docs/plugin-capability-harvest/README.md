@@ -12,6 +12,8 @@ The observation room emits hashes and structural facts. Raw external expression 
 
 Installation, exposure, registered callability, observed runtime behavior, documented behavior, credentials and authority remain independent facts.
 
+The filesystem scanner establishes installation only. Host catalogs, live registries, app/MCP declarations, documentation and runtime results must be supplied as separate typed observations and fingerprinted with `python -m scripts.plugin_capability_harvest fingerprint surfaces.json`. The tool never promotes one lane into another.
+
 ## Runtime seam
 
 `to_loop_spec()` maps a validated prompt candidate to the existing `loop-spec/v1` contract with `CANDIDATE_PREPARE` authority only. The established loop runner remains the sole owner of dispatch, grants, interruption recovery and action receipts. This package cannot activate its output.

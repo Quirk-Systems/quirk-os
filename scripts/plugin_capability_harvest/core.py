@@ -7,6 +7,7 @@ content is reduced to a digest before it crosses the observation boundary.
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -35,6 +36,14 @@ BLOCKING_PREFIXES = (
     "IP-", "RIGHTS-", "PROV-", "AUTH-", "DATA-", "SEC-", "LOOP-",
     "PROVIDER-", "CANON-", "PERSON-", "PH-",
 )
+REQUIRED_FIXTURES = frozenset({
+    "SL-01-HIDDEN-CONTEXT", "SL-02-AUTHORITY-LAUNDERING",
+    "SL-03-FALSE-COMPLETION", "SL-04-PROJECTION-CANON",
+    "SL-05-PROMPT-CONTAMINATION", "SL-06-DUPLICATE",
+    "SL-07-ACK-LOSS", "SL-08-PROVIDER-SUBSTITUTION",
+    "SL-09-RIGHTS-AMBIGUITY", "SL-10-INFINITE-LOOP",
+    "SL-11-NEGATIVE-CARRY", "SL-12-TASTE-SUBSTITUTION",
+})
 ROLE_ORDER = (
     "signal_miner", "goal_binder", "capability_architect",
     "implementation_planner", "builder", "adversary", "integrator",
@@ -81,7 +90,8 @@ def sha256(value: Any) -> str:
 def _instant(value: Any, label: str) -> str:
     _require(_nonempty(value), f"{label} is required")
     try:
-        datetime.fromisoformat(value.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        _require(parsed.tzinfo is not None, f"{label} must include a timezone")
     except ValueError as exc:
         raise ContractError(f"{label} must be an ISO date-time") from exc
     return value
@@ -101,6 +111,7 @@ def fingerprint_surface(surface: dict[str, Any]) -> dict[str, Any]:
     _require(surface["state"] in SURFACE_STATES, "surface.state is invalid")
     _instant(surface["observed_at"], "surface.observed_at")
     _instant(surface["fresh_until"], "surface.fresh_until")
+    _require(datetime.fromisoformat(surface["fresh_until"].replace("Z", "+00:00")) > datetime.fromisoformat(surface["observed_at"].replace("Z", "+00:00")), "surface freshness must end after observation")
     effects = _strings(surface["effect_classes"], "surface.effect_classes", False)
     _require(all(effect in EFFECTS for effect in effects), "surface.effect_classes is invalid")
     _require(surface["rights"] in {"quirk_owned", "open_license_verified", "reference_only", "proprietary", "unknown"}, "surface.rights is invalid")
@@ -154,6 +165,9 @@ def compare_surfaces(baseline: list[dict[str, Any]] | None, current: list[dict[s
     _instant(observed_at, "observed_at")
     if not baseline:
         return {"status": "BASELINE_UNAVAILABLE", "observed_at": observed_at, "deltas": []}
+    comparison_time = datetime.fromisoformat(observed_at.replace("Z", "+00:00"))
+    if any(datetime.fromisoformat(item["observation"]["fresh_until"].replace("Z", "+00:00")) < comparison_time for item in baseline):
+        return {"status": "BASELINE_UNAVAILABLE", "reason": "baseline_stale", "observed_at": observed_at, "deltas": []}
     before, after = _surface_index(baseline, "baseline"), _surface_index(current, "current")
     deltas = []
     for key in sorted(set(before) | set(after)):
@@ -212,6 +226,10 @@ def create_mechanism_candidate(spec: dict[str, Any]) -> dict[str, Any]:
         _strings(spec.get(key), key)
     _require(spec.get("clean_room_attestation") is True, "clean_room_attestation must be true")
     _require(spec.get("external_expression_retained") is False, "external_expression_retained must be false")
+    _require(_nonempty(spec.get("clean_room_review_ref")) and spec["clean_room_review_ref"].startswith("sha256:"), "clean_room_review_ref must be a content digest")
+    exposure_refs = _strings(spec.get("exposure_ledger_refs"), "exposure_ledger_refs", False)
+    _require(all(ref.startswith("sha256:") for ref in exposure_refs), "exposure_ledger_refs must be content digests")
+    _require(all(ref.startswith(("sha256:", "quirk:")) for ref in spec["source_evidence_refs"]), "source evidence must be Quirk refs or content digests")
     _require(all(effect in EFFECTS for effect in spec["effect_classes"]), "invalid effect class")
     result = {"api_version": API_VERSION, "kind": "CapabilityMechanism", "version": "0.1.0", "status": "candidate", **deepcopy(spec)}
     result["fingerprint"] = sha256(spec)
@@ -222,6 +240,7 @@ def _validate_authority(authority: dict[str, Any]) -> None:
     _require(isinstance(authority, dict), "authority must be an object")
     _require(authority.get("maximum_right") in RIGHTS, "authority.maximum_right is invalid")
     _strings(authority.get("allowed_targets"), "authority.allowed_targets")
+    _require(all(target not in {"*", "/", "~"} and not target.endswith("/**") for target in authority["allowed_targets"]), "authority targets must be narrow")
     effects = _strings(authority.get("prohibited_effects"), "authority.prohibited_effects")
     _require(all(effect in EFFECTS for effect in effects), "authority.prohibited_effects is invalid")
 
@@ -229,9 +248,10 @@ def _validate_authority(authority: dict[str, Any]) -> None:
 def _validate_budgets(budgets: dict[str, Any]) -> None:
     _require(isinstance(budgets, dict), "budgets must be an object")
     for key in ("max_depth", "max_children", "max_tool_calls", "max_iterations", "max_output_bytes"):
-        _require(isinstance(budgets.get(key), int) and budgets[key] >= 0, f"budgets.{key} must be a non-negative integer")
+        _require(type(budgets.get(key)) is int and budgets[key] >= 0, f"budgets.{key} must be a non-negative integer")
     for key in ("max_cost", "max_wall_seconds"):
-        _require(isinstance(budgets.get(key), (int, float)) and budgets[key] >= 0, f"budgets.{key} must be non-negative")
+        value = budgets.get(key)
+        _require(type(value) in (int, float) and value >= 0 and value != float("inf"), f"budgets.{key} must be finite and non-negative")
 
 
 def effective_authority(parent: dict[str, Any], child: dict[str, Any]) -> dict[str, Any]:
@@ -240,8 +260,9 @@ def effective_authority(parent: dict[str, Any], child: dict[str, Any]) -> dict[s
     _validate_authority(child)
     _validate_budgets(parent["budgets"])
     _validate_budgets(child["budgets"])
-    _require(RIGHTS.index(child["maximum_right"]) <= RIGHTS.index(parent["maximum_right"]), "child authority exceeds parent")
-    _require(set(child["allowed_targets"]) <= set(parent["allowed_targets"]), "child target exceeds parent scope")
+    _require(child.get("parent_authority_digest") == sha256({key: value for key, value in parent.items() if key != "parent_authority_digest"}), "child is not bound to parent authority")
+    _require(RIGHTS.index(child["maximum_right"]) < RIGHTS.index(parent["maximum_right"]), "child authority must be strictly lower than parent")
+    _require(set(child["allowed_targets"]) < set(parent["allowed_targets"]), "child targets must be a strict subset")
     _require(set(parent["prohibited_effects"]) <= set(child["prohibited_effects"]), "child removed a prohibited effect")
     for key, value in child["budgets"].items():
         _require(value <= parent["budgets"][key], f"child budget {key} exceeds parent")
@@ -250,23 +271,35 @@ def effective_authority(parent: dict[str, Any], child: dict[str, Any]) -> dict[s
 
 
 def _validate_prompt_packet(packet: dict[str, Any]) -> None:
+    allowed = {"packet_version", "run_id", "parent_run_id", "task_id", "role", "mission", "portfolio_context", "source_contract", "authority", "budgets", "stop_conditions", "handoff"}
+    _require(isinstance(packet, dict) and set(packet) == allowed, "packet contains missing or unknown fields")
+    _require(not _forbidden_paths(packet), "packet contains prohibited material fields")
     _require(packet.get("packet_version") == API_VERSION, f"packet_version must be {API_VERSION}")
     for key in ("run_id", "task_id", "role"):
         _require(_nonempty(packet.get(key)), f"{key} is required")
     _require(packet["role"] in ROLE_ORDER, "role is invalid")
     mission = packet.get("mission", {})
+    _require(set(mission) == {"desired_change", "acceptance_evidence"}, "mission contains missing or unknown fields")
     _require(_nonempty(mission.get("desired_change")), "mission.desired_change is required")
     _strings(mission.get("acceptance_evidence"), "mission.acceptance_evidence", False)
     source = packet.get("source_contract", {})
+    _require(set(source) == {"provided_sources", "prohibited_source_classes", "external_prompt_material_included"}, "source_contract contains missing or unknown fields")
+    refs = _strings(source.get("provided_sources"), "source_contract.provided_sources", False)
+    _require(all(ref.startswith(("sha256:", "quirk:")) for ref in refs), "provided sources must be Quirk refs or content digests")
     prohibited = _strings(source.get("prohibited_source_classes"), "source_contract.prohibited_source_classes")
     _require(set(PROHIBITED_SOURCE_CLASSES) <= set(prohibited), "source contract omits protected source classes")
     _require(not source.get("external_prompt_material_included", False), "external prompt material is prohibited")
     _validate_authority(packet.get("authority"))
+    _require(RIGHTS.index(packet["authority"]["maximum_right"]) <= RIGHTS.index("propose"), "prompt authority cannot exceed propose")
     _validate_budgets(packet.get("budgets"))
     _strings(packet.get("stop_conditions"), "stop_conditions", False)
     portfolio = packet.get("portfolio_context", {})
+    _require(set(portfolio) == {"goal_refs", "project_refs", "system_refs", "affected_person_refs"}, "portfolio_context contains missing or unknown fields")
+    for key in portfolio:
+        _strings(portfolio[key], f"portfolio_context.{key}")
     _require(any(portfolio.get(key) for key in ("goal_refs", "project_refs", "system_refs", "affected_person_refs")), "owned portfolio context is required")
-    _require(_nonempty(packet.get("handoff", {}).get("dedupe_key")), "handoff.dedupe_key is required")
+    handoff = packet.get("handoff", {})
+    _require(set(handoff) == {"dedupe_key"} and _nonempty(handoff.get("dedupe_key")), "handoff must contain only dedupe_key")
 
 
 def compile_prompt_candidate(packet: dict[str, Any]) -> dict[str, Any]:
@@ -313,6 +346,10 @@ def to_loop_spec(prompt_candidate: dict[str, Any], evaluator_digest: str) -> dic
     digest = prompt_candidate.get("content_sha256", "")
     _require(isinstance(digest, str) and digest.startswith("sha256:") and len(digest) == 71, "prompt content digest is invalid")
     _require(isinstance(evaluator_digest, str) and len(evaluator_digest) == 64 and all(char in "0123456789abcdef" for char in evaluator_digest), "evaluator_digest must be 64 lowercase hex characters")
+    recomputed = sha256(prompt_candidate.get("prompt_text", "").encode("utf-8"))
+    _require(hmac.compare_digest(digest, recomputed), "prompt content digest mismatch")
+    expected_line = f"Packet fingerprint: {prompt_candidate.get('packet_fingerprint', '')}"
+    _require(expected_line in prompt_candidate["prompt_text"].splitlines(), "packet fingerprint binding is missing")
     return {
         "schema_version": "loop-spec/v1",
         "run_id": f"prompt-replay:{digest[7:23]}",
@@ -342,8 +379,11 @@ def promotion_decision(fixture_results: list[dict[str, Any]], carry: float, huma
     """Prepare a gate decision; never grant admission or authority."""
     _require(bool(fixture_results), "fixture_results are required")
     _require(all(_nonempty(item.get("id")) and isinstance(item.get("passed"), bool) for item in fixture_results), "invalid fixture result")
-    blocking = [item["id"] for item in fixture_results if not item["passed"] and item["id"].startswith(BLOCKING_PREFIXES)]
-    decision = "repair" if blocking or carry <= 0 else ("human_review_recorded" if human_approval_ref else "constrain")
+    ids = [item["id"] for item in fixture_results]
+    _require(len(ids) == len(set(ids)), "duplicate fixture result")
+    _require(set(ids) == REQUIRED_FIXTURES, "fixture result set does not match the required manifest")
+    blocking = [item["id"] for item in fixture_results if not item["passed"]]
+    decision = "repair" if blocking or carry <= 0 else "constrain"
     return {
         "api_version": API_VERSION,
         "kind": "PromotionGateDecision",
@@ -353,6 +393,7 @@ def promotion_decision(fixture_results: list[dict[str, Any]], carry: float, huma
         "blocking_failures": blocking,
         "forward_carry": carry,
         "human_approval_ref": human_approval_ref,
+        "human_approval_verified": False,
         "self_promotion_allowed": False,
         "authority_effect": "none",
     }
@@ -363,18 +404,20 @@ def run_receipt(*, baseline_ref: str | None, surfaces: list[dict[str, Any]], del
     receipt = {
         "api_version": API_VERSION,
         "kind": "PluginHarvestReceipt",
-        "status": "completed",
+        "status": "completed" if baseline_ref and surfaces else "incomplete",
         "observation_time": _instant(observed_at, "observation_time"),
-        "authority_ceiling_observed": "propose",
+        "authority_ceiling_observed": "unknown",
         "baseline_receipt_ref": baseline_ref,
         "surface_set_sha256": sha256(sorted(surface_dedupe_key(item) for item in surfaces)),
         "delta_dedupe_keys": sorted(item["key"] for item in deltas),
         "quarantine_refs": sorted(quarantine_refs),
         "prompt_candidate_refs": sorted(item["content_sha256"] for item in prompt_candidates),
-        "no_external_calls": True,
-        "no_authority_escalation": True,
-        "no_canon_write": True,
-        "immutable": True,
+        "effect_observations": {
+            "external_calls": "unknown",
+            "authority_escalation": "unknown",
+            "canon_write": "unknown"
+        },
+        "immutable_storage": "unproven",
     }
     receipt["receipt_sha256"] = sha256(receipt)
     return receipt

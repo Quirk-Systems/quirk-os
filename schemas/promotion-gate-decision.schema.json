@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/promotion-gate-decision.v0.1.schema.json",
+  "title": "Candidate-only promotion gate decision",
+  "type": "object",
+  "required": ["api_version", "kind", "status", "decision", "all_release_blocking_fixtures_passed", "blocking_failures", "forward_carry", "human_approval_ref", "human_approval_verified", "self_promotion_allowed", "authority_effect"],
+  "additionalProperties": false,
+  "properties": {
+    "api_version": {"const": "quirk.capability-harvest/v0.1"}, "kind": {"const": "PromotionGateDecision"}, "status": {"const": "candidate"},
+    "decision": {"enum": ["repair", "constrain"]}, "all_release_blocking_fixtures_passed": {"type": "boolean"},
+    "blocking_failures": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "forward_carry": {"type": "number"},
+    "human_approval_ref": {"type": ["string", "null"]}, "human_approval_verified": {"const": false}, "self_promotion_allowed": {"const": false}, "authority_effect": {"const": "none"}
+  }
+}

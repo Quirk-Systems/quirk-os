@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -10,7 +11,7 @@ from typing import Any
 
 from .core import API_VERSION, sha256
 
-ALLOWLIST = {"package.json", "manifest.json", "plugin.json", "SKILL.md"}
+IDENTITY_PATHS = (Path(".codex-plugin/plugin.json"), Path("manifest.json"), Path("plugin.json"), Path("package.json"))
 
 
 @dataclass(frozen=True)
@@ -28,24 +29,38 @@ def _inside(root: Path, candidate: Path) -> bool:
         return False
 
 
-def _identity(plugin_dir: Path) -> tuple[str | None, str | None, list[str], list[str]]:
+def _safe_read(path: Path, root: Path, limit: int) -> bytes:
+    if path.is_symlink() or not _inside(root, path.resolve(strict=True)):
+        raise ValueError("PATH_SCOPE_VIOLATION")
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(path, flags)
+    try:
+        stat = os.fstat(descriptor)
+        if stat.st_size > limit:
+            raise ValueError("BYTE_LIMIT")
+        return os.read(descriptor, limit + 1)
+    finally:
+        os.close(descriptor)
+
+
+def _identity(plugin_dir: Path, root: Path, limit: int) -> tuple[str | None, str | None, list[str], list[str]]:
     package_id = version = None
     contradictions: list[str] = []
     quarantine: list[str] = []
     seen: list[tuple[str, str, str]] = []
-    for name in ("manifest.json", "plugin.json", "package.json"):
-        path = plugin_dir / name
+    for relative in IDENTITY_PATHS:
+        path = plugin_dir / relative
         if not path.is_file():
             continue
         try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, UnicodeError, json.JSONDecodeError):
-            quarantine.append(f"malformed:{path.name}")
+            data = json.loads(_safe_read(path, root, limit).decode("utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+            quarantine.append(f"{str(exc) if isinstance(exc, ValueError) else 'malformed'}:{relative}")
             continue
         candidate_id = data.get("id") or data.get("name") or data.get("package")
         candidate_version = data.get("version")
         if isinstance(candidate_id, str) and isinstance(candidate_version, str):
-            seen.append((name, candidate_id, candidate_version))
+            seen.append((str(relative), candidate_id, candidate_version))
             package_id = package_id or candidate_id
             version = version or candidate_version
     for name, candidate_id, candidate_version in seen:
@@ -69,33 +84,40 @@ def scan_plugin_root(root: str | Path, limits: ScanLimits = ScanLimits(), observ
     quarantine: list[dict[str, Any]] = []
     total_bytes = 0
     files_seen = 0
-    plugin_dirs = sorted({path.parent for path in base.rglob("*") if path.name in ALLOWLIST})
+    declared_roots = {path.parent.parent for path in base.rglob(".codex-plugin/plugin.json")}
+    if not declared_roots:
+        declared_roots = {path for path in base.iterdir() if path.is_dir() and any((path / rel).is_file() for rel in IDENTITY_PATHS)}
+    plugin_dirs = sorted(declared_roots)
     for plugin_dir in plugin_dirs:
         resolved_dir = plugin_dir.resolve()
         if not _inside(base, resolved_dir):
             quarantine.append({"path": str(plugin_dir), "reason": "PATH_SCOPE_VIOLATION"})
             continue
-        package_id, version, contradictions, identity_quarantine = _identity(plugin_dir)
+        package_id, version, contradictions, identity_quarantine = _identity(plugin_dir, base, limits.max_bytes_per_file)
         for reason in identity_quarantine:
             quarantine.append({"path": str(plugin_dir.relative_to(base)), "reason": reason})
+        if contradictions:
+            quarantine.append({"path": str(plugin_dir.relative_to(base)), "reason": "identity_conflict", "contradictions": contradictions})
+            continue
         if package_id is None or version is None:
             continue
-        for path in sorted(plugin_dir.iterdir()):
-            if path.name not in ALLOWLIST or not path.is_file():
+        candidates = [plugin_dir / rel for rel in IDENTITY_PATHS]
+        candidates.extend(sorted((plugin_dir / "skills").glob("*/SKILL.md")) if (plugin_dir / "skills").is_dir() else [])
+        for path in candidates:
+            if not path.is_file():
                 continue
             files_seen += 1
             if files_seen > limits.max_files:
                 quarantine.append({"path": str(path.relative_to(base)), "reason": "FILE_LIMIT"})
                 break
-            resolved = path.resolve()
-            if not _inside(base, resolved):
-                quarantine.append({"path": str(path.relative_to(base)), "reason": "PATH_SCOPE_VIOLATION"})
+            try:
+                raw = _safe_read(path, base, limits.max_bytes_per_file)
+            except (OSError, ValueError) as exc:
+                quarantine.append({"path": str(path.relative_to(base)), "reason": str(exc)})
                 continue
-            size = resolved.stat().st_size
-            if size > limits.max_bytes_per_file or total_bytes + size > limits.max_total_bytes:
+            if total_bytes + len(raw) > limits.max_total_bytes:
                 quarantine.append({"path": str(path.relative_to(base)), "reason": "BYTE_LIMIT"})
                 continue
-            raw = resolved.read_bytes()
             total_bytes += len(raw)
             kind = "skill" if path.name == "SKILL.md" else "manifest"
             observations.append({
@@ -121,7 +143,10 @@ def scan_plugin_root(root: str | Path, limits: ScanLimits = ScanLimits(), observ
     return {
         "api_version": API_VERSION,
         "kind": "PluginRootScan",
-        "root_fingerprint": sha256([item["surface"]["sha256"] for item in observations]),
+        "root_fingerprint": sha256([{
+            "identity": item["identity"], "surface": item["surface"],
+            "rights": item["rights"], "contradictions": item["contradictions"]
+        } for item in observations]),
         "observations": observations,
         "quarantine": quarantine,
         "limits": limits.__dict__,
