@@ -168,11 +168,22 @@ force-push, reopened H0-A blocker, false `VERIFIED_SUCCESS`, fabricated
 evidence, non-determinism, hidden I/O, benchmark leakage, validator weakening,
 or authority smuggling.
 
-The latest status record leaves Task 0 `IN_REVIEW`, with the isolated-local-
-worktree, distinct-reviewer, and Subagent-Driven execution gates unsatisfied;
-Task 1 is `NOT_STARTED`. No implementation may begin until those gates are
-reconciled by valid human authority. Completion of candidate evidence ends at
-handoff and never implies any stronger authority.
+The issue #52 status record `5388985719` left Task 0 `IN_REVIEW` and Task 1
+`NOT_STARTED`. A read-only verification on 2026-09-11 now confirms a clean
+isolated worktree at the approved plan head, unchanged immutable and protected
+paths, fresh subagent dispatch, and substantive review by a distinct Codex
+subagent. The former workspace/reviewer availability gaps are resolved.
+
+Task 0 nevertheless remains `HOLD`: the approved plan's
+[latest-comment predicate](https://github.com/Quirk-Systems/quirk-os/blob/c179705bbd2e571849528e76204048f3f5935d27/docs/superpowers/plans/2026-08-21-applause-gate-implementation-plan.md#L375-L378)
+requires approval `5381075909` to be the latest Bryan-authored issue #52 comment,
+but status record `5388985719` is later. Its `authority_effect: none` does not
+override that predicate. The checks were reproduced individually; the complete
+shell helper was not executed because the GitHub CLI was unavailable. No
+preflight pass or Task 1 execution is claimed. The frozen plan and human records
+were not changed; their reconciliation requires an explicit successor decision.
+Completion of candidate evidence ends at handoff and never implies stronger
+authority.
 
 Silence, issue creation, assignment, labels, PR state, prior approval, passing
 fixtures or CI, confidence, completed-looking artifacts, branch position, and
