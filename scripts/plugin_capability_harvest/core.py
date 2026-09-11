@@ -57,6 +57,39 @@ class ContractError(ValueError):
     """Raised when a candidate would violate a fail-closed contract."""
 
 
+class ReadOnlyEvidenceResolver:
+    """Content-addressed evidence resolver with host-configured trust roots."""
+
+    def __init__(self, records: dict[str, dict[str, Any]], trusted_issuers: set[str], now: str):
+        _instant(now, "resolver.now")
+        _require(isinstance(records, dict) and isinstance(trusted_issuers, set), "resolver inputs are invalid")
+        self._records = deepcopy(records)
+        self._trusted_issuers = frozenset(trusted_issuers)
+        self._now = datetime.fromisoformat(now.replace("Z", "+00:00"))
+        for ref, record in self._records.items():
+            _require(SHA256_RE.fullmatch(ref) is not None and hmac.compare_digest(ref, sha256(record)), "evidence registry key is not content-bound")
+
+    def resolve(self, ref: str, expected_kind: str, subject_ref: str, implementation_actor_ref: str) -> dict[str, Any]:
+        _reference(ref, "evidence ref")
+        _require(ref in self._records, f"unresolved evidence ref {ref}")
+        record = deepcopy(self._records[ref])
+        common = {"kind", "issuer_ref", "subject_ref", "observed_at", "fresh_until"}
+        allowed = {
+            "CleanRoomReview": common | {"status", "reviewer_independent"},
+            "SourceExposureDecision": common | {"prohibited_material_seen"},
+            "SourceRightsDecision": common | {"rights"},
+        }
+        _require(expected_kind in allowed and set(record) == allowed[expected_kind] and record["kind"] == expected_kind, "evidence record shape is invalid")
+        _reference(record["issuer_ref"], "evidence issuer")
+        _reference(record["subject_ref"], "evidence subject")
+        _require(record["issuer_ref"] in self._trusted_issuers and record["issuer_ref"] != implementation_actor_ref, "evidence issuer is not an independent trust root")
+        _require(record["subject_ref"] == subject_ref, "evidence subject mismatch")
+        start = datetime.fromisoformat(_instant(record["observed_at"], "evidence observed_at").replace("Z", "+00:00"))
+        end = datetime.fromisoformat(_instant(record["fresh_until"], "evidence fresh_until").replace("Z", "+00:00"))
+        _require(start <= self._now < end, "evidence record is stale or future-dated")
+        return record
+
+
 def _require(condition: bool, message: str) -> None:
     if not condition:
         raise ContractError(message)
@@ -175,11 +208,23 @@ def _validate_fingerprint(record: dict[str, Any], label: str = "fingerprint") ->
     _require(isinstance(record, dict) and set(record) == required, f"{label} has an invalid shape")
     _require(record["api_version"] == API_VERSION and record["kind"] == "SourceSurfaceFingerprint", f"{label} has an invalid contract identity")
     _require(set(record["identity"]) == {"provider", "package", "version"} and all(_nonempty(v) for v in record["identity"].values()), f"{label} identity is invalid")
+    _require(set(record["surface"]) == {"kind", "name", "state", "location", "effect_classes"}, f"{label} surface shape is invalid")
+    _require(all(_nonempty(record["surface"][key]) for key in ("kind", "name", "location")), f"{label} surface identity is invalid")
+    _require(record["surface"]["state"] in SURFACE_STATES, f"{label} surface state is invalid")
+    effects = _strings(record["surface"]["effect_classes"], f"{label} effect_classes", False)
+    _require(all(effect in EFFECTS for effect in effects), f"{label} effect class is invalid")
     _require(set(record["observation"]) == {"observed_at", "fresh_until", "source_type", "capture_ref"}, f"{label} observation is invalid")
     _instant(record["observation"]["observed_at"], f"{label}.observed_at")
     _instant(record["observation"]["fresh_until"], f"{label}.fresh_until")
+    observed_dt = datetime.fromisoformat(record["observation"]["observed_at"].replace("Z", "+00:00"))
+    fresh_dt = datetime.fromisoformat(record["observation"]["fresh_until"].replace("Z", "+00:00"))
+    _require(observed_dt < fresh_dt, f"{label} freshness ordering is invalid")
+    _require(record["observation"]["source_type"] in {"first_party_runtime", "first_party_file", "third_party", "unknown"}, f"{label} source_type is invalid")
     _reference(record["observation"]["capture_ref"], f"{label}.capture_ref")
-    _require(SHA256_RE.fullmatch(record["content"].get("sha256", "")) is not None and type(record["content"].get("byte_length")) is int, f"{label} content is invalid")
+    _require(set(record["content"]) == {"sha256", "byte_length"} and SHA256_RE.fullmatch(record["content"].get("sha256", "")) is not None and type(record["content"].get("byte_length")) is int and record["content"]["byte_length"] >= 0, f"{label} content is invalid")
+    _require(record["rights"] in {"quirk_owned", "open_license_verified", "reference_only", "proprietary", "unknown"}, f"{label} rights are invalid")
+    expected_status = "quarantined" if record["rights"] == "unknown" else "candidate"
+    _require(record["status"] == expected_status, f"{label} rights/status combination is invalid")
     claimed = record["record_sha256"]
     actual = sha256({key: value for key, value in record.items() if key != "record_sha256"})
     _require(SHA256_RE.fullmatch(claimed) is not None and hmac.compare_digest(claimed, actual), f"{label} record digest mismatch")
@@ -240,15 +285,17 @@ def _forbidden_paths(value: Any, path: str = "$") -> list[str]:
     return found
 
 
-def create_mechanism_candidate(spec: dict[str, Any], evidence_registry: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def create_mechanism_candidate(spec: dict[str, Any], evidence_resolver: ReadOnlyEvidenceResolver) -> dict[str, Any]:
     """Create an original provider-neutral candidate after the observation room."""
     _require(isinstance(spec, dict), "mechanism spec must be an object")
-    allowed = {"id", "purpose", "problem", "input_classes", "transformations", "output_classes", "preconditions", "postconditions", "failure_modes", "recovery_modes", "provider_assumptions", "non_capabilities", "source_evidence_refs", "effect_classes", "success_metrics", "cheapest_disproof", "authority_boundary_ref", "clean_room_attestation", "external_expression_retained", "clean_room_review_ref", "exposure_ledger_refs"}
+    allowed = {"id", "purpose", "problem", "input_classes", "transformations", "output_classes", "preconditions", "postconditions", "failure_modes", "recovery_modes", "provider_assumptions", "non_capabilities", "source_evidence_refs", "effect_classes", "success_metrics", "cheapest_disproof", "authority_boundary_ref", "implementation_actor_ref", "clean_room_attestation", "external_expression_retained", "clean_room_review_ref", "exposure_ledger_refs"}
     _require(set(spec) == allowed, "mechanism contains missing or unknown fields")
     contaminated = _forbidden_paths(spec)
     _require(not contaminated, f"prohibited expressive material at {', '.join(contaminated)}")
-    for key in ("id", "purpose", "problem", "cheapest_disproof", "authority_boundary_ref"):
+    for key in ("id", "purpose", "problem", "cheapest_disproof", "authority_boundary_ref", "implementation_actor_ref"):
         _require(_nonempty(spec.get(key)), f"{key} is required")
+    _reference(spec["id"], "mechanism id")
+    _reference(spec["implementation_actor_ref"], "implementation_actor_ref")
     for key in (
         "input_classes", "transformations", "output_classes", "preconditions",
         "postconditions", "failure_modes", "recovery_modes", "provider_assumptions",
@@ -257,19 +304,18 @@ def create_mechanism_candidate(spec: dict[str, Any], evidence_registry: dict[str
         _strings(spec.get(key), key)
     _require(spec.get("clean_room_attestation") is True, "clean_room_attestation must be true")
     _require(spec.get("external_expression_retained") is False, "external_expression_retained must be false")
-    _require(isinstance(evidence_registry, dict), "evidence_registry is required")
+    _require(isinstance(evidence_resolver, ReadOnlyEvidenceResolver), "trusted read-only evidence resolver is required")
     _reference(spec.get("clean_room_review_ref"), "clean_room_review_ref")
     exposure_refs = _strings(spec.get("exposure_ledger_refs"), "exposure_ledger_refs", False)
     for ref in [*exposure_refs, *spec["source_evidence_refs"], spec["clean_room_review_ref"]]:
         _reference(ref, "mechanism evidence ref")
-        _require(ref in evidence_registry, f"unresolved mechanism evidence ref {ref}")
-    review = evidence_registry[spec["clean_room_review_ref"]]
+    review = evidence_resolver.resolve(spec["clean_room_review_ref"], "CleanRoomReview", spec["id"], spec["implementation_actor_ref"])
     _require(review.get("kind") == "CleanRoomReview" and review.get("status") == "passed" and review.get("reviewer_independent") is True, "clean-room review is not independently verified")
     for ref in exposure_refs:
-        ledger = evidence_registry[ref]
+        ledger = evidence_resolver.resolve(ref, "SourceExposureDecision", spec["id"], spec["implementation_actor_ref"])
         _require(ledger.get("kind") == "SourceExposureDecision" and ledger.get("prohibited_material_seen") is False, "source exposure is contaminated")
     for ref in spec["source_evidence_refs"]:
-        source = evidence_registry[ref]
+        source = evidence_resolver.resolve(ref, "SourceRightsDecision", spec["id"], spec["implementation_actor_ref"])
         _require(source.get("rights") in {"quirk_owned", "open_license_verified"}, "source rights do not permit implementation expression")
     _require(all(effect in EFFECTS for effect in spec["effect_classes"]), "invalid effect class")
     result = {"api_version": API_VERSION, "kind": "CapabilityMechanism", "version": "0.1.0", "status": "candidate", **deepcopy(spec)}
@@ -320,8 +366,10 @@ def _validate_prompt_packet(packet: dict[str, Any]) -> None:
     _require(isinstance(packet, dict) and set(packet) == allowed, "packet contains missing or unknown fields")
     _require(not _forbidden_paths(packet), "packet contains prohibited material fields")
     _require(packet.get("packet_version") == API_VERSION, f"packet_version must be {API_VERSION}")
-    for key in ("run_id", "task_id", "role"):
-        _require(_nonempty(packet.get(key)), f"{key} is required")
+    for key in ("run_id", "task_id"):
+        _reference(packet.get(key), key)
+    _require(packet.get("parent_run_id") is None or (isinstance(packet["parent_run_id"], str) and QUIRK_REF_RE.fullmatch(packet["parent_run_id"])), "parent_run_id must be null or a Quirk run reference")
+    _require(_nonempty(packet.get("role")), "role is required")
     _require(packet["role"] in ROLE_ORDER, "role is invalid")
     mission = packet.get("mission", {})
     _require(set(mission) == {"desired_change", "acceptance_evidence"}, "mission contains missing or unknown fields")
@@ -335,17 +383,19 @@ def _validate_prompt_packet(packet: dict[str, Any]) -> None:
     _require(set(PROHIBITED_SOURCE_CLASSES) <= set(prohibited), "source contract omits protected source classes")
     _require(not source.get("external_prompt_material_included", False), "external prompt material is prohibited")
     _validate_authority(packet.get("authority"))
+    for ref in packet["authority"]["allowed_targets"]: _reference(ref, "authority target")
     _require(RIGHTS.index(packet["authority"]["maximum_right"]) <= RIGHTS.index("propose"), "prompt authority cannot exceed propose")
     _validate_budgets(packet.get("budgets"))
     _require(packet["authority"]["budgets"] == packet["budgets"], "packet budget authorities must match exactly")
-    _strings(packet.get("stop_conditions"), "stop_conditions", False)
+    for ref in _strings(packet.get("stop_conditions"), "stop_conditions", False): _reference(ref, "stop condition")
     portfolio = packet.get("portfolio_context", {})
     _require(set(portfolio) == {"goal_refs", "project_refs", "system_refs", "affected_person_refs"}, "portfolio_context contains missing or unknown fields")
     for key in portfolio:
         for ref in _strings(portfolio[key], f"portfolio_context.{key}"): _reference(ref, f"portfolio_context.{key}")
     _require(any(portfolio.get(key) for key in ("goal_refs", "project_refs", "system_refs", "affected_person_refs")), "owned portfolio context is required")
     handoff = packet.get("handoff", {})
-    _require(set(handoff) == {"dedupe_key"} and _nonempty(handoff.get("dedupe_key")), "handoff must contain only dedupe_key")
+    _require(set(handoff) == {"dedupe_key"}, "handoff must contain only dedupe_key")
+    _reference(handoff.get("dedupe_key"), "handoff.dedupe_key")
 
 
 def compile_prompt_candidate(packet: dict[str, Any]) -> dict[str, Any]:

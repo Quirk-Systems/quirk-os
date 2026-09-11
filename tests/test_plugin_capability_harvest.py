@@ -5,6 +5,7 @@ from pathlib import Path
 
 from scripts.plugin_capability_harvest import (
     ContractError,
+    ReadOnlyEvidenceResolver,
     ScanLimits,
     canonical_bytes,
     compare_surfaces,
@@ -16,6 +17,7 @@ from scripts.plugin_capability_harvest import (
     promotion_decision,
     run_receipt,
     scan_plugin_root,
+    sha256,
     to_loop_spec,
 )
 
@@ -48,7 +50,7 @@ def budgets(depth=2, calls=20):
 def authority(right="propose", depth=2, calls=20):
     return {
         "maximum_right": right,
-        "allowed_targets": ["candidate_registry", "evidence_store"],
+        "allowed_targets": ["quirk:target.candidate_registry", "quirk:target.evidence_store"],
         "prohibited_effects": ["publish", "canon_change", "authority_change"],
         "budgets": budgets(depth, calls),
     }
@@ -56,8 +58,7 @@ def authority(right="propose", depth=2, calls=20):
 
 def child_authority(parent, right="infer", targets=None, depth=1):
     value = authority(right, depth)
-    value["allowed_targets"] = targets or ["candidate_registry"]
-    from scripts.plugin_capability_harvest.core import sha256
+    value["allowed_targets"] = targets or ["quirk:target.candidate_registry"]
     value["parent_authority_digest"] = sha256(parent)
     return value
 
@@ -81,8 +82,8 @@ def fixture_manifest_digest():
 def packet(**updates):
     value = {
         "packet_version": "quirk.capability-harvest/v0.1",
-        "run_id": "run.example", "parent_run_id": None,
-        "task_id": "task.example", "role": "signal_miner",
+        "run_id": "quirk:run.example", "parent_run_id": None,
+        "task_id": "quirk:task.example", "role": "signal_miner",
         "mission": {"desired_change": "quirk:move.reusable_loop", "acceptance_evidence": ["quirk:acceptance.falsifiable_candidate"]},
         "portfolio_context": {"goal_refs": ["quirk:goal.quirk"], "project_refs": [], "system_refs": ["quirk:system.quirk"], "affected_person_refs": ["quirk:person.owner"]},
         "source_contract": {
@@ -95,39 +96,61 @@ def packet(**updates):
             "external_prompt_material_included": False,
         },
         "authority": authority(), "budgets": budgets(),
-        "stop_conditions": ["identity or rights unresolved", "budget exhausted"],
-        "handoff": {"dedupe_key": "goal.quirk/signal_miner/v0.1"},
+        "stop_conditions": ["quirk:stop.identity_rights", "quirk:stop.budget"],
+        "handoff": {"dedupe_key": "quirk:handoff.goal_signal_v0.1"},
     }
     value.update(updates)
     return value
 
 
+def evidence_bundle(subject="quirk:mechanism.inspect_then_propose"):
+    records = [
+        {
+            "kind": "SourceRightsDecision", "issuer_ref": "quirk:actor.rights_officer",
+            "subject_ref": subject, "observed_at": NOW, "fresh_until": LATER,
+            "rights": "quirk_owned",
+        },
+        {
+            "kind": "CleanRoomReview", "issuer_ref": "quirk:actor.clean_room_reviewer",
+            "subject_ref": subject, "observed_at": NOW, "fresh_until": LATER,
+            "status": "passed", "reviewer_independent": True,
+        },
+        {
+            "kind": "SourceExposureDecision", "issuer_ref": "quirk:actor.clean_room_reviewer",
+            "subject_ref": subject, "observed_at": NOW, "fresh_until": LATER,
+            "prohibited_material_seen": False,
+        },
+    ]
+    registry = {sha256(record): record for record in records}
+    resolver = ReadOnlyEvidenceResolver(
+        registry,
+        {"quirk:actor.rights_officer", "quirk:actor.clean_room_reviewer"},
+        NOW,
+    )
+    return registry, resolver
+
+
 def mechanism(**updates):
+    registry, resolver = evidence_bundle()
+    refs = {record["kind"]: ref for ref, record in registry.items()}
     value = {
-        "id": "mechanism.inspect_then_propose", "purpose": "Reduce repeated bounded work",
+        "id": "quirk:mechanism.inspect_then_propose", "purpose": "Reduce repeated bounded work",
         "problem": "Useful work is trapped in one-off runs",
         "input_classes": ["typed_owned_context"], "transformations": ["inspect", "classify", "propose"],
         "output_classes": ["candidate_prompt"], "preconditions": ["source identity known"],
         "postconditions": ["candidate only"], "failure_modes": ["missing provenance"],
         "recovery_modes": ["quarantine"], "provider_assumptions": [],
-        "non_capabilities": ["publish", "canon write"], "source_evidence_refs": ["quirk:source.owned"],
+        "non_capabilities": ["publish", "canon write"], "source_evidence_refs": [refs["SourceRightsDecision"]],
         "effect_classes": ["none"], "success_metrics": ["positive Forward Carry"],
         "cheapest_disproof": "Replay without conversation memory",
-        "authority_boundary_ref": "authority.propose_only",
+        "authority_boundary_ref": "quirk:authority.propose_only",
+        "implementation_actor_ref": "quirk:actor.builder",
         "clean_room_attestation": True, "external_expression_retained": False,
-        "clean_room_review_ref": "sha256:" + "b" * 64,
-        "exposure_ledger_refs": ["sha256:" + "c" * 64],
+        "clean_room_review_ref": refs["CleanRoomReview"],
+        "exposure_ledger_refs": [refs["SourceExposureDecision"]],
     }
     value.update(updates)
-    return value
-
-
-def evidence_registry():
-    return {
-        "quirk:source.owned": {"kind": "SourceRightsDecision", "rights": "quirk_owned"},
-        "sha256:" + "b" * 64: {"kind": "CleanRoomReview", "status": "passed", "reviewer_independent": True},
-        "sha256:" + "c" * 64: {"kind": "SourceExposureDecision", "prohibited_material_seen": False},
-    }
+    return value, resolver
 
 
 class HarvestContractsTest(unittest.TestCase):
@@ -177,27 +200,40 @@ class HarvestContractsTest(unittest.TestCase):
             compare_surfaces([item, item], [item], NOW)
 
     def test_clean_room_candidate_is_provider_neutral(self):
-        result = create_mechanism_candidate(mechanism(), evidence_registry())
+        spec, resolver = mechanism()
+        result = create_mechanism_candidate(spec, resolver)
         self.assertEqual(result["status"], "candidate")
         self.assertFalse(result["external_expression_retained"])
 
     def test_hidden_prompt_is_rejected(self):
         with self.assertRaisesRegex(ContractError, "unknown fields"):
-            create_mechanism_candidate(mechanism(hidden_prompt="copy me"), evidence_registry())
+            spec, resolver = mechanism(hidden_prompt="copy me")
+            create_mechanism_candidate(spec, resolver)
 
     def test_mechanism_alias_cannot_smuggle_source_text(self):
         with self.assertRaisesRegex(ContractError, "unknown fields"):
-            create_mechanism_candidate(mechanism(documentation="COPIED PROPRIETARY PROMPT"), evidence_registry())
+            spec, resolver = mechanism(documentation="COPIED PROPRIETARY PROMPT")
+            create_mechanism_candidate(spec, resolver)
 
     def test_false_clean_room_attestation_is_rejected(self):
         with self.assertRaisesRegex(ContractError, "clean_room_attestation"):
-            create_mechanism_candidate(mechanism(clean_room_attestation=False), evidence_registry())
+            spec, resolver = mechanism(clean_room_attestation=False)
+            create_mechanism_candidate(spec, resolver)
 
     def test_mechanism_requires_resolved_independent_review(self):
-        registry = evidence_registry()
-        registry["sha256:" + "b" * 64]["reviewer_independent"] = False
-        with self.assertRaisesRegex(ContractError, "independently verified"):
-            create_mechanism_candidate(mechanism(), registry)
+        spec, _ = mechanism()
+        registry, _ = evidence_bundle()
+        review_ref = spec["clean_room_review_ref"]
+        registry[review_ref]["reviewer_independent"] = False
+        with self.assertRaisesRegex(ContractError, "content-bound"):
+            ReadOnlyEvidenceResolver(registry, {"quirk:actor.rights_officer", "quirk:actor.clean_room_reviewer"}, NOW)
+
+    def test_mechanism_requires_trusted_independent_issuer(self):
+        spec, _ = mechanism()
+        registry, _ = evidence_bundle()
+        resolver = ReadOnlyEvidenceResolver(registry, {"quirk:actor.rights_officer"}, NOW)
+        with self.assertRaisesRegex(ContractError, "independent trust root"):
+            create_mechanism_candidate(spec, resolver)
 
     def test_child_authority_cannot_expand(self):
         parent = authority("propose", 2)
@@ -258,6 +294,30 @@ class HarvestContractsTest(unittest.TestCase):
     def test_prompt_rejects_raw_mission_expression(self):
         bad = packet()
         bad["mission"]["desired_change"] = "PROPRIETARY SECRET PROMPT"
+        with self.assertRaisesRegex(ContractError, "Quirk reference"):
+            compile_prompt_candidate(bad)
+
+    def test_prompt_rejects_raw_run_identity(self):
+        with self.assertRaisesRegex(ContractError, "Quirk reference"):
+            compile_prompt_candidate(packet(run_id="free form"))
+
+    def test_prompt_rejects_structured_parent_identity(self):
+        with self.assertRaisesRegex(ContractError, "parent_run_id"):
+            compile_prompt_candidate(packet(parent_run_id={"secret": "payload"}))
+
+    def test_prompt_rejects_raw_stop_condition(self):
+        with self.assertRaisesRegex(ContractError, "Quirk reference"):
+            compile_prompt_candidate(packet(stop_conditions=["raw instruction text"]))
+
+    def test_prompt_rejects_raw_handoff_key(self):
+        bad = packet()
+        bad["handoff"]["dedupe_key"] = "raw/dedupe/key"
+        with self.assertRaisesRegex(ContractError, "Quirk reference"):
+            compile_prompt_candidate(bad)
+
+    def test_prompt_rejects_raw_authority_target(self):
+        bad = packet()
+        bad["authority"]["allowed_targets"] = ["raw external payload"]
         with self.assertRaisesRegex(ContractError, "Quirk reference"):
             compile_prompt_candidate(bad)
 
@@ -337,7 +397,8 @@ class HarvestContractsTest(unittest.TestCase):
     def test_persistent_objects_match_closed_schema_shapes(self):
         root = Path(__file__).resolve().parents[1]
         schemas = root / "schemas"
-        mechanism_result = create_mechanism_candidate(mechanism(), evidence_registry())
+        mechanism_spec, resolver = mechanism()
+        mechanism_result = create_mechanism_candidate(mechanism_spec, resolver)
         prompt_result = compile_prompt_candidate(packet())
         promotion_result = promotion_decision(all_fixture_results(), 10, fixture_manifest_digest(), "sha256:" + "d" * 64)
         receipt_result = run_receipt(baseline_ref="quirk:receipt.baseline", surfaces=[fingerprint_surface(surface())], deltas=[], prompt_candidates=[prompt_result], quarantine_refs=[], observed_at=NOW)

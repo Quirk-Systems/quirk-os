@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import stat
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -17,6 +18,7 @@ IDENTITY_PATHS = (Path(".codex-plugin/plugin.json"), Path("manifest.json"), Path
 @dataclass(frozen=True)
 class ScanLimits:
     max_files: int = 500
+    max_directories: int = 2_000
     max_bytes_per_file: int = 1_000_000
     max_total_bytes: int = 20_000_000
 
@@ -35,25 +37,41 @@ def _safe_read(path: Path, root: Path, limit: int) -> bytes:
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
     descriptor = os.open(path, flags)
     try:
-        stat = os.fstat(descriptor)
-        if stat.st_size > limit:
+        file_stat = os.fstat(descriptor)
+        if not stat.S_ISREG(file_stat.st_mode):
+            raise ValueError("NOT_REGULAR_FILE")
+        if file_stat.st_size > limit:
             raise ValueError("BYTE_LIMIT")
-        return os.read(descriptor, limit + 1)
+        chunks: list[bytes] = []
+        remaining = limit + 1
+        while remaining:
+            chunk = os.read(descriptor, min(64 * 1024, remaining))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        payload = b"".join(chunks)
+        if len(payload) > limit:
+            raise ValueError("BYTE_LIMIT")
+        return payload
     finally:
         os.close(descriptor)
 
 
-def _identity(plugin_dir: Path, root: Path, limit: int) -> tuple[str | None, str | None, list[str], list[str]]:
+def _identity(plugin_dir: Path, root: Path, limit: int) -> tuple[str | None, str | None, list[str], list[str], dict[Path, bytes]]:
     package_id = version = None
     contradictions: list[str] = []
     quarantine: list[str] = []
     seen: list[tuple[str, str, str]] = []
+    captured: dict[Path, bytes] = {}
     for relative in IDENTITY_PATHS:
         path = plugin_dir / relative
         if not path.is_file():
             continue
         try:
-            data = json.loads(_safe_read(path, root, limit).decode("utf-8"))
+            raw = _safe_read(path, root, limit)
+            captured[path] = raw
+            data = json.loads(raw.decode("utf-8"))
         except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
             quarantine.append(f"{str(exc) if isinstance(exc, ValueError) else 'malformed'}:{relative}")
             continue
@@ -70,7 +88,32 @@ def _identity(plugin_dir: Path, root: Path, limit: int) -> tuple[str | None, str
             contradictions.append(f"version:{name}:{candidate_version}!={version}")
     if package_id is None or version is None:
         quarantine.append("identity_unresolved")
-    return package_id, version, contradictions, quarantine
+    return package_id, version, contradictions, quarantine, captured
+
+
+def _discover_plugin_roots(base: Path, limits: ScanLimits) -> tuple[set[Path], list[dict[str, Any]]]:
+    """Find declared roots without unbounded recursion or following symlinks."""
+    declared: set[Path] = set()
+    quarantine: list[dict[str, Any]] = []
+    directories_seen = 0
+    for current, directories, files in os.walk(base, topdown=True, followlinks=False):
+        directories[:] = sorted(name for name in directories if not (Path(current) / name).is_symlink())
+        directories_seen += 1
+        if directories_seen > limits.max_directories:
+            quarantine.append({"path": ".", "reason": "DIRECTORY_LIMIT"})
+            break
+        current_path = Path(current)
+        if current_path.name == ".codex-plugin" and "plugin.json" in files:
+            declared.add(current_path.parent)
+            directories[:] = []
+    if not declared:
+        for path in sorted(base.iterdir()):
+            if path.is_dir() and not path.is_symlink() and any((path / rel).is_file() for rel in IDENTITY_PATHS):
+                declared.add(path)
+                if len(declared) > limits.max_files:
+                    quarantine.append({"path": ".", "reason": "FILE_LIMIT"})
+                    break
+    return declared, quarantine
 
 
 def scan_plugin_root(root: str | Path, limits: ScanLimits = ScanLimits(), observed_at: str | None = None) -> dict[str, Any]:
@@ -84,16 +127,15 @@ def scan_plugin_root(root: str | Path, limits: ScanLimits = ScanLimits(), observ
     quarantine: list[dict[str, Any]] = []
     total_bytes = 0
     files_seen = 0
-    declared_roots = {path.parent.parent for path in base.rglob(".codex-plugin/plugin.json")}
-    if not declared_roots:
-        declared_roots = {path for path in base.iterdir() if path.is_dir() and any((path / rel).is_file() for rel in IDENTITY_PATHS)}
+    declared_roots, discovery_quarantine = _discover_plugin_roots(base, limits)
+    quarantine.extend(discovery_quarantine)
     plugin_dirs = sorted(declared_roots)
     for plugin_dir in plugin_dirs:
         resolved_dir = plugin_dir.resolve()
         if not _inside(base, resolved_dir):
             quarantine.append({"path": str(plugin_dir), "reason": "PATH_SCOPE_VIOLATION"})
             continue
-        package_id, version, contradictions, identity_quarantine = _identity(plugin_dir, base, limits.max_bytes_per_file)
+        package_id, version, contradictions, identity_quarantine, identity_content = _identity(plugin_dir, base, limits.max_bytes_per_file)
         for reason in identity_quarantine:
             quarantine.append({"path": str(plugin_dir.relative_to(base)), "reason": reason})
         if contradictions:
@@ -110,11 +152,14 @@ def scan_plugin_root(root: str | Path, limits: ScanLimits = ScanLimits(), observ
             if files_seen > limits.max_files:
                 quarantine.append({"path": str(path.relative_to(base)), "reason": "FILE_LIMIT"})
                 break
-            try:
-                raw = _safe_read(path, base, limits.max_bytes_per_file)
-            except (OSError, ValueError) as exc:
-                quarantine.append({"path": str(path.relative_to(base)), "reason": str(exc)})
-                continue
+            if path in identity_content:
+                raw = identity_content[path]
+            else:
+                try:
+                    raw = _safe_read(path, base, limits.max_bytes_per_file)
+                except (OSError, ValueError) as exc:
+                    quarantine.append({"path": str(path.relative_to(base)), "reason": str(exc)})
+                    continue
             if total_bytes + len(raw) > limits.max_total_bytes:
                 quarantine.append({"path": str(path.relative_to(base)), "reason": "BYTE_LIMIT"})
                 continue
