@@ -154,6 +154,26 @@ class SubmissionPackTests(unittest.TestCase):
         self.assertFalse(report["contract_valid"])
         self.assertTrue(any("invalid JSON" in error for error in report["errors"]))
 
+    def test_invalid_utf8_and_duplicate_keys_are_rejected(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            invalid_utf8_path = Path(directory) / "invalid-utf8.json"
+            invalid_utf8_path.write_bytes(b"\xff")
+            invalid_utf8_report = validate(ROOT, invalid_utf8_path.relative_to(ROOT))
+
+            duplicate_path = Path(directory) / "duplicate.json"
+            duplicate_pack = PACK.read_text(encoding="utf-8").replace(
+                '"status": "BLOCKED_INPUT_CONFLICT",',
+                '"status": "PARTIAL_MISSING_INPUT", "status": "BLOCKED_INPUT_CONFLICT",',
+                1,
+            )
+            duplicate_path.write_text(duplicate_pack, encoding="utf-8")
+            duplicate_report = validate(ROOT, duplicate_path.relative_to(ROOT))
+
+        self.assertFalse(invalid_utf8_report["contract_valid"])
+        self.assertTrue(any("invalid JSON" in error for error in invalid_utf8_report["errors"]))
+        self.assertFalse(duplicate_report["contract_valid"])
+        self.assertTrue(any("duplicate key" in error for error in duplicate_report["errors"]))
+
     def test_source_candidate_digests_are_recomputed(self):
         pack = json.loads(PACK.read_text(encoding="utf-8"))
         pack["package"]["source_candidate"]["source_blob_sha1"] = "0" * 40
@@ -164,6 +184,18 @@ class SubmissionPackTests(unittest.TestCase):
         self.assertFalse(report["contract_valid"])
         self.assertFalse(report["checks"]["source_blob_matches"])
         self.assertTrue(any("source blob SHA-1" in error for error in report["errors"]))
+
+    def test_source_candidate_metadata_matches_hashed_manifest(self):
+        pack = json.loads(PACK.read_text(encoding="utf-8"))
+        pack["package"]["source_candidate"]["title"] = "Incorrect title"
+        pack["package"]["source_candidate"]["version"] = "9.9.9"
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            pack_path = Path(directory) / "submission-pack.json"
+            pack_path.write_text(json.dumps(pack), encoding="utf-8")
+            report = validate(ROOT, pack_path.relative_to(ROOT))
+        self.assertFalse(report["contract_valid"])
+        self.assertFalse(report["checks"]["source_metadata_matches"])
+        self.assertTrue(any("identity metadata" in error for error in report["errors"]))
 
     def test_two_processes_produce_identical_output(self):
         command = [

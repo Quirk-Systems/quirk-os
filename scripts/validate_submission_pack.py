@@ -38,6 +38,19 @@ UNPERFORMED_ACTIONS = {
 }
 
 
+class DuplicateKeyError(ValueError):
+    pass
+
+
+def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            raise DuplicateKeyError(f"duplicate key {key!r}")
+        value[key] = item
+    return value
+
+
 def _sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
@@ -81,10 +94,10 @@ def validate(repo: Path, pack_relative_path: Path = PACK_PATH) -> dict[str, Any]
     pack_bytes = pack_path.read_bytes()
     parse_error = None
     try:
-        pack = json.loads(pack_bytes)
-    except json.JSONDecodeError as exc:
+        pack = json.loads(pack_bytes, object_pairs_hook=_reject_duplicate_keys)
+    except (json.JSONDecodeError, UnicodeDecodeError, DuplicateKeyError) as exc:
         pack = {}
-        parse_error = f"<root>: invalid JSON: {exc.msg}"
+        parse_error = f"<root>: invalid JSON: {exc}"
     pack_object = _object(pack)
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
@@ -183,6 +196,7 @@ def validate(repo: Path, pack_relative_path: Path = PACK_PATH) -> dict[str, Any]
     source_candidate = _object(package.get("source_candidate"))
     source_blob_matches = False
     manifest_digest_matches = False
+    source_metadata_matches = False
     source_id = source_candidate.get("id")
     if isinstance(source_id, str) and re.fullmatch(r"quirk-[a-z0-9-]+", source_id):
         source_path = repo / "skills" / source_id / "SKILL.md"
@@ -192,17 +206,34 @@ def validate(repo: Path, pack_relative_path: Path = PACK_PATH) -> dict[str, Any]
                 _git_blob_sha(source_path.read_bytes())
                 == source_candidate.get("source_blob_sha1")
             )
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest = json.loads(
+                manifest_path.read_bytes(),
+                object_pairs_hook=_reject_duplicate_keys,
+            )
             manifest_digest_matches = (
                 isinstance(manifest, dict)
                 and _manifest_digest(manifest) == source_candidate.get("manifest_sha256")
             )
-        except (OSError, json.JSONDecodeError):
+            source_metadata_matches = (
+                isinstance(manifest, dict)
+                and all(
+                    source_candidate.get(key) == manifest.get(key)
+                    for key in ("id", "title", "version")
+                )
+            )
+        except (
+            OSError,
+            json.JSONDecodeError,
+            UnicodeDecodeError,
+            DuplicateKeyError,
+        ):
             pass
     if not source_blob_matches:
         errors.append("package/source_candidate: source blob SHA-1 does not match")
     if not manifest_digest_matches:
         errors.append("package/source_candidate: canonical manifest SHA-256 does not match")
+    if not source_metadata_matches:
+        errors.append("package/source_candidate: identity metadata does not match manifest")
 
     rule_snapshot = _object(pack_object.get("rule_snapshot"))
     public_copy = _object(pack_object.get("public_copy"))
@@ -247,6 +278,7 @@ def validate(repo: Path, pack_relative_path: Path = PACK_PATH) -> dict[str, Any]
             package_boundary_complete,
             source_blob_matches,
             manifest_digest_matches,
+            source_metadata_matches,
             publisher_facts_complete,
             current_version_case_evidence,
             public_copy_complete,
@@ -279,6 +311,7 @@ def validate(repo: Path, pack_relative_path: Path = PACK_PATH) -> dict[str, Any]
             "package_boundary_complete": package_boundary_complete,
             "source_blob_matches": source_blob_matches,
             "manifest_digest_matches": manifest_digest_matches,
+            "source_metadata_matches": source_metadata_matches,
             "publisher_support_privacy_complete": publisher_facts_complete,
             "independent_verdict_present": independent_verdict_present,
             "all_required_actions_unperformed": unperformed_actions == UNPERFORMED_ACTIONS,
