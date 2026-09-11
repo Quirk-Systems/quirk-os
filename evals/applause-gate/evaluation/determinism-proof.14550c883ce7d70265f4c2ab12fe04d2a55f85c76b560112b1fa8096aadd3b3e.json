@@ -1,0 +1,30 @@
+{
+  "authority_effect": "none",
+  "candidate_commit": "73a3d73f6f45f44918bd35ed8a02aa553131650b",
+  "classifications": {
+    "limitations": [],
+    "skips": [],
+    "warnings": []
+  },
+  "deterministic": true,
+  "observations": [
+    {
+      "cold_process": 1,
+      "exit_code": 0,
+      "payload_sha256": "ce118a8328442fe4690a8f88f09e293a0f8ac4815027d7aa3fffbf9ae8a76022",
+      "receipt_hash": "e9933874001f86f27822e48d58cedc9d755759b0cf28f721ece52421c6ee4fcf",
+      "verdict": "PASS"
+    },
+    {
+      "cold_process": 2,
+      "exit_code": 0,
+      "payload_sha256": "ce118a8328442fe4690a8f88f09e293a0f8ac4815027d7aa3fffbf9ae8a76022",
+      "receipt_hash": "e9933874001f86f27822e48d58cedc9d755759b0cf28f721ece52421c6ee4fcf",
+      "verdict": "PASS"
+    }
+  ],
+  "process_isolation": "two separate subprocess invocations with fresh interpreters",
+  "receipt_hash": "14550c883ce7d70265f4c2ab12fe04d2a55f85c76b560112b1fa8096aadd3b3e",
+  "schema_version": "applause-gate-determinism-proof.v1",
+  "verdict": "PASS"
+}
