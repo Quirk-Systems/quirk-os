@@ -4,7 +4,7 @@
     "name": "plugin-eval",
     "version": "0.1.0"
   },
-  "createdAt": "2026-09-11T18:39:12.644Z",
+  "createdAt": "2026-09-11T18:57:06.621Z",
   "target": {
     "kind": "skill",
     "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",
@@ -379,7 +379,7 @@
     {
       "id": "support_file_count",
       "category": "documentation",
-      "value": 3,
+      "value": 1,
       "unit": "files",
       "band": "good",
       "source": "core",
@@ -761,12 +761,14 @@
           "category": "measurement",
           "evidence": [
             "observed_usage_samples=0",
-            "usage_file=/home/runner/work/quirk-os/quirk-os/.plugin-eval/benchmark-usage.jsonl"
+            "candidate_usage_samples=0",
+            "usage_file=/home/runner/work/quirk-os/quirk-os/.plugin-eval/benchmark-usage.jsonl",
+            "benchmark_result=missing"
           ],
           "id": "pc-observed-token-usage",
-          "message": "Token usage must come from completed benchmark telemetry, not a static estimate.",
+          "message": "Token usage must come from a matching, complete, verifier-passing benchmark.",
           "remediation": [
-            "Run the authenticated Plugin Eval benchmark and retain its observed JSONL usage log."
+            "Run the authenticated Plugin Eval benchmark and retain its bound result and observed JSONL usage log."
           ],
           "severity": "error",
           "source": "extension:premature-certainty",
@@ -886,7 +888,10 @@
             "classifier_sha256": "49174cf165f010cd8779d683c5397c8bb1e1b82edab10fe0aba83b79661c7d1b",
             "fixture_sha256": "987dab65550837b6abe2d5d820f4c6e5fbd8531b3e56f85e015d36c26b65be2f",
             "observed_usage_status": "unavailable",
-            "schema_sha256": "7e76ddfbc90255f899f54aa45f159d8a2314cecba35a997f4838f30efe131d99"
+            "schema_sha256": "7e76ddfbc90255f899f54aa45f159d8a2314cecba35a997f4838f30efe131d99",
+            "target_id": "quirk-applause-gate",
+            "target_manifest_sha256": "3e1257f6b76448a74b139b35d84462e2f5b4a0c2590c190271093eb012d42ad4",
+            "target_skill_sha256": "4aec21d97b8ceeb3ae9fb4acb41f71168b9fa2141b802934cedd4616c7981654"
           },
           "description": "Digests for the public fixtures, output schema, and classifier used by this metric pack.",
           "id": "pc-evaluation-sources",
@@ -899,7 +904,7 @@
   ],
   "measurementPlan": {
     "kind": "measurement-plan",
-    "createdAt": "2026-09-11T18:39:12.770Z",
+    "createdAt": "2026-09-11T18:57:06.750Z",
     "target": {
       "kind": "skill",
       "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",
@@ -1215,7 +1220,7 @@
   },
   "workflowGuide": {
     "kind": "workflow-guide",
-    "createdAt": "2026-09-11T18:39:12.772Z",
+    "createdAt": "2026-09-11T18:57:06.752Z",
     "target": {
       "kind": "skill",
       "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",

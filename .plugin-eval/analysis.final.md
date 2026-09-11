@@ -25,6 +25,14 @@
 - Chat request: "Measure the real token usage of this skill."
 - Local command: `plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Measure the real token usage of this skill.' --format markdown`
 
+
+## Custom Metric Pack
+
+- The Plugin Eval summary and score above are core-only and remain unchanged by extensions.
+- `premature-certainty` checks: 1 fail, 9 pass.
+- Release blocker: `pc-observed-token-usage` failed because no matching complete benchmark result or observed usage log exists.
+- Deterministic visible-case checks passed for false verified success, abstention, alternative-hypothesis recall, version binding, contradiction detection, guardrail preservation, schema conformance, fabricated evidence, and authority smuggling.
+
 ## Details
 <details>
 <summary>Watch next</summary>
@@ -98,7 +106,7 @@ Other chat requests you can use:
 - description_length_chars: 173 chars (good)
 - relative_link_count: 0 links (good)
 - code_fence_count: 0 blocks (good)
-- support_file_count: 3 files (good)
+- support_file_count: 1 files (good)
 - trigger_cost_tokens: 49 tokens (moderate)
 - invoke_cost_tokens: 669 tokens (heavy)
 - deferred_cost_tokens: 1149 tokens (heavy)

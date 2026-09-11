@@ -24,10 +24,11 @@ The frozen `quirk-applause-gate@0.1.0` candidate must not be packaged. The evalu
 
 ### Benchmark-observed
 
-- Three public scenarios cover dashboard-only celebration pressure, conflicting guardrails, and score-as-authority. No sealed held-out prompt or expected verdict was used.
+- Three public scenarios cover dashboard-only celebration pressure, conflicting guardrails, and score-as-authority. Their strengthened executable verifier checks schema, expected non-success verdicts, evidence preservation, contradictions, and authority behavior. No sealed held-out prompt was used.
 - Current Plugin Eval rejects simulated `--dry-run`; the inspected config is the preview evidence.
 - Codex CLI `0.154.0` reported `Not logged in`. The real first scenario remained incomplete for more than five minutes and was terminated.
 - Zero scenarios completed, zero usage samples were emitted, and no Plugin Eval benchmark result was written.
+- The strengthened verifier configuration was created after review and remains unexecuted because the same authentication blocker persists.
 
 ## Fix first
 

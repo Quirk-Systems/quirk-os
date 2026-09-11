@@ -26,7 +26,9 @@
     "package_json_sha256": "92d67bf1492c8b4ddb50dadf579777682e3e10af5a7063d48b6753f4a8ac9f99"
   },
   "benchmark": {
-    "config_sha256": "f5748494987ea9fd019d780872124828077dce9fdaa484e94671af7be17a9394",
+    "attempted_config_sha256": "f5748494987ea9fd019d780872124828077dce9fdaa484e94671af7be17a9394",
+    "strengthened_config_sha256": "5fc32f4c969498ec69c63b572e91dc1757e31fdbae03820ef0e2810d49f4806f",
+    "strengthened_config_executed": false,
     "held_out_cases_used": false,
     "scenario_source": "public benchmark scenarios derived from visible risk categories without expected verdict labels"
   },
