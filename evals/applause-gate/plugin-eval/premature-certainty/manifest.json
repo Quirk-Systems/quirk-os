@@ -1,0 +1,11 @@
+{
+  "name": "premature-certainty",
+  "version": "1.0.0",
+  "supportedTargetKinds": [
+    "skill"
+  ],
+  "command": [
+    "python3",
+    "./evaluate.py"
+  ]
+}

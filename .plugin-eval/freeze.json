@@ -1,0 +1,36 @@
+{
+  "schema_version": "quirk.plugin-eval-freeze.v1",
+  "recorded_at": "2026-09-11T18:40:15Z",
+  "candidate": {
+    "id": "quirk-applause-gate",
+    "version": "0.1.0",
+    "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+    "evaluated_commit": "73a3d73f6f45f44918bd35ed8a02aa553131650b",
+    "evaluated_tree": "7ae402c586daca9939ed9e2331ae095550092bfb",
+    "last_candidate_change_commit": "499f94b8d12e29dd7804cc9b537fd70f6a8048d8",
+    "skill_git_blob_sha1": "66bcdb29c071dc4c1866941c70a0b8314b768423",
+    "skill_sha256": "4aec21d97b8ceeb3ae9fb4acb41f71168b9fa2141b802934cedd4616c7981654",
+    "manifest_file_sha256": "3e1257f6b76448a74b139b35d84462e2f5b4a0c2590c190271093eb012d42ad4",
+    "manifest_canonical_sha256": "d20de6656de630870d06762e52c22eda9ac3fc0c7e74535428ddb3311180c719",
+    "schema_sha256": "7e76ddfbc90255f899f54aa45f159d8a2314cecba35a997f4838f30efe131d99",
+    "visible_fixture_sha256": "987dab65550837b6abe2d5d820f4c6e5fbd8531b3e56f85e015d36c26b65be2f",
+    "classifier_sha256": "49174cf165f010cd8779d683c5397c8bb1e1b82edab10fe0aba83b79661c7d1b",
+    "validator_sha256": "f43253c8a3f03870a709197f1e44443acef00368cb8d48b4d3e1d83bb6f2bae6",
+    "tracked_candidate_diff_after_evaluation": false
+  },
+  "plugin_eval": {
+    "version": "0.1.0",
+    "upstream_repository": "openai/plugins",
+    "upstream_commit": "d416fd5a43426019986b1e489506db3db66dee3d",
+    "entry_script_sha256": "6013d9b280e3ca76de00f6269937650867d991ae6455fdd8d853b38c2382c563",
+    "package_json_sha256": "92d67bf1492c8b4ddb50dadf579777682e3e10af5a7063d48b6753f4a8ac9f99"
+  },
+  "benchmark": {
+    "attempted_config_sha256": "f5748494987ea9fd019d780872124828077dce9fdaa484e94671af7be17a9394",
+    "strengthened_config_sha256": "5fc32f4c969498ec69c63b572e91dc1757e31fdbae03820ef0e2810d49f4806f",
+    "strengthened_config_executed": false,
+    "held_out_cases_used": false,
+    "scenario_source": "public benchmark scenarios derived from visible risk categories without expected verdict labels"
+  },
+  "authority_effect": "none"
+}

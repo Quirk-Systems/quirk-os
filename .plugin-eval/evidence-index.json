@@ -1,0 +1,114 @@
+{
+  "schema_version": "quirk.plugin-eval-evidence-index.v1",
+  "recorded_at": "2026-09-11T18:57:19Z",
+  "candidate_id": "quirk-applause-gate",
+  "candidate_version": "0.1.0",
+  "evaluated_commit": "73a3d73f6f45f44918bd35ed8a02aa553131650b",
+  "predecessor_evidence": {
+    "status": "draft",
+    "pull_request": "Quirk-Systems/quirk-os#94",
+    "head_commit": "b13a75f632056ed5ef352e505e40db0667797ae9",
+    "evidence_blob_sha1": "b26f28c582b57bd89dcc85e692b1a8dfac75dd6f",
+    "declared_verdict": "PASS_CANDIDATE_EVIDENCE",
+    "review_or_check_evidence_present": false
+  },
+  "plugin_eval": {
+    "version": "0.1.0",
+    "upstream_commit": "d416fd5a43426019986b1e489506db3db66dee3d"
+  },
+  "benchmark": {
+    "attempted_config_sha256": "f5748494987ea9fd019d780872124828077dce9fdaa484e94671af7be17a9394",
+    "strengthened_config_sha256": "5fc32f4c969498ec69c63b572e91dc1757e31fdbae03820ef0e2810d49f4806f",
+    "strengthened_config_executed": false,
+    "completed": false,
+    "measured_usage_samples": 0
+  },
+  "metric_pack": {
+    "name": "premature-certainty",
+    "version": "1.0.0",
+    "manifest_sha256": "e3172eee5d5c706a47056831c8f34b9259a4ef0fa3b6cc5878d942916efa3931",
+    "script_sha256": "c46014ad0d947485fcad51c6a58c9e6854a78cd73b95799cb8b65fef671da0b6",
+    "benchmark_verifier_sha256": "48e93927e1a096c7b0e6ac5ceb88efa23cc372d916b9444565afa913eb6fa604",
+    "output_sha256": "c28da84fac0631e0003eb29241e26b2ee0c9d87525db868f58e45f174c13102d",
+    "core_score_overwritten": false
+  },
+  "disposition": "REVISE_SKILL",
+  "authority_effect": "none",
+  "artifacts": [
+    {
+      "path": ".plugin-eval/start.md",
+      "sha256": "9fa83bf99a22825fe1881d79b7b824348b74081c7d91eca9ecadd6afd43fcff8",
+      "role": "natural-language routing evidence"
+    },
+    {
+      "path": ".plugin-eval/freeze.json",
+      "sha256": "24bc3f2e4137f075d4f2f17cc7b366c977ccdf753d8ad075116b84e17ec640b0",
+      "role": "candidate and tool freeze"
+    },
+    {
+      "path": ".plugin-eval/analysis.final.json",
+      "sha256": "f57d9ea95f80e3b61d9a55303c71015bb547960279a5291a7d4dc4f642639f9b",
+      "role": "Plugin Eval analysis with metric-pack extension"
+    },
+    {
+      "path": ".plugin-eval/analysis.final.md",
+      "sha256": "9156dbc752e4f373faef6edd0f2beb1256ad1db872f67d67d572db0d05f344f7",
+      "role": "human-readable Plugin Eval analysis with extension status"
+    },
+    {
+      "path": ".plugin-eval/benchmark.json",
+      "sha256": "5fc32f4c969498ec69c63b572e91dc1757e31fdbae03820ef0e2810d49f4806f",
+      "role": "strengthened public benchmark configuration"
+    },
+    {
+      "path": ".plugin-eval/benchmark.preview.txt",
+      "sha256": "a78a0399aa0c394e7ddde434942640481d2e2150736ecf98a3424b50ce150d99",
+      "role": "config digest and dry-run compatibility evidence"
+    },
+    {
+      "path": ".plugin-eval/benchmark.attempt.json",
+      "sha256": "c843b9d14eb78ac99c9df849fb7c9fb1ec0d1240358082e5d42ad106a0d19b10",
+      "role": "executed benchmark attempt and blocker evidence"
+    },
+    {
+      "path": ".plugin-eval/observed-usage.json",
+      "sha256": "15daec45699908666968a9c85e4feda7e8e28ece850aee3799ed1c7152162839",
+      "role": "measured-usage availability record"
+    },
+    {
+      "path": ".plugin-eval/measurement-plan.json",
+      "sha256": "e406e33aa035dee8dedac0f0395ea08f68e2b8e8822ee8b0e16706c966bff0a1",
+      "role": "machine-readable measurement plan"
+    },
+    {
+      "path": ".plugin-eval/measurement-plan.md",
+      "sha256": "9b797557fc9a5cf9352a44b244764a7ec71c4479308fa0d0d02211b9255d7dbb",
+      "role": "human-readable measurement plan"
+    },
+    {
+      "path": "evals/applause-gate/plugin-eval/premature-certainty/manifest.json",
+      "sha256": "e3172eee5d5c706a47056831c8f34b9259a4ef0fa3b6cc5878d942916efa3931",
+      "role": "metric-pack manifest"
+    },
+    {
+      "path": "evals/applause-gate/plugin-eval/premature-certainty/evaluate.py",
+      "sha256": "c46014ad0d947485fcad51c6a58c9e6854a78cd73b95799cb8b65fef671da0b6",
+      "role": "deterministic target-bound metric-pack implementation"
+    },
+    {
+      "path": "evals/applause-gate/plugin-eval/premature-certainty/verify_benchmark_output.py",
+      "sha256": "48e93927e1a096c7b0e6ac5ceb88efa23cc372d916b9444565afa913eb6fa604",
+      "role": "scenario-bound benchmark verifier"
+    },
+    {
+      "path": ".plugin-eval/premature-certainty.output.json",
+      "sha256": "c28da84fac0631e0003eb29241e26b2ee0c9d87525db868f58e45f174c13102d",
+      "role": "standalone metric-pack output"
+    },
+    {
+      "path": ".plugin-eval/disposition.md",
+      "sha256": "4783b202eb3cabccb93fb55460b61485bc6b662417b0867ce8d259a846c28672",
+      "role": "final disposition and unresolved findings"
+    }
+  ]
+}

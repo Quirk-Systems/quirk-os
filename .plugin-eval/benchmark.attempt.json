@@ -1,0 +1,38 @@
+{
+  "schema_version": "quirk.plugin-eval-benchmark-attempt.v1",
+  "recorded_at": "2026-09-11T18:40:15Z",
+  "started_at": "2026-09-11T18:32:24Z",
+  "status": "BLOCKED",
+  "mode": "codex-cli",
+  "target": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+  "config": {
+    "path": "/home/runner/work/quirk-os/quirk-os/.plugin-eval/benchmark.json",
+    "sha256": "f5748494987ea9fd019d780872124828077dce9fdaa484e94671af7be17a9394",
+    "scenario_count": 3,
+    "held_out_cases_used": false
+  },
+  "runner": {
+    "plugin_eval_version": "0.1.0",
+    "plugin_eval_upstream_commit": "d416fd5a43426019986b1e489506db3db66dee3d",
+    "codex_version": "codex-cli 0.154.0",
+    "codex_authenticated": false,
+    "scenario_timeout_supported": false
+  },
+  "execution": {
+    "scenarios_started": 1,
+    "scenarios_completed": 0,
+    "first_scenario": "dashboard-spike",
+    "elapsed_before_termination": "greater than 300 seconds",
+    "termination": "operator terminated a hung unauthenticated process",
+    "plugin_eval_result_written": false,
+    "usage_log_written": false,
+    "observed_usage_samples": 0
+  },
+  "blockers": [
+    "Codex CLI reported Not logged in before execution.",
+    "The first real scenario did not complete after more than five minutes.",
+    "Plugin Eval 0.1.0 has no per-scenario timeout and writes its benchmark result only after all scenarios complete."
+  ],
+  "classification": "benchmark-observed",
+  "authority_effect": "none"
+}
