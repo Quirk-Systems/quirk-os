@@ -1,34 +1,109 @@
 {
-  "schema_version": "applause-review.v1",
-  "review_id": "review.ABG-P01",
-  "candidate_id": "quirk-applause-gate",
-  "case_id": "ABG-P01",
-  "claim": "Variant B materially improves the preregistered primary outcome without degrading declared guardrails.",
-  "signal": "Primary conversion increased against the pinned control during the preregistered window.",
-  "claim_state": "bounded",
-  "signal_state": "detected",
-  "evidence_sufficiency": "sufficient",
-  "causal_support": "supported",
-  "contradiction_state": "none_detected",
-  "guardrail_state": "stable",
-  "version_binding": "bound",
-  "freshness_state": "current",
-  "commitment_risk": "low",
-  "verdict": "VERIFIED_SUCCESS",
-  "required_codes": [
-    "PREREGISTERED_HYPOTHESIS_BOUND",
-    "GUARDRAILS_STABLE"
-  ],
-  "withheld_claims": [],
-  "missing_proof": [],
-  "reversible_next_move": "Record the bounded verified-success review as candidate evidence only.",
-  "evidence_refs": [
-    "preregistration_ref",
-    "pinned_control_ref",
-    "primary_metric_result_ref",
-    "guardrail_result_refs",
-    "evaluated_version_ref"
-  ],
-  "warnings": [],
-  "authority_effect": "none"
+  "request": {
+    "object_type": "applause_review_request",
+    "schema_version": "applause-review-request.v1",
+    "request_id": "request.ABG-P01",
+    "candidate_id": "quirk-applause-gate",
+    "subject": "Variant B",
+    "claim": "Variant B materially improves the preregistered primary outcome without degrading declared guardrails.",
+    "signal": "Primary conversion increased against the pinned control during the preregistered window.",
+    "evaluated_version": "evaluated_version_ref",
+    "observation_window": {
+      "start": "2026-08-01T00:00:00Z",
+      "end": "2026-08-08T00:00:00Z",
+      "state": "complete"
+    },
+    "evidence_assessments": [
+      {
+        "evidence_ref": "evaluated_version_ref",
+        "evidence_kind": "version",
+        "assertion_state": "supports",
+        "version_ref": "evaluated_version_ref",
+        "content_digest": "5555555555555555555555555555555555555555555555555555555555555555",
+        "integrity_state": "valid"
+      },
+      {
+        "evidence_ref": "guardrail_result_refs",
+        "evidence_kind": "guardrail",
+        "assertion_state": "supports",
+        "version_ref": "evaluated_version_ref",
+        "content_digest": "4444444444444444444444444444444444444444444444444444444444444444",
+        "integrity_state": "valid"
+      },
+      {
+        "evidence_ref": "pinned_control_ref",
+        "evidence_kind": "comparison",
+        "assertion_state": "supports",
+        "version_ref": "evaluated_version_ref",
+        "content_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "integrity_state": "valid"
+      },
+      {
+        "evidence_ref": "preregistration_ref",
+        "evidence_kind": "context",
+        "assertion_state": "supports",
+        "version_ref": "evaluated_version_ref",
+        "content_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "integrity_state": "valid"
+      },
+      {
+        "evidence_ref": "primary_metric_result_ref",
+        "evidence_kind": "primary_outcome",
+        "assertion_state": "supports",
+        "version_ref": "evaluated_version_ref",
+        "content_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+        "integrity_state": "valid"
+      }
+    ],
+    "primary_outcome_state": "supported",
+    "causal_support": "supported",
+    "guardrail_state": "stable",
+    "contradiction_state": "none_detected",
+    "version_binding": "bound",
+    "freshness_state": "current",
+    "integrity_state": "valid",
+    "commitment_risk": "low"
+  },
+  "review": {
+    "object_type": "applause_review",
+    "schema_version": "applause-review.v1",
+    "request_id": "request.ABG-P01",
+    "candidate_id": "quirk-applause-gate",
+    "request_payload_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "diagnostic_facts_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "primary_outcome_state": "supported",
+    "causal_support": "supported",
+    "guardrail_state": "stable",
+    "contradiction_state": "none_detected",
+    "version_binding": "bound",
+    "freshness_state": "current",
+    "integrity_state": "valid",
+    "commitment_risk": "low",
+    "verdict": "VERIFIED_SUCCESS",
+    "required_codes": [
+      "GUARDRAILS_STABLE",
+      "PREREGISTERED_HYPOTHESIS_BOUND"
+    ],
+    "withheld_claims": [],
+    "missing_proof": [],
+    "contradiction_refs": [],
+    "evidence_refs": [
+      "evaluated_version_ref",
+      "guardrail_result_refs",
+      "pinned_control_ref",
+      "preregistration_ref",
+      "primary_metric_result_ref"
+    ],
+    "warnings": [],
+    "next_move": {
+      "kind": "record_candidate_evidence",
+      "description": "Record this bounded result as candidate evidence only.",
+      "execution_authorized": false
+    },
+    "authority_effect": "none",
+    "runtime_effect": "none",
+    "canon_effect": "none",
+    "admission_effect": "none",
+    "release_publication_effect": "none"
+  }
 }
