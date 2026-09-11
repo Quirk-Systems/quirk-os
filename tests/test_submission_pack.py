@@ -154,11 +154,15 @@ class SubmissionPackTests(unittest.TestCase):
         self.assertFalse(report["contract_valid"])
         self.assertTrue(any("invalid JSON" in error for error in report["errors"]))
 
-    def test_invalid_utf8_and_duplicate_keys_are_rejected(self):
+    def test_non_utf8_and_duplicate_keys_are_rejected(self):
         with tempfile.TemporaryDirectory(dir=ROOT) as directory:
             invalid_utf8_path = Path(directory) / "invalid-utf8.json"
             invalid_utf8_path.write_bytes(b"\xff")
             invalid_utf8_report = validate(ROOT, invalid_utf8_path.relative_to(ROOT))
+
+            utf16_path = Path(directory) / "utf16.json"
+            utf16_path.write_bytes(PACK.read_text(encoding="utf-8").encode("utf-16"))
+            utf16_report = validate(ROOT, utf16_path.relative_to(ROOT))
 
             duplicate_path = Path(directory) / "duplicate.json"
             duplicate_pack = PACK.read_text(encoding="utf-8").replace(
@@ -171,6 +175,8 @@ class SubmissionPackTests(unittest.TestCase):
 
         self.assertFalse(invalid_utf8_report["contract_valid"])
         self.assertTrue(any("invalid JSON" in error for error in invalid_utf8_report["errors"]))
+        self.assertFalse(utf16_report["contract_valid"])
+        self.assertTrue(any("invalid JSON" in error for error in utf16_report["errors"]))
         self.assertFalse(duplicate_report["contract_valid"])
         self.assertTrue(any("duplicate key" in error for error in duplicate_report["errors"]))
 

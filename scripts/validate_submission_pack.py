@@ -94,7 +94,10 @@ def validate(repo: Path, pack_relative_path: Path = PACK_PATH) -> dict[str, Any]
     pack_bytes = pack_path.read_bytes()
     parse_error = None
     try:
-        pack = json.loads(pack_bytes, object_pairs_hook=_reject_duplicate_keys)
+        pack = json.loads(
+            pack_bytes.decode("utf-8"),
+            object_pairs_hook=_reject_duplicate_keys,
+        )
     except (json.JSONDecodeError, UnicodeDecodeError, DuplicateKeyError) as exc:
         pack = {}
         parse_error = f"<root>: invalid JSON: {exc}"
@@ -207,7 +210,7 @@ def validate(repo: Path, pack_relative_path: Path = PACK_PATH) -> dict[str, Any]
                 == source_candidate.get("source_blob_sha1")
             )
             manifest = json.loads(
-                manifest_path.read_bytes(),
+                manifest_path.read_bytes().decode("utf-8"),
                 object_pairs_hook=_reject_duplicate_keys,
             )
             manifest_digest_matches = (

@@ -21,9 +21,9 @@
   "pack_path": "docs/applause-gate/submission-pack.json",
   "pack_sha256": "034b416c113990d1c11aad6106aca1887bec2063ad76bbfac47ff110eb6b6078",
   "pack_status": "BLOCKED_INPUT_CONFLICT",
-  "receipt_hash": "f3e746f5874975105cefe9c2e8ade200ad3570b985de066c913acf32783d04c0",
+  "receipt_hash": "99d35e3ded03449aacb255f8fcc8d388511f90a8a32d91b80e1ed0f4cdea70a5",
   "schema_sha256": "6268d24198bda67704f28c9aa6fa345092e4d1c21464746f5bc693f7fb620d15",
   "schema_version": "submission-pack-validation.v1",
   "submission_ready": false,
-  "validator_sha256": "2d9bd945e4ffd566ccab2ad61a9b8801186ea18968cf2b22bbd8c605f53e4454"
+  "validator_sha256": "feb34adb3512610a36bf14196045a26fbad3f55ebb262e9525ef62223a1068c0"
 }
