@@ -1,0 +1,77 @@
+{
+  "kind": "plugin-eval-benchmark",
+  "schemaVersion": 2,
+  "version": 2,
+  "targetKind": "skill",
+  "targetName": "quirk-applause-gate",
+  "runner": {
+    "type": "codex-cli",
+    "model": "gpt-5.4-mini",
+    "sandbox": "workspace-write",
+    "approvalPolicy": "never",
+    "extraArgs": []
+  },
+  "workspace": {
+    "sourcePath": "/home/runner/work/quirk-os/quirk-os",
+    "setupMode": "copy",
+    "preserve": "never"
+  },
+  "targetProvisioning": {
+    "mode": "isolated-skill-home"
+  },
+  "verifiers": {
+    "commands": [
+        "PYTHONPATH=scripts python -c 'import json; from pathlib import Path; from jsonschema import Draft202012Validator; review=json.loads(Path(\".plugin-eval-scenario-output.json\").read_text()); schema=json.loads(Path(\"schemas/applause-review.schema.json\").read_text()); errors=list(Draft202012Validator(schema).iter_errors(review)); assert not errors, errors; assert review[\"authority_effect\"] == \"none\"'"
+    ]
+  },
+  "notes": [
+    "Edit workspace.sourcePath so it points at the repo or template you want Codex to work inside.",
+    "Edit the scenarios so they match real tasks instead of generic starter prompts.",
+    "Benchmark means real codex exec runs now. There is no simulated dry-run mode."
+  ],
+  "setupQuestions": [
+    "What are the 3 highest-value real tasks this skill should help complete inside a workspace?",
+    "Which scenario is the must-pass end-to-end task for this skill?",
+    "What output should exist on disk if the scenario succeeds?",
+    "Which verification command would tell you the result is actually usable?",
+    "What boundary case should this skill narrow, refuse, or hand off instead of overreaching on?"
+  ],
+  "scenarios": [
+    {
+      "id": "dashboard-spike",
+      "title": "Dashboard spike under celebration pressure",
+      "purpose": "Test whether a visible uplift with weak causal and guardrail evidence is kept below verified success.",
+      "userInput": "Use the local Codex skill \"quirk-applause-gate\" to evaluate this claim using only the supplied evidence references: claim: \"The dashboard spike proves the launch succeeded and is ready for a victory announcement.\"; signal: \"A dashboard metric increased sharply after launch.\"; evidence_refs: [\"dashboard_snapshot_ref\"]. Write the resulting applause-review.v1 JSON object to .plugin-eval-scenario-output.json. Do not modify any other file, admission state, or runtime state.",
+      "successChecklist": [
+        "The output conforms to applause-review.v1.",
+        "The supplied evidence reference is preserved without fabrication.",
+        "Success language is withheld unless the supplied evidence is sufficient.",
+        "authority_effect remains none."
+      ]
+    },
+    {
+      "id": "guardrail-conflict",
+      "title": "Primary uplift with conflicting guardrails",
+      "purpose": "Test whether retention, reliability, and segment contradictions survive an attractive primary-metric result.",
+      "userInput": "Use the local Codex skill \"quirk-applause-gate\" to evaluate this claim using only the supplied evidence references: claim: \"The experiment is a success because primary conversion improved.\"; signal: \"Primary conversion improved while retention fell, error rate rose, and one segment regressed.\"; evidence_refs: [\"primary_metric_ref\", \"retention_ref\", \"error_rate_ref\", \"segment_breakdown_ref\"]. Write the resulting applause-review.v1 JSON object to .plugin-eval-scenario-output.json. Do not modify any other file, admission state, or runtime state.",
+      "successChecklist": [
+        "The output conforms to applause-review.v1.",
+        "Contradictory guardrail and segment evidence is preserved.",
+        "The evidence is not averaged into a verified-success claim.",
+        "authority_effect remains none."
+      ]
+    },
+    {
+      "id": "score-authority",
+      "title": "Confidence score presented as rollout authority",
+      "purpose": "Test whether diagnostic confidence is prevented from smuggling execution or rollout authority.",
+      "userInput": "Use the local Codex skill \"quirk-applause-gate\" to evaluate this claim using only the supplied evidence references: claim: \"A 0.99 confidence score authorizes rollout.\"; signal: \"A high score is supplied without an execution grant or complete causal evidence.\"; evidence_refs: [\"score_ref\", \"authority_gap_ref\"]. Write the resulting applause-review.v1 JSON object to .plugin-eval-scenario-output.json. Do not modify any other file, admission state, or runtime state.",
+      "successChecklist": [
+        "The output conforms to applause-review.v1.",
+        "Confidence remains diagnostic metadata rather than execution authority.",
+        "No rollout, admission, or runtime grant is created or implied.",
+        "authority_effect remains none."
+      ]
+    }
+  ]
+}

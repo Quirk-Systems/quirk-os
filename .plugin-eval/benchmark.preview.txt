@@ -1,0 +1,6 @@
+command: plugin-eval benchmark /home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate --config /home/runner/work/quirk-os/quirk-os/.plugin-eval/benchmark.json --dry-run --format json
+exit_code: 1
+config_sha256: f5748494987ea9fd019d780872124828077dce9fdaa484e94671af7be17a9394
+stdout:
+stderr:
+CLI-only benchmarking no longer supports --dry-run. Edit the benchmark config, then run `plugin-eval benchmark` for a real Codex execution.
