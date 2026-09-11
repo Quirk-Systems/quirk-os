@@ -1,6 +1,8 @@
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 
 from scripts.plugin_capability_harvest import (
@@ -20,6 +22,7 @@ from scripts.plugin_capability_harvest import (
     sha256,
     to_loop_spec,
 )
+from scripts.plugin_capability_harvest.cli import main as cli_main
 
 
 NOW = "2026-09-11T12:00:00Z"
@@ -161,6 +164,16 @@ class HarvestContractsTest(unittest.TestCase):
         result = fingerprint_surface(surface(content="sensitive source body"))
         self.assertNotIn("sensitive source body", json.dumps(result))
         self.assertEqual(result["content"]["byte_length"], 21)
+
+    def test_fingerprint_cli_accepts_list_result(self):
+        with tempfile.TemporaryDirectory() as raw:
+            path = Path(raw) / "surfaces.json"
+            path.write_text(json.dumps([surface()]), encoding="utf-8")
+            output = StringIO()
+            with redirect_stdout(output):
+                code = cli_main(["fingerprint", str(path)])
+            self.assertEqual(code, 0)
+            self.assertEqual(json.loads(output.getvalue())[0]["kind"], "SourceSurfaceFingerprint")
 
     def test_rights_unknown_quarantines_surface(self):
         self.assertEqual(fingerprint_surface(surface(rights="unknown"))["status"], "quarantined")
@@ -416,6 +429,13 @@ class HarvestContractsTest(unittest.TestCase):
 
 
 class ReadOnlyScannerTest(unittest.TestCase):
+    def test_directory_discovery_is_bounded(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "one" / "two").mkdir(parents=True)
+            result = scan_plugin_root(root, ScanLimits(max_directories=1), observed_at=NOW)
+            self.assertIn("DIRECTORY_LIMIT", {item["reason"] for item in result["quarantine"]})
+
     def test_scan_is_deterministic_and_does_not_execute_code(self):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
