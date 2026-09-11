@@ -140,13 +140,15 @@ def scan_plugin_root(root: str | Path, limits: ScanLimits = ScanLimits(), observ
         item["identity"]["plugin_id"], item["identity"]["resolved_version"],
         item["surface"]["type"], item["surface"]["relative_path"],
     ))
+    quarantine_fingerprint = sha256(quarantine)
     return {
         "api_version": API_VERSION,
         "kind": "PluginRootScan",
-        "root_fingerprint": sha256([{
+        "root_fingerprint": sha256({"observations": [{
             "identity": item["identity"], "surface": item["surface"],
             "rights": item["rights"], "contradictions": item["contradictions"]
-        } for item in observations]),
+        } for item in observations], "quarantine_sha256": quarantine_fingerprint}),
+        "quarantine_set_sha256": quarantine_fingerprint,
         "observations": observations,
         "quarantine": quarantine,
         "limits": limits.__dict__,

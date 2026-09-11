@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .core import ContractError, compare_surfaces, compile_prompt_candidate, fingerprint_surface
+from .core import ContractError, compare_surfaces, compile_prompt_candidate, fingerprint_surface, run_receipt, to_loop_spec
 from .scanner import ScanLimits, scan_plugin_root
 
 
@@ -31,6 +31,11 @@ def build_parser() -> argparse.ArgumentParser:
     prompt.add_argument("packet")
     fingerprint = commands.add_parser("fingerprint", help="fingerprint separately supplied catalog, registry, app, MCP, documentation, or runtime surfaces")
     fingerprint.add_argument("surfaces")
+    loop_spec = commands.add_parser("to-loop-spec", help="verify and map a prompt candidate to prepare-only loop-spec/v1")
+    loop_spec.add_argument("candidate")
+    loop_spec.add_argument("--evaluator-digest", required=True)
+    receipt = commands.add_parser("receipt", help="emit a candidate evidence receipt from validated references")
+    receipt.add_argument("input")
     return parser
 
 
@@ -43,11 +48,15 @@ def main(argv: list[str] | None = None) -> int:
             result = compare_surfaces(_load(args.baseline), _load(args.current), args.observed_at)
         elif args.command == "prompt":
             result = compile_prompt_candidate(_load(args.packet))
-        else:
+        elif args.command == "fingerprint":
             supplied = _load(args.surfaces)
             if not isinstance(supplied, list):
                 raise ContractError("surfaces input must be a list")
             result = [fingerprint_surface(item) for item in supplied]
+        elif args.command == "to-loop-spec":
+            result = to_loop_spec(_load(args.candidate), args.evaluator_digest)
+        else:
+            result = run_receipt(**_load(args.input))
         print(json.dumps(result, indent=2, sort_keys=True))
         if result.get("status") == "BASELINE_UNAVAILABLE":
             return 4

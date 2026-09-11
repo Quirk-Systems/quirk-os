@@ -16,7 +16,7 @@ The filesystem scanner establishes installation only. Host catalogs, live regist
 
 ## Runtime seam
 
-`to_loop_spec()` maps a validated prompt candidate to the existing `loop-spec/v1` contract with `CANDIDATE_PREPARE` authority only. The established loop runner remains the sole owner of dispatch, grants, interruption recovery and action receipts. This package cannot activate its output.
+`to_loop_spec()` maps a validated prompt candidate to the existing `loop-spec/v1` contract with `CANDIDATE_PREPARE` authority only. It does not claim that an extra approval flag is runtime-enforced. The established loop runner remains the sole owner of dispatch, grants, interruption recovery, approval/grant checks and action receipts. This package cannot activate its output.
 
 ## Verify
 
@@ -24,5 +24,7 @@ The filesystem scanner establishes installation only. Host catalogs, live regist
 python -m unittest tests.test_plugin_capability_harvest -v
 python -m scripts.plugin_capability_harvest --help
 ```
+
+The CLI exposes `scan`, `fingerprint`, `diff`, `prompt`, `to-loop-spec`, and `receipt`. Each command writes JSON to stdout only; callers own durable append-only storage and any later grant.
 
 Release posture is `CONSTRAIN` until independent review, no-memory replay, cross-topology comparison, schema validation, and measured positive Forward Carry are present. Passing tests never grant authority or admission.

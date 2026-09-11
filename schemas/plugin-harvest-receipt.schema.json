@@ -6,7 +6,7 @@
   "required": ["api_version", "kind", "status", "observation_time", "authority_ceiling_observed", "baseline_receipt_ref", "surface_set_sha256", "delta_dedupe_keys", "quarantine_refs", "prompt_candidate_refs", "effect_observations", "immutable_storage", "receipt_sha256"],
   "additionalProperties": false,
   "properties": {
-    "api_version": {"const": "quirk.capability-harvest/v0.1"}, "kind": {"const": "PluginHarvestReceipt"}, "status": {"enum": ["completed", "incomplete"]},
+    "api_version": {"const": "quirk.capability-harvest/v0.1"}, "kind": {"const": "PluginHarvestReceipt"}, "status": {"enum": ["candidate_evidence", "incomplete"]},
     "observation_time": {"type": "string", "format": "date-time"}, "authority_ceiling_observed": {"const": "unknown"}, "baseline_receipt_ref": {"type": ["string", "null"]},
     "surface_set_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
     "delta_dedupe_keys": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}, "quarantine_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
