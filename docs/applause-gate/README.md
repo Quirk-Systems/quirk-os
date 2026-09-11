@@ -3,6 +3,7 @@ schema_version: quirk.applause-gate.delivery-control/0.1
 control_issue: https://github.com/Quirk-Systems/quirk-os/issues/49
 source_issue_updated_at: 2026-09-11T18:24:40Z
 source_repository_snapshot: 499f94b8d12e29dd7804cc9b537fd70f6a8048d8
+verification_updated_on: 2026-09-11
 status: ACTIVE
 authority_effect: none
 ---
@@ -48,7 +49,7 @@ commits, checks, or files. The snapshot has no implementation issue in
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [ABG-01 / #50](https://github.com/Quirk-Systems/quirk-os/issues/50) | `DONE` | `P0` | — | Bryan, decision owner | Independence exception explicitly accepted | [APPROVE_H0_A](https://github.com/Quirk-Systems/quirk-os/issues/50#issuecomment-5377985530) | PR #48 head `2cee4c829644133e0882a68656733222fa01c344`; runs `32552475647`, `32552475648`; artifact `9470446513` | `LOW` |
 | [ABG-02 / #51](https://github.com/Quirk-Systems/quirk-os/issues/51) | `DONE` | `P0` | ABG-01 evidence | Bryan, decision owner | Human gate | [AUTHORIZE_H0_B](https://github.com/Quirk-Systems/quirk-os/issues/51#issuecomment-5379655626) | The bounded grant and its later successor decision | `MEDIUM` |
-| [ABG-03 / #52](https://github.com/Quirk-Systems/quirk-os/issues/52) | `IN_REVIEW` | `P0` | Clean isolated checkout proof; distinct substantive reviewer; availability of the approved Subagent-Driven execution primitive | Copilot, plan implementer | `TBD`, distinct from implementer | [Successor exact-head grant](https://github.com/Quirk-Systems/quirk-os/issues/52#issuecomment-5381075909) | PR #66 head `c179705bbd2e571849528e76204048f3f5935d27`; plan blob `da7e2fd72ae7ebbe00e37be469c6f813ad5bdf85`; run `32580487546`; [latest Task 0 state](https://github.com/Quirk-Systems/quirk-os/issues/52#issuecomment-5388985719) | `HIGH` |
+| [ABG-03 / #52](https://github.com/Quirk-Systems/quirk-os/issues/52) | `IN_REVIEW` | `P0` | Frozen approval guard rejects the later status comment; successor reconciliation required | Copilot, plan implementer | Distinct Codex subagent review completed; verdict `HOLD` | [Successor exact-head grant](https://github.com/Quirk-Systems/quirk-os/issues/52#issuecomment-5381075909) | PR #66 head `c179705bbd2e571849528e76204048f3f5935d27`; plan blob `da7e2fd72ae7ebbe00e37be469c6f813ad5bdf85`; run `32580487546`; verification update below | `HIGH` |
 | [ABG-04 / #53](https://github.com/Quirk-Systems/quirk-os/issues/53) | `BLOCKED` | `P1` | ABG-03 Task 0 approval and a clean successor implementation lane | Unassigned until `READY` | `TBD`, distinct from implementer | ABG-03 successor grant only after its preflight passes | None current; PR #64 bytes are excluded | `HIGH` |
 | [ABG-05 / #54](https://github.com/Quirk-Systems/quirk-os/issues/54) | `BLOCKED` | `P1` | ABG-04 schema evidence | Unassigned until `READY` | `TBD`, distinct from implementer | No current executable task grant | None current; PR #64 bytes are excluded | `HIGH` |
 | [ABG-06 / #55](https://github.com/Quirk-Systems/quirk-os/issues/55) | `BLOCKED` | `P1` | ABG-05 deterministic evaluator evidence | Unassigned until `READY` | `TBD`, distinct from implementer | No current executable task grant | None current; PR #64 bytes are excluded | `HIGH` |
@@ -62,9 +63,9 @@ commits, checks, or files. The snapshot has no implementation issue in
 
 | Work item | GitHub issue / PR state | Recorded governance decision | Observed repository bytes | Valid current evidence | Next transition |
 | --- | --- | --- | --- | --- | --- |
-| ABG-01 | #50 open; PR #48 merged; successor PR #88 draft | `APPROVE_H0_A` for the exact fixture-only head | H0-A fixtures and validator are reachable from `main` | The exact-head decision, successful runs, and artifact listed above | Reopen only for evidence drift or an explicit successor decision |
-| ABG-02 | #51 open; PR #89 draft | `AUTHORIZE_H0_B`, later constrained to the successor plan lane | No repository byte expands the grant | The human comments linked above | Preserve the successor ceiling |
-| ABG-03 | #52 closed; PR #66 open/draft | Successor plan approved; prior execution approval superseded | The checked-in plan and PR #64 implementation belong to historical/excluded lineage | PR #66 exact head, plan blob, successful one-job run, and latest Task 0 record | Satisfy the two open Task 0 requirements and execution-primitive constraint |
+| ABG-01 | #50 open; PR #48 merged; successor PR #88 open, ready for review | `APPROVE_H0_A` for the exact fixture-only head | H0-A fixtures and validator are reachable from `main` | The exact-head decision, successful runs, and artifact listed above | Reopen only for evidence drift or an explicit successor decision |
+| ABG-02 | #51 open; PR #89 open, ready for review | `AUTHORIZE_H0_B`, later constrained to the successor plan lane | No repository byte expands the grant | The human comments linked above | Preserve the successor ceiling |
+| ABG-03 | #52 closed; PR #66 open/draft | Successor plan approved; prior execution approval superseded | The checked-in plan and PR #64 implementation belong to historical/excluded lineage | PR #66 exact head, plan blob, successful one-job run, and verification update below | Reconcile the frozen latest-comment predicate through an explicit successor decision |
 | ABG-04 | #53 open; PR #91 draft | No completion decision in the successor lane | A schema from PR #64 is on `main` | None; those bytes and their CI were explicitly excluded | Start only from the approved clean successor lane after ABG-03 |
 | ABG-05 | #54 open; PR #90 draft | No completion decision in the successor lane | Classifier code from PR #64 is on `main` | None; those bytes and their CI were explicitly excluded | Await ABG-04 evidence and exact scope |
 | ABG-06 | #55 open; PR #92 draft | No completion decision in the successor lane | A candidate Skill from PR #64 is on `main` | None; those bytes and their CI were explicitly excluded | Await ABG-05 evidence and exact scope |
@@ -77,6 +78,34 @@ commits, checks, or files. The snapshot has no implementation issue in
 Opening or updating PRs #88–#97 does not transition these rows. A transition
 requires the predecessor evidence, explicit decision, exact version binding,
 and review required by the target work item.
+
+## Task 0 verification update — 2026-09-11
+
+A read-only Codex review with a distinct `review_package` subagent now verifies
+the previously missing isolated-checkout evidence. The implementation worktree
+is clean on `agent/quirk-applause-gate` at approved head
+`c179705bbd2e571849528e76204048f3f5935d27`, with the expected GitHub origin.
+The H0-A predecessor and frozen base are ancestors; all five immutable H0-A
+files, the plan, and protected shared paths are unchanged. Plan blob
+`da7e2fd72ae7ebbe00e37be469c6f813ad5bdf85`, dependency-lock blob
+`083ac9bf8d74939d8286549caaebf0626e7d51ec`, and fixture SHA-256
+`987dab65550837b6abe2d5d820f4c6e5fbd8531b3e56f85e015d36c26b65be2f`
+match the approved bindings. Fresh subagent dispatch and substantive independent
+review are available; their former unavailability is historical.
+
+The independent verdict is still `HOLD`. The
+[frozen approval guard](https://github.com/Quirk-Systems/quirk-os/blob/c179705bbd2e571849528e76204048f3f5935d27/docs/superpowers/plans/2026-08-21-applause-gate-implementation-plan.md#L375-L378)
+requires approval comment `5381075909` to be the latest Bryan-authored comment
+on issue #52. Later status comment `5388985719` makes that predicate false.
+Its non-authorizing wording does not waive the literal guard. Local commands
+and provider predicates were checked individually; the complete shell helper
+was not executed because the GitHub CLI was unavailable.
+
+No `H0B-PREFLIGHT-PASS` is claimed, Task 1 remains `NOT_STARTED`, and the plan
+and human decision records remain unchanged. Reconciliation requires a reviewed
+successor plan/decision; another identical approval would also violate the
+exactly-one-matching-decision requirement. This update records evidence only
+and grants no implementation or other authority.
 
 ## Supersession and conflict record
 
