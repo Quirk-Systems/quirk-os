@@ -106,6 +106,65 @@ class SubmissionPackTests(unittest.TestCase):
             report = validate(ROOT, pack_path.relative_to(ROOT))
         self.assertFalse(report["checks"]["package_boundary_complete"])
 
+    def test_duplicate_case_ids_do_not_satisfy_exact_counts(self):
+        pack = json.loads(PACK.read_text(encoding="utf-8"))
+        package_sha256 = "0" * 64
+        pack["package"]["submitted_package"]["sha256"] = package_sha256
+        passed_entry = next(
+            entry
+            for entry in pack["evidence_notes"]["ledger"]
+            if entry["classification"] == "PASSED_TEST_EVIDENCE"
+        )
+        passed_entry["submitted_package_sha256"] = package_sha256
+
+        def review_case(index: int) -> dict:
+            return {
+                "id": "DUPLICATE",
+                "prompt": f"Prompt {index}",
+                "expected_behavior": f"Expected behavior {index}",
+                "package_sha256": package_sha256,
+                "evidence_refs": [passed_entry["id"]],
+            }
+
+        pack["review_cases"]["positive"] = [review_case(index) for index in range(5)]
+        pack["review_cases"]["negative"] = [review_case(index) for index in range(5, 8)]
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            pack_path = Path(directory) / "submission-pack.json"
+            pack_path.write_text(json.dumps(pack), encoding="utf-8")
+            report = validate(ROOT, pack_path.relative_to(ROOT))
+        self.assertFalse(report["contract_valid"])
+        self.assertFalse(report["checks"]["exact_case_counts"])
+        self.assertTrue(any("case ids must be unique" in error for error in report["errors"]))
+
+    def test_structurally_invalid_pack_returns_invalid_report(self):
+        pack = json.loads(PACK.read_text(encoding="utf-8"))
+        pack["evidence_notes"]["ledger"] = None
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            pack_path = Path(directory) / "submission-pack.json"
+            pack_path.write_text(json.dumps(pack), encoding="utf-8")
+            report = validate(ROOT, pack_path.relative_to(ROOT))
+        self.assertFalse(report["contract_valid"])
+        self.assertTrue(report["errors"])
+
+    def test_invalid_json_returns_invalid_report(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            pack_path = Path(directory) / "submission-pack.json"
+            pack_path.write_text("{", encoding="utf-8")
+            report = validate(ROOT, pack_path.relative_to(ROOT))
+        self.assertFalse(report["contract_valid"])
+        self.assertTrue(any("invalid JSON" in error for error in report["errors"]))
+
+    def test_source_candidate_digests_are_recomputed(self):
+        pack = json.loads(PACK.read_text(encoding="utf-8"))
+        pack["package"]["source_candidate"]["source_blob_sha1"] = "0" * 40
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            pack_path = Path(directory) / "submission-pack.json"
+            pack_path.write_text(json.dumps(pack), encoding="utf-8")
+            report = validate(ROOT, pack_path.relative_to(ROOT))
+        self.assertFalse(report["contract_valid"])
+        self.assertFalse(report["checks"]["source_blob_matches"])
+        self.assertTrue(any("source blob SHA-1" in error for error in report["errors"]))
+
     def test_two_processes_produce_identical_output(self):
         command = [
             sys.executable,

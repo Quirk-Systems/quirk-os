@@ -79,7 +79,7 @@
             "manifest_sha256"
           ],
           "properties": {
-            "id": {"type": "string", "minLength": 1},
+            "id": {"type": "string", "pattern": "^quirk-[a-z0-9-]+$"},
             "title": {"type": "string", "minLength": 1},
             "version": {"type": "string", "minLength": 1},
             "source_blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
