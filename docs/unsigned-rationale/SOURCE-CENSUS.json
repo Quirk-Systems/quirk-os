@@ -1,0 +1,44 @@
+{
+  "source_census": [
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-preference/blob/f70a713c097436172760d633ccee9bacb071483b/candidates/image-evidence-intake-v0.1.0/fixtures/producer-event.json",
+      "fingerprint": "sha256:6ae22b2b27319803602b692e7ea73456568d97eaa1e1624670c53dc7a656e9d6",
+      "git_blob_sha": "6bea1fb045e7869cfd570ca4411538456dcc4ec0",
+      "classification": "candidate",
+      "classification_reason": "Versioned repository or draft source; no runtime admission inferred",
+      "purpose": "Ownership, compatibility boundary, or byte-preserving source fixture",
+      "rights": "Task-scoped inspection; producer-event is a synthetic fixture; no training or graph application"
+    },
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-preference/blob/f70a713c097436172760d633ccee9bacb071483b/candidates/image-evidence-intake-v0.1.0/src/intake.mjs",
+      "fingerprint": "sha256:a86de029d873f2be6c504720679387d2684ec8680979fe0cc875214a6e13333d",
+      "git_blob_sha": "10004fc5b063f8d822cc12a9140ca2af443e27c0",
+      "classification": "candidate",
+      "classification_reason": "Versioned repository or draft source; no runtime admission inferred",
+      "purpose": "Ownership, compatibility boundary, or byte-preserving source fixture",
+      "rights": "Task-scoped inspection; producer-event is a synthetic fixture; no training or graph application"
+    },
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-os/blob/499f94b8d12e29dd7804cc9b537fd70f6a8048d8/.github/workflows/golden-gates.yml",
+      "fingerprint": "sha256:4beab1ba7917b93a9c17c5e26713e8e33e3b5c74825ac414f756bca8476cde8a",
+      "git_blob_sha": "4d4751ca21236828fe001977fe56be01365896cc",
+      "classification": "candidate",
+      "classification_reason": "Versioned repository or draft source; no runtime admission inferred",
+      "purpose": "Ownership, compatibility boundary, or byte-preserving source fixture",
+      "rights": "Task-scoped inspection; producer-event is a synthetic fixture; no training or graph application"
+    },
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-os/blob/499f94b8d12e29dd7804cc9b537fd70f6a8048d8/docs/canon/REPO-MANAGEMENT.md",
+      "fingerprint": "sha256:8a89e200b60a036b351237da0d78d86a2762ed892306a95c93ca9ab4321967fe",
+      "git_blob_sha": "82411256219d50d5fe1e19e1bbb0de65673618a0",
+      "classification": "candidate",
+      "classification_reason": "Versioned repository or draft source; no runtime admission inferred",
+      "purpose": "Ownership, compatibility boundary, or byte-preserving source fixture",
+      "rights": "Task-scoped inspection; producer-event is a synthetic fixture; no training or graph application"
+    }
+  ],
+  "repo_default_head": "499f94b8d12e29dd7804cc9b537fd70f6a8048d8",
+  "preference_draft_head": "f70a713c097436172760d633ccee9bacb071483b",
+  "deployment_observed": false,
+  "existing_image_contract_replaced": false
+}

@@ -1,0 +1,4 @@
+SYNTHETIC SOURCE B — written for a local contract fixture.
+The comparison screen places the decision question in a collapsed drawer.
+It labels the final action "Finish".
+No person has evaluated this screen.

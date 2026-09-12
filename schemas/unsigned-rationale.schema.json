@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:quirk:schema:unsigned-rationale:0.1.0",
+  "title": "Quirk unsigned rationale 0.1.0",
+  "description": "Candidate comparison record. Numeric protocol values and undeclared fields are forbidden. The core validator additionally checks unique IDs, cross-references, timestamp validity, duplicate JSON keys, and supported UTF-8 serialization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format", "format_version", "id", "revision", "status", "sources",
+    "question", "claims", "rationale", "outcome", "unresolved_questions",
+    "restrictions", "signature"
+  ],
+  "properties": {
+    "format": { "const": "quirk.unsigned-rationale" },
+    "format_version": { "const": "0.1.0" },
+    "id": { "$ref": "#/$defs/id" },
+    "revision": { "$ref": "#/$defs/text" },
+    "status": { "const": "CANDIDATE" },
+    "sources": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/source" }
+    },
+    "question": { "$ref": "#/$defs/text" },
+    "claims": {
+      "type": "array",
+      "maxItems": 128,
+      "items": { "$ref": "#/$defs/claim" }
+    },
+    "rationale": { "$ref": "#/$defs/text" },
+    "outcome": {
+      "enum": ["choose_first", "choose_second", "choose_neither", "defer"]
+    },
+    "unresolved_questions": {
+      "type": "array",
+      "maxItems": 128,
+      "items": { "$ref": "#/$defs/text" }
+    },
+    "restrictions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effects_allowed", "training_allowed", "preference_graph_apply_allowed"],
+      "properties": {
+        "effects_allowed": { "const": false },
+        "training_allowed": { "const": false },
+        "preference_graph_apply_allowed": { "const": false }
+      }
+    },
+    "signature": { "type": "null" }
+  },
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 16384,
+      "pattern": "\\S"
+    },
+    "id": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "not": { "pattern": "[^A-Za-z0-9._:-]" }
+    },
+    "nullable_text": {
+      "anyOf": [ { "$ref": "#/$defs/text" }, { "type": "null" } ]
+    },
+    "digest": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 32,
+      "not": { "pattern": "\\s" },
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]{1,6})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "locator", "inspected_at", "revision", "sha256",
+        "revision_unavailable_reason", "digest_unavailable_reason"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "locator": { "$ref": "#/$defs/text" },
+        "inspected_at": { "$ref": "#/$defs/timestamp" },
+        "revision": { "$ref": "#/$defs/nullable_text" },
+        "sha256": { "anyOf": [ { "$ref": "#/$defs/digest" }, { "type": "null" } ] },
+        "revision_unavailable_reason": { "$ref": "#/$defs/nullable_text" },
+        "digest_unavailable_reason": { "$ref": "#/$defs/nullable_text" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "revision": { "type": "null" } } },
+          "then": { "properties": { "revision_unavailable_reason": { "$ref": "#/$defs/text" } } },
+          "else": { "properties": { "revision_unavailable_reason": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "sha256": { "type": "null" } } },
+          "then": { "properties": { "digest_unavailable_reason": { "$ref": "#/$defs/text" } } },
+          "else": { "properties": { "digest_unavailable_reason": { "type": "null" } } }
+        }
+      ]
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "text", "assertion_class", "source_ids", "support_locator", "unsupported_reason"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "text": { "$ref": "#/$defs/text" },
+        "assertion_class": { "enum": ["supplied", "observed", "inference", "quirk_bet"] },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "support_locator": { "$ref": "#/$defs/nullable_text" },
+        "unsupported_reason": { "$ref": "#/$defs/nullable_text" }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "support_locator": { "$ref": "#/$defs/text" },
+            "unsupported_reason": { "type": "null" }
+          }
+        },
+        {
+          "properties": {
+            "support_locator": { "type": "null" },
+            "unsupported_reason": { "$ref": "#/$defs/text" }
+          }
+        }
+      ]
+    }
+  }
+}
