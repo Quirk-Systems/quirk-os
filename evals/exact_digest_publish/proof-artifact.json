@@ -1,0 +1,71 @@
+{
+  "artifact_id": "artifact.exact-digest-publish.proof",
+  "artifact_type": "evaluation_evidence",
+  "content_hash": "9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6",
+  "content_ref": "evals/exact_digest_publish/run-9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6.json",
+  "created_at": "2026-09-12T11:25:08.316035Z",
+  "created_by": "agent.codex",
+  "evaluation": {
+    "authority_effect": "none",
+    "authority_mode": "test_fixture",
+    "blockers": [],
+    "bounded_verified": true,
+    "evidence_origin": "Unsigned run record; source authenticity requires external verification and is not verified by this resolver.",
+    "source_manifest_sha256": "7e0d35584185138a4b185f4ecfbdb6d2df067f3a1bbfa41af8ba62444cbcf260",
+    "trust_assumptions": [
+      "Linux kernel and root test supervisor are trusted; broker and workers are distinct non-root UIDs.",
+      "Broker code/configuration and their ancestors are controlled by the trusted deployment authority.",
+      "Authorizer UID and credentials are not controlled by evaluator or composer processes.",
+      "No privileged file descriptor or privileged process capability is delegated to worker identities.",
+      "The protected local filesystem sink is the complete publication effect under test.",
+      "Evidence is retrieved from a trusted execution source; these JSON run records are unsigned."
+    ],
+    "verified_claims": [
+      "Passing evaluations alone do not create grants or authorize publication.",
+      "Kernel-authenticated evaluator and composer identities cannot invoke authorizer operations or write protected state and sink paths.",
+      "Publication binds artifact identity, payload digest, operation, destination and current policy; time validity is rechecked immediately before publication.",
+      "Missing, expired, revoked, used or scope-mismatched grants and non-current evaluation passes block new publication.",
+      "Exact staged bytes, single-use grants, request idempotency and crash reconciliation constrain the local effect and its receipt."
+    ],
+    "withheld_claims": [
+      "Actual human presence, understanding, and consent: automated authorizer is a synthetic fixture.",
+      "Production authentication, deployment admission, external publishing adapters, and cloud credential isolation.",
+      "Protection against compromised root, kernel, broker, deployment authority, or authorizer session.",
+      "Canonical admission, live activation, or permission manufactured by evaluation success."
+    ]
+  },
+  "metadata": {
+    "evidence_origin": {
+      "authority_effect": "none",
+      "conclusion": "success",
+      "head_sha": "90a37d8d7f55f007f682bfd9ae4a9f6dfc566d74",
+      "job_id": 103545978322,
+      "job_url": "https://github.com/Quirk-Systems/quirk-os/actions/runs/34690959537/job/103545978322",
+      "repository": "Quirk-Systems/quirk-os",
+      "retrieval_method": "Authenticated GitHub connector: decoded job logs between QUIRK_PROOF_JSON markers; head and conclusion checked against workflow run API",
+      "retrieved_at": "2026-09-12T11:25:46.363Z",
+      "run_attempt": 1,
+      "run_file_sha256": "9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6",
+      "run_id": 34690959537,
+      "run_url": "https://github.com/Quirk-Systems/quirk-os/actions/runs/34690959537",
+      "source_manifest_sha256": "7e0d35584185138a4b185f4ecfbdb6d2df067f3a1bbfa41af8ba62444cbcf260",
+      "system": "github_actions"
+    },
+    "maturity": "candidate",
+    "owner_repository": "Quirk-Systems/quirk-os",
+    "schema_ref": "schemas/artifact.schema.json"
+  },
+  "rights": {
+    "owner_ref": null,
+    "provenance_complete": false,
+    "status": "unclear"
+  },
+  "run_receipt_ref": "evals/exact_digest_publish/run-9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6.json",
+  "source_refs": [
+    "evals/exact_digest_publish/run-9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6.json",
+    "https://github.com/Quirk-Systems/quirk-core/pull/10"
+  ],
+  "status": "produced",
+  "title": "Exact digest publication evaluation evidence",
+  "version": "0.1.0"
+}

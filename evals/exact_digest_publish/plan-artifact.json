@@ -1,0 +1,28 @@
+{
+  "artifact_id": "artifact.exact-digest-publish.plan",
+  "title": "Exact digest publication: bounded enforcement plan",
+  "artifact_type": "implementation_plan",
+  "created_by": "agent.codex",
+  "created_at": "2026-09-12T11:07:52Z",
+  "run_receipt_ref": null,
+  "source_refs": [
+    "https://github.com/Quirk-Systems/quirk-core/pull/10",
+    "https://github.com/Quirk-Systems/quirk-os/blob/10a2f7e9435c6555f0436c8e0882d9ee99081f68/docs/golden-project-pack/ARCHITECTURE.md"
+  ],
+  "version": "0.1.0",
+  "rights": {
+    "status": "unclear",
+    "owner_ref": null,
+    "provenance_complete": false
+  },
+  "status": "produced",
+  "content_ref": "docs/exact_digest_publish/PLAN.md",
+  "content_hash": "0f33cf5bf5e9087b880d3751d11756be463a7dc065fff4cbb5e99b7f2f2278c3",
+  "metadata": {
+    "maturity": "candidate",
+    "owner_repository": "Quirk-Systems/quirk-os",
+    "proposed_move_ref": "qpm_exact_digest_publish_enforcement",
+    "schema_ref": "schemas/artifact.schema.json",
+    "authority_effect": "none"
+  }
+}
