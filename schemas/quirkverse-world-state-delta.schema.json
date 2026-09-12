@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/quirkverse-world-state-delta.schema.json",
+  "title": "Quirkverse World-State Delta",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "delta_id", "activation_ref", "recorded_at", "proof_ref", "changes", "explicit_non_changes", "reversibility", "approved_by"],
+  "properties": {
+    "schema_version": {"const": "quirk.quirkverse-world-state-delta/0.1"},
+    "delta_id": {"type": "string", "pattern": "^delta\\.world\\.[a-z0-9._-]+$"},
+    "activation_ref": {"type": "string", "pattern": "^activation\\.[a-z0-9._-]+$"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "proof_ref": {"type": "string"},
+    "changes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["residents", "relationships", "locations", "storylines", "capabilities", "preferences", "open_world"],
+      "properties": {
+        "residents": {"type": "array", "items": {"$ref": "#/$defs/change"}},
+        "relationships": {"type": "array", "items": {"$ref": "#/$defs/change"}},
+        "locations": {"type": "array", "items": {"$ref": "#/$defs/change"}},
+        "storylines": {"type": "array", "items": {"$ref": "#/$defs/change"}},
+        "capabilities": {"type": "array", "items": {"$ref": "#/$defs/change"}},
+        "preferences": {"type": "array", "items": {"$ref": "#/$defs/change"}},
+        "open_world": {"type": "array", "items": {"$ref": "#/$defs/change"}}
+      }
+    },
+    "explicit_non_changes": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "reversibility": {"enum": ["reversible", "repairable", "compensatable", "irreversible"]},
+    "rollback_or_reconciliation": {"type": ["string", "null"]},
+    "approved_by": {"type": "string"},
+    "canon_effect": {"enum": ["none", "candidate_only", "canon_update"], "default": "none"}
+  },
+  "$defs": {
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_ref", "operation", "before", "after", "evidence_ref"],
+      "properties": {
+        "object_ref": {"type": "string"},
+        "operation": {"enum": ["ADD", "CHANGE", "REMOVE", "RETIRE", "BREAK", "REPAIR", "PROVE", "DISPROVE", "UNLOCK", "LOCK", "WATCH"]},
+        "before": {},
+        "after": {},
+        "evidence_ref": {"type": "string"}
+      }
+    }
+  }
+}

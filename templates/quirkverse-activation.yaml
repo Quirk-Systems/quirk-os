@@ -1,0 +1,97 @@
+schema_version: quirk.quirkverse-activation/0.1
+activation_id: activation.example.signal-to-proof
+title: Example Quirkverse Activation
+status: CANDIDATE
+authority_effect: none
+
+signal:
+  summary: ""
+  source_refs: []
+  signal_type: capability_opening
+  observed_at:
+  evidence_state: mixed
+
+why_now: ""
+
+world_route:
+  plane: Quirkverse
+  location: Aperture
+  resident_cast:
+    - Bryan
+    - Brayn
+    - BryMinn
+    - Brayk
+  specialist_guild_or_capability:
+  existing_storyline:
+  related_recent_changes: []
+
+story_pressure: ""
+activation_format: quest
+activation_body: ""
+
+capability_pursuit:
+  capability_sought: ""
+  current_state: SIGNAL
+  required_proof:
+    - ""
+  forbidden_self_promotion: true
+  human_judgment_retained:
+    - final disposition
+
+rules_and_gates:
+  in_scope:
+    - ""
+  non_goals:
+    - no runtime activation
+    - no Canon promotion
+  authority:
+    - candidate analysis only
+  effect_class: PREPARE
+  stop_conditions:
+    - material scope change
+    - authority change
+  scope_change_triggers:
+    - objective changes
+    - files, systems, or paths change
+    - dependency surface changes
+    - effect class rises
+    - human owner changes
+  reversibility: reversible
+
+proof_object_stack:
+  experience_or_story_artifact:
+  operational_artifact: ""
+  evidence_receipt: receipt.activation.example.signal-to-proof
+  lineage_edge: ""
+  skill_or_capability_candidate:
+  communication_artifact:
+  world_state_delta: delta.world.example.signal-to-proof
+
+cheapest_disproof: ""
+
+adversarial_fixture_refs:
+  - fixture.spectacle-without-substance
+  - fixture.lore-as-evidence
+  - fixture.popularity-as-authority
+  - fixture.fake-tournament
+  - fixture.artifact-without-outcome
+
+human_gate:
+  owner: Bryan
+  reviewer: ""
+  judge: Bryan
+  publisher: Bryan
+  shutdown_authority: Bryan
+
+receipt_ref: receipt.activation.example.signal-to-proof
+continuity_delta_ref: delta.world.example.signal-to-proof
+
+external_classification:
+  keep: []
+  steal: []
+  mutate: []
+  kill: []
+  boneyard: []
+
+one_move: ""
+projection_refs: []
