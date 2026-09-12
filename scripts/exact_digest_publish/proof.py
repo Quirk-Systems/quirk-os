@@ -64,7 +64,14 @@ REQUIRED_SOURCES = {
     ".github/workflows/exact-digest-publishing.yml",
     "schemas/proposed-move.schema.json",
     "schemas/artifact.schema.json",
+    "evals/exact_digest_publish/plan-artifact.json",
 }
+# These fields are resolver outputs, not the work contract being evaluated.
+# Every other Proposed Move field is bound, including any future schema input.
+MOVE_OUTPUT_FIELDS = frozenset({
+    "disposition", "implementation_ref", "eval_refs", "evidence_refs",
+    "receipt_ref", "resolution_note", "resolution_artifacts",
+})
 ASSUMPTIONS = (
     "Linux kernel and root test supervisor are trusted; broker and workers are distinct non-root UIDs.",
     "Broker code/configuration and their ancestors are controlled by the trusted deployment authority.",
@@ -100,6 +107,12 @@ def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def move_inputs(move: dict) -> dict:
+    if type(move) is not dict:
+        raise ValueError("Proposed Move must be a JSON object")
+    return {key: value for key, value in move.items() if key not in MOVE_OUTPUT_FIELDS}
+
+
 def source_manifest() -> dict:
     names = set(REQUIRED_SOURCES)
     for directory in (ROOT / "scripts" / "exact_digest_publish", TESTS):
@@ -111,7 +124,26 @@ def source_manifest() -> dict:
             raise ValueError("Missing or symlinked proof source: " + name)
         data = path.read_bytes()
         files[name] = {"sha256": digest(data), "bytes": len(data)}
-    return {"algorithm": "sha256", "files": files, "manifest_sha256": digest(encoded(files))}
+    move_path = EVIDENCE / "proposed-move.json"
+    if not move_path.is_file() or move_path.is_symlink():
+        raise ValueError("Missing or symlinked Proposed Move input")
+    projection = move_inputs(json.loads(move_path.read_bytes()))
+    work_inputs = {"proposed_move": {
+        "path": "evals/exact_digest_publish/proposed-move.json",
+        "excluded_resolver_outputs": sorted(MOVE_OUTPUT_FIELDS),
+        "sha256": digest(encoded(projection)),
+    }}
+    payload = {"files": files, "work_inputs": work_inputs}
+    return {"algorithm": "sha256", **payload, "manifest_sha256": digest(encoded(payload))}
+
+
+def check_plan_artifact(plan: dict, plan_bytes: bytes, validator) -> None:
+    """Validate the existing Artifact contract and its exact plan-byte binding."""
+    validator.validate(plan)
+    if (plan["artifact_id"] != "artifact.exact-digest-publish.plan"
+            or plan["content_ref"] != "docs/exact_digest_publish/PLAN.md"
+            or plan["content_hash"] != digest(plan_bytes)):
+        raise ValueError("Plan Artifact does not bind the expected PLAN.md bytes")
 
 
 def read_optional(path: str):
@@ -302,6 +334,12 @@ def resolve(run_path: Path) -> int:
     # with an ad hoc approximation when the repository dependency is unavailable.
     from jsonschema import Draft202012Validator, FormatChecker
 
+    checker = FormatChecker()
+    artifact_schema = json.loads((ROOT / "schemas" / "artifact.schema.json").read_bytes())
+    Draft202012Validator.check_schema(artifact_schema)
+    plan = json.loads((EVIDENCE / "plan-artifact.json").read_bytes())
+    check_plan_artifact(plan, (ROOT / "docs" / "exact_digest_publish" / "PLAN.md").read_bytes(),
+                        Draft202012Validator(artifact_schema, format_checker=checker))
     raw = run_path.read_bytes()
     record = json.loads(raw)
     if not isinstance(record, dict):
@@ -322,7 +360,7 @@ def resolve(run_path: Path) -> int:
                                 "verified_claims": list(BOUNDED_CLAIMS) if verified else [],
                                 "withheld_claims": list(WITHHELD), "trust_assumptions": list(ASSUMPTIONS),
                                 "source_manifest_sha256": current["manifest_sha256"],
-                                "evidence_origin": "Unsigned run record; source authenticity is externally verified."})
+                                "evidence_origin": "Unsigned run record; source authenticity requires external verification and is not verified by this resolver."})
     move_path = EVIDENCE / "proposed-move.json"
     move = json.loads(move_path.read_bytes())
     move["disposition"] = "verified" if verified else "implemented"
@@ -337,7 +375,6 @@ def resolve(run_path: Path) -> int:
     move["resolution_note"] = note + "Actual human presence, production deployment, external publication, and Canon admission remain unproven; evaluation grants no authority."
     move["resolution_artifacts"] = list(dict.fromkeys(move["resolution_artifacts"] + [
         relative + "implementation-artifact.json", relative + "proof-artifact.json", relative + "manifest.json", run_ref]))
-    checker = FormatChecker()
     for instance, schema_name in ((implementation, "artifact.schema.json"), (proof, "artifact.schema.json"),
                                    (move, "proposed-move.schema.json")):
         schema = json.loads((ROOT / "schemas" / schema_name).read_bytes())
