@@ -1,0 +1,78 @@
+{
+  "acceptance_checks": [
+    "With no grant, passing evaluations leave grant storage unchanged and publication blocked.",
+    "Evaluator and composer identities cannot invoke authorizer operations or manufacture approval by supplying role or approval fields.",
+    "Only exact matching artifact, bytes, destination, current policy, passing evaluation, and effective grant permit publication.",
+    "Expiry, revocation, and evaluation invalidation block later publication without deleting historical evidence.",
+    "Distinct unprivileged subprocesses cannot alter protected broker code, configuration, grant state, guard, or sink through filesystem access.",
+    "The receipt identifies the actual digest, destination, evaluation, grant, and policy; denied requests leave no partial publication.",
+    "Existing Proposed Move and Artifact schemas validate these work records, and the plan artifact digest matches its bytes.",
+    "The final evidence names exact tested source, command, environment, results, and remaining production and human-presence limits."
+  ],
+  "affected_objects": [
+    "capability.exact-digest-publish",
+    "artifact.exact-digest-publish.plan"
+  ],
+  "authority_required": [
+    "authority.repo_candidate_write",
+    "Explicit authorization for local isolated enforcement verification",
+    "Separate human authorization for any future production publication"
+  ],
+  "blocks_merge": true,
+  "contradiction_refs": [],
+  "created_at": "2026-09-12T11:07:52Z",
+  "dependencies": [
+    "https://github.com/Quirk-Systems/quirk-core/pull/10"
+  ],
+  "dependency_class": "missing_execution_contract",
+  "desired_change": "Implement and verify a Linux broker that permits publication to a protected local sink only when current evaluation evidence and an independently recorded human-authorizer grant cover the same artifact, digest, destination, and policy.",
+  "disposition": "implemented",
+  "eval_refs": [
+    "eval.exact-digest-publish.process-isolation.v1",
+    "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json"
+  ],
+  "evidence_refs": [
+    "evals/exact_digest_publish/proof-artifact.json",
+    "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json",
+    "evals/exact_digest_publish/manifest.json"
+  ],
+  "expected_outcome": "Evaluator and composer subprocesses cannot mint human grants, weaken the guard, or publish directly; actual evidence resolves only the tested local boundary.",
+  "finding_ref": "https://github.com/Quirk-Systems/quirk-os/blob/10a2f7e9435c6555f0436c8e0882d9ee99081f68/scripts/sync_control_plane/skill_runtime.py",
+  "hidden_context_dependencies": [
+    "Existing runtime grant validation checks supplied fields; it does not authenticate the approval issuer or isolate grant storage.",
+    "A synthetic authorizer in automated tests proves operating-system identity separation, not actual human presence or consent."
+  ],
+  "id": "qpm_exact_digest_publish_enforcement",
+  "implementation_ref": "evals/exact_digest_publish/implementation-artifact.json",
+  "lane": "gate",
+  "proposer": {
+    "actor_id": "agent.codex",
+    "actor_type": "agent"
+  },
+  "receipt_ref": "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json",
+  "resolution_artifacts": [
+    "scripts/exact_digest_publish/",
+    "tests/exact_digest_publish/",
+    "docs/exact_digest_publish/README.md",
+    "docs/exact_digest_publish/PLAN.md",
+    "evals/exact_digest_publish/plan-artifact.json",
+    "evals/exact_digest_publish/implementation-artifact.json",
+    "evals/exact_digest_publish/proof-artifact.json",
+    "evals/exact_digest_publish/manifest.json",
+    "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json"
+  ],
+  "resolution_note": "Constrain: implementation exists; local boundary proof remains unresolved. Blockers: MISSING_EXTRA_OR_DUPLICATE_EXECUTED_CASES, SUITE_OR_PREFLIGHT_ERRORS, UNSUCCESSFUL_OR_INCOMPLETE_TEST_RESULT. Actual human presence, production deployment, external publication, and Canon admission remain unproven; evaluation grants no authority.",
+  "reversibility": "reversible",
+  "risk": {
+    "class": "L3",
+    "rights_or_safety_impact": "A weak boundary could turn evaluation into publication permission or permit unapproved bytes to reach the protected sink.",
+    "strange_intact_risk": "none"
+  },
+  "schema_version": "proposed-move.v1",
+  "source_refs": [
+    "https://github.com/Quirk-Systems/quirk-core/pull/10",
+    "https://github.com/Quirk-Systems/quirk-os/blob/10a2f7e9435c6555f0436c8e0882d9ee99081f68/docs/skills/ARCHITECTURE.md",
+    "https://github.com/Quirk-Systems/quirk-os/blob/10a2f7e9435c6555f0436c8e0882d9ee99081f68/docs/golden-project-pack/ARCHITECTURE.md"
+  ],
+  "title": "Enforce independent approval at exact digest publication"
+}

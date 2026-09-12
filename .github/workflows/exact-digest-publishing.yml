@@ -1,0 +1,49 @@
+name: Exact Digest Publishing Boundary
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/exact_digest_publish/**'
+      - 'tests/exact_digest_publish/**'
+      - 'evals/exact_digest_publish/**'
+      - 'docs/exact_digest_publish/**'
+      - 'schemas/artifact.schema.json'
+      - 'schemas/proposed-move.schema.json'
+      - '.github/workflows/exact-digest-publishing.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  process-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install existing schema-validator version
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.26.0'
+      - name: Verify real OS identity and filesystem boundaries
+        run: sudo --non-interactive "$(command -v python)" -m scripts.exact_digest_publish.proof run --output /tmp/exact-digest-proof.json
+      - name: Emit inspectable evidence
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('/tmp/exact-digest-proof.json')
+          print('QUIRK_PROOF_JSON_BEGIN')
+          print(path.read_text() if path.exists() else '{"error":"no_evidence_emitted"}')
+          print('QUIRK_PROOF_JSON_END')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exact-digest-boundary-proof
+          path: /tmp/exact-digest-proof.json
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,31 @@
+{
+  "artifact_id": "artifact.exact-digest-publish.implementation",
+  "artifact_type": "source_manifest",
+  "content_hash": "7edab27892dd275f661e39d33043cd72aae29ed91e59e42e4ead87792bb69e46",
+  "content_ref": "evals/exact_digest_publish/manifest.json",
+  "created_at": "2026-09-12T11:19:51.572536Z",
+  "created_by": "agent.codex",
+  "evaluation": {
+    "authority_effect": "none",
+    "authority_mode": "test_fixture",
+    "bounded_verified": false
+  },
+  "metadata": {
+    "maturity": "candidate",
+    "owner_repository": "Quirk-Systems/quirk-os",
+    "schema_ref": "schemas/artifact.schema.json"
+  },
+  "rights": {
+    "owner_ref": null,
+    "provenance_complete": false,
+    "status": "unclear"
+  },
+  "run_receipt_ref": "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json",
+  "source_refs": [
+    "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json",
+    "https://github.com/Quirk-Systems/quirk-core/pull/10"
+  ],
+  "status": "produced",
+  "title": "Exact digest publication implementation manifest",
+  "version": "0.1.0"
+}
