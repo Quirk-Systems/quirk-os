@@ -1,0 +1,8 @@
+{
+  "source_ref": "fixture:review:malformed",
+  "response": "selected",
+  "rationale": "Synthetic fixture: inspect the stale source before using its carried claims.",
+  "next_move": "Repair the owning input and rerun its adapter; retain the malformed source for inspection.",
+  "finish_condition": "Repair the owning input and rerun its adapter; retain the malformed source for inspection. Preserve uncertainty and all existing authority obligations.",
+  "captured_at": "2026-09-10T00:31:00.000Z"
+}

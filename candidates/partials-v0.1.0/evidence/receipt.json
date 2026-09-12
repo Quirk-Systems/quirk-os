@@ -1,0 +1,42 @@
+{
+  "candidate": "quirk.partials/v1alpha1",
+  "package_version": "0.1.0",
+  "status": "candidate",
+  "disposition": "Constrain",
+  "source_manifest_sha256": "5d0784471ac7b1e56b781ad7f37bd8fae47a89e4967d872534f304215383186e",
+  "environment": {
+    "node": "v24.19.0",
+    "python_validator": "jsonschema 4.26.0 with explicit stdlib datetime checker"
+  },
+  "checks": {
+    "node_tests": 118,
+    "node_pass": 118,
+    "independent_valid_fixtures": 8,
+    "independent_negatives_rejected": 10,
+    "npm_ci_offline": "passed",
+    "fixture_regeneration": "deterministic",
+    "independent_review_fixtures": 3,
+    "independent_review_negatives_rejected": 3,
+    "change_review_api_tests": 16,
+    "change_review_cli_tests": 1,
+    "independent_decision_fixtures": 2,
+    "independent_decision_negatives_rejected": 9,
+    "decision_contract_tests": 16,
+    "inspector_controller_and_markup_tests": 7,
+    "decision_cli_tests": 1,
+    "generated_schemas": 6
+  },
+  "human_review": "unverified",
+  "browser_interaction": "unverified; local-file navigation blocked by browser security policy",
+  "real_life_benefit": "unverified",
+  "consumer_deployment": "not_performed",
+  "authority": "propose_only_no_external_effects",
+  "prior_evidence_head": "328f0b361676ab28667503ccd48e752031c6e69a",
+  "validation_run": {
+    "started_at": "2026-09-10T02:20:15.506687+00:00",
+    "completed_at": "2026-09-10T02:20:21.504542+00:00",
+    "validation_latency_ms": 5998,
+    "scope": "Measured validation commands, including offline installation and fixture regeneration; not implementation or user effort"
+  },
+  "controller_test_scope": "Minimal event-handler harness and generated module syntax/CSP/escaping checks; not browser interaction or DOM conformance"
+}

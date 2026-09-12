@@ -1,0 +1,37 @@
+{
+  "capturedAt": "2026-01-10T12:00:00.000Z",
+  "asOfDate": "2026-01-10",
+  "inventory": {
+    "program_digest": "sha256:c57821c085c7c7cde453e535d8a4dec26efdc27a9b5063d523162de706d0723a",
+    "known_items": [
+      {
+        "id": "synthetic:optional:1",
+        "label": "Synthetic optional initiative 1"
+      },
+      {
+        "id": "synthetic:optional:2",
+        "label": "Synthetic optional initiative 2"
+      },
+      {
+        "id": "synthetic:optional:3",
+        "label": "Synthetic optional initiative 3"
+      },
+      {
+        "id": "synthetic:optional:4",
+        "label": "Synthetic optional initiative 4"
+      },
+      {
+        "id": "synthetic:optional:5",
+        "label": "Synthetic optional initiative 5"
+      },
+      {
+        "id": "synthetic:optional:6",
+        "label": "Synthetic optional initiative 6"
+      }
+    ],
+    "lower_bound": 6,
+    "source_refs": [
+      "fixture:synthetic-optional-inventory"
+    ]
+  }
+}

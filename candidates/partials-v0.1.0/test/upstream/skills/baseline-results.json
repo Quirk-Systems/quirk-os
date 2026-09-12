@@ -1,0 +1,84 @@
+[
+  {
+    "scenario_id": "WC-RED-001",
+    "execution_date": "2026-08-23",
+    "execution_context": "historical assistant output in the current conversation before writing-cuntsnickery SKILL.md existed",
+    "capture_method": "manual transcription from current conversation",
+    "evidence_ref": "evidence/outputs/WC-RED-001.txt",
+    "sha256": "2474ddffac8947243c6526aeb719414b4dfa06d916f0a994d6efa9a985581fbe",
+    "verdict": "RED_CONFIRMED",
+    "automated_observations": {
+      "normalized_exact_duplicate_line_count": 10,
+      "missing_full_song_contract_sections": [
+        "creative_thesis",
+        "suno_style_prompt",
+        "structure_tags",
+        "production_performance_map",
+        "quality_receipt"
+      ]
+    },
+    "critical_failures": [
+      "package-contract-missing",
+      "exact-hook-repetition",
+      "consent-specificity"
+    ],
+    "strengths_preserved": [
+      "technical-erotic metaphor",
+      "sectional escalation",
+      "performance contrast"
+    ],
+    "manual_notes": "The song contains strong operational-language comedy, but it repeats the entire main hook verbatim, omits five required package surfaces, and signals reciprocal interest without making the adult consent boundary explicit enough for the locked contract."
+  },
+  {
+    "scenario_id": "WC-RED-002",
+    "execution_date": "2026-08-23",
+    "execution_context": "historical assistant output in the current conversation before writing-cuntsnickery SKILL.md existed",
+    "capture_method": "manual transcription from current conversation",
+    "evidence_ref": "evidence/outputs/WC-RED-002.txt",
+    "sha256": "04d5dbf542573e2098cac26e00c66dbecc8cdd3a6cf3791527463823e1b710d8",
+    "verdict": "RED_CONFIRMED",
+    "automated_observations": {
+      "normalized_exact_duplicate_line_count": 0,
+      "missing_full_song_contract_sections": [
+        "creative_thesis",
+        "suno_style_prompt",
+        "structure_tags",
+        "production_performance_map",
+        "quality_receipt"
+      ]
+    },
+    "critical_failures": [
+      "package-contract-missing",
+      "generic-explicit-filler"
+    ],
+    "strengths_preserved": [
+      "mutated final hook",
+      "deadpan bridge",
+      "adult partner has standards and dialogue"
+    ],
+    "manual_notes": "The continuation adds useful material, but it replaces the narrow continuation request with a whole reformatted artifact, lacks the required Suno and quality surfaces, and retains generic explicit phrasing such as ‘wetness as the chorus.’ Exact duplicate-line detection does not catch semantic repetition inside chant atoms, so human review remains necessary."
+  },
+  {
+    "scenario_id": "WC-RED-010",
+    "execution_date": "2026-08-23",
+    "execution_context": "historical assistant output in the current conversation before writing-cuntsnickery SKILL.md existed",
+    "capture_method": "manual transcription from current conversation",
+    "evidence_ref": "evidence/outputs/WC-RED-010.txt",
+    "sha256": "b9e3be3ec369b707bc6368f07a4b78e7a0218d29273c8dbf47b80c7ac364ec58",
+    "verdict": "RED_CONFIRMED",
+    "automated_observations": {
+      "normalized_exact_duplicate_line_count": 0,
+      "missing_full_song_contract_sections": []
+    },
+    "critical_failures": [
+      "persona-lock",
+      "longdong-boundary-omitted"
+    ],
+    "strengths_preserved": [
+      "clear tone",
+      "useful reference palette",
+      "consent-forward themes"
+    ],
+    "manual_notes": "The response defines a memorable character—‘filthy-minded performance auditor’—instead of first defining a reusable technique. It also does not separate Cuntsnickery mechanics from the broader Longdong Fuckflow yield concept."
+  }
+]

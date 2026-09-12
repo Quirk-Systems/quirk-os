@@ -1,0 +1,98 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>Quirk partials · private review</title><style>body{margin:0;background:#f3f1e9;color:#242b2b;font:17px/1.5 system-ui,sans-serif}main{max-width:760px;margin:auto;padding:24px 16px 60px}h1{font-size:2rem;line-height:1.1}article{background:white;border:1px solid #c7cfc6;border-radius:16px;padding:20px;margin:22px 0}h2{font-size:1.45rem;line-height:1.3}h3{font-size:1rem;margin-bottom:4px}.eyebrow,.quiet{color:#4e6057}.eyebrow{font-size:.83rem;overflow-wrap:anywhere}dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}dt{text-transform:capitalize;color:#4e6057}dd{margin:0;font-weight:650}ul{padding-left:22px}li,p,.digest{overflow-wrap:anywhere}summary{cursor:pointer;padding:12px 0;min-height:24px}summary:focus-visible{outline:3px solid #146849}.digest{font-size:.7rem}@media(max-width:340px){dl{grid-template-columns:1fr}}</style></head><body><main><p class="eyebrow">QUIRK SYSTEMS / PARTIALS</p><h1>Keep what is known.<br>Show what is unfinished.</h1><p>This saved view reflects the records when it was generated. Review here; changes require a new explicit record. No accounts, connections, or actions are attached.</p><article><h2>Source review</h2><p>3 matched · 1 held for review · 0 exact duplicates</p><p>Matched records agree with supplied expectations. They remain candidates requiring human review.</p><ul><li>fixture:review:os: expectation_matched</li><li>fixture:review:preference: expectation_matched</li><li>fixture:review:skills: expectation_matched</li><li>fixture:review:malformed: invalid_record</li></ul><details><summary>Review receipt</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;schema_version&quot;: &quot;quirk.partials-review-result/v1alpha1&quot;,
+  &quot;status&quot;: &quot;candidate&quot;,
+  &quot;captured_at&quot;: &quot;2026-09-10T00:00:00.000Z&quot;,
+  &quot;request_digest&quot;: &quot;sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc&quot;,
+  &quot;rows&quot;: [
+    {
+      &quot;index&quot;: 0,
+      &quot;source_ref&quot;: &quot;fixture:review:os&quot;,
+      &quot;input_digest&quot;: &quot;sha256:901722bf755a27861fdf932a7902b61708c0fbdfc00517aed31cbc6bf4c42c8d&quot;,
+      &quot;disposition&quot;: &quot;matched&quot;,
+      &quot;reason&quot;: &quot;expectation_matched&quot;,
+      &quot;duplicate_of&quot;: null
+    },
+    {
+      &quot;index&quot;: 1,
+      &quot;source_ref&quot;: &quot;fixture:review:preference&quot;,
+      &quot;input_digest&quot;: &quot;sha256:24b9c414e4a37eb6d8e7da2a294012be138387137291ba3cc4e8085a7f6cb69d&quot;,
+      &quot;disposition&quot;: &quot;matched&quot;,
+      &quot;reason&quot;: &quot;expectation_matched&quot;,
+      &quot;duplicate_of&quot;: null
+    },
+    {
+      &quot;index&quot;: 2,
+      &quot;source_ref&quot;: &quot;fixture:review:skills&quot;,
+      &quot;input_digest&quot;: &quot;sha256:0015b5e7a4f51593768d7b29fa656a5fc9dc9b19bf14e1d207f6b016684ab558&quot;,
+      &quot;disposition&quot;: &quot;matched&quot;,
+      &quot;reason&quot;: &quot;expectation_matched&quot;,
+      &quot;duplicate_of&quot;: null
+    },
+    {
+      &quot;index&quot;: 3,
+      &quot;source_ref&quot;: &quot;fixture:review:malformed&quot;,
+      &quot;input_digest&quot;: &quot;sha256:4b0e524a2429e658a8fb44dd8156843b31213fe70294e69c1dd5ae826df23b68&quot;,
+      &quot;disposition&quot;: &quot;quarantined&quot;,
+      &quot;reason&quot;: &quot;invalid_record&quot;,
+      &quot;duplicate_of&quot;: null
+    }
+  ],
+  &quot;records&quot;: [
+    {
+      &quot;index&quot;: 0,
+      &quot;record_digest&quot;: &quot;sha256:901722bf755a27861fdf932a7902b61708c0fbdfc00517aed31cbc6bf4c42c8d&quot;
+    },
+    {
+      &quot;index&quot;: 1,
+      &quot;record_digest&quot;: &quot;sha256:24b9c414e4a37eb6d8e7da2a294012be138387137291ba3cc4e8085a7f6cb69d&quot;
+    },
+    {
+      &quot;index&quot;: 2,
+      &quot;record_digest&quot;: &quot;sha256:0015b5e7a4f51593768d7b29fa656a5fc9dc9b19bf14e1d207f6b016684ab558&quot;
+    }
+  ],
+  &quot;counts&quot;: {
+    &quot;inputs&quot;: 4,
+    &quot;matched&quot;: 3,
+    &quot;quarantined&quot;: 1,
+    &quot;duplicates&quot;: 0
+  },
+  &quot;authority&quot;: {
+    &quot;maximum_right&quot;: &quot;propose&quot;,
+    &quot;effect_execution_allowed&quot;: false,
+    &quot;calendar_write_allowed&quot;: false,
+    &quot;canon_promotion_allowed&quot;: false,
+    &quot;graph_application_allowed&quot;: false,
+    &quot;training_allowed&quot;: false,
+    &quot;human_review_required&quot;: true,
+    &quot;upstream_hold_refs&quot;: [
+      &quot;os:inventory_unknown&quot;,
+      &quot;os:no_runtime_or_calendar_authority&quot;,
+      &quot;os:protected_schedule&quot;,
+      &quot;preference:human_review_open&quot;,
+      &quot;preference:no_graph_application&quot;,
+      &quot;preference:no_model_training&quot;,
+      &quot;preference:unsigned_source&quot;,
+      &quot;review:expectations_are_caller_supplied&quot;,
+      &quot;review:human_review_open&quot;,
+      &quot;skills:candidate-only&quot;,
+      &quot;skills:current-version-evaluation-required&quot;,
+      &quot;skills:independent-qa-required&quot;,
+      &quot;skills:no-admission-or-submission-grant&quot;
+    ]
+  },
+  &quot;receipt&quot;: {
+    &quot;capability_ref&quot;: &quot;capability.partials-source-review/v0.1.0&quot;,
+    &quot;transform_version&quot;: &quot;0.1.0&quot;,
+    &quot;output_digest&quot;: &quot;sha256:493ac13153d2949f181768bc00e8012f0ed3cbcf3c95562bfa68418eefa16d61&quot;,
+    &quot;observed_human_benefit&quot;: null,
+    &quot;human_review_minutes&quot;: null,
+    &quot;compute_cost&quot;: null,
+    &quot;limitations&quot;: [
+      &quot;Matched means only agreement with explicit caller expectations within the supplied age limit.&quot;,
+      &quot;No remote freshness, source authentication, admission, capacity or effect authority is established.&quot;,
+      &quot;Counts describe input dispositions only; domain counts are never added across records.&quot;,
+      &quot;Original request must be retained for replay; this output is not an authenticated ledger.&quot;
+    ]
+  }
+}</pre></details></article><article><p class="eyebrow">Quirk-Systems/quirk-os · candidate</p><h2>At least 6; total unknown</h2><p>Active discretionary initiatives in this program plus outside discretionary inventory; employment and essential care are excluded.</p><dl><div><dt>knowledge</dt><dd>partial</dd></div><div><dt>evidence</dt><dd>partial</dd></div><div><dt>work</dt><dd>not_started</dd></div><div><dt>availability</dt><dd>partial</dd></div></dl><h3>Known items</h3><ul><li>Synthetic optional initiative 1</li><li>Synthetic optional initiative 2</li><li>Synthetic optional initiative 3</li><li>Synthetic optional initiative 4</li><li>Synthetic optional initiative 5</li><li>Synthetic optional initiative 6</li></ul><h3>What remains unresolved</h3><ul><li>independent_human_benefit_verification</li><li>native_comparable_benefit_evidence</li><li>native:inventory_unknown</li><li>native:costs_unknown</li><li>native:insufficient_uses</li><li>initiative.weekly-planning</li><li>current_real_world_capacity</li><li>protected_obligation_fit</li></ul><p><strong>Candidate · propose only · human review required</strong></p><p>Count limit: exceeded</p><details><summary>Evidence and limits</summary><h3>Recorded support</h3><ul><li>native_shape_valid</li><li>native_receipts_consistent</li></ul><ul><li>Native receipts establish local integrity, not authenticated human truth.</li><li>A use report is subjective feedback and supplies no elapsed minutes or completed commitment.</li><li>Native benefit result is a self-report comparison only.</li></ul><h3>Holds</h3><ul><li>os:inventory_unknown</li><li>os:protected_schedule</li><li>os:no_runtime_or_calendar_authority</li><li>inventory_incomplete</li><li>count_limit_exceeded</li><li>evidence_not_supported</li><li>work_not_completed</li><li>inputs_not_available</li><li>human_review_required</li><li>candidate_has_no_execution_authority</li></ul><p>Captured: 2026-09-10T00:00:00.000Z</p><p class="digest">sha256:901722bf755a27861fdf932a7902b61708c0fbdfc00517aed31cbc6bf4c42c8d</p></details></article><article><p class="eyebrow">Quirk-Systems/quirk-preference · candidate</p><h2>At least 1; total unknown</h2><p>Distinct candidate events observed in this one inspection document; full export size, image bytes, identity, and benefit remain unverified.</p><dl><div><dt>knowledge</dt><dd>partial</dd></div><div><dt>evidence</dt><dd>partial</dd></div><div><dt>work</dt><dd>partial</dd></div><div><dt>availability</dt><dd>partial</dd></div></dl><h3>Known items</h3><ul><li>Candidate comparison 1</li></ul><h3>What remains unresolved</h3><ul><li>source_authentication</li><li>verified_human_origin</li><li>independent_evaluation</li><li>observed_human_benefit</li><li>verify_complete_export</li><li>complete_export</li><li>image_bytes:9596cd811612c91579468065a4f239fac60ea9db49610553a42378dbecb46842</li><li>image_bytes:fd3f83026c379f41d4db4bc9f454337378efe29ccd2a06dcecdfe10d03dd255a</li></ul><p><strong>Candidate · propose only · human review required</strong></p><p>Count limit: not_assessed</p><details><summary>Evidence and limits</summary><h3>Recorded support</h3><ul><li>inspection_shape_and_counts_consistent</li></ul><ul><li>Structural projection does not authenticate the inspection or rerun original payload validation.</li><li>Unsigned export; human origin is a claim.</li><li>Replay checking covers this document only.</li><li>A last-page flag does not establish a complete export.</li><li>Included lineage metadata does not establish image byte availability or globally complete lineage.</li></ul><h3>Holds</h3><ul><li>preference:no_graph_application</li><li>preference:no_model_training</li><li>preference:unsigned_source</li><li>preference:human_review_open</li><li>inventory_incomplete</li><li>evidence_not_supported</li><li>work_not_completed</li><li>inputs_not_available</li><li>human_review_required</li><li>candidate_has_no_execution_authority</li></ul><p>Captured: 2026-09-10T00:00:00.000Z</p><p class="digest">sha256:24b9c414e4a37eb6d8e7da2a294012be138387137291ba3cc4e8085a7f6cb69d</p></details></article><article><p class="eyebrow">Quirk-Systems/quirk-skills · candidate</p><h2>At least 2; total unknown</h2><p>Declared RED-stage evaluation scenarios and package readiness; scenario completeness does not mean skill readiness.</p><dl><div><dt>knowledge</dt><dd>partial</dd></div><div><dt>evidence</dt><dd>partial</dd></div><div><dt>work</dt><dd>partial</dd></div><div><dt>availability</dt><dd>partial</dd></div></dl><h3>Known items</h3><ul><li>SYN-RED-001: historical RED result reported</li><li>SYN-RED-002: not executed</li></ul><h3>What remains unresolved</h3><ul><li>current_version_passing_positive_cases</li><li>current_version_passing_negative_or_boundary_cases</li><li>independent_qa_verdict</li><li>immutable_package_digest</li><li>execute_scenario:SYN-RED-002</li><li>current_version_comparative_evaluation</li><li>independent_qa</li><li>SKILL.md (intentionally absent)</li><li>plugin-bundle</li><li>independent-qa-verdict</li><li>package_artifact_inventory</li></ul><p><strong>Candidate · propose only · human review required</strong></p><p>Count limit: not_assessed</p><details><summary>Evidence and limits</summary><h3>Recorded support</h3><ul><li>historical_expected_negative_reported:SYN-RED-001</li></ul><ul><li>RED_CONFIRMED is an expected historical failure, never current-version passing evidence.</li><li>PROPOSED_NOT_EXECUTED scenarios are not executed negative review cases.</li><li>References and recorded SHA-256 values are source declarations; artifact bytes are not verified by this adapter.</li><li>The native RED validator is not executed by this projection; internal consistency cannot establish admission or submission readiness.</li></ul><h3>Holds</h3><ul><li>skills:candidate-only</li><li>skills:current-version-evaluation-required</li><li>skills:independent-qa-required</li><li>skills:no-admission-or-submission-grant</li><li>inventory_incomplete</li><li>evidence_not_supported</li><li>work_not_completed</li><li>inputs_not_available</li><li>human_review_required</li><li>candidate_has_no_execution_authority</li></ul><p>Captured: 2026-09-10T00:00:00.000Z</p><p class="digest">sha256:0015b5e7a4f51593768d7b29fa656a5fc9dc9b19bf14e1d207f6b016684ab558</p></details></article></main></body></html>

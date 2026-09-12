@@ -1,0 +1,101 @@
+{
+  "schema_version": "quirk.partials/v1alpha1",
+  "revision": 0,
+  "supersedes_digest": null,
+  "status": "candidate",
+  "knowledge": {
+    "status": "partial",
+    "known_items": [
+      {
+        "id": "SYN-RED-001",
+        "label": "SYN-RED-001: historical RED result reported"
+      },
+      {
+        "id": "SYN-RED-002",
+        "label": "SYN-RED-002: not executed"
+      }
+    ],
+    "lower_bound": 2,
+    "upper_bound": null,
+    "exact": null,
+    "completeness_basis": "unconfirmed"
+  },
+  "evidence": {
+    "status": "partial",
+    "satisfied": [
+      "historical_expected_negative_reported:SYN-RED-001"
+    ],
+    "missing": [
+      "current_version_passing_positive_cases",
+      "current_version_passing_negative_or_boundary_cases",
+      "independent_qa_verdict",
+      "immutable_package_digest"
+    ],
+    "conflicts": [],
+    "limitations": [
+      "RED_CONFIRMED is an expected historical failure, never current-version passing evidence.",
+      "PROPOSED_NOT_EXECUTED scenarios are not executed negative review cases.",
+      "References and recorded SHA-256 values are source declarations; artifact bytes are not verified by this adapter.",
+      "The native RED validator is not executed by this projection; internal consistency cannot establish admission or submission readiness."
+    ]
+  },
+  "work": {
+    "status": "partial",
+    "completed_units": [
+      "historical_result_report:SYN-RED-001"
+    ],
+    "remaining_units": [
+      "execute_scenario:SYN-RED-002",
+      "current_version_comparative_evaluation",
+      "independent_qa"
+    ],
+    "failed_units": []
+  },
+  "availability": {
+    "status": "partial",
+    "present": [
+      "candidate-object.json"
+    ],
+    "missing": [
+      "SKILL.md (intentionally absent)",
+      "plugin-bundle"
+    ],
+    "unverified": [
+      "independent-qa-verdict",
+      "package_artifact_inventory"
+    ]
+  },
+  "authority": {
+    "maximum_right": "propose",
+    "effect_execution_allowed": false,
+    "calendar_write_allowed": false,
+    "canon_promotion_allowed": false,
+    "graph_application_allowed": false,
+    "training_allowed": false,
+    "human_review_required": true,
+    "upstream_hold_refs": [
+      "skills:candidate-only",
+      "skills:current-version-evaluation-required",
+      "skills:independent-qa-required",
+      "skills:no-admission-or-submission-grant"
+    ]
+  },
+  "id": "skills:synthetic-technique:readiness",
+  "subject": {
+    "system": "Quirk-Systems/quirk-skills",
+    "id": "synthetic-technique",
+    "version": "0.1.0-candidate",
+    "digest": "sha256:621518a4aa75f65f8a6141930b95f6a20bc864a5e1e5e3e1e75202baa109c647"
+  },
+  "scope": {
+    "id": "synthetic-technique:red-readiness",
+    "description": "Declared RED-stage evaluation scenarios and package readiness; scenario completeness does not mean skill readiness."
+  },
+  "provenance": {
+    "kind": "synthetic",
+    "source_refs": [
+      "fixture:skills-red.json"
+    ],
+    "captured_at": "2026-09-10T00:00:00.000Z"
+  }
+}
