@@ -1,0 +1,463 @@
+{
+  "authority_mode": "test_fixture",
+  "blockers": [],
+  "bounded_verified": true,
+  "cases": [
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:18.829765Z",
+      "id": "test_enforcement.EnforcementTests.test_01_synthetic_authorizer_permits_exact_bytes_and_receipt",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:18.491617Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:19.693837Z",
+      "id": "test_enforcement.EnforcementTests.test_02_one_thousand_evaluations_cannot_create_any_grant",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:18.829871Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:19.991050Z",
+      "id": "test_enforcement.EnforcementTests.test_03_evaluator_and_composer_cannot_issue_or_forge_human_grants",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:19.693962Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:20.240543Z",
+      "id": "test_enforcement.EnforcementTests.test_04_additional_fields_cannot_turn_evidence_into_authority",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:19.991161Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:20.543190Z",
+      "id": "test_enforcement.EnforcementTests.test_05_kernel_denies_both_workers_direct_writes",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:20.240654Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:20.786702Z",
+      "id": "test_enforcement.EnforcementTests.test_06_kernel_peer_identity_cannot_be_impersonated",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:20.543294Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:21.283671Z",
+      "id": "test_enforcement.EnforcementTests.test_07_roles_cannot_borrow_each_others_actions",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:20.786814Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:21.760479Z",
+      "id": "test_enforcement.EnforcementTests.test_08_each_subject_dimension_is_bound_to_approval",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:21.283774Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:22.004878Z",
+      "id": "test_enforcement.EnforcementTests.test_09_scope_digest_and_decision_must_match_human_request",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:21.760592Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:22.394571Z",
+      "id": "test_enforcement.EnforcementTests.test_10_current_evaluation_must_pass_and_not_be_invalidated",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:22.005023Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:22.826699Z",
+      "id": "test_enforcement.EnforcementTests.test_11_policy_revision_invalidates_old_evidence_and_grant",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:22.394690Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:23.102144Z",
+      "id": "test_enforcement.EnforcementTests.test_12_revocation_before_dispatch_blocks_publication",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:22.826800Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:25.083485Z",
+      "id": "test_enforcement.EnforcementTests.test_13_expired_approval_is_not_effective",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:23.102252Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:26.457339Z",
+      "id": "test_enforcement.EnforcementTests.test_14_stale_evaluation_cannot_use_current_grant",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:25.083589Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:26.765476Z",
+      "id": "test_enforcement.EnforcementTests.test_15_grant_is_single_use_and_request_replay_has_no_duplicate_effect",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:26.457437Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:27.185874Z",
+      "id": "test_enforcement.EnforcementTests.test_16_grant_and_request_ids_cannot_be_rebound",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:26.765574Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:27.529980Z",
+      "id": "test_enforcement.EnforcementTests.test_17_staging_new_bytes_does_not_redirect_old_approval",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:27.185999Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:27.776684Z",
+      "id": "test_enforcement.EnforcementTests.test_18_changed_snapshot_bytes_fail_closed",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:27.530075Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:28.048750Z",
+      "id": "test_enforcement.EnforcementTests.test_19_second_broker_cannot_own_the_same_state",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:27.776787Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:28.379323Z",
+      "id": "test_enforcement.EnforcementTests.test_20_revocation_after_dispatch_preserves_historical_receipt",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:28.048865Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:30.111842Z",
+      "id": "test_enforcement.EnforcementTests.test_21_expiry_after_dispatch_preserves_historical_receipt",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:28.379423Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:30.625931Z",
+      "id": "test_enforcement.EnforcementTests.test_22_crash_before_dispatch_consumes_grant_and_does_not_retry",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:30.111967Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:31.122209Z",
+      "id": "test_enforcement.EnforcementTests.test_23_crash_after_dispatch_reconciles_one_exact_effect",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:30.626064Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:31.592146Z",
+      "id": "test_enforcement.EnforcementTests.test_24_unexpected_output_is_unknown_and_never_redispatched",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:31.122308Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:34.238636Z",
+      "id": "test_enforcement.EnforcementTests.test_25_grant_expiry_during_dispatch_preparation_blocks_effect",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:31.592243Z"
+    },
+    {
+      "details": [],
+      "finished_at": "2026-09-12T11:24:36.913053Z",
+      "id": "test_enforcement.EnforcementTests.test_26_evaluation_expiry_during_dispatch_preparation_blocks_effect",
+      "outcome": "passed",
+      "started_at": "2026-09-12T11:24:34.238730Z"
+    }
+  ],
+  "command": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "scripts.exact_digest_publish.proof",
+    "run",
+    "--output",
+    "/tmp/exact-digest-proof.json"
+  ],
+  "discovered_cases": [
+    "test_enforcement.EnforcementTests.test_01_synthetic_authorizer_permits_exact_bytes_and_receipt",
+    "test_enforcement.EnforcementTests.test_02_one_thousand_evaluations_cannot_create_any_grant",
+    "test_enforcement.EnforcementTests.test_03_evaluator_and_composer_cannot_issue_or_forge_human_grants",
+    "test_enforcement.EnforcementTests.test_04_additional_fields_cannot_turn_evidence_into_authority",
+    "test_enforcement.EnforcementTests.test_05_kernel_denies_both_workers_direct_writes",
+    "test_enforcement.EnforcementTests.test_06_kernel_peer_identity_cannot_be_impersonated",
+    "test_enforcement.EnforcementTests.test_07_roles_cannot_borrow_each_others_actions",
+    "test_enforcement.EnforcementTests.test_08_each_subject_dimension_is_bound_to_approval",
+    "test_enforcement.EnforcementTests.test_09_scope_digest_and_decision_must_match_human_request",
+    "test_enforcement.EnforcementTests.test_10_current_evaluation_must_pass_and_not_be_invalidated",
+    "test_enforcement.EnforcementTests.test_11_policy_revision_invalidates_old_evidence_and_grant",
+    "test_enforcement.EnforcementTests.test_12_revocation_before_dispatch_blocks_publication",
+    "test_enforcement.EnforcementTests.test_13_expired_approval_is_not_effective",
+    "test_enforcement.EnforcementTests.test_14_stale_evaluation_cannot_use_current_grant",
+    "test_enforcement.EnforcementTests.test_15_grant_is_single_use_and_request_replay_has_no_duplicate_effect",
+    "test_enforcement.EnforcementTests.test_16_grant_and_request_ids_cannot_be_rebound",
+    "test_enforcement.EnforcementTests.test_17_staging_new_bytes_does_not_redirect_old_approval",
+    "test_enforcement.EnforcementTests.test_18_changed_snapshot_bytes_fail_closed",
+    "test_enforcement.EnforcementTests.test_19_second_broker_cannot_own_the_same_state",
+    "test_enforcement.EnforcementTests.test_20_revocation_after_dispatch_preserves_historical_receipt",
+    "test_enforcement.EnforcementTests.test_21_expiry_after_dispatch_preserves_historical_receipt",
+    "test_enforcement.EnforcementTests.test_22_crash_before_dispatch_consumes_grant_and_does_not_retry",
+    "test_enforcement.EnforcementTests.test_23_crash_after_dispatch_reconciles_one_exact_effect",
+    "test_enforcement.EnforcementTests.test_24_unexpected_output_is_unknown_and_never_redispatched",
+    "test_enforcement.EnforcementTests.test_25_grant_expiry_during_dispatch_preparation_blocks_effect",
+    "test_enforcement.EnforcementTests.test_26_evaluation_expiry_during_dispatch_preparation_blocks_effect"
+  ],
+  "environment": {
+    "egid": 0,
+    "euid": 0,
+    "executable": "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "gid": 0,
+    "gid_map": "0          0 4294967295",
+    "kernel": "6.17.0-1022-azure",
+    "machine": "x86_64",
+    "platform": "linux",
+    "python": "3.13.15 (main, Aug  6 2026, 02:15:18) [GCC 13.3.0]",
+    "runner": {},
+    "supplementary_groups": [
+      0
+    ],
+    "uid": 0,
+    "uid_map": "0          0 4294967295"
+  },
+  "evaluation_ref": "eval.exact-digest-publish.process-isolation.v1",
+  "evidence_origin": "Unsigned observed unittest result; verify the execution source separately.",
+  "execution_method": "unittest discovery and TestResult in this runner process",
+  "finished_at": "2026-09-12T11:24:36.913319Z",
+  "format_version": 1,
+  "required_cases": [
+    "test_enforcement.EnforcementTests.test_01_synthetic_authorizer_permits_exact_bytes_and_receipt",
+    "test_enforcement.EnforcementTests.test_02_one_thousand_evaluations_cannot_create_any_grant",
+    "test_enforcement.EnforcementTests.test_03_evaluator_and_composer_cannot_issue_or_forge_human_grants",
+    "test_enforcement.EnforcementTests.test_04_additional_fields_cannot_turn_evidence_into_authority",
+    "test_enforcement.EnforcementTests.test_05_kernel_denies_both_workers_direct_writes",
+    "test_enforcement.EnforcementTests.test_06_kernel_peer_identity_cannot_be_impersonated",
+    "test_enforcement.EnforcementTests.test_07_roles_cannot_borrow_each_others_actions",
+    "test_enforcement.EnforcementTests.test_08_each_subject_dimension_is_bound_to_approval",
+    "test_enforcement.EnforcementTests.test_09_scope_digest_and_decision_must_match_human_request",
+    "test_enforcement.EnforcementTests.test_10_current_evaluation_must_pass_and_not_be_invalidated",
+    "test_enforcement.EnforcementTests.test_11_policy_revision_invalidates_old_evidence_and_grant",
+    "test_enforcement.EnforcementTests.test_12_revocation_before_dispatch_blocks_publication",
+    "test_enforcement.EnforcementTests.test_13_expired_approval_is_not_effective",
+    "test_enforcement.EnforcementTests.test_14_stale_evaluation_cannot_use_current_grant",
+    "test_enforcement.EnforcementTests.test_15_grant_is_single_use_and_request_replay_has_no_duplicate_effect",
+    "test_enforcement.EnforcementTests.test_16_grant_and_request_ids_cannot_be_rebound",
+    "test_enforcement.EnforcementTests.test_17_staging_new_bytes_does_not_redirect_old_approval",
+    "test_enforcement.EnforcementTests.test_18_changed_snapshot_bytes_fail_closed",
+    "test_enforcement.EnforcementTests.test_19_second_broker_cannot_own_the_same_state",
+    "test_enforcement.EnforcementTests.test_20_revocation_after_dispatch_preserves_historical_receipt",
+    "test_enforcement.EnforcementTests.test_21_expiry_after_dispatch_preserves_historical_receipt",
+    "test_enforcement.EnforcementTests.test_22_crash_before_dispatch_consumes_grant_and_does_not_retry",
+    "test_enforcement.EnforcementTests.test_23_crash_after_dispatch_reconciles_one_exact_effect",
+    "test_enforcement.EnforcementTests.test_24_unexpected_output_is_unknown_and_never_redispatched",
+    "test_enforcement.EnforcementTests.test_25_grant_expiry_during_dispatch_preparation_blocks_effect",
+    "test_enforcement.EnforcementTests.test_26_evaluation_expiry_during_dispatch_preparation_blocks_effect"
+  ],
+  "result": {
+    "errors": 0,
+    "expected_failures": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests_run": 26,
+    "unexpected_successes": 0,
+    "was_successful": true
+  },
+  "run_id": "3068b110-c78b-40a2-9deb-de6f585a64d1",
+  "source_manifest": {
+    "algorithm": "sha256",
+    "files": {
+      ".github/workflows/exact-digest-publishing.yml": {
+        "bytes": 1759,
+        "sha256": "463c2c5d917d8af6bd7a88f19f7190de95d04c6d72f17c80d589a2435aadc56c"
+      },
+      "docs/exact_digest_publish/PLAN.md": {
+        "bytes": 6393,
+        "sha256": "0f33cf5bf5e9087b880d3751d11756be463a7dc065fff4cbb5e99b7f2f2278c3"
+      },
+      "evals/exact_digest_publish/plan-artifact.json": {
+        "bytes": 1013,
+        "sha256": "6b25139315e03690ca66a0c8dcc9889d52012dbb53d6e945d7ff37a83356c7cc"
+      },
+      "schemas/artifact.schema.json": {
+        "bytes": 1253,
+        "sha256": "abeefa071fe318ffd5d597ff9c8762b766fb0af5977f98527bb0ff6faedd219f"
+      },
+      "schemas/proposed-move.schema.json": {
+        "bytes": 6282,
+        "sha256": "c698bd7de16b7d76de093f822c8abba2b1a8fe27e5377f692f6c300909833c33"
+      },
+      "scripts/exact_digest_publish/__init__.py": {
+        "bytes": 80,
+        "sha256": "51dedb3054866abfbc5e61ae0e809847382743986e49638817aa9048b60b03db"
+      },
+      "scripts/exact_digest_publish/authorizer.py": {
+        "bytes": 2990,
+        "sha256": "266daabec3bdc9e3d1d657f7b23e307d807a980c429abdb1d463ad9a34fe9b18"
+      },
+      "scripts/exact_digest_publish/broker.py": {
+        "bytes": 22772,
+        "sha256": "25eefafaea675bda0f1f844990d84f6e2b69a49dd190a32965d4e7c7220f6f6a"
+      },
+      "scripts/exact_digest_publish/client.py": {
+        "bytes": 1819,
+        "sha256": "7d724ac70b2cfb1e6d1d206dd2b8f2fb8683962b8c3b38032f9e1046baaa748f"
+      },
+      "scripts/exact_digest_publish/model.py": {
+        "bytes": 3502,
+        "sha256": "1fa858c984d1fe1d92877971f62e49149e2bebce509b713c57c0ad1cb57a8e6f"
+      },
+      "scripts/exact_digest_publish/proof.py": {
+        "bytes": 21369,
+        "sha256": "465b004dd1e5dd5e81c394f767fb295f1160b44b9ccda335e3ac734fc79e9c8c"
+      },
+      "tests/exact_digest_publish/peer_client.py": {
+        "bytes": 2896,
+        "sha256": "52b4d130a08842fe4b9cc90a91d4585a9270f7f7026498a2b6d24f442eb9a1d8"
+      },
+      "tests/exact_digest_publish/test_enforcement.py": {
+        "bytes": 32016,
+        "sha256": "d25199274dd6be18d5640d2c3532c646a7b78bb04a203a414454403aa137da40"
+      }
+    },
+    "manifest_sha256": "7e0d35584185138a4b185f4ecfbdb6d2df067f3a1bbfa41af8ba62444cbcf260",
+    "work_inputs": {
+      "proposed_move": {
+        "excluded_resolver_outputs": [
+          "disposition",
+          "eval_refs",
+          "evidence_refs",
+          "implementation_ref",
+          "receipt_ref",
+          "resolution_artifacts",
+          "resolution_note"
+        ],
+        "path": "evals/exact_digest_publish/proposed-move.json",
+        "sha256": "a5a520bcc717815176bc2dd0534e9f8cbfef98e5e64f186b5ae76e7655ded17e"
+      }
+    }
+  },
+  "source_manifest_after": {
+    "algorithm": "sha256",
+    "files": {
+      ".github/workflows/exact-digest-publishing.yml": {
+        "bytes": 1759,
+        "sha256": "463c2c5d917d8af6bd7a88f19f7190de95d04c6d72f17c80d589a2435aadc56c"
+      },
+      "docs/exact_digest_publish/PLAN.md": {
+        "bytes": 6393,
+        "sha256": "0f33cf5bf5e9087b880d3751d11756be463a7dc065fff4cbb5e99b7f2f2278c3"
+      },
+      "evals/exact_digest_publish/plan-artifact.json": {
+        "bytes": 1013,
+        "sha256": "6b25139315e03690ca66a0c8dcc9889d52012dbb53d6e945d7ff37a83356c7cc"
+      },
+      "schemas/artifact.schema.json": {
+        "bytes": 1253,
+        "sha256": "abeefa071fe318ffd5d597ff9c8762b766fb0af5977f98527bb0ff6faedd219f"
+      },
+      "schemas/proposed-move.schema.json": {
+        "bytes": 6282,
+        "sha256": "c698bd7de16b7d76de093f822c8abba2b1a8fe27e5377f692f6c300909833c33"
+      },
+      "scripts/exact_digest_publish/__init__.py": {
+        "bytes": 80,
+        "sha256": "51dedb3054866abfbc5e61ae0e809847382743986e49638817aa9048b60b03db"
+      },
+      "scripts/exact_digest_publish/authorizer.py": {
+        "bytes": 2990,
+        "sha256": "266daabec3bdc9e3d1d657f7b23e307d807a980c429abdb1d463ad9a34fe9b18"
+      },
+      "scripts/exact_digest_publish/broker.py": {
+        "bytes": 22772,
+        "sha256": "25eefafaea675bda0f1f844990d84f6e2b69a49dd190a32965d4e7c7220f6f6a"
+      },
+      "scripts/exact_digest_publish/client.py": {
+        "bytes": 1819,
+        "sha256": "7d724ac70b2cfb1e6d1d206dd2b8f2fb8683962b8c3b38032f9e1046baaa748f"
+      },
+      "scripts/exact_digest_publish/model.py": {
+        "bytes": 3502,
+        "sha256": "1fa858c984d1fe1d92877971f62e49149e2bebce509b713c57c0ad1cb57a8e6f"
+      },
+      "scripts/exact_digest_publish/proof.py": {
+        "bytes": 21369,
+        "sha256": "465b004dd1e5dd5e81c394f767fb295f1160b44b9ccda335e3ac734fc79e9c8c"
+      },
+      "tests/exact_digest_publish/peer_client.py": {
+        "bytes": 2896,
+        "sha256": "52b4d130a08842fe4b9cc90a91d4585a9270f7f7026498a2b6d24f442eb9a1d8"
+      },
+      "tests/exact_digest_publish/test_enforcement.py": {
+        "bytes": 32016,
+        "sha256": "d25199274dd6be18d5640d2c3532c646a7b78bb04a203a414454403aa137da40"
+      }
+    },
+    "manifest_sha256": "7e0d35584185138a4b185f4ecfbdb6d2df067f3a1bbfa41af8ba62444cbcf260",
+    "work_inputs": {
+      "proposed_move": {
+        "excluded_resolver_outputs": [
+          "disposition",
+          "eval_refs",
+          "evidence_refs",
+          "implementation_ref",
+          "receipt_ref",
+          "resolution_artifacts",
+          "resolution_note"
+        ],
+        "path": "evals/exact_digest_publish/proposed-move.json",
+        "sha256": "a5a520bcc717815176bc2dd0534e9f8cbfef98e5e64f186b5ae76e7655ded17e"
+      }
+    }
+  },
+  "started_at": "2026-09-12T11:24:18.429744Z",
+  "suite_errors": [],
+  "test_command": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/exact_digest_publish",
+    "-v"
+  ],
+  "trust_assumptions": [
+    "Linux kernel and root test supervisor are trusted; broker and workers are distinct non-root UIDs.",
+    "Broker code/configuration and their ancestors are controlled by the trusted deployment authority.",
+    "Authorizer UID and credentials are not controlled by evaluator or composer processes.",
+    "No privileged file descriptor or privileged process capability is delegated to worker identities.",
+    "The protected local filesystem sink is the complete publication effect under test.",
+    "Evidence is retrieved from a trusted execution source; these JSON run records are unsigned."
+  ],
+  "verified_claims": [
+    "Passing evaluations alone do not create grants or authorize publication.",
+    "Kernel-authenticated evaluator and composer identities cannot invoke authorizer operations or write protected state and sink paths.",
+    "Publication binds artifact identity, payload digest, operation, destination and current policy; time validity is rechecked immediately before publication.",
+    "Missing, expired, revoked, used or scope-mismatched grants and non-current evaluation passes block new publication.",
+    "Exact staged bytes, single-use grants, request idempotency and crash reconciliation constrain the local effect and its receipt."
+  ],
+  "withheld_claims": [
+    "Actual human presence, understanding, and consent: automated authorizer is a synthetic fixture.",
+    "Production authentication, deployment admission, external publishing adapters, and cloud credential isolation.",
+    "Protection against compromised root, kernel, broker, deployment authority, or authorizer session.",
+    "Canonical admission, live activation, or permission manufactured by evaluation success."
+  ]
+}

@@ -2,12 +2,16 @@
   "algorithm": "sha256",
   "files": {
     ".github/workflows/exact-digest-publishing.yml": {
-      "bytes": 1630,
-      "sha256": "ac8fc976f626af1f203df4382825500aed17b5ea1c120d30017d76c1b022c4d7"
+      "bytes": 1759,
+      "sha256": "463c2c5d917d8af6bd7a88f19f7190de95d04c6d72f17c80d589a2435aadc56c"
     },
     "docs/exact_digest_publish/PLAN.md": {
       "bytes": 6393,
       "sha256": "0f33cf5bf5e9087b880d3751d11756be463a7dc065fff4cbb5e99b7f2f2278c3"
+    },
+    "evals/exact_digest_publish/plan-artifact.json": {
+      "bytes": 1013,
+      "sha256": "6b25139315e03690ca66a0c8dcc9889d52012dbb53d6e945d7ff37a83356c7cc"
     },
     "schemas/artifact.schema.json": {
       "bytes": 1253,
@@ -38,8 +42,8 @@
       "sha256": "1fa858c984d1fe1d92877971f62e49149e2bebce509b713c57c0ad1cb57a8e6f"
     },
     "scripts/exact_digest_publish/proof.py": {
-      "bytes": 19333,
-      "sha256": "c8cf364f078a65a7781ae59217a4e5e2eb2ec59255b1d3b434f497865a76a6ef"
+      "bytes": 21369,
+      "sha256": "465b004dd1e5dd5e81c394f767fb295f1160b44b9ccda335e3ac734fc79e9c8c"
     },
     "tests/exact_digest_publish/peer_client.py": {
       "bytes": 2896,
@@ -50,5 +54,20 @@
       "sha256": "d25199274dd6be18d5640d2c3532c646a7b78bb04a203a414454403aa137da40"
     }
   },
-  "manifest_sha256": "600dbfe3a120a9073de30641b9db0c4efc72dfce8c75854f7e9cd7e8442c8d8b"
+  "manifest_sha256": "7e0d35584185138a4b185f4ecfbdb6d2df067f3a1bbfa41af8ba62444cbcf260",
+  "work_inputs": {
+    "proposed_move": {
+      "excluded_resolver_outputs": [
+        "disposition",
+        "eval_refs",
+        "evidence_refs",
+        "implementation_ref",
+        "receipt_ref",
+        "resolution_artifacts",
+        "resolution_note"
+      ],
+      "path": "evals/exact_digest_publish/proposed-move.json",
+      "sha256": "a5a520bcc717815176bc2dd0534e9f8cbfef98e5e64f186b5ae76e7655ded17e"
+    }
+  }
 }

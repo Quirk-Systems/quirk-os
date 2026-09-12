@@ -26,14 +26,14 @@
   ],
   "dependency_class": "missing_execution_contract",
   "desired_change": "Implement and verify a Linux broker that permits publication to a protected local sink only when current evaluation evidence and an independently recorded human-authorizer grant cover the same artifact, digest, destination, and policy.",
-  "disposition": "implemented",
+  "disposition": "verified",
   "eval_refs": [
     "eval.exact-digest-publish.process-isolation.v1",
-    "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json"
+    "evals/exact_digest_publish/run-9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6.json"
   ],
   "evidence_refs": [
     "evals/exact_digest_publish/proof-artifact.json",
-    "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json",
+    "evals/exact_digest_publish/run-9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6.json",
     "evals/exact_digest_publish/manifest.json"
   ],
   "expected_outcome": "Evaluator and composer subprocesses cannot mint human grants, weaken the guard, or publish directly; actual evidence resolves only the tested local boundary.",
@@ -49,7 +49,7 @@
     "actor_id": "agent.codex",
     "actor_type": "agent"
   },
-  "receipt_ref": "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json",
+  "receipt_ref": "evals/exact_digest_publish/run-9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6.json",
   "resolution_artifacts": [
     "scripts/exact_digest_publish/",
     "tests/exact_digest_publish/",
@@ -59,9 +59,10 @@
     "evals/exact_digest_publish/implementation-artifact.json",
     "evals/exact_digest_publish/proof-artifact.json",
     "evals/exact_digest_publish/manifest.json",
-    "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json"
+    "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json",
+    "evals/exact_digest_publish/run-9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6.json"
   ],
-  "resolution_note": "Constrain: implementation exists; local boundary proof remains unresolved. Blockers: MISSING_EXTRA_OR_DUPLICATE_EXECUTED_CASES, SUITE_OR_PREFLIGHT_ERRORS, UNSUCCESSFUL_OR_INCOMPLETE_TEST_RESULT. Actual human presence, production deployment, external publication, and Canon admission remain unproven; evaluation grants no authority.",
+  "resolution_note": "Constrain: verified only for the exact recorded sources and Linux local protected-sink boundary, using synthetic authorizer identities. Actual human presence, production deployment, external publication, and Canon admission remain unproven; evaluation grants no authority.",
   "reversibility": "reversible",
   "risk": {
     "class": "L3",

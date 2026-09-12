@@ -79,6 +79,8 @@ The operating system must distinguish these principals. Evaluator and composer p
 
 A passing evaluation is evidence. A grant is permission. A receipt records an effect. They remain separate records even when the publication guard composes them.
 
+The implementation argument is an invariant over the protected grant store. Start with no grant. Every evaluator operation leaves that store unchanged; the publication guard requires an effective grant from the separate authorizer identity. Induction therefore preserves the denial after any finite sequence of evaluator operations. The 1,000-evaluation test checks an execution of this invariant; code review checks the transition structure. This is a bounded implementation argument, not a machine-checked theorem about every possible deployment.
+
 ## Trust assumptions
 
 - The Linux kernel, root, broker process, and deployment control plane are trusted.
@@ -100,3 +102,11 @@ At the durable authorization commit, the broker requires a current passing evalu
 No new evaluation or grant can be processed during that serialized commit-and-dispatch operation.
 
 The planned stages use existing Proposed Move, Artifact, evaluation, and receipt distinctions. They add no `Shape`, `Plan`, `Implementation`, or `Proof` foundational kind.
+
+## Recorded result
+
+[GitHub Actions run 34690959537](https://github.com/Quirk-Systems/quirk-os/actions/runs/34690959537) passed all 26 required process cases with zero failures, errors, or skips at commit `90a37d8d7f55f007f682bfd9ae4a9f6dfc566d74`, on Linux with a full UID/GID map. The source-and-work-input manifest is `7e0d35584185138a4b185f4ecfbdb6d2df067f3a1bbfa41af8ba62444cbcf260`. The existing Golden Gates workflow also passed.
+
+The [proof Artifact](../../evals/exact_digest_publish/proof-artifact.json) preserves the exact run bytes and checked GitHub origin; the [implementation Artifact](../../evals/exact_digest_publish/implementation-artifact.json) references the source manifest. Resolution validated the existing work-object schemas and plan digest. The Proposed Move is `verified` only within its recorded local boundary, with **Constrain** admission and synthetic authorizer identities. Neither result grants Human Approval.
+
+Earlier failures remain distinguishable: the preserved local run executed zero tests because only UID/GID 0 was mapped; the first CI attempt failed before execution because repository policy required full action commit pins. Neither supplied passing evidence.

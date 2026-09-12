@@ -1,14 +1,14 @@
 {
   "artifact_id": "artifact.exact-digest-publish.implementation",
   "artifact_type": "source_manifest",
-  "content_hash": "7edab27892dd275f661e39d33043cd72aae29ed91e59e42e4ead87792bb69e46",
+  "content_hash": "ff96f8380d0ce2381c247a6d925fecff2035024e8104019bcd053f921a2ec4d7",
   "content_ref": "evals/exact_digest_publish/manifest.json",
-  "created_at": "2026-09-12T11:19:51.572536Z",
+  "created_at": "2026-09-12T11:25:08.316017Z",
   "created_by": "agent.codex",
   "evaluation": {
     "authority_effect": "none",
     "authority_mode": "test_fixture",
-    "bounded_verified": false
+    "bounded_verified": true
   },
   "metadata": {
     "maturity": "candidate",
@@ -20,9 +20,9 @@
     "provenance_complete": false,
     "status": "unclear"
   },
-  "run_receipt_ref": "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json",
+  "run_receipt_ref": "evals/exact_digest_publish/run-9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6.json",
   "source_refs": [
-    "evals/exact_digest_publish/run-a4b00b8713249870969bfe13c4ef09f964ea1000d61fab55fdb05537aab1a5b7.json",
+    "evals/exact_digest_publish/run-9056cf50b0f18bc6f5031a611f5256ccdfa8c1f0f81eea450da1c968fb2b82b6.json",
     "https://github.com/Quirk-Systems/quirk-core/pull/10"
   ],
   "status": "produced",
