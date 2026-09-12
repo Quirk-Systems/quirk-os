@@ -166,7 +166,7 @@ class SkillContractTests(unittest.TestCase):
             (ROOT / "schemas" / "skill-runtime-grant.schema.json").read_text(encoding="utf-8")
         )
         receipt_schema = json.loads(
-            (ROOT / "schemas" / "skill-run-receipt.schema.json").read_text(encoding="utf-8")
+            (ROOT / "schemas" / "skill-run-receipt.v2.schema.json").read_text(encoding="utf-8")
         )
         format_checker = FormatChecker()
         grant_errors = list(
@@ -191,8 +191,22 @@ class SkillContractTests(unittest.TestCase):
             Draft202012Validator(receipt_schema, format_checker=format_checker).iter_errors(receipt)
         )
         self.assertEqual(receipt_errors, [])
-        self.assertTrue(receipt["immutable"])
-        self.assertTrue(receipt["no_authority_escalation"])
+        self.assertIsNone(receipt["immutable"])
+        self.assertIsNone(receipt["no_authority_escalation"])
+        self.assertIsNone(receipt["authority_ceiling_observed"])
+        self.assertEqual(receipt["schema_version"], "skill-run-receipt/v2")
+        self.assertEqual(receipt["evidence_status"], "unverified")
+
+    def test_receipt_builder_does_not_invent_observations(self) -> None:
+        manifest, _ = admitted_copy()
+        receipt = build_run_receipt(
+            manifest, valid_grant(manifest), receipt_id="receipt.test.unknown",
+            status="completed", started_at="2026-08-12T05:00:00Z",
+            finished_at="2026-08-12T05:01:00Z", input_refs=[], output_refs=[],
+            evidence_refs=[], finding_codes=[], proposed_mutations=[],
+        )
+        self.assertNotEqual(receipt.get("no_authority_escalation"), True)
+        self.assertNotEqual(receipt.get("immutable"), True)
 
     def test_all_44_cases_execute_to_declared_expectations(self) -> None:
         cases = json.loads(

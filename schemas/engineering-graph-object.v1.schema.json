@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "Engineering graph current object v1",
+  "required": [
+    "object_id",
+    "digest",
+    "kind",
+    "tenant_id"
+  ],
+  "properties": {
+    "object_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "artifact",
+        "claim",
+        "evidence",
+        "run",
+        "action",
+        "judgment",
+        "principal",
+        "policy"
+      ]
+    },
+    "visible_to": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$id": "https://quirk.systems/schemas/engineering-graph-object.v1.schema.json"
+}

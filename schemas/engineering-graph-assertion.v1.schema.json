@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "Engineering provenance assertion v1",
+  "description": "Candidate content only; never action authority. Endpoints and source_ref must resolve to same-tenant objects. Runtime checks exact current digests and validity. An observed label requires trusted host observation; this schema does not authenticate authorship.",
+  "required": [
+    "assertion_id",
+    "subject_id",
+    "subject_digest",
+    "predicate",
+    "object_id",
+    "object_digest",
+    "source_ref",
+    "source_digest",
+    "observer",
+    "observed_at",
+    "valid_from",
+    "valid_until",
+    "status"
+  ],
+  "properties": {
+    "assertion_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predicate": {
+      "enum": [
+        "supported_by",
+        "contradicted_by",
+        "depends_on",
+        "blocked_by",
+        "produced",
+        "prefers"
+      ]
+    },
+    "object_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_until": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "observed",
+        "declared",
+        "retracted"
+      ]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "supersedes": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$id": "https://quirk.systems/schemas/engineering-graph-assertion.v1.schema.json"
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": "candidate-projection-readback/v1",
+  "observed_at": "2026-09-10T08:13:37.244Z",
+  "base_id": "appYP3w5BrARBp9Yq",
+  "table_id": "tblyZVemDCb77wb8y",
+  "url": "https://airtable.com/appYP3w5BrARBp9Yq/tblyZVemDCb77wb8y",
+  "local_source_commit": "32246433730c9a3a4e9b7538660ce94b72885a7d",
+  "operation": "create_and_readback",
+  "records": [
+    {
+      "record_id": "action.local-pilot.20260910",
+      "airtable_record_id": "recgqEFOtboma6zbM",
+      "content_sha256": "634b5c96cf7306c3a5b600003cf9cbf55709d9f9994ca99bf5ffb9ec9f412504",
+      "matched_fields": 21
+    },
+    {
+      "record_id": "evidence.runtime-proof.20260910",
+      "airtable_record_id": "reco6CpFjla9Bt9BN",
+      "content_sha256": "31860fc5bd25593a024ee0b21ce753ecbd49256fb0b583558b6fd125c87119b2",
+      "matched_fields": 21
+    },
+    {
+      "record_id": "binding.runtime-pr3",
+      "airtable_record_id": "recPHS8tTA91JJbj1",
+      "content_sha256": "c6e9f42d1d2c5059fc79fb013a4cdf3a18059f01ac7aa45cbfd3bbeb51a9de50",
+      "matched_fields": 21
+    },
+    {
+      "record_id": "binding.supabase-candidate",
+      "airtable_record_id": "rechN3LlbzxMk2Tlh",
+      "content_sha256": "c235563c1748e6f2be5e65702ec8e800654a721885125f94d1fbf8185aa7d6db",
+      "matched_fields": 21
+    },
+    {
+      "record_id": "binding.hugging-face-export",
+      "airtable_record_id": "recfjXYYzcbdUuTdY",
+      "content_sha256": "f24d578737aec5945b28a6ea6bfe68aff71d67d893ad102ef1c61b317d7401c3",
+      "matched_fields": 21
+    },
+    {
+      "record_id": "evidence.agent-ready-scan",
+      "airtable_record_id": "recuwW8g9zvd04rhX",
+      "content_sha256": "f2fa603603606ead9c75234833f0885d39738b1f5732e79dda89da08732daa8a",
+      "matched_fields": 21
+    },
+    {
+      "record_id": "binding.cloudflare-runtime",
+      "airtable_record_id": "recETYfGWowR473nl",
+      "content_sha256": "c4f2fc5b63dde6ebd3cc80bae5afee363cd9074c55687fc8768d617b9f0c2014",
+      "matched_fields": 21
+    },
+    {
+      "record_id": "binding.airtable-candidate",
+      "airtable_record_id": "rectuNsR9mpVLjZtD",
+      "content_sha256": "7814e9360275fee7900a66ca054549cc936b05a4a9e9d9a357851d91df9ad492",
+      "matched_fields": 21
+    }
+  ],
+  "verified_count": 8,
+  "admission_effect": "none",
+  "limitations": [
+    "Candidate projection only",
+    "Readback equality is not immutable storage or observer authentication",
+    "Local pilot external-write counter excludes this separately authorized host projection"
+  ]
+}
