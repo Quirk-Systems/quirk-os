@@ -1,0 +1,19 @@
+{
+  "validation_status": "pass",
+  "validated_at": "2026-08-21T07:44:00Z",
+  "scope": "candidate contract pack only",
+  "validator": "local candidate-pack validation",
+  "positive_fixtures_passing": 4,
+  "adversarial_fixtures_rejecting": 11,
+  "exit_code": 0,
+  "warning": "A spreadsheet runtime warmup warning appeared in the local environment before validation; the contract validator itself exited with code 0.",
+  "not_proven": [
+    "runtime readiness",
+    "canonical admission",
+    "provider access",
+    "publication authority",
+    "automatic learning promotion",
+    "economic scalability in production",
+    "observed compounding in production"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "fixture_set": "one-to-infinity-positive-fixtures",
+  "expected_result": "accept_as_candidate_shape_only",
+  "fixtures": [
+    {
+      "fixture_id": "minimum-valid-transformation",
+      "target_contract": "transformation",
+      "must_include": [
+        "value_contract",
+        "retained_state",
+        "reinvestment_rule",
+        "constraints",
+        "balancers",
+        "delays",
+        "governance",
+        "promotion_policy"
+      ]
+    },
+    {
+      "fixture_id": "minimum-valid-run",
+      "target_contract": "run",
+      "must_include": [
+        "authority_scope",
+        "provider_may_promote=false",
+        "retained_state_updates.require_promotion_decision=true",
+        "metrics",
+        "receipts"
+      ]
+    },
+    {
+      "fixture_id": "minimum-valid-evidence",
+      "target_contract": "evidence",
+      "must_include": [
+        "one evidence_stage only",
+        "baseline",
+        "observed_result",
+        "evaluator",
+        "counter_metrics",
+        "falsification",
+        "limitations"
+      ]
+    },
+    {
+      "fixture_id": "minimum-valid-promotion",
+      "target_contract": "promotion",
+      "must_include": [
+        "required evidence IDs for all five proof stages",
+        "human decision authority",
+        "no_auto_promotion=true",
+        "no_provider_authority=true",
+        "rollback_plan",
+        "explicit exclusions"
+      ]
+    }
+  ]
+}
