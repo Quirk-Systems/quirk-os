@@ -1,0 +1,71 @@
+{
+  "api_version": "quirk.dev/attention-program/v1alpha1",
+  "kind": "Program",
+  "metadata": {
+    "id": "program.attention-demo",
+    "title": "Attention Program \u2014 synthetic example",
+    "version": "0.1.0",
+    "status": "candidate",
+    "owner_ref": "human.operator"
+  },
+  "authority": {
+    "maximum_right": "propose",
+    "external_effects": false
+  },
+  "revision": 0,
+  "goal": {
+    "id": "goal.reduced-planning-burden",
+    "statement": "Complete a recurring planning commitment with less total human effort while protecting existing obligations.",
+    "beneficiary": "The operator",
+    "done_when": "Two comparable useful completions; positive net human minutes after all recorded costs; no reported displaced obligation; explicit trial decision."
+  },
+  "trial": {
+    "start_date": "2026-01-05",
+    "end_date": "2026-01-18",
+    "phase": "defined",
+    "disposition": null,
+    "reason": ""
+  },
+  "bounds": {
+    "wip_limit": 2,
+    "external_in_progress": null,
+    "inventory_confirmed": false,
+    "setup_minutes": 0,
+    "maintenance_minutes": 0,
+    "costs_confirmed": false
+  },
+  "schedule": {
+    "timezone": "Etc/UTC",
+    "sleep_start": "23:00",
+    "sleep_end": "07:00",
+    "workdays": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "work_start": "09:00",
+    "work_end": "17:00",
+    "prep_minutes": 15,
+    "commute_minutes": 20,
+    "weekend_anchor": null,
+    "weekend_start": "09:00",
+    "weekend_end": "13:00"
+  },
+  "initiatives": [
+    {
+      "id": "initiative.weekly-planning",
+      "title": "A manageable weekly plan",
+      "beneficiary": "The operator",
+      "done_when": "Fixed obligations are accounted for and selected optional work fits confirmed capacity.",
+      "next_move": "Confirm existing discretionary commitments, then choose one available planning session.",
+      "phase": "queued",
+      "budget_minutes": 60,
+      "cluster_ids": []
+    }
+  ],
+  "sessions": [],
+  "observations": [],
+  "receipts": []
+}

@@ -21,6 +21,10 @@ The first project pack defines the accountable machinery beneath Quirk Core:
 
 Start here: [`docs/golden-project-pack/README.md`](docs/golden-project-pack/README.md)
 
+## Candidate local program tooling
+
+The [Attention Program](docs/attention-program/README.md) binds a goal to bounded commitments, known capacity, human-reported evidence, and an explicit ending. Its portable local panel and deterministic runner do not activate a runtime manifest or grant external authority.
+
 ## Core laws
 
 - Every consequential mutation owes a receipt.
