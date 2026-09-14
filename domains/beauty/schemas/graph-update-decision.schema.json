@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quirk://schemas/core/graph-update-decision/0.1.0",
+  "title": "GraphUpdateDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "proposalId": { "type": "string" },
+    "actorId": { "type": "string" },
+    "purpose": { "type": "string" },
+    "decision": { "enum": ["approve", "revise", "reject"] },
+    "humanConfirmed": { "const": true },
+    "reason": { "type": "string", "minLength": 1 },
+    "corrections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feature": { "type": "string" },
+          "delta": { "type": "number", "minimum": -1, "maximum": 1 },
+          "setStrength": { "type": "number", "minimum": -1, "maximum": 1 },
+          "evidenceIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+        },
+        "required": ["feature", "delta", "evidenceIds"]
+      }
+    },
+    "decidedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["id", "proposalId", "actorId", "purpose", "decision", "humanConfirmed", "reason", "corrections", "decidedAt", "expiresAt"]
+}

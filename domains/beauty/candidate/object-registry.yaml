@@ -1,0 +1,52 @@
+api_version: quirk.candidate/v1
+kind: ObjectRegistry
+metadata:
+  domain: quirk.products.beauty
+  version: 0.1.0
+  truth_status: candidate
+objects:
+  - id: beauty.taste_context
+    purpose: Declares the purpose partition and real-world context for a choice.
+    owner: quirk.products.beauty
+    lifecycle: ephemeral_or_versioned
+    authority: descriptive_only
+  - id: beauty.taste_option
+    purpose: Represents a comparable beauty candidate with explicit attributes.
+    owner: quirk.products.beauty
+    lifecycle: candidate
+    authority: none
+  - id: beauty.taste_choice
+    purpose: Records an explicit human selection or abstention.
+    owner: quirk.products.beauty
+    lifecycle: append_only_event
+    authority: evidence_only
+  - id: beauty.preference_evidence
+    purpose: Derives candidate preference evidence from an explicit choice.
+    owner: quirk.products.beauty
+    lifecycle: append_only_candidate
+    authority: cannot_mutate_graph
+  - id: beauty.recommendation
+    purpose: Ranks a candidate option and cites the evidence used.
+    owner: quirk.products.beauty
+    lifecycle: expiring_candidate
+    authority: proposal_only
+  - id: beauty.outcome_observation
+    purpose: Records an explicit human report after real-world testing.
+    owner: quirk.products.beauty
+    lifecycle: append_only_event
+    authority: evidence_only
+  - id: beauty.graph_update_proposal
+    purpose: Proposes a purpose-scoped Preference Graph change.
+    owner: quirk.products.beauty
+    lifecycle: expiring_candidate
+    authority: auto_apply_false
+  - id: core.graph_update_decision
+    purpose: Records the human approval, revision, or rejection.
+    owner: quirk.core.human_gate
+    lifecycle: append_only_decision
+    authority: bounded_effect_grant
+  - id: core.preference_graph_receipt
+    purpose: Proves the exact admitted graph mutation and its lineage.
+    owner: quirk.core.evidence
+    lifecycle: append_only_receipt
+    authority: effect_evidence

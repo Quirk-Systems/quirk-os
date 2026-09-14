@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+coverage/
+proof/evidence/*.local.json
+!proof/evidence/.gitkeep
