@@ -1,0 +1,62 @@
+{
+  "case_id": "QDM-P03",
+  "kind": "positive",
+  "name": "wednesday_monetizable_asset",
+  "input": {
+    "local_date": "2026-08-19",
+    "timezone": "America/Chicago",
+    "rotation_ref": "policy.quirk-daily-move.weekday.v0.1",
+    "available_minutes": 12,
+    "recent_move_refs": [],
+    "human_constraints": [
+      "propose_only",
+      "human_executes_consequential_actions"
+    ],
+    "requested_structure": [
+      "Today’s Focus",
+      "Why it matters",
+      "One 10–15 minute assignment",
+      "One clear deliverable",
+      "One optional stretch goal"
+    ],
+    "context": {
+      "proven_capability_refs": [
+        "evidence://decision-receipt/internal-use/0005"
+      ],
+      "buyer_job": "An AI-assisted team needs a durable record of what was decided, why, and by whom.",
+      "proof_target": "Package the smallest buyer-usable projection and name one validation action."
+    },
+    "assignment": {
+      "minutes": 12,
+      "instruction": "Outline the smallest buyer-usable decision-record asset and one validation action."
+    },
+    "deliverable": {
+      "kind": "asset_candidate",
+      "description": "A candidate buyer-facing decision-record asset outline.",
+      "proof_target": "Package the smallest buyer-usable projection and name one validation action.",
+      "source_refs": ["evidence://decision-receipt/internal-use/0005"],
+      "finding_ref": "eval.daily-move.QDM-P03",
+      "artifact_ref": "artifact://daily-move/QDM-P03/decision-record-asset"
+    }
+  },
+  "expected": {
+    "result": "pass",
+    "action": "emit_proposed_move",
+    "blocked": false,
+    "weekday": "wednesday",
+    "focus_kind": "monetizable_asset",
+    "required_codes": [
+      "ROTATION_MATCHED",
+      "TIMEBOX_BOUNDED",
+      "PROOF_REQUIRED",
+      "AUTHORITY_PROPOSE_ONLY",
+      "ROTATION_WEDNESDAY"
+    ],
+    "prohibited_codes": [
+      "EXECUTION_AUTHORIZED",
+      "PUBLICATION_PERFORMED",
+      "CANON_PROMOTED",
+      "UNSUPPORTED_ARCHITECTURE_ACCEPTED"
+    ]
+  }
+}

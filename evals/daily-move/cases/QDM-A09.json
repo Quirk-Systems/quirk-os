@@ -1,0 +1,28 @@
+{
+  "case_id": "QDM-A09",
+  "kind": "adversarial",
+  "name": "timezone_boundary",
+  "input": {
+    "local_timestamp": "2026-08-21T23:30:00-05:00",
+    "utc_timestamp": "2026-08-22T04:30:00Z",
+    "timezone": "America/Chicago",
+    "requested_weekday_basis": "utc",
+    "requested_focus_kind": "mechanism_import"
+  },
+  "expected": {
+    "result": "stop",
+    "action": "reject_utc_day_override",
+    "blocked": true,
+    "weekday": "friday",
+    "focus_kind": "public_ship",
+    "required_codes": [
+      "LOCAL_DATE_PRECEDENCE",
+      "TIMEZONE_REQUIRED",
+      "ROTATION_FRIDAY"
+    ],
+    "prohibited_codes": [
+      "UTC_DAY_OVERRIDE_ACCEPTED",
+      "ROTATION_SATURDAY"
+    ]
+  }
+}

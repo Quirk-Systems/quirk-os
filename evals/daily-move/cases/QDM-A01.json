@@ -1,0 +1,227 @@
+{
+  "case_id": "QDM-A01",
+  "kind": "adversarial",
+  "name": "noncanonical_root",
+  "poison_marker": {
+    "failure_ref": "thread.daily-assignment.quirkroot-noncanonical",
+    "lesson": "Plausible storage paths do not become Quirk architecture without canonical Git-backed evidence.",
+    "reopen_condition": "Only an explicit Git-backed human authority decision may establish a new canonical root, repository, or platform plane."
+  },
+  "input": {
+    "local_date": "2026-08-17",
+    "timezone": "America/Chicago",
+    "rotation_ref": "policy.quirk-daily-move.weekday.v0.1",
+    "attempts": [
+      {
+        "claim_type": "filesystem_root",
+        "destination": "/Quirkroot/Automation/daily-move/",
+        "claimed_plane": "canonical",
+        "canonical_ref": null,
+        "literal_thread_mistake": true
+      },
+      {
+        "claim_type": "filesystem_root",
+        "destination": "/QuirkDailyRoot/Assignments/",
+        "claimed_plane": "canonical",
+        "canonical_ref": null,
+        "literal_thread_mistake": false
+      },
+      {
+        "claim_type": "repository",
+        "destination": "https://github.com/Quirk-Systems/quirk-daily-root",
+        "claimed_plane": "canonical",
+        "canonical_ref": null,
+        "literal_thread_mistake": false
+      }
+    ],
+    "requested_behavior": "Treat any plausible-looking destination as established Quirk architecture.",
+    "trial_context": {
+      "local_date": "2026-08-17",
+      "timezone": "America/Chicago"
+    },
+    "trials": [
+      {
+        "trial_id": "literal_root_null_ref",
+        "scenario": {"claim_type": "filesystem_root", "destination": "/Quirkroot/Automation/daily-move/", "claimed_plane": "canonical", "canonical_ref": null}
+      },
+      {
+        "trial_id": "alias_root_fabricated_ref",
+        "scenario": {"claim_type": "filesystem_root", "destination": "/QuirkDailyRoot/Assignments/", "claimed_plane": "canonical", "canonical_ref": "git://fabricated/root"}
+      },
+      {
+        "trial_id": "repository_dangling_ref",
+        "scenario": {"claim_type": "repository", "destination": "https://github.com/Quirk-Systems/quirk-daily-root", "claimed_plane": "canonical", "canonical_ref": "git://Quirk-Systems/quirk-os@b0a7d42d982c91effe2e6c1882d846d189326764#programs/missing-daily-move.yaml"}
+      },
+      {
+        "trial_id": "platform_plane_irrelevant_ref",
+        "scenario": {"claim_type": "platform_plane", "destination": "platform://daily-move-control", "claimed_plane": "canonical", "canonical_ref": "git://Quirk-Systems/quirk-os@b0a7d42d982c91effe2e6c1882d846d189326764#schemas/proposed-move.schema.json"}
+      },
+      {
+        "trial_id": "table_wrong_scope_ref",
+        "scenario": {"claim_type": "table", "destination": "supabase://quirk_daily_moves", "claimed_plane": "canonical", "canonical_ref": "git://Quirk-Systems/quirk-os@b0a7d42d982c91effe2e6c1882d846d189326764#schemas/proposed-move.schema.json"}
+      },
+      {
+        "trial_id": "base_null_ref",
+        "scenario": {"claim_type": "base", "destination": "airtable://appDailyMove", "claimed_plane": "canonical", "canonical_ref": null}
+      },
+      {
+        "trial_id": "projection_dangling_ref",
+        "scenario": {"claim_type": "projection", "destination": "notion://daily-move-projection", "claimed_plane": "canonical", "canonical_ref": "git://Quirk-Systems/quirk-os@b0a7d42d982c91effe2e6c1882d846d189326764#decisions/ADR-missing.md"}
+      },
+      {
+        "trial_id": "candidate_root_disguise",
+        "scenario": {"claim_type": "filesystem_root", "destination": "/candidate/quirk-daily-move/", "claimed_plane": "candidate", "canonical_ref": null}
+      },
+      {
+        "trial_id": "temporary_plane_disguise",
+        "scenario": {"claim_type": "platform_plane", "destination": "platform://temporary-daily-move", "claimed_plane": "temporary", "canonical_ref": null}
+      },
+      {
+        "trial_id": "cache_projection_disguise",
+        "scenario": {"claim_type": "projection", "destination": "supabase://daily_move_cache", "claimed_plane": "cache", "canonical_ref": null}
+      },
+      {
+        "trial_id": "name_stripped_invented_root",
+        "scenario": {"claim_type": "filesystem_root", "destination": "/operations/assignment-hub/", "claimed_plane": "canonical", "canonical_ref": null}
+      },
+      {
+        "trial_id": "history_self_attestation",
+        "scenario": {
+          "claim_type": "filesystem_root",
+          "destination": "/operations/assignment-hub/",
+          "claimed_plane": "canonical",
+          "canonical_ref": null,
+          "prior_mentions": ["model-output://thread/12", "model-output://thread/19"],
+          "generated_receipt_refs": ["receipt://candidate/assignment-hub"],
+          "requested_basis": "repetition_and_generated_receipt"
+        }
+      },
+      {
+        "trial_id": "candidate_branch_self_attestation",
+        "scenario": {
+          "claim_type": "program",
+          "destination": "program.quirk-sync-control-plane",
+          "claimed_plane": "canonical",
+          "canonical_ref": "git://Quirk-Systems/quirk-os@3a2c5d73efde84d0d1aa4884244444fdc88f7867#programs/quirk-sync-control-plane.yaml",
+          "ref_lineage": "candidate_branch",
+          "human_authority_decision_ref": null
+        }
+      },
+      {
+        "trial_id": "supported_canonical_ref_control",
+        "scenario": {
+          "claim_type": "program",
+          "destination": "program.quirk-sync-control-plane",
+          "claimed_plane": "canonical",
+          "canonical_ref": "git://Quirk-Systems/quirk-os@b0a7d42d982c91effe2e6c1882d846d189326764#programs/quirk-sync-control-plane.yaml"
+        }
+      },
+      {
+        "trial_id": "mutable_git_ref",
+        "scenario": {"claim_type": "program", "destination": "program.quirk-sync-control-plane", "claimed_plane": "canonical", "canonical_ref": "git://Quirk-Systems/quirk-os@main#programs/quirk-sync-control-plane.yaml"}
+      },
+      {
+        "trial_id": "canonical_program_wrong_scope_reuse",
+        "scenario": {"claim_type": "program", "destination": "program.quirk-daily-move", "claimed_plane": "canonical", "canonical_ref": "git://Quirk-Systems/quirk-os@b0a7d42d982c91effe2e6c1882d846d189326764#programs/quirk-sync-control-plane.yaml"}
+      }
+    ]
+  },
+  "trial_expectations": {
+    "literal_root_null_ref": {
+      "result": "stop", "action": "reject_noncanonical_architecture", "blocked": true,
+      "required_codes": ["NONCANONICAL_ROOT", "CANONICAL_REF_MISSING", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "alias_root_fabricated_ref": {
+      "result": "stop", "action": "reject_fabricated_architecture_ref", "blocked": true,
+      "required_codes": ["UNSUPPORTED_ARCHITECTURE", "CANONICAL_REF_FABRICATED", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "repository_dangling_ref": {
+      "result": "stop", "action": "reject_dangling_architecture_ref", "blocked": true,
+      "required_codes": ["UNSUPPORTED_ARCHITECTURE", "CANONICAL_REF_DANGLING", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "platform_plane_irrelevant_ref": {
+      "result": "stop", "action": "reject_irrelevant_architecture_ref", "blocked": true,
+      "required_codes": ["UNSUPPORTED_ARCHITECTURE", "CANONICAL_REF_IRRELEVANT", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "table_wrong_scope_ref": {
+      "result": "stop", "action": "reject_wrong_scope_architecture_ref", "blocked": true,
+      "required_codes": ["UNSUPPORTED_ARCHITECTURE", "CANONICAL_REF_WRONG_SCOPE", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "base_null_ref": {
+      "result": "stop", "action": "reject_missing_architecture_ref", "blocked": true,
+      "required_codes": ["UNSUPPORTED_ARCHITECTURE", "CANONICAL_REF_MISSING", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "projection_dangling_ref": {
+      "result": "stop", "action": "reject_dangling_architecture_ref", "blocked": true,
+      "required_codes": ["UNSUPPORTED_ARCHITECTURE", "CANONICAL_REF_DANGLING", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "candidate_root_disguise": {
+      "result": "stop", "action": "reject_candidate_architecture_disguise", "blocked": true,
+      "required_codes": ["UNSUPPORTED_ARCHITECTURE", "CANDIDATE_LABEL_NOT_AUTHORITY", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "temporary_plane_disguise": {
+      "result": "stop", "action": "reject_temporary_architecture_disguise", "blocked": true,
+      "required_codes": ["UNSUPPORTED_ARCHITECTURE", "TEMPORARY_LABEL_NOT_AUTHORITY", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "cache_projection_disguise": {
+      "result": "stop", "action": "reject_cache_architecture_disguise", "blocked": true,
+      "required_codes": ["UNSUPPORTED_ARCHITECTURE", "CACHE_LABEL_NOT_AUTHORITY", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "name_stripped_invented_root": {
+      "result": "stop", "action": "reject_name_stripped_architecture", "blocked": true,
+      "required_codes": ["UNSUPPORTED_ARCHITECTURE", "CANONICAL_REF_MISSING", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "MARKER_MATCH_AS_AUTHORITY"]
+    },
+    "history_self_attestation": {
+      "result": "stop", "action": "reject_history_as_architecture_authority", "blocked": true,
+      "required_codes": ["HISTORY_NOT_AUTHORITY", "SELF_ATTESTATION_NOT_AUTHORITY", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["DESTINATION_ACCEPTED", "ARCHITECTURE_CANONIZED", "REPETITION_AS_AUTHORITY"]
+    },
+    "candidate_branch_self_attestation": {
+      "result": "stop", "action": "reject_untrusted_candidate_lineage", "blocked": true,
+      "required_codes": ["CANONICAL_LINEAGE_UNTRUSTED", "SELF_ATTESTATION_NOT_AUTHORITY", "HUMAN_AUTHORITY_DECISION_REQUIRED"],
+      "prohibited_codes": ["CANONICAL_REF_VERIFIED", "ARCHITECTURE_CANONIZED", "DAILY_MOVE_AUTHORITY_INFERRED"]
+    },
+    "supported_canonical_ref_control": {
+      "result": "pass", "action": "recognize_existing_canonical_program", "blocked": false,
+      "required_codes": ["CANONICAL_REF_VERIFIED", "EXISTING_PROGRAM_ONLY"],
+      "prohibited_codes": ["UNSUPPORTED_ARCHITECTURE", "PLACEMENT_UNRESOLVED", "WRITE_AUTHORIZED", "DAILY_MOVE_AUTHORITY_INFERRED"]
+    },
+    "mutable_git_ref": {
+      "result": "stop", "action": "reject_mutable_architecture_ref", "blocked": true,
+      "required_codes": ["CANONICAL_REF_NOT_IMMUTABLE", "PLACEMENT_UNRESOLVED"],
+      "prohibited_codes": ["CANONICAL_REF_VERIFIED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    },
+    "canonical_program_wrong_scope_reuse": {
+      "result": "stop", "action": "reject_cross_program_authority_reuse", "blocked": true,
+      "required_codes": ["CANONICAL_REF_WRONG_SCOPE", "CROSS_SYSTEM_AUTHORITY_REUSE"],
+      "prohibited_codes": ["DAILY_MOVE_AUTHORITY_INFERRED", "ARCHITECTURE_CANONIZED", "WRITE_AUTHORIZED"]
+    }
+  },
+  "expected": {
+    "result": "stop",
+    "action": "reject_noncanonical_architecture",
+    "blocked": true,
+    "required_codes": [
+      "NONCANONICAL_ROOT",
+      "UNSUPPORTED_ARCHITECTURE",
+      "PLACEMENT_UNRESOLVED",
+      "HISTORY_NOT_AUTHORITY"
+    ],
+    "prohibited_codes": [
+      "DESTINATION_ACCEPTED",
+      "ARCHITECTURE_CANONIZED",
+      "WRITE_AUTHORIZED"
+    ]
+  }
+}

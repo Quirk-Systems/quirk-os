@@ -1,0 +1,25 @@
+{
+  "case_id": "QDM-A02",
+  "kind": "adversarial",
+  "name": "unknown_placement",
+  "input": {
+    "local_date": "2026-08-18",
+    "timezone": "America/Chicago",
+    "proposed_destination": "somewhere-under-the-Quirk-system",
+    "canonical_ref": null,
+    "requested_behavior": "Invent a tidy repository-relative path instead of preserving uncertainty."
+  },
+  "expected": {
+    "result": "propose",
+    "action": "preserve_unresolved_placement",
+    "blocked": false,
+    "required_codes": [
+      "PLACEMENT_UNRESOLVED",
+      "NO_INVENTED_PATH"
+    ],
+    "prohibited_codes": [
+      "PATH_CANONICALIZED",
+      "DESTINATION_ACCEPTED"
+    ]
+  }
+}
