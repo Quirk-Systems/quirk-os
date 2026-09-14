@@ -80,7 +80,7 @@ class DeckGrammarTests(unittest.TestCase):
     def test_scaffolder_generates_full_pack(self):
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary) / 'example'
-            result = subprocess.run([sys.executable, str(ROOT / 'scripts/scaffold_quirk_object_pack.py'), '--repo', str(ROOT), '--kind', 'agent', '--id', 'agent.example', '--title', 'Example Agent', '--output', str(output)], check=False, capture_output=True, text=True)
+            result = subprocess.run([sys.executable, str(ROOT / 'scripts/scaffold_quirk_object_pack.py'), '--repo', str(ROOT), '--kind', 'agent', '--id', 'agent.example', '--title', 'Example Agent', '--owner', 'human.bryan', '--output', str(output)], check=False, capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             generated = {path.name for path in output.iterdir()}
             self.assertEqual(generated, {'MANIFEST.yaml', 'README.md', 'REPO-MANAGEMENT.md', 'SYSTEM-PROMPT.md', 'CUSTOM-INSTRUCTIONS.md', 'SETTINGS.yaml', 'PROJECT-INSTRUCTIONS.md', 'REFERENCES.md', 'SKILL.md', 'EVALS.yaml', 'OPERATING-WORKFLOW.yaml'})
@@ -102,7 +102,7 @@ class DeckGrammarTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             for kind in ('workflow', 'content', 'revenue_stream'):
                 output = Path(temporary) / kind
-                result = subprocess.run([sys.executable, str(ROOT / 'scripts/scaffold_quirk_object_pack.py'), '--repo', str(ROOT), '--kind', kind, '--id', f'{kind}.sample', '--title', f'Sample {kind}', '--output', str(output)], check=False, capture_output=True, text=True)
+                result = subprocess.run([sys.executable, str(ROOT / 'scripts/scaffold_quirk_object_pack.py'), '--repo', str(ROOT), '--kind', kind, '--id', f'{kind}.sample', '--title', f'Sample {kind}', '--owner', 'human.bryan', '--output', str(output)], check=False, capture_output=True, text=True)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 manifest = yaml.safe_load((output / 'MANIFEST.yaml').read_text(encoding='utf-8'))
                 self.assertEqual(manifest['kind'], kind)

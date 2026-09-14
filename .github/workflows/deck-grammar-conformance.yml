@@ -29,10 +29,14 @@ on:
       - 'schemas/intention.schema.json'
       - 'scripts/deck_grammar/**'
       - 'scripts/scaffold_quirk_object_pack.py'
+      - 'scripts/object_pack.py'
+      - 'schemas/object-pack-creation.schema.json'
+      - 'requirements-evals.txt'
       - 'scripts/validate_deck_grammar.py'
       - 'skills/quirk-deck-compiler/**'
       - 'templates/quirk-object-pack/**'
       - 'tests/test_deck_grammar.py'
+      - 'tests/test_object_pack.py'
   workflow_dispatch:
 
 permissions:
@@ -64,6 +68,9 @@ jobs:
 
       - name: Run Deck Grammar tests
         run: python -m unittest discover -s tests -p 'test_deck_grammar.py' -v
+
+      - name: Run candidate Object Pack creation tests
+        run: python -m unittest discover -s tests -p 'test_object_pack.py' -v
 
       - name: Run Deck Grammar conformance
         env:

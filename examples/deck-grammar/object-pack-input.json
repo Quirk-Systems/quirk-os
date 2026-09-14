@@ -1,0 +1,8 @@
+{
+  "kind": "agent",
+  "object_id": "agent.example",
+  "title": "Example Agent",
+  "owner": "human.bryan",
+  "authority_ceiling": "propose",
+  "status": "candidate"
+}
