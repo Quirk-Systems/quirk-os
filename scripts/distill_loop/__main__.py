@@ -54,7 +54,13 @@ def _ledger(root: Path):
 LOCK_NAME = "distill-ledger.lock"
 WINDOWS_LOCK_ATTEMPTS = 6
 CONTENTION_ERRNOS = frozenset(
-    code for code in (getattr(errno, "EDEADLOCK", None), getattr(errno, "EDEADLK", None)) if code
+    code
+    for code in (
+        getattr(errno, "EDEADLOCK", None),
+        getattr(errno, "EDEADLK", None),
+        getattr(errno, "EACCES", None),
+    )
+    if code
 )
 
 
