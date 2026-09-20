@@ -108,6 +108,11 @@ def _ledger_lock(*roots: Path):
     try:
         for root in sorted({r.resolve() for r in roots}):
             lock_path = root / "skills" / LOCK_NAME
+            # Never create the lock through a planted link: the skills directory and the
+            # lock file must be real entries, so nothing this command writes can be
+            # redirected outside the tree it was pointed at.
+            if lock_path.parent.is_symlink() or lock_path.is_symlink():
+                raise LockUnavailable("lock path is a symlink; refusing to lock or write through it")
             lock_path.parent.mkdir(parents=True, exist_ok=True)
             handle = open(lock_path, "a+", encoding="utf-8")
             try:
@@ -128,12 +133,31 @@ def _ledger_digest_on_disk(root: Path) -> str:
     return _load(path)["ledger_sha256"] if path.exists() else new_ledger()["ledger_sha256"]
 
 
-def _tree_has_content(root: Path) -> bool:
-    """True when the tree holds anything besides the lock file this command itself creates."""
-    if not root.exists():
-        return False
-    lock = (root / "skills" / LOCK_NAME).resolve()
-    return any(path.is_file() and path.resolve() != lock for path in root.rglob("*"))
+def _out_tree_problems(out: Path) -> list[str]:
+    """Entries a redirected --out may hold before initialization: nothing, or the lock we made.
+
+    Every pre-existing entry is inspected without following links. A directory symlink
+    (for example `skills -> elsewhere`) counts as content even when its target is empty,
+    because writing through it would land files outside the selected tree.
+    """
+    if out.is_symlink():
+        return ["output tree itself is a symlink"]
+    if not out.exists():
+        return []
+    skills = out / "skills"
+    lock = skills / LOCK_NAME
+    problems: list[str] = []
+    for entry in out.iterdir():
+        if entry != skills:
+            problems.append(f"pre-existing entry {entry.name}")
+            continue
+        if entry.is_symlink() or not entry.is_dir():
+            problems.append("skills entry is not a real directory")
+            continue
+        for inner in entry.iterdir():
+            if inner != lock or inner.is_symlink() or not inner.is_file():
+                problems.append(f"pre-existing entry skills/{inner.name}")
+    return problems
 
 
 def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
@@ -159,13 +183,19 @@ def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
             print(json.dumps({"error": "LEDGER_FORKED", "detail": "source ledger changed since this operation read it; re-run against the current ledger"}), file=sys.stderr)
             return 1
         if out.resolve() != root.resolve():
-            if (out / LEDGER_PATH).exists():
+            out_ledger = out / LEDGER_PATH
+            if out_ledger.is_symlink():
+                print(json.dumps({"error": "LEDGER_FORKED", "detail": "output ledger is a symlink; refusing to write through it"}), file=sys.stderr)
+                return 1
+            if out_ledger.exists():
                 if _ledger_digest_on_disk(out) != expected:
                     print(json.dumps({"error": "LEDGER_FORKED", "detail": "output tree already holds a different ledger; refusing to replace it"}), file=sys.stderr)
                     return 1
-            elif _tree_has_content(out):
-                print(json.dumps({"error": "LEDGER_FORKED", "detail": "output tree is not empty and holds no ledger; refusing to write into it"}), file=sys.stderr)
-                return 1
+            else:
+                problems = _out_tree_problems(out)
+                if problems:
+                    print(json.dumps({"error": "LEDGER_FORKED", "detail": "output tree is not empty and holds no ledger; refusing to write into it", "entries": problems}), file=sys.stderr)
+                    return 1
         write_files(out, result["files"])
     return 0
 

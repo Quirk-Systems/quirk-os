@@ -396,6 +396,31 @@ class FightCardTests(unittest.TestCase):
             self.assertEqual(_write_guarded(root, result, out), 1)
             self.assertFalse((out / "skills" / "distill-ledger.json").exists())
 
+    def test_k2i_symlinked_out_tree_never_writes_outside_it(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+        from distill_loop.__main__ import _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out, outside = Path(tmp) / "root", Path(tmp) / "out", Path(tmp) / "outside"
+            write_files(root, self.distilled["files"])
+            outside.mkdir()
+            out.mkdir()
+            (out / "skills").symlink_to(outside, target_is_directory=True)
+            nxt, _ = append_entry(self.distilled["ledger"], kind="abstained", recorded_at="2026-09-19T00:00:00Z",
+                                  actor="agent.distill-loop", candidate_id=None, source_receipt_id="receipt.s.1",
+                                  source_skill_id="quirk-s", source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {"skills/distill-ledger.json": json.dumps(nxt), "skills/quirk-distilled-x/SKILL.md": "x\n"},
+                      "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, result, out), 1)
+            self.assertEqual(list(outside.iterdir()), [], "nothing may land outside the output tree, not even the lock")
+            # the output tree itself as a symlink is refused the same way
+            linked_out = Path(tmp) / "linked"
+            linked_out.symlink_to(outside, target_is_directory=True)
+            self.assertEqual(_write_guarded(root, result, linked_out), 1)
+            self.assertEqual(list(outside.iterdir()), [])
+
     def test_k2h_flock_failure_is_a_structured_refusal(self) -> None:
         import tempfile
         from unittest import mock

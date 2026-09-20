@@ -400,6 +400,14 @@ def validate(repo: Path) -> dict[str, Any]:
             controls["k2_nonempty_out_without_ledger_refused"] = (
                 cli._write_guarded(root, result, cluttered_out) == 1 and not (cluttered_out / LEDGER_PATH).exists()
             )
+            outside = Path(tmp) / "outside"
+            outside.mkdir()
+            linked_out = Path(tmp) / "linked"
+            linked_out.mkdir()
+            (linked_out / "skills").symlink_to(outside, target_is_directory=True)
+            controls["k2_symlinked_out_refused"] = (
+                cli._write_guarded(root, result, linked_out) == 1 and list(outside.iterdir()) == []
+            )
             before = (root / LEDGER_PATH).read_text(encoding="utf-8")
             with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", None):
                 unlocked = cli._write_guarded(root, result)
@@ -414,7 +422,7 @@ def validate(repo: Path) -> dict[str, Any]:
         for label in ("id_collision_abstains", "forged_source_abstains", "unreceipted_evidence_excluded",
                       "inverted_receipt_time_abstains", "eval_ceiling_escalation_refused", "swapped_eval_suite_quarantined",
                       "k2_fork_refused_under_cas", "k2_redirected_empty_out_initialized", "k2_redirected_diverged_out_refused",
-                      "k2_nonempty_out_without_ledger_refused", "k2_lock_unavailable_refused"):
+                      "k2_nonempty_out_without_ledger_refused", "k2_lock_unavailable_refused", "k2_symlinked_out_refused"):
             if not controls.get(label):
                 fail("FIGHT_CARD_FAIL_OPEN", label)
 
