@@ -106,13 +106,14 @@ def _ledger_lock(*roots: Path):
     """
     handles = []
     try:
+        # Never create the lock through a planted link: the tree, its skills directory,
+        # and the lock file must be real entries as given, before any resolution, so
+        # nothing this command writes can be redirected outside the tree it was pointed at.
+        for given in roots:
+            if given.is_symlink() or (given / "skills").is_symlink() or (given / "skills" / LOCK_NAME).is_symlink():
+                raise LockUnavailable(f"{given} or its lock path is a symlink; refusing to lock or write through it")
         for root in sorted({r.resolve() for r in roots}):
             lock_path = root / "skills" / LOCK_NAME
-            # Never create the lock through a planted link: the skills directory and the
-            # lock file must be real entries, so nothing this command writes can be
-            # redirected outside the tree it was pointed at.
-            if lock_path.parent.is_symlink() or lock_path.is_symlink():
-                raise LockUnavailable("lock path is a symlink; refusing to lock or write through it")
             lock_path.parent.mkdir(parents=True, exist_ok=True)
             handle = open(lock_path, "a+", encoding="utf-8")
             try:

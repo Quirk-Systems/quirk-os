@@ -24,7 +24,7 @@ from .common import (
     sha256_json_without_keys,
 )
 from .evaluator import run_eval_suite
-from .ledger import append_entry, candidate_state, distilled_entry, promotion_receipt_used
+from .ledger import append_entry, candidate_state, distilled_entry, promotion_receipt_used, verify_ledger
 
 
 def promotion_attestation(receipt: dict[str, Any]) -> str:
@@ -75,6 +75,8 @@ def validate_promotion_receipt(
     if integrity.get("source_blob_sha") != receipt["candidate_source_blob_sha"]:
         errors.append("promotion receipt source blob sha does not match candidate on disk")
 
+    errors.extend(f"ledger: {message}" for message in verify_ledger(ledger))
+
     if promotion_receipt_used(ledger, receipt["receipt_id"]):
         errors.append("promotion receipt id already recorded in the ledger; receipts are single use")
 
@@ -82,6 +84,8 @@ def validate_promotion_receipt(
     if entry is None:
         errors.append("candidate has no distilled ledger entry; unknown provenance cannot be promoted")
     else:
+        if not entry.get("refs", {}).get("source_manifest_sha256"):
+            errors.append("distilled entry lacks source_manifest_sha256; registry-bound provenance is required to promote")
         try:
             if parse_utc(receipt["decided_at"]) <= parse_utc(entry["recorded_at"]):
                 errors.append("promotion decided before the candidate was distilled; the decision must strictly follow it")

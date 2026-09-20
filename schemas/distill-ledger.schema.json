@@ -182,7 +182,36 @@
           "type": "string",
           "pattern": "^[0-9a-f]{64}$"
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "distilled"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "candidate_id": {
+                "type": "string"
+              },
+              "refs": {
+                "required": [
+                  "manifest_sha256",
+                  "source_blob_sha",
+                  "source_manifest_sha256",
+                  "eval_suite_ref"
+                ]
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

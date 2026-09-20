@@ -217,11 +217,45 @@ class FightCardTests(unittest.TestCase):
             new_ledger(), kind="distilled", recorded_at="2026-09-01T00:00:00Z", actor="agent.distill-loop",
             candidate_id=self.distilled["manifest"]["id"], source_receipt_id="receipt.other.0001",
             source_skill_id=self.fx.source_manifest["id"], source_skill_version=self.fx.source_manifest["version"],
-            finding_codes=["DISTILLED_CANDIDATE_WRITTEN"], refs={},
+            finding_codes=["DISTILLED_CANDIDATE_WRITTEN"],
+            refs={"manifest_sha256": "a" * 64, "source_manifest_sha256": self.fx.source_manifest["integrity"]["manifest_sha256"]},
         )
         out = self.fx.distill(ledger=ledger)
         self.assertEqual(out["outcome"], "abstained")
         self.assertIn("CANDIDATE_ID_COLLISION", out["finding_codes"])
+
+    def test_k5c_distilled_entry_without_source_digest_cannot_exist_or_promote(self) -> None:
+        from distill_loop.ledger import entry_digest, seal_ledger
+
+        with self.assertRaises(ValueError):
+            append_entry(
+                new_ledger(), kind="distilled", recorded_at="2026-09-01T00:00:00Z", actor="agent.distill-loop",
+                candidate_id=self.distilled["manifest"]["id"], source_receipt_id="receipt.x.1",
+                source_skill_id="quirk-x", source_skill_version="0.1.0", finding_codes=[], refs={"manifest_sha256": "a" * 64},
+            )
+        # a ledger hand-built without the field, with valid hashes, is schema-invalid and unpromotable
+        stripped = copy.deepcopy(self.distilled["ledger"])
+        stripped["entries"][0]["refs"].pop("source_manifest_sha256")
+        stripped["entries"][0]["entry_sha256"] = entry_digest(stripped["entries"][0])
+        stripped = seal_ledger(stripped)
+        self.assertTrue(schema_errors(self.fx.schemas["distill_ledger"], stripped))
+        errors = self._validate(ledger=stripped)
+        self.assertTrue(any("source_manifest_sha256" in error for error in errors), errors)
+        # a ledger whose chain is broken is refused outright
+        broken = copy.deepcopy(self.distilled["ledger"])
+        broken["entries"][0]["finding_codes"] = []
+        errors = self._validate(ledger=broken)
+        self.assertTrue(any(error.startswith("ledger:") for error in errors), errors)
+
+    def test_s1d_non_array_suite_is_refused_not_raised(self) -> None:
+        from distill_loop.common import sha256_json
+
+        for suite in (None, False, {"cases": []}, "[]"):
+            report = run_eval_suite(suite, self.distilled["manifest"], case_schema=self.fx.schemas["skill_eval_case"])
+            self.assertFalse(report["complete"])
+            self.assertTrue(report["failures"])
+            receipt = attest_promotion({**self.fx.promotion_receipt, "eval_suite_sha256": sha256_json(suite)})
+            self.assertTrue(self._validate(receipt, eval_suite=suite))
 
     def test_k2_cli_refuses_to_write_over_a_forked_ledger(self) -> None:
         import subprocess

@@ -64,6 +64,8 @@ def append_entry(
     """Return (new_ledger, entry). The input ledger is never mutated."""
     if kind not in ENTRY_KINDS:
         raise ValueError(f"unknown ledger entry kind: {kind}")
+    if kind == "distilled" and not (refs.get("manifest_sha256") and refs.get("source_manifest_sha256")):
+        raise ValueError("a distilled entry must carry manifest_sha256 and source_manifest_sha256 provenance")
     errors = verify_ledger(ledger)
     if errors:
         raise ValueError("refusing to append to a ledger that fails verification: " + "; ".join(errors))

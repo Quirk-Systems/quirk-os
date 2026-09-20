@@ -286,7 +286,8 @@ def validate(repo: Path) -> dict[str, Any]:
         collided, _ = append_entry(
             new_ledger(), kind="distilled", recorded_at="2026-09-01T00:00:00Z", actor="agent.distill-loop",
             candidate_id=manifest["id"], source_receipt_id="receipt.other.0001", source_skill_id=example["source_manifest"]["id"],
-            source_skill_version=example["source_manifest"]["version"], finding_codes=["DISTILLED_CANDIDATE_WRITTEN"], refs={},
+            source_skill_version=example["source_manifest"]["version"], finding_codes=["DISTILLED_CANDIDATE_WRITTEN"],
+            refs={"manifest_sha256": "a" * 64, "source_manifest_sha256": example["source_manifest"]["integrity"]["manifest_sha256"]},
         )
         out = trigger_with(ledger_v=collided)
         controls["id_collision_abstains"] = out["outcome"] == "abstained" and "CANDIDATE_ID_COLLISION" in out["finding_codes"]
@@ -419,10 +420,13 @@ def validate(repo: Path) -> dict[str, Any]:
                     broken = cli._write_guarded(root, result)
                 controls["k2_lock_failure_refused"] = broken == 1 and (root / LEDGER_PATH).read_text(encoding="utf-8") == before
 
-        for label in ("id_collision_abstains", "forged_source_abstains", "unreceipted_evidence_excluded",
-                      "inverted_receipt_time_abstains", "eval_ceiling_escalation_refused", "swapped_eval_suite_quarantined",
-                      "k2_fork_refused_under_cas", "k2_redirected_empty_out_initialized", "k2_redirected_diverged_out_refused",
-                      "k2_nonempty_out_without_ledger_refused", "k2_lock_unavailable_refused", "k2_symlinked_out_refused"):
+        mandatory = ["id_collision_abstains", "forged_source_abstains", "unreceipted_evidence_excluded",
+                     "inverted_receipt_time_abstains", "eval_ceiling_escalation_refused", "swapped_eval_suite_quarantined",
+                     "k2_fork_refused_under_cas", "k2_redirected_empty_out_initialized", "k2_redirected_diverged_out_refused",
+                     "k2_nonempty_out_without_ledger_refused", "k2_lock_unavailable_refused", "k2_symlinked_out_refused"]
+        if cli.fcntl is not None:
+            mandatory.append("k2_lock_failure_refused")
+        for label in mandatory:
             if not controls.get(label):
                 fail("FIGHT_CARD_FAIL_OPEN", label)
 

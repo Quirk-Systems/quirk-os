@@ -86,6 +86,15 @@ def run_eval_suite(
     kinds: set[str] = set()
     scenarios: list[str] = []
     passed = 0
+    if not isinstance(cases, list):
+        return {
+            "total": 0,
+            "passed": 0,
+            "kinds": [],
+            "missing_kinds": sorted(REQUIRED_EVAL_KINDS),
+            "failures": ["eval suite must be a JSON array of cases"],
+            "complete": False,
+        }
     for index, case in enumerate(cases, start=1):
         if not isinstance(case, dict):
             failures.append(f"case {index}: case is not an object")
