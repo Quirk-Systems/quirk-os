@@ -1,0 +1,81 @@
+name: Distill Loop Conformance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/distill-loop-conformance.yml'
+      - 'docs/distill-loop/**'
+      - 'examples/distill-loop/**'
+      - 'evals/skills/distilled/**'
+      - 'schemas/distill-*.json'
+      - 'schemas/skill-*.json'
+      - 'scripts/distill_loop/**'
+      - 'scripts/validate_distill_loop.py'
+      - 'scripts/sync_control_plane/skill_runtime.py'
+      - 'skills/distill-ledger.json'
+      - 'skills/quirk-distilled-*/**'
+      - 'tests/test_distill_loop.py'
+  push:
+    branches-ignore: [main]
+    paths:
+      - '.github/workflows/distill-loop-conformance.yml'
+      - 'docs/distill-loop/**'
+      - 'examples/distill-loop/**'
+      - 'evals/skills/distilled/**'
+      - 'schemas/distill-*.json'
+      - 'schemas/skill-*.json'
+      - 'scripts/distill_loop/**'
+      - 'scripts/validate_distill_loop.py'
+      - 'scripts/sync_control_plane/skill_runtime.py'
+      - 'skills/distill-ledger.json'
+      - 'skills/quirk-distilled-*/**'
+      - 'tests/test_distill_loop.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: distill-loop-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate-distill-loop-conformance:
+    name: candidate-distill-loop-conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Install evaluation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run distill loop tests
+        run: python -m unittest discover -s tests -p 'test_distill_loop.py' -v
+
+      - name: Run distill loop conformance
+        env:
+          PYTHONPATH: scripts
+        run: |
+          python scripts/validate_distill_loop.py \
+            --repo . \
+            --output evals/skills/distilled/conformance-results.json \
+            --require-pass
+
+      - name: Upload distill loop evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: distill-loop-conformance-${{ github.sha }}
+          path: evals/skills/distilled/conformance-results.json
+          if-no-files-found: error
+          retention-days: 30

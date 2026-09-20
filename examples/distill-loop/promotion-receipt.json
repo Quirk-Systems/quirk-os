@@ -1,0 +1,24 @@
+{
+  "receipt_id": "receipt.distill-promotion.quirk-distilled-decision-brief-2d699dfa.0001",
+  "candidate_id": "quirk-distilled-decision-brief-2d699dfa",
+  "candidate_version": "0.1.0",
+  "candidate_manifest_sha256": "d5cdc2b0480dc07624b635d7a9c3d904056570912b0f9089b2b51f1f785aa5a1",
+  "candidate_source_blob_sha": "4136bfb2806e9a0e75aec3a913f7824f03044a4e",
+  "source_run_receipt_ref": "receipt.quirk-distillation-synthesizer.trial.0007",
+  "eval_suite_ref": "evals/skills/distilled/quirk-distilled-decision-brief-2d699dfa.json",
+  "eval_suite_sha256": "7d86951a6984a7052505b735127bfc6e01640c2ca60330ff9ffd2d2badd9b366",
+  "decision": "promote",
+  "promoted_to": "reviewed_candidate",
+  "admission_effect": "none",
+  "canon_effect": "none",
+  "runtime_effect": "none",
+  "requested_by": "operator.distill-review",
+  "approved_by": "human.bryan",
+  "decided_at": "2026-09-19T09:15:00Z",
+  "rationale": "Replay reproduced the four declared moves with comparable evidence in a bounded trial; adversarial and regression cases authored by the reviewer pass; the excluded cache_sources move stays excluded.",
+  "immutable": true,
+  "attestation": {
+    "algorithm": "sha256-canonical-json-v1",
+    "digest": "9590fb45ab5c7a6fb82bf472d8c2506fe29f7016b45ff7654f7abd5d81a04cae"
+  }
+}
