@@ -27,4 +27,17 @@ jobs:
           python-version: "3.13"
 
       - name: Validate Golden Project Pack
-        run: python scripts/validate_golden_pack.py
+        run: |
+          python scripts/validate_golden_pack.py \
+            --repo . \
+            --metrics-output evals/golden-pack/validate-golden-pack-metrics.json \
+            --write-step-summary
+
+      - name: Upload Golden Pack metrics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: golden-pack-validation-metrics
+          path: evals/golden-pack/validate-golden-pack-metrics.json
+          if-no-files-found: error
+          retention-days: 30

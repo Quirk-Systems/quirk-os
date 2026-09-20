@@ -66,10 +66,14 @@ Apply the candidate migration, then execute the transactional proof script:
 supabase/migrations/20260812030000_sync_control_plane_contracts.sql
 supabase/migrations/20260812030001_sync_control_plane_evidence.sql
 supabase/migrations/20260812030002_sync_control_plane_delivery.sql
+supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql
 supabase/tests/sync_control_plane_hardening.sql
+supabase/tests/sync_control_plane_outbox_claim_benchmark.sql
 ```
 
 The proof transaction rolls back all test data while asserting valid activation, self-promotion rejection, rights blocking, trigger collision blocking, duplicate identity rejection, idempotent receipts, append-only history, deferred Cloudflare representation, dead-letter exhaustion, drift-to-Proposed-Move behavior, and projection reconstruction.
+
+The outbox benchmark fixture also runs `EXPLAIN (ANALYZE, BUFFERS)` for the claim predicate over a mixed queue state population and asserts stable plan properties (index usage + no explicit sort for `ORDER BY available_at, id`) without asserting fragile absolute timings.
 
 ## Admission checklist
 
