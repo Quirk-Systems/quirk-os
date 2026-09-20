@@ -420,6 +420,15 @@ def validate(repo: Path) -> dict[str, Any]:
                 cli._write_guarded(root, nested_result, nested_out) == 1
                 and (sentinel_dir / "SKILL.md").read_text(encoding="utf-8") == "sentinel\n"
             )
+            cli_outside = Path(tmp) / "cli-outside"
+            cli_outside.mkdir()
+            cli_linked = Path(tmp) / "cli-linked"
+            cli_linked.symlink_to(cli_outside, target_is_directory=True)
+            cli_code = cli.main([
+                "distill", "--receipt", str(repo / EXAMPLE_DIR / "run-receipt.json"), "--trace", str(repo / EXAMPLE_DIR / "run-trace.json"),
+                "--repo", str(repo), "--root", str(root), "--out", str(cli_linked), "--write",
+            ])
+            controls["k2_cli_symlinked_out_refused"] = cli_code == 1 and list(cli_outside.iterdir()) == []
             before = (root / LEDGER_PATH).read_text(encoding="utf-8")
             with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", None):
                 unlocked = cli._write_guarded(root, result)
@@ -435,7 +444,7 @@ def validate(repo: Path) -> dict[str, Any]:
                      "inverted_receipt_time_abstains", "eval_ceiling_escalation_refused", "swapped_eval_suite_quarantined",
                      "k2_fork_refused_under_cas", "k2_redirected_empty_out_initialized", "k2_redirected_diverged_out_refused",
                      "k2_nonempty_out_without_ledger_refused", "k2_lock_unavailable_refused", "k2_symlinked_out_refused",
-                     "k2_nested_symlink_refused_despite_matching_ledger"]
+                     "k2_nested_symlink_refused_despite_matching_ledger", "k2_cli_symlinked_out_refused"]
         if cli.fcntl is not None:
             mandatory.append("k2_lock_failure_refused")
         for label in mandatory:

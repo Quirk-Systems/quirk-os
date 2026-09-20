@@ -229,7 +229,13 @@ def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
         if unsafe:
             print(json.dumps({"error": "LEDGER_FORKED", "detail": "a destination path passes through a symlink or non-directory; refusing to write", "paths": unsafe}), file=sys.stderr)
             return 1
-        write_files(out, result["files"])
+        try:
+            write_files(out, result["files"])
+        except OSError as exc:
+            # write_files creates temps exclusively and writes the ledger last, so a
+            # failure here leaves the ledger untouched; report it and fail closed.
+            print(json.dumps({"error": "WRITE_FAILED", "detail": str(exc)}), file=sys.stderr)
+            return 1
     return 0
 
 
@@ -268,9 +274,12 @@ def main(argv: list[str] | None = None) -> int:
     _add_roots(context)
 
     args = parser.parse_args(argv)
-    repo = getattr(args, "repo", REPO_DEFAULT).resolve()
-    root = (getattr(args, "root", None) or repo).resolve()
-    out = (getattr(args, "out", None) or root).resolve()
+    # Paths are made absolute but deliberately NOT resolved here: the write guard must
+    # see a symlinked --root or --out as given so it can refuse it before anything is
+    # created through it. Resolution happens inside the guard, after that refusal.
+    repo = getattr(args, "repo", REPO_DEFAULT).absolute()
+    root = (getattr(args, "root", None) or repo).absolute()
+    out = (getattr(args, "out", None) or root).absolute()
 
     if args.command == "attest":
         print(json.dumps(attest_promotion(_load(args.receipt)), indent=2))

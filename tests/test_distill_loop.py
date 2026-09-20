@@ -492,6 +492,59 @@ class FightCardTests(unittest.TestCase):
             self.assertEqual(_write_guarded(root, result, out), 1)
             self.assertEqual((outside / "pkg" / "SKILL.md").read_text(encoding="utf-8"), "sentinel\n")
 
+    def test_k2k_cli_refuses_a_symlinked_out_as_given(self) -> None:
+        import tempfile
+
+        import distill_loop.__main__ as cli
+        from distill_loop import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, outside = Path(tmp) / "root", Path(tmp) / "outside"
+            write_files(root, self.distilled["files"])
+            outside.mkdir()
+            linked_out = Path(tmp) / "linked"
+            linked_out.symlink_to(outside, target_is_directory=True)
+            code = cli.main([
+                "distill", "--receipt", str(EXAMPLE / "run-receipt.json"), "--trace", str(EXAMPLE / "run-trace.json"),
+                "--repo", str(ROOT), "--root", str(root), "--out", str(linked_out), "--write",
+            ])
+            self.assertEqual(code, 1)
+            self.assertEqual(list(outside.iterdir()), [], "a symlinked --out given on the CLI must never be written through")
+            # the same command against a real empty --out succeeds and lands the ledger there
+            real_out = Path(tmp) / "real"
+            code = cli.main([
+                "distill", "--receipt", str(EXAMPLE / "run-receipt.json"), "--trace", str(EXAMPLE / "run-trace.json"),
+                "--repo", str(ROOT), "--root", str(root), "--out", str(real_out), "--write",
+            ])
+            self.assertEqual(code, 0)
+            self.assertTrue((real_out / "skills" / "distill-ledger.json").exists())
+
+    def test_k2l_temp_files_are_exclusive_unpredictable_and_cleaned_up(self) -> None:
+        import tempfile
+        from unittest import mock
+
+        from distill_loop import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, outside = Path(tmp) / "root", Path(tmp) / "outside"
+            outside.mkdir()
+            (outside / "victim").write_text("sentinel\n", encoding="utf-8")
+            target_dir = root / "skills" / "pkg"
+            target_dir.mkdir(parents=True)
+            # the old predictable sibling name, planted as a link, must never be followed
+            (target_dir / "manifest.json.tmp").symlink_to(outside / "victim")
+            write_files(root, {"skills/pkg/manifest.json": "{}\n"})
+            self.assertEqual((outside / "victim").read_text(encoding="utf-8"), "sentinel\n")
+            self.assertEqual((target_dir / "manifest.json").read_text(encoding="utf-8"), "{}\n")
+            self.assertEqual([p.name for p in target_dir.iterdir() if p.name.endswith(".tmp") and not p.is_symlink()], [],
+                             "no temp residue after a successful write")
+            # a failure mid-write removes the temp and leaves the destination untouched
+            with mock.patch("os.replace", side_effect=OSError("disk full")):
+                with self.assertRaises(OSError):
+                    write_files(root, {"skills/pkg/manifest.json": "changed\n"})
+            self.assertEqual((target_dir / "manifest.json").read_text(encoding="utf-8"), "{}\n")
+            self.assertEqual([p.name for p in target_dir.iterdir() if p.name.endswith(".tmp") and not p.is_symlink()], [])
+
     def test_k2h_flock_failure_is_a_structured_refusal(self) -> None:
         import tempfile
         from unittest import mock
