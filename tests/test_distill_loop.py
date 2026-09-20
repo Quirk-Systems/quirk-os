@@ -374,19 +374,19 @@ class CliLockTests(unittest.TestCase):
             files = {"skills/distill-ledger.json": "after\n"}
 
             denied = fake_msvcrt([OSError(errno.EINVAL, "denied")])
-            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
                 self.assertEqual(cli._write_guarded(root, files), 1)
             self.assertEqual(len(denied.calls), 1)
             self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
 
             busy = fake_msvcrt([OSError(contention, "busy")])
-            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", busy):
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", busy):
                 self.assertEqual(cli._write_guarded(root, files), 1)
             self.assertEqual(len(busy.calls), cli.WINDOWS_LOCK_ATTEMPTS)
             self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
 
             eventually = fake_msvcrt([OSError(contention, "busy"), None])
-            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", eventually):
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", eventually):
                 self.assertEqual(cli._write_guarded(root, files), 0)
             self.assertEqual(target.read_text(encoding="utf-8"), "after\n")
 

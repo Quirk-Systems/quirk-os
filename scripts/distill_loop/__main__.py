@@ -18,6 +18,7 @@ import argparse
 import contextlib
 import errno
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -66,10 +67,9 @@ CONTENTION_ERRNOS = frozenset(
 
 
 def _lock_handle(handle) -> None:
-    if fcntl is not None:
-        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
-        return
-    if msvcrt is not None:
+    if os.name == "nt":
+        if msvcrt is None:
+            raise LockUnavailable("no interprocess lock primitive available on this host")
         handle.seek(0)
         for _ in range(WINDOWS_LOCK_ATTEMPTS):
             try:
@@ -80,16 +80,21 @@ def _lock_handle(handle) -> None:
                     raise LockUnavailable(f"lock primitive failed: {exc}") from exc
                 time.sleep(0.05)
         raise LockUnavailable(f"lock still contended after {WINDOWS_LOCK_ATTEMPTS} attempts")
+    if fcntl is not None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        return
     raise LockUnavailable("no interprocess lock primitive available on this host")
 
 
 def _unlock_handle(handle) -> None:
-    if fcntl is not None:
-        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
-    elif msvcrt is not None:
+    if os.name == "nt":
+        if msvcrt is None:
+            return
         handle.seek(0)
         with contextlib.suppress(OSError):
             msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+    elif fcntl is not None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 @contextlib.contextmanager
