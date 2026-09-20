@@ -204,7 +204,8 @@ begin
   $$
   loop
     raise notice '%', v_explain_line;
-    if v_explain_line ilike '%projection_outbox_claim_ready_idx%' then
+    if v_explain_line ilike '%projection_outbox_claim_pending_failed_idx%'
+       or v_explain_line ilike '%projection_outbox_claim_expired_leased_idx%' then
       v_has_claim_index := true;
     end if;
     if v_explain_line ~ '^\s*Sort\s' then
@@ -213,7 +214,7 @@ begin
   end loop;
 
   if not v_has_claim_index then
-    raise exception 'benchmark expected claim query to use projection_outbox_claim_ready_idx';
+    raise exception 'benchmark expected claim query to use new projection_outbox_claim_* indexes';
   end if;
   if v_has_sort then
     raise exception 'benchmark expected index-ordered claim path without explicit Sort node';
@@ -231,7 +232,7 @@ begin
     and (
       status <> 'leased'
       or available_at > now()
-      or attempts > max_attempts
+      or attempts >= max_attempts
     );
   if v_non_ready <> 0 then
     raise exception 'benchmark claimed rows outside readiness predicate';
