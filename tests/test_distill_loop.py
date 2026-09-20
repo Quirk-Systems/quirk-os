@@ -249,6 +249,82 @@ class FightCardTests(unittest.TestCase):
             fresh_result = {"files": {"skills/distill-ledger.json": json.dumps(forked)}, "ledger_input_sha256": forked["ledger_sha256"]}
             self.assertEqual(_write_guarded(root, fresh_result), 0)
 
+    def test_k2b_two_writers_with_the_same_input_cannot_both_land(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+        from distill_loop.__main__ import _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            base = self.distilled["ledger"]
+            writer_a, _ = append_entry(base, kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                                       candidate_id=None, source_receipt_id="receipt.a.1", source_skill_id="quirk-a",
+                                       source_skill_version="0.1.0", finding_codes=[], refs={})
+            writer_b, _ = append_entry(base, kind="abstained", recorded_at="2026-09-19T00:00:01Z", actor="agent.distill-loop",
+                                       candidate_id=None, source_receipt_id="receipt.b.1", source_skill_id="quirk-b",
+                                       source_skill_version="0.1.0", finding_codes=[], refs={})
+            result_a = {"files": {"skills/distill-ledger.json": json.dumps(writer_a)}, "ledger_input_sha256": base["ledger_sha256"]}
+            result_b = {"files": {"skills/distill-ledger.json": json.dumps(writer_b)}, "ledger_input_sha256": base["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, result_a), 0)
+            self.assertEqual(_write_guarded(root, result_b), 1)
+            on_disk = json.loads((root / "skills" / "distill-ledger.json").read_text())
+            self.assertEqual(on_disk["ledger_sha256"], writer_a["ledger_sha256"])
+            self.assertEqual(on_disk["entries"][-1]["source_receipt_id"], "receipt.a.1")
+
+    def test_k2c_write_blocks_while_another_process_holds_the_ledger_lock(self) -> None:
+        import tempfile
+        import threading
+        import time
+
+        try:
+            import fcntl
+        except ImportError:  # pragma: no cover
+            self.skipTest("no fcntl on this host")
+        from distill_loop import write_files
+        from distill_loop.__main__ import LOCK_NAME, _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            lock_path = root / "skills" / LOCK_NAME
+            holder = open(lock_path, "a+", encoding="utf-8")
+            fcntl.flock(holder.fileno(), fcntl.LOCK_EX)
+            result = {"files": {"skills/distill-ledger.json": json.dumps(self.distilled["ledger"])},
+                      "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            outcome: list[int] = []
+            worker = threading.Thread(target=lambda: outcome.append(_write_guarded(root, result)))
+            worker.start()
+            time.sleep(0.3)
+            self.assertTrue(worker.is_alive(), "writer must wait for the ledger lock")
+            fcntl.flock(holder.fileno(), fcntl.LOCK_UN)
+            holder.close()
+            worker.join(timeout=5)
+            self.assertEqual(outcome, [0])
+
+    def test_k2d_redirected_write_initializes_an_empty_out_tree_and_refuses_a_diverged_one(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+        from distill_loop.__main__ import _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, empty_out, diverged_out = Path(tmp) / "root", Path(tmp) / "empty", Path(tmp) / "diverged"
+            write_files(root, self.distilled["files"])  # non-genesis source ledger
+            nxt, _ = append_entry(self.distilled["ledger"], kind="abstained", recorded_at="2026-09-19T00:00:00Z",
+                                  actor="agent.distill-loop", candidate_id=None, source_receipt_id="receipt.c.1",
+                                  source_skill_id="quirk-c", source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {"skills/distill-ledger.json": json.dumps(nxt)}, "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, result, empty_out), 0)
+            self.assertEqual(json.loads((empty_out / "skills" / "distill-ledger.json").read_text())["ledger_sha256"], nxt["ledger_sha256"])
+            other, _ = append_entry(new_ledger(), kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                                    candidate_id=None, source_receipt_id="receipt.d.1", source_skill_id="quirk-d",
+                                    source_skill_version="0.1.0", finding_codes=[], refs={})
+            write_files(diverged_out, {"skills/distill-ledger.json": json.dumps(other)})
+            self.assertEqual(_write_guarded(root, result, diverged_out), 1)
+            self.assertEqual(json.loads((diverged_out / "skills" / "distill-ledger.json").read_text())["ledger_sha256"], other["ledger_sha256"])
+
     def test_k3_promotion_receipt_is_single_use(self) -> None:
         errors = self._validate(ledger=self.promoted["ledger"])
         self.assertTrue(any("single use" in error for error in errors), errors)
@@ -287,6 +363,14 @@ class FightCardTests(unittest.TestCase):
         receipt = attest_promotion({**self.fx.promotion_receipt, "decided_at": "2026-01-01T00:00:00Z"})
         errors = self._validate(receipt)
         self.assertTrue(any("before the candidate was distilled" in error for error in errors), errors)
+        distilled_at = self.distilled["ledger_entry"]["recorded_at"]
+        equal = attest_promotion({**self.fx.promotion_receipt, "decided_at": distilled_at})
+        errors = self._validate(equal)
+        self.assertTrue(any("strictly follow" in error for error in errors), errors)
+        one_second_later = distilled_at.replace("Z", "+00:00")
+        from datetime import datetime, timedelta
+        later = (datetime.fromisoformat(one_second_later) + timedelta(seconds=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        self.assertEqual(self._validate(attest_promotion({**self.fx.promotion_receipt, "decided_at": later})), [])
 
     def test_k7_receipt_finished_before_started_abstains(self) -> None:
         receipt = copy.deepcopy(self.fx.receipt)
@@ -305,6 +389,20 @@ class FightCardTests(unittest.TestCase):
         errors = self._validate(receipt, eval_suite=posturing)
         self.assertTrue(any("does not match its kind" in error for error in errors), errors)
         self.assertTrue(any("distinct scenarios" in error for error in errors), errors)
+
+    def test_s1b_unknown_scenarios_cannot_stand_in_for_real_cases(self) -> None:
+        from distill_loop.common import sha256_json
+
+        suite = copy.deepcopy(self.fx.reviewed_suite)
+        for case, scenario in zip(suite[1:], ("unknown_adversarial_probe", "unknown_regression_probe", "unknown_authority_probe")):
+            case["scenario"] = scenario
+            case["input"] = {"anything": True}
+            case["expected"] = {"result": "abstain", "action": "request_missing_evidence", "blocked": True,
+                                "required_codes": ["INSUFFICIENT_EVIDENCE"], "prohibited_codes": []}
+        receipt = attest_promotion({**self.fx.promotion_receipt, "eval_suite_sha256": sha256_json(suite)})
+        errors = self._validate(receipt, eval_suite=suite)
+        self.assertTrue(any("not an approved scenario" in error for error in errors), errors)
+        self.assertTrue(any("generic fallback" in error for error in errors), errors)
 
     def test_s2_eval_refuses_ceiling_escalation(self) -> None:
         case = dict(self.fx.reviewed_suite[0])

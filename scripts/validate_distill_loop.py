@@ -327,6 +327,18 @@ def validate(repo: Path) -> dict[str, Any]:
         def _posturing(receipt): receipt["eval_suite_sha256"] = sha256_json(posturing)
         refused("posturing_suite_refused", _posturing, eval_suite=posturing)
 
+        unknown = copy.deepcopy(example["reviewed_suite"])
+        for case, scenario in zip(unknown[1:], ("unknown_adversarial_probe", "unknown_regression_probe", "unknown_authority_probe")):
+            case["scenario"] = scenario
+            case["input"] = {"anything": True}
+            case["expected"] = {"result": "abstain", "action": "request_missing_evidence", "blocked": True,
+                                "required_codes": ["INSUFFICIENT_EVIDENCE"], "prohibited_codes": []}
+        def _unknown(receipt): receipt["eval_suite_sha256"] = sha256_json(unknown)
+        refused("unknown_scenario_suite_refused", _unknown, eval_suite=unknown)
+
+        def _equal_time(receipt): receipt["decided_at"] = distilled["ledger_entry"]["recorded_at"]
+        refused("equal_timestamp_promotion_refused", _equal_time)
+
         escalated_case = dict(example["reviewed_suite"][0])
         escalated_case["input"] = dict(escalated_case["input"], authority_ceiling_observed="execute_bounded")
         verdict = evaluate_distilled_case(escalated_case, manifest)

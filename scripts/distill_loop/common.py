@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -115,10 +116,14 @@ def unique_in_order(items: list[str]) -> list[str]:
 
 
 def write_files(root: Path, files: dict[str, str]) -> list[Path]:
+    """Write each file through a temp sibling and an atomic replace, ledger last."""
     written: list[Path] = []
-    for relative, text in sorted(files.items()):
+    ordered = sorted(files.items(), key=lambda item: (item[0] == LEDGER_PATH, item[0]))
+    for relative, text in ordered:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text, encoding="utf-8")
+        temp = path.with_name(path.name + ".tmp")
+        temp.write_text(text, encoding="utf-8")
+        os.replace(temp, path)
         written.append(path)
     return written

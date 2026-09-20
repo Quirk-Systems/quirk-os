@@ -67,13 +67,13 @@ Every row is a bout that landed against the first cut of this loop and is refuse
 | Bout | Fighter | Attack | Refusal |
 | --- | --- | --- | --- |
 | K1 | kicker | Second receipt hashes to an existing candidate id and overwrites its package | `CANDIDATE_ID_COLLISION` |
-| K2 | kicker | Two operators write against the same ledger; the later write silently drops the earlier chain | CLI `LEDGER_FORKED`; a write must match the ledger digest it read |
+| K2 | kicker | Two operators write against the same ledger; the later write silently drops the earlier chain | CLI `LEDGER_FORKED`; check and write happen under an interprocess lock, the source ledger must still carry the digest the operation read, and a redirected `--out` tree must be empty or carry that same digest |
 | K3 | kicker | One attested promotion receipt replayed against a second candidate | promotion receipt ids are single use in the ledger |
 | K4 | kicker | Trace claims a move succeeded with evidence the run receipt never listed | move excluded, `EVIDENCE_UNRECEIPTED` |
 | K5 | kicker | Self-consistent forged source skill with a matching forged receipt | `SOURCE_NOT_REGISTERED`; source must sit in `skills/registry.json` at the exact digest, and the registry digest must verify |
-| K6 | kicker | Promotion receipt decided before the candidate was distilled | refused; `decided_at` must follow the distilled entry |
+| K6 | kicker | Promotion receipt decided before, or at the same instant as, the distillation | refused; `decided_at` must strictly follow the distilled entry |
 | K7 | kicker | Run receipt that finished before it started | `RECEIPT_TIME_INVALID` |
-| S1 | swanger | Four copies of the positive case relabeled positive, adversarial, regression, authority | refused; each kind must carry its own shape (adversarial, regression, authority expect a blocked non-pass) and scenarios must be distinct |
+| S1 | swanger | Four copies of the positive case relabeled positive, adversarial, regression, authority; or three invented scenario names that only the generic fallback satisfies | refused; each kind is limited to the scenarios the evaluator implements, must carry its own shape (adversarial, regression, authority expect a blocked non-pass), scenarios must be distinct, and a case the generic fallback satisfies exercises nothing |
 | S2 | swanger | Positive case emits `CEILING_RESPECTED` without stating an observed ceiling | positive case must state `authority_ceiling_observed`; above the manifest ceiling is `CEILING_ESCALATION` |
 | S3 | swanger | Eval suite swapped on disk after promotion; candidate still offered to the next run | quarantined; on-disk suite digest must match the promoted digest |
 

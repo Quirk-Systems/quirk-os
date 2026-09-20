@@ -15,9 +15,15 @@ what they would write. Nothing here admits or activates a skill.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import sys
 from pathlib import Path
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - non-POSIX hosts fall back to the digest check alone
+    fcntl = None
 
 from .common import LEDGER_PATH, load_schemas, write_files
 from .context import next_run_context
@@ -35,14 +41,58 @@ def _ledger(root: Path):
     return _load(path) if path.exists() else new_ledger()
 
 
-def _write_guarded(out: Path, result: dict) -> int:
-    """Refuse to write over a ledger that moved since this operation read it."""
-    path = out / LEDGER_PATH
-    on_disk = _load(path)["ledger_sha256"] if path.exists() else new_ledger()["ledger_sha256"]
-    if on_disk != result.get("ledger_input_sha256"):
-        print(json.dumps({"error": "LEDGER_FORKED", "detail": "on-disk ledger changed since this operation read it; re-run against the current ledger"}), file=sys.stderr)
-        return 1
-    write_files(out, result["files"])
+LOCK_NAME = "distill-ledger.lock"
+
+
+@contextlib.contextmanager
+def _ledger_lock(*roots: Path):
+    """Hold an exclusive interprocess lock on every tree we will check or write.
+
+    The lock makes check-then-write one step: a second writer that computed its
+    result against the same input ledger blocks here, then re-reads a ledger
+    that has moved and is refused instead of silently replacing the first write.
+    """
+    handles = []
+    try:
+        for root in sorted({r.resolve() for r in roots}):
+            lock_path = root / "skills" / LOCK_NAME
+            lock_path.parent.mkdir(parents=True, exist_ok=True)
+            handle = open(lock_path, "a+", encoding="utf-8")
+            if fcntl is not None:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            handles.append(handle)
+        yield
+    finally:
+        for handle in reversed(handles):
+            if fcntl is not None:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+            handle.close()
+
+
+def _ledger_digest_on_disk(root: Path) -> str:
+    path = root / LEDGER_PATH
+    return _load(path)["ledger_sha256"] if path.exists() else new_ledger()["ledger_sha256"]
+
+
+def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
+    """Compare-and-swap the ledger under lock.
+
+    `root` is the tree whose ledger this operation read; `out` is where it writes
+    (default: `root`). Under the lock, the source ledger must still carry the digest
+    the operation read. When writing elsewhere, the output tree must either be
+    empty (it is initialized from the input ledger) or already carry that same
+    digest; anything else is a fork and is refused.
+    """
+    out = out or root
+    expected = result.get("ledger_input_sha256")
+    with _ledger_lock(root, out):
+        if _ledger_digest_on_disk(root) != expected:
+            print(json.dumps({"error": "LEDGER_FORKED", "detail": "source ledger changed since this operation read it; re-run against the current ledger"}), file=sys.stderr)
+            return 1
+        if out.resolve() != root.resolve() and (out / LEDGER_PATH).exists() and _ledger_digest_on_disk(out) != expected:
+            print(json.dumps({"error": "LEDGER_FORKED", "detail": "output tree already holds a different ledger; refusing to replace it"}), file=sys.stderr)
+            return 1
+        write_files(out, result["files"])
     return 0
 
 
@@ -112,7 +162,7 @@ def main(argv: list[str] | None = None) -> int:
         summary["files"] = sorted(result["files"])
         print(json.dumps(summary, indent=2))
         if args.write:
-            return _write_guarded(out, result)
+            return _write_guarded(root, result, out)
         return 0
 
     receipt = _load(args.receipt)
@@ -132,7 +182,7 @@ def main(argv: list[str] | None = None) -> int:
     if result["errors"]:
         return 1
     if args.write:
-        return _write_guarded(out, result)
+        return _write_guarded(root, result, out)
     return 0
 
 

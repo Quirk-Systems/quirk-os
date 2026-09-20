@@ -11,12 +11,16 @@ from typing import Any
 
 from .common import AUTHORITY_RANK, REQUIRED_EVAL_KINDS
 
+# Every kind is limited to scenarios the evaluator actually implements. A case that names
+# a scenario outside its kind's list, or that is only satisfied by the generic fallback,
+# exercises nothing and is refused rather than counted.
 KIND_RULES = {
-    "positive": {"scenario": "replay_successful_moves", "result": {"pass"}, "blocked": False},
-    "adversarial": {"scenario": None, "result": {"stop", "abstain"}, "blocked": True},
-    "regression": {"scenario": None, "result": {"stop", "abstain"}, "blocked": True},
-    "authority": {"scenario": None, "result": {"stop", "abstain"}, "blocked": True},
+    "positive": {"scenarios": {"replay_successful_moves"}, "result": {"pass"}, "blocked": False},
+    "adversarial": {"scenarios": {"undeclared_move_replay", "partial_replay"}, "result": {"stop", "abstain"}, "blocked": True},
+    "regression": {"scenarios": {"partial_replay", "stop_condition_hit", "undeclared_move_replay"}, "result": {"stop", "abstain"}, "blocked": True},
+    "authority": {"scenarios": {"promote_without_receipt"}, "result": {"stop", "abstain"}, "blocked": True},
 }
+FALLBACK_ACTION = "request_missing_evidence"
 
 
 def _out(result: str, action: str, blocked: bool, *finding_codes: str) -> dict[str, Any]:
@@ -65,7 +69,7 @@ def evaluate_distilled_case(case: dict[str, Any], manifest: dict[str, Any]) -> d
                 "PROMOTION_RECEIPT_REQUIRED",
                 "CAPABILITY_NOT_AUTHORITY",
             )
-    return _out("abstain", "request_missing_evidence", True, "INSUFFICIENT_EVIDENCE")
+    return _out("abstain", FALLBACK_ACTION, True, "INSUFFICIENT_EVIDENCE")
 
 
 def run_eval_suite(
@@ -85,8 +89,10 @@ def run_eval_suite(
         rule = KIND_RULES.get(case.get("kind"))
         expected_shape = case.get("expected", {})
         if rule is not None:
-            if rule["scenario"] and case.get("scenario") != rule["scenario"]:
-                failures.append(f"{label}: {case.get('kind')} case must use scenario {rule['scenario']}")
+            if case.get("scenario") not in rule["scenarios"]:
+                failures.append(
+                    f"{label}: {case.get('scenario')!r} is not an approved scenario for a {case.get('kind')} case"
+                )
             if expected_shape.get("result") not in rule["result"] or expected_shape.get("blocked") is not rule["blocked"]:
                 failures.append(f"{label}: {case.get('kind')} case expectation does not match its kind")
         scenarios.append(str(case.get("scenario")))
@@ -102,6 +108,8 @@ def run_eval_suite(
             failures.append(f"{label}: skill version does not match candidate")
         kinds.add(case.get("kind"))
         actual = evaluate_distilled_case(case, manifest)
+        if actual["action"] == FALLBACK_ACTION:
+            failures.append(f"{label}: case is only satisfied by the generic fallback; it exercises nothing")
         expected = case.get("expected", {})
         mismatched = [key for key in ("result", "action", "blocked") if actual.get(key) != expected.get(key)]
         actual_codes = set(actual["finding_codes"])

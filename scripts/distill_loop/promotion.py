@@ -83,8 +83,8 @@ def validate_promotion_receipt(
         errors.append("candidate has no distilled ledger entry; unknown provenance cannot be promoted")
     else:
         try:
-            if parse_utc(receipt["decided_at"]) < parse_utc(entry["recorded_at"]):
-                errors.append("promotion decided before the candidate was distilled")
+            if parse_utc(receipt["decided_at"]) <= parse_utc(entry["recorded_at"]):
+                errors.append("promotion decided before the candidate was distilled; the decision must strictly follow it")
         except (ValueError, TypeError, KeyError):
             errors.append("promotion or distillation timestamp is invalid")
         if entry.get("source_receipt_id") != receipt["source_run_receipt_ref"]:
