@@ -373,7 +373,7 @@ class CliLockTests(unittest.TestCase):
             target.write_text("before\n", encoding="utf-8")
             files = {"skills/distill-ledger.json": "after\n"}
 
-            denied = fake_msvcrt([PermissionError(errno.EPERM, "denied")])
+            denied = fake_msvcrt([OSError(errno.EINVAL, "denied")])
             with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
                 self.assertEqual(cli._write_guarded(root, files), 1)
             self.assertEqual(len(denied.calls), 1)

@@ -59,6 +59,7 @@ CONTENTION_ERRNOS = frozenset(
         getattr(errno, "EDEADLOCK", None),
         getattr(errno, "EDEADLK", None),
         getattr(errno, "EACCES", None),
+        getattr(errno, "EPERM", None),
     )
     if code
 )
