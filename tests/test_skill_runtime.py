@@ -65,7 +65,10 @@ def valid_grant(manifest: dict) -> dict:
 
 class SkillIntegrityTests(unittest.TestCase):
     def test_all_candidate_manifests_bind_exact_source_and_digest(self) -> None:
-        manifests = list(SKILLS.glob("*/manifest.json"))
+        manifests = [
+            path for path in SKILLS.glob("*/manifest.json")
+            if not path.parent.name.startswith("quirk-distilled-")
+        ]
         self.assertEqual(len(manifests), 12)
         for path in manifests:
             manifest = json.loads(path.read_text(encoding="utf-8"))

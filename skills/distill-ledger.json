@@ -1,0 +1,15 @@
+{
+  "api_version": "quirk.dev/distill-ledger/v1alpha1",
+  "kind": "DistillLedger",
+  "status": "candidate",
+  "trigger_actor": "agent.distill-loop",
+  "authority": {
+    "semantic_authority": false,
+    "runtime_authority": false,
+    "canon_promotion": false,
+    "admission_effect": "none",
+    "projection_only": true
+  },
+  "entries": [],
+  "ledger_sha256": "93a997039fb79e566eff213eae2d386d22998bd9f0ddd40d86d1bdeaf3848577"
+}

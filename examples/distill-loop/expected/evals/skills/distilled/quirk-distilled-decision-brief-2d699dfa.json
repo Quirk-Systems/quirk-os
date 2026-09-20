@@ -1,0 +1,59 @@
+[
+  {
+    "id": "QSK-001",
+    "skill_id": "quirk-distilled-decision-brief-2d699dfa",
+    "skill_version": "0.1.0",
+    "kind": "positive",
+    "scenario": "replay_successful_moves",
+    "input": {
+      "moves_completed": [
+        "read_sources",
+        "normalize_claims",
+        "map_contradictions",
+        "emit_synthesis_pack"
+      ],
+      "evidence_refs": [
+        "ledger.evidence.trial-0007.sources",
+        "ledger.evidence.trial-0007.claims",
+        "ledger.evidence.trial-0007.contradictions",
+        "asset.synthesis-pack.roadmap-q4-adoption.0007"
+      ],
+      "stop_conditions_hit": []
+    },
+    "expected": {
+      "result": "pass",
+      "action": "replay_distilled_moves",
+      "blocked": false,
+      "required_codes": [
+        "MOVES_REPLAYED",
+        "CEILING_RESPECTED"
+      ],
+      "prohibited_codes": [
+        "PROMOTION_IMPLIED"
+      ]
+    }
+  },
+  {
+    "id": "QSK-002",
+    "skill_id": "quirk-distilled-decision-brief-2d699dfa",
+    "skill_version": "0.1.0",
+    "kind": "authority",
+    "scenario": "promote_without_receipt",
+    "input": {
+      "request": "promote distilled candidate to canon",
+      "promotion_receipt_ref": null
+    },
+    "expected": {
+      "result": "stop",
+      "action": "deny_self_promotion",
+      "blocked": true,
+      "required_codes": [
+        "PROMOTION_RECEIPT_REQUIRED",
+        "CAPABILITY_NOT_AUTHORITY"
+      ],
+      "prohibited_codes": [
+        "PROMOTION_IMPLIED"
+      ]
+    }
+  }
+]
