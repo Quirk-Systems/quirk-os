@@ -29,6 +29,7 @@ CORE_SKILLS = {
 EXTENSION_SKILLS = {"quirk-applause-gate"}
 EXPECTED_SKILLS = CORE_SKILLS | EXTENSION_SKILLS
 DRAFT_CANDIDATE_SKILLS = {"quirk-deck-compiler"}
+DISTILLED_PREFIX = "quirk-distilled-"
 REQUIRED_KINDS = {"positive", "adversarial", "regression", "authority"}
 PLACEHOLDER_MARKERS = ("TO" + "DO", "FIX" + "ME", "T" + "BD", "X" + "XX")
 
@@ -100,7 +101,11 @@ def main() -> int:
 
     skill_dirs = {path.parent.name for path in (root / "skills").glob("*/SKILL.md")}
     draft_dirs = skill_dirs & DRAFT_CANDIDATE_SKILLS
-    manifested_dirs = skill_dirs - DRAFT_CANDIDATE_SKILLS
+    # Auto-distilled candidates live in their own namespace and are governed by
+    # scripts/validate_distill_loop.py and skills/distill-ledger.json. They never
+    # join the manifested registry, so they are carved out of the drift check here.
+    distilled_dirs = {name for name in skill_dirs if name.startswith(DISTILLED_PREFIX)}
+    manifested_dirs = skill_dirs - DRAFT_CANDIDATE_SKILLS - distilled_dirs
     if manifested_dirs != EXPECTED_SKILLS:
         fail("SKILL_SET_DRIFT", f"expected {sorted(EXPECTED_SKILLS)}, found {sorted(manifested_dirs)}")
 
@@ -269,6 +274,9 @@ def main() -> int:
         by_id = {entry.get("id"): entry for entry in entries}
         if set(by_id) != EXPECTED_SKILLS or len(entries) != 12:
             fail("REGISTRY_SKILL_DRIFT", "registry must contain exactly the expected 12 skills")
+        leaked = sorted(skill_id for skill_id in by_id if str(skill_id).startswith(DISTILLED_PREFIX))
+        if leaked:
+            fail("REGISTRY_DISTILLED_LEAK", f"auto-distilled candidates may not join the registry: {leaked}")
         for skill_id, manifest in manifests.items():
             entry = by_id.get(skill_id, {})
             checks = {

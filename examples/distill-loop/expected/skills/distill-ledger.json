@@ -1,0 +1,45 @@
+{
+  "api_version": "quirk.dev/distill-ledger/v1alpha1",
+  "kind": "DistillLedger",
+  "status": "candidate",
+  "trigger_actor": "agent.distill-loop",
+  "authority": {
+    "semantic_authority": false,
+    "runtime_authority": false,
+    "canon_promotion": false,
+    "admission_effect": "none",
+    "projection_only": true
+  },
+  "entries": [
+    {
+      "entry_id": "dl.000001",
+      "kind": "distilled",
+      "recorded_at": "2026-09-18T14:26:40Z",
+      "actor": "agent.distill-loop",
+      "candidate_id": "quirk-distilled-decision-brief-2d699dfa",
+      "source_receipt_id": "receipt.quirk-distillation-synthesizer.trial.0007",
+      "source_skill_id": "quirk-distillation-synthesizer",
+      "source_skill_version": "0.2.0",
+      "finding_codes": [
+        "DISTILLED_CANDIDATE_WRITTEN",
+        "EVAL_KINDS_INCOMPLETE",
+        "PROMOTION_REQUIRED",
+        "UNDECLARED_MOVE_EXCLUDED"
+      ],
+      "refs": {
+        "eval_suite_ref": "evals/skills/distilled/quirk-distilled-decision-brief-2d699dfa.json",
+        "eval_suite_sha256": "478b4803dc14b29bcbadba5dbd53880bacac2d57ee48d2438111c17ab4935217",
+        "excluded_moves": [
+          "cache_sources",
+          "emit_proposed_move"
+        ],
+        "manifest_sha256": "d5cdc2b0480dc07624b635d7a9c3d904056570912b0f9089b2b51f1f785aa5a1",
+        "source_blob_sha": "4136bfb2806e9a0e75aec3a913f7824f03044a4e",
+        "trace_id": "trace.quirk-distillation-synthesizer.trial.0007"
+      },
+      "prev_entry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "entry_sha256": "c814688cc5803c9b33c2e67fe69caf5ad810d982dcafb12d8bc556535122d55d"
+    }
+  ],
+  "ledger_sha256": "71a35f17da3fe86d8595d22788127feb984dc952c9c412cf1342fd1fb9304281"
+}
