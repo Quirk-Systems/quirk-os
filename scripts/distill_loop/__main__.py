@@ -67,7 +67,10 @@ def _lock_handle(handle) -> None:
     the lost-update the guard exists to prevent.
     """
     if fcntl is not None:
-        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        except OSError as exc:
+            raise LockUnavailable(f"lock primitive failed: {exc}") from exc
         return
     if msvcrt is not None:
         handle.seek(0)
@@ -84,7 +87,8 @@ def _lock_handle(handle) -> None:
 
 def _unlock_handle(handle) -> None:
     if fcntl is not None:
-        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        with contextlib.suppress(OSError):
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
     elif msvcrt is not None:
         handle.seek(0)
         with contextlib.suppress(OSError):
@@ -124,14 +128,22 @@ def _ledger_digest_on_disk(root: Path) -> str:
     return _load(path)["ledger_sha256"] if path.exists() else new_ledger()["ledger_sha256"]
 
 
+def _tree_has_content(root: Path) -> bool:
+    """True when the tree holds anything besides the lock file this command itself creates."""
+    if not root.exists():
+        return False
+    lock = (root / "skills" / LOCK_NAME).resolve()
+    return any(path.is_file() and path.resolve() != lock for path in root.rglob("*"))
+
+
 def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
     """Compare-and-swap the ledger under lock.
 
     `root` is the tree whose ledger this operation read; `out` is where it writes
     (default: `root`). Under the lock, the source ledger must still carry the digest
     the operation read. When writing elsewhere, the output tree must either be
-    empty (it is initialized from the input ledger) or already carry that same
-    digest; anything else is a fork and is refused.
+    truly empty (it is initialized from the input ledger) or already carry that same
+    digest; a tree with other files and no ledger, or a different ledger, is refused.
     """
     out = out or root
     expected = result.get("ledger_input_sha256")
@@ -146,9 +158,14 @@ def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
         if _ledger_digest_on_disk(root) != expected:
             print(json.dumps({"error": "LEDGER_FORKED", "detail": "source ledger changed since this operation read it; re-run against the current ledger"}), file=sys.stderr)
             return 1
-        if out.resolve() != root.resolve() and (out / LEDGER_PATH).exists() and _ledger_digest_on_disk(out) != expected:
-            print(json.dumps({"error": "LEDGER_FORKED", "detail": "output tree already holds a different ledger; refusing to replace it"}), file=sys.stderr)
-            return 1
+        if out.resolve() != root.resolve():
+            if (out / LEDGER_PATH).exists():
+                if _ledger_digest_on_disk(out) != expected:
+                    print(json.dumps({"error": "LEDGER_FORKED", "detail": "output tree already holds a different ledger; refusing to replace it"}), file=sys.stderr)
+                    return 1
+            elif _tree_has_content(out):
+                print(json.dumps({"error": "LEDGER_FORKED", "detail": "output tree is not empty and holds no ledger; refusing to write into it"}), file=sys.stderr)
+                return 1
         write_files(out, result["files"])
     return 0
 
