@@ -19,6 +19,7 @@ import contextlib
 import errno
 import json
 import sys
+import time
 from pathlib import Path
 
 try:
@@ -70,6 +71,7 @@ def _lock_handle(handle) -> None:
             except OSError as exc:
                 if exc.errno not in CONTENTION_ERRNOS:
                     raise LockUnavailable(f"lock primitive failed: {exc}") from exc
+                time.sleep(0.05)
         raise LockUnavailable(f"lock still contended after {WINDOWS_LOCK_ATTEMPTS} attempts")
     raise LockUnavailable("no interprocess lock primitive available on this host")
 
