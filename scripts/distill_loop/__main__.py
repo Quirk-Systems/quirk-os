@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import errno
 import json
 import sys
 from pathlib import Path
@@ -50,36 +51,44 @@ def _ledger(root: Path):
 
 
 LOCK_NAME = "distill-ledger.lock"
+# msvcrt.locking(LK_LOCK) blocks for up to ten one-second attempts per call and reports
+# contention as EDEADLOCK. Retrying that a bounded number of times is a wait; retrying
+# anything else, or forever, would be a spin that never fails closed.
+WINDOWS_LOCK_ATTEMPTS = 6
+CONTENTION_ERRNOS = frozenset(code for code in (getattr(errno, "EDEADLOCK", None), getattr(errno, "EDEADLK", None)) if code)
 
 
 def _lock_handle(handle) -> None:
     """Take an exclusive, blocking interprocess lock or raise LockUnavailable.
 
-    POSIX uses flock. Windows uses msvcrt.locking, which blocks in ten one-second
-    attempts per call, so it is retried until it succeeds. Any other host has no
-    reliable primitive and must not write at all: an unlocked check-then-write is
-    exactly the lost-update the guard exists to prevent.
+    POSIX uses flock. Windows uses msvcrt.locking, retried only on confirmed
+    contention and only a bounded number of times. Any other host has no reliable
+    primitive and must not write at all: an unlocked check-then-write is exactly
+    the lost-update the guard exists to prevent.
     """
     if fcntl is not None:
         fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
         return
-    if msvcrt is not None:  # pragma: no cover - exercised on Windows only
+    if msvcrt is not None:
         handle.seek(0)
-        while True:
+        for _ in range(WINDOWS_LOCK_ATTEMPTS):
             try:
                 msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
                 return
-            except OSError:
-                continue
+            except OSError as exc:
+                if exc.errno not in CONTENTION_ERRNOS:
+                    raise LockUnavailable(f"lock primitive failed: {exc}") from exc
+        raise LockUnavailable(f"lock still contended after {WINDOWS_LOCK_ATTEMPTS} attempts")
     raise LockUnavailable("no interprocess lock primitive available on this host")
 
 
 def _unlock_handle(handle) -> None:
     if fcntl is not None:
         fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
-    elif msvcrt is not None:  # pragma: no cover - exercised on Windows only
+    elif msvcrt is not None:
         handle.seek(0)
-        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+        with contextlib.suppress(OSError):
+            msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
 
 
 @contextlib.contextmanager

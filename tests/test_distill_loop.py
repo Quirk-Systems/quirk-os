@@ -326,6 +326,59 @@ class FightCardTests(unittest.TestCase):
             self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
             self.assertEqual(cli._write_guarded(root, result), 0)
 
+    def test_k2f_windows_lock_path_fails_closed_instead_of_spinning(self) -> None:
+        import errno
+        import tempfile
+        from types import SimpleNamespace
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+        from distill_loop import write_files
+
+        contention = getattr(errno, "EDEADLOCK", getattr(errno, "EDEADLK", 36))
+
+        def fake_msvcrt(sequence):
+            calls = []
+
+            def locking(fd, mode, nbytes):
+                if mode == 2:  # LK_UNLCK
+                    return None
+                calls.append(mode)
+                outcome = sequence[min(len(calls), len(sequence)) - 1]
+                if outcome is not None:
+                    raise outcome
+            return SimpleNamespace(locking=locking, LK_LOCK=1, LK_UNLCK=2, calls=calls)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            before = (root / "skills" / "distill-ledger.json").read_text()
+            base = self.distilled["ledger"]
+            nxt, _ = append_entry(base, kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                                  candidate_id=None, source_receipt_id="receipt.w.1", source_skill_id="quirk-w",
+                                  source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {"skills/distill-ledger.json": json.dumps(nxt)}, "ledger_input_sha256": base["ledger_sha256"]}
+
+            # persistent non-contention failure: refused at once, never retried
+            denied = fake_msvcrt([PermissionError(errno.EACCES, "denied")])
+            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
+                self.assertEqual(cli._write_guarded(root, result), 1)
+            self.assertEqual(len(denied.calls), 1)
+            self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
+
+            # endless contention: bounded retries, then refused
+            busy = fake_msvcrt([OSError(contention, "busy")])
+            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", busy):
+                self.assertEqual(cli._write_guarded(root, result), 1)
+            self.assertEqual(len(busy.calls), cli.WINDOWS_LOCK_ATTEMPTS)
+            self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
+
+            # one round of contention then success: the write lands
+            eventually = fake_msvcrt([OSError(contention, "busy"), None])
+            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", eventually):
+                self.assertEqual(cli._write_guarded(root, result), 0)
+            self.assertEqual(json.loads((root / "skills" / "distill-ledger.json").read_text())["ledger_sha256"], nxt["ledger_sha256"])
+
     def test_k2d_redirected_write_initializes_an_empty_out_tree_and_refuses_a_diverged_one(self) -> None:
         import tempfile
 
