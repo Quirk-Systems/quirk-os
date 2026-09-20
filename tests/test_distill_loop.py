@@ -16,6 +16,7 @@ from distill_loop import (  # noqa: E402
     apply_promotion,
     attest_promotion,
     candidate_state,
+    evaluate_distilled_case,
     load_schemas,
     new_ledger,
     next_run_context,
@@ -45,15 +46,17 @@ class DistillFixture:
         self.source_text = (source_dir / "SKILL.md").read_text(encoding="utf-8")
         self.promotion_receipt = _json(EXAMPLE / "promotion-receipt.json")
         self.reviewed_suite = _json(EXAMPLE / "reviewed-eval-suite.json")
+        self.registry = _json(ROOT / "skills" / "registry.json")
 
-    def distill(self, *, receipt=None, trace=None, ledger=None):
+    def distill(self, *, receipt=None, trace=None, ledger=None, source_manifest=None, source_text=None, registry=None):
         return post_run_distill(
             receipt=receipt or self.receipt,
             trace=trace or self.trace,
-            source_manifest=self.source_manifest,
-            source_text=self.source_text,
+            source_manifest=source_manifest or self.source_manifest,
+            source_text=source_text or self.source_text,
             ledger=ledger or new_ledger(),
             schemas=self.schemas,
+            registry=registry or self.registry,
         )
 
 
@@ -181,9 +184,153 @@ class TriggerTests(unittest.TestCase):
         trace.update({"receipt_id": receipt["receipt_id"], "skill_id": manifest["id"], "skill_version": manifest["version"]})
         outcome = post_run_distill(
             receipt=receipt, trace=trace, source_manifest=manifest, source_text=self.result["skill_text"],
-            ledger=new_ledger(), schemas=self.fx.schemas,
+            ledger=new_ledger(), schemas=self.fx.schemas, registry=self.fx.registry,
         )
-        self.assertIn("RECURSIVE_DISTILLATION_DENIED", outcome["finding_codes"])
+        # a distilled candidate is never in the registry, so the registry gate fires first
+        self.assertTrue({"SOURCE_NOT_REGISTERED", "RECURSIVE_DISTILLATION_DENIED"} & set(outcome["finding_codes"]))
+        self.assertEqual(outcome["outcome"], "abstained")
+
+
+class FightCardTests(unittest.TestCase):
+    """Each test is one bout that landed on main before hardening and must be refused now."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.fx = DistillFixture()
+        cls.distilled = cls.fx.distill()
+        cls.promoted = apply_promotion(
+            cls.fx.promotion_receipt, candidate_manifest=cls.distilled["manifest"], candidate_source=cls.distilled["skill_text"],
+            eval_suite=cls.fx.reviewed_suite, ledger=cls.distilled["ledger"], schemas=cls.fx.schemas,
+        )
+        assert cls.promoted["outcome"] == "promoted", cls.promoted["errors"]
+
+    def _validate(self, receipt=None, **overrides):
+        kwargs = {
+            "candidate_manifest": self.distilled["manifest"], "candidate_source": self.distilled["skill_text"],
+            "eval_suite": self.fx.reviewed_suite, "ledger": self.distilled["ledger"], "schemas": self.fx.schemas,
+        }
+        kwargs.update(overrides)
+        return validate_promotion_receipt(receipt or self.fx.promotion_receipt, **kwargs)
+
+    def test_k1_candidate_id_collision_abstains(self) -> None:
+        ledger, _ = append_entry(
+            new_ledger(), kind="distilled", recorded_at="2026-09-01T00:00:00Z", actor="agent.distill-loop",
+            candidate_id=self.distilled["manifest"]["id"], source_receipt_id="receipt.other.0001",
+            source_skill_id=self.fx.source_manifest["id"], source_skill_version=self.fx.source_manifest["version"],
+            finding_codes=["DISTILLED_CANDIDATE_WRITTEN"], refs={},
+        )
+        out = self.fx.distill(ledger=ledger)
+        self.assertEqual(out["outcome"], "abstained")
+        self.assertIn("CANDIDATE_ID_COLLISION", out["finding_codes"])
+
+    def test_k2_cli_refuses_to_write_over_a_forked_ledger(self) -> None:
+        import subprocess
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            from distill_loop import write_files
+
+            write_files(root, self.distilled["files"])
+            # fork: the on-disk ledger moves after the operation read it
+            forked, _ = append_entry(
+                self.distilled["ledger"], kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                candidate_id=None, source_receipt_id="receipt.elsewhere.0001", source_skill_id="quirk-x",
+                source_skill_version="0.1.0", finding_codes=["RUN_NOT_COMPLETED"], refs={},
+            )
+            # promote computes against the ledger it reads; simulate the race by racing the file after read
+            # via a stale copy: write the fork *before* promote reads means no fork, so instead exercise the guard directly.
+            from distill_loop.__main__ import _write_guarded
+
+            stale_result = {"files": {"skills/distill-ledger.json": "{}"}, "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            (root / "skills" / "distill-ledger.json").write_text(json.dumps(forked), encoding="utf-8")
+            self.assertEqual(_write_guarded(root, stale_result), 1)
+            self.assertEqual(json.loads((root / "skills" / "distill-ledger.json").read_text())["ledger_sha256"], forked["ledger_sha256"])
+            fresh_result = {"files": {"skills/distill-ledger.json": json.dumps(forked)}, "ledger_input_sha256": forked["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, fresh_result), 0)
+
+    def test_k3_promotion_receipt_is_single_use(self) -> None:
+        errors = self._validate(ledger=self.promoted["ledger"])
+        self.assertTrue(any("single use" in error for error in errors), errors)
+
+    def test_k4_unreceipted_evidence_is_excluded(self) -> None:
+        trace = copy.deepcopy(self.fx.trace)
+        trace["moves"][0]["evidence_ref"] = "ledger.evidence.never-receipted"
+        out = self.fx.distill(trace=trace)
+        self.assertIn("EVIDENCE_UNRECEIPTED", out["finding_codes"])
+        self.assertEqual(out["outcome"], "distilled")
+        self.assertNotIn(trace["moves"][0]["move"], out["manifest"]["method"]["moves"])
+        self.assertIn(trace["moves"][0]["move"], out["ledger_entry"]["refs"]["excluded_moves"])
+
+    def test_k5_source_outside_registry_abstains(self) -> None:
+        from sync_control_plane.skill_runtime import git_blob_sha, manifest_digest
+
+        forged = copy.deepcopy(self.fx.source_manifest)
+        forged["purpose"] += " (forged)"
+        text = self.fx.source_text + "\nforged\n"
+        forged["integrity"]["source_blob_sha"] = git_blob_sha(text)
+        forged["integrity"]["manifest_sha256"] = "0" * 64
+        forged["integrity"]["manifest_sha256"] = manifest_digest(forged)
+        receipt = copy.deepcopy(self.fx.receipt)
+        receipt["skill_manifest_sha256"] = forged["integrity"]["manifest_sha256"]
+        out = self.fx.distill(receipt=receipt, source_manifest=forged, source_text=text)
+        self.assertEqual(out["outcome"], "abstained")
+        self.assertIn("SOURCE_NOT_REGISTERED", out["finding_codes"])
+
+    def test_k5b_tampered_registry_is_not_trusted(self) -> None:
+        registry = copy.deepcopy(self.fx.registry)
+        registry["skills"][0]["manifest_sha256"] = "f" * 64
+        out = self.fx.distill(registry=registry)
+        self.assertIn("SOURCE_NOT_REGISTERED", out["finding_codes"])
+
+    def test_k6_time_travel_promotion_refused(self) -> None:
+        receipt = attest_promotion({**self.fx.promotion_receipt, "decided_at": "2026-01-01T00:00:00Z"})
+        errors = self._validate(receipt)
+        self.assertTrue(any("before the candidate was distilled" in error for error in errors), errors)
+
+    def test_k7_receipt_finished_before_started_abstains(self) -> None:
+        receipt = copy.deepcopy(self.fx.receipt)
+        receipt["started_at"] = "2026-09-18T15:00:00Z"
+        out = self.fx.distill(receipt=receipt)
+        self.assertEqual(out["outcome"], "abstained")
+        self.assertIn("RECEIPT_TIME_INVALID", out["finding_codes"])
+
+    def test_s1_posturing_suite_refused(self) -> None:
+        from distill_loop.common import sha256_json
+
+        positive = self.fx.reviewed_suite[0]
+        posturing = [dict(positive, id=f"QSK-{i:03d}", kind=kind)
+                     for i, kind in enumerate(["positive", "adversarial", "regression", "authority"], start=1)]
+        receipt = attest_promotion({**self.fx.promotion_receipt, "eval_suite_sha256": sha256_json(posturing)})
+        errors = self._validate(receipt, eval_suite=posturing)
+        self.assertTrue(any("does not match its kind" in error for error in errors), errors)
+        self.assertTrue(any("distinct scenarios" in error for error in errors), errors)
+
+    def test_s2_eval_refuses_ceiling_escalation(self) -> None:
+        case = dict(self.fx.reviewed_suite[0])
+        case["input"] = dict(case["input"], authority_ceiling_observed="execute_bounded")
+        verdict = evaluate_distilled_case(case, self.distilled["manifest"])
+        self.assertEqual(verdict["result"], "stop")
+        self.assertIn("CEILING_ESCALATION", verdict["finding_codes"])
+        missing = dict(self.fx.reviewed_suite[0])
+        missing["input"] = {k: v for k, v in missing["input"].items() if k != "authority_ceiling_observed"}
+        self.assertNotEqual(evaluate_distilled_case(missing, self.distilled["manifest"])["result"], "pass")
+
+    def test_s3_swapped_eval_suite_is_quarantined(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            write_files(root, self.promoted["files"])
+            self.assertTrue(next_run_context(self.promoted["ledger"], root=root)["context_sources"])
+            (root / self.distilled["manifest"]["quality"]["eval_suite_ref"]).write_text("[]\n", encoding="utf-8")
+            context = next_run_context(self.promoted["ledger"], root=root)
+            self.assertEqual(context["context_sources"], [])
+            self.assertTrue(any("eval suite" in problem for problem in context["quarantined"][0]["problems"]))
+
 
 
 class LedgerTests(unittest.TestCase):

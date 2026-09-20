@@ -19,9 +19,10 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
-from distill_loop.common import LEDGER_PATH, CANDIDATE_PREFIX, load_schemas, schema_errors, sha256_json, sha256_json_without_keys
+from distill_loop.common import LEDGER_PATH, CANDIDATE_PREFIX, load_schemas, schema_errors, sha256_json, sha256_json_without_keys, source_registration_errors
 from distill_loop.context import next_run_context
-from distill_loop.ledger import candidate_state, new_ledger, verify_ledger
+from distill_loop.evaluator import evaluate_distilled_case
+from distill_loop.ledger import append_entry, candidate_state, new_ledger, verify_ledger
 from distill_loop.promotion import apply_promotion, validate_promotion_receipt
 from distill_loop.trigger import post_run_distill
 from sync_control_plane.skill_runtime import load_skill_for_execution, validate_manifest_integrity
@@ -69,6 +70,7 @@ def _synthetic_grant(manifest: dict[str, Any]) -> dict[str, Any]:
 
 def run_example(repo: Path) -> dict[str, Any]:
     schemas = load_schemas(repo)
+    registry = _json(repo / "skills" / "registry.json")
     receipt = _json(repo / EXAMPLE_DIR / "run-receipt.json")
     trace = _json(repo / EXAMPLE_DIR / "run-trace.json")
     source_dir = repo / "skills" / receipt["skill_id"]
@@ -82,6 +84,7 @@ def run_example(repo: Path) -> dict[str, Any]:
         source_text=source_text,
         ledger=new_ledger(),
         schemas=schemas,
+        registry=registry,
     )
     promotion_receipt = _json(repo / EXAMPLE_DIR / "promotion-receipt.json")
     reviewed_suite = _json(repo / EXAMPLE_DIR / "reviewed-eval-suite.json")
@@ -97,6 +100,7 @@ def run_example(repo: Path) -> dict[str, Any]:
         )
     return {
         "schemas": schemas,
+        "registry": registry,
         "receipt": receipt,
         "trace": trace,
         "source_manifest": source_manifest,
@@ -247,7 +251,7 @@ def validate(repo: Path) -> dict[str, Any]:
         blocked_receipt["status"] = "blocked"
         blocked = post_run_distill(
             receipt=blocked_receipt, trace=example["trace"], source_manifest=example["source_manifest"],
-            source_text=example["source_text"], ledger=new_ledger(), schemas=schemas,
+            source_text=example["source_text"], ledger=new_ledger(), schemas=schemas, registry=example["registry"],
         )
         controls["blocked_run_abstains"] = blocked["outcome"] == "abstained" and "RUN_NOT_COMPLETED" in blocked["finding_codes"]
         if not controls["blocked_run_abstains"]:
@@ -256,20 +260,93 @@ def validate(repo: Path) -> dict[str, Any]:
         escalated_receipt["authority_ceiling_observed"] = "execute_bounded"
         escalated = post_run_distill(
             receipt=escalated_receipt, trace=example["trace"], source_manifest=example["source_manifest"],
-            source_text=example["source_text"], ledger=new_ledger(), schemas=schemas,
+            source_text=example["source_text"], ledger=new_ledger(), schemas=schemas, registry=example["registry"],
         )
         controls["escalated_run_abstains"] = escalated["outcome"] == "abstained" and "CEILING_ESCALATION_OBSERVED" in escalated["finding_codes"]
         if not controls["escalated_run_abstains"]:
             fail("TRIGGER_FAIL_OPEN", "escalated run distilled")
         twice = post_run_distill(
             receipt=example["receipt"], trace=example["trace"], source_manifest=example["source_manifest"],
-            source_text=example["source_text"], ledger=distilled["ledger"], schemas=schemas,
+            source_text=example["source_text"], ledger=distilled["ledger"], schemas=schemas, registry=example["registry"],
         )
         controls["duplicate_receipt_abstains"] = twice["outcome"] == "abstained" and "ALREADY_DISTILLED" in twice["finding_codes"]
         if not controls["duplicate_receipt_abstains"]:
             fail("TRIGGER_FAIL_OPEN", "same receipt distilled twice")
         if blocked["ledger"]["entries"][-1]["kind"] != "abstained":
             fail("ABSTENTION_UNRECEIPTED", "abstentions must append a ledger entry")
+
+        # 5b. Fight card: the bouts that landed before this hardening must all be refused now.
+        def trigger_with(receipt_v=None, trace_v=None, manifest_v=None, text_v=None, ledger_v=None, registry_v=None):
+            return post_run_distill(
+                receipt=receipt_v or example["receipt"], trace=trace_v or example["trace"],
+                source_manifest=manifest_v or example["source_manifest"], source_text=text_v or example["source_text"],
+                ledger=ledger_v or new_ledger(), schemas=schemas, registry=registry_v or example["registry"],
+            )
+
+        collided, _ = append_entry(
+            new_ledger(), kind="distilled", recorded_at="2026-09-01T00:00:00Z", actor="agent.distill-loop",
+            candidate_id=manifest["id"], source_receipt_id="receipt.other.0001", source_skill_id=example["source_manifest"]["id"],
+            source_skill_version=example["source_manifest"]["version"], finding_codes=["DISTILLED_CANDIDATE_WRITTEN"], refs={},
+        )
+        out = trigger_with(ledger_v=collided)
+        controls["id_collision_abstains"] = out["outcome"] == "abstained" and "CANDIDATE_ID_COLLISION" in out["finding_codes"]
+
+        forged_manifest = copy.deepcopy(example["source_manifest"])
+        forged_manifest["purpose"] += " (forged)"
+        forged_text = example["source_text"] + "\nforged\n"
+        from sync_control_plane.skill_runtime import git_blob_sha, manifest_digest
+        forged_manifest["integrity"]["source_blob_sha"] = git_blob_sha(forged_text)
+        forged_manifest["integrity"]["manifest_sha256"] = "0" * 64
+        forged_manifest["integrity"]["manifest_sha256"] = manifest_digest(forged_manifest)
+        forged_receipt = copy.deepcopy(example["receipt"])
+        forged_receipt["skill_manifest_sha256"] = forged_manifest["integrity"]["manifest_sha256"]
+        out = trigger_with(receipt_v=forged_receipt, manifest_v=forged_manifest, text_v=forged_text)
+        controls["forged_source_abstains"] = out["outcome"] == "abstained" and "SOURCE_NOT_REGISTERED" in out["finding_codes"]
+
+        ghost_trace = copy.deepcopy(example["trace"])
+        ghost_trace["moves"][0]["evidence_ref"] = "ledger.evidence.never-receipted"
+        out = trigger_with(trace_v=ghost_trace)
+        controls["unreceipted_evidence_excluded"] = (
+            "EVIDENCE_UNRECEIPTED" in out["finding_codes"]
+            and (out["outcome"] == "abstained" or ghost_trace["moves"][0]["move"] not in out["manifest"]["method"]["moves"])
+        )
+
+        inverted = copy.deepcopy(example["receipt"])
+        inverted["started_at"] = "2026-09-18T15:00:00Z"
+        out = trigger_with(receipt_v=inverted)
+        controls["inverted_receipt_time_abstains"] = out["outcome"] == "abstained" and "RECEIPT_TIME_INVALID" in out["finding_codes"]
+
+        if promoted and promoted["outcome"] == "promoted":
+            def _same_receipt(receipt): return None
+            refused("replayed_promotion_receipt_refused", _same_receipt, ledger=promoted["ledger"])
+        def _time_travel(receipt): receipt["decided_at"] = "2026-01-01T00:00:00Z"
+        refused("time_travel_promotion_refused", _time_travel)
+
+        posturing = [dict(example["reviewed_suite"][0], id=f"QSK-{i:03d}", kind=kind)
+                     for i, kind in enumerate(["positive", "adversarial", "regression", "authority"], start=1)]
+        def _posturing(receipt): receipt["eval_suite_sha256"] = sha256_json(posturing)
+        refused("posturing_suite_refused", _posturing, eval_suite=posturing)
+
+        escalated_case = dict(example["reviewed_suite"][0])
+        escalated_case["input"] = dict(escalated_case["input"], authority_ceiling_observed="execute_bounded")
+        verdict = evaluate_distilled_case(escalated_case, manifest)
+        controls["eval_ceiling_escalation_refused"] = verdict["result"] == "stop" and "CEILING_ESCALATION" in verdict["finding_codes"]
+
+        if promoted and promoted["outcome"] == "promoted":
+            import tempfile
+            from distill_loop.common import write_files
+            with tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                write_files(root, distilled["files"])
+                write_files(root, promoted["files"])
+                (root / manifest["quality"]["eval_suite_ref"]).write_text("[]\n", encoding="utf-8")
+                swapped = next_run_context(promoted["ledger"], root=root)
+                controls["swapped_eval_suite_quarantined"] = swapped["context_sources"] == [] and bool(swapped["quarantined"])
+
+        for label in ("id_collision_abstains", "forged_source_abstains", "unreceipted_evidence_excluded",
+                      "inverted_receipt_time_abstains", "eval_ceiling_escalation_refused", "swapped_eval_suite_quarantined"):
+            if not controls.get(label):
+                fail("FIGHT_CARD_FAIL_OPEN", label)
 
     # 6. Live tree: ledger chain and every distilled candidate on disk.
     live_ledger_path = repo / LEDGER_PATH
@@ -282,6 +359,14 @@ def validate(repo: Path) -> dict[str, Any]:
             fail("LIVE_LEDGER_SCHEMA", message)
         for message in verify_ledger(live_ledger):
             fail("LIVE_LEDGER_CHAIN", message)
+        registry = _json(repo / "skills" / "registry.json")
+        for entry in live_ledger.get("entries", []):
+            if entry.get("kind") != "distilled":
+                continue
+            probe = {"id": entry.get("source_skill_id"), "version": entry.get("source_skill_version"),
+                     "integrity": {"manifest_sha256": entry.get("refs", {}).get("source_manifest_sha256")}}
+            for message in source_registration_errors(registry, probe):
+                fail("LIVE_LEDGER_SOURCE_UNREGISTERED", f"{entry.get('entry_id')}: {message}")
         for path in sorted((repo / "skills").glob(f"{CANDIDATE_PREFIX}*/manifest.json")):
             candidate_id = path.parent.name
             live_candidates.append(candidate_id)

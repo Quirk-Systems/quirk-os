@@ -9,7 +9,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from .common import REQUIRED_EVAL_KINDS
+from .common import AUTHORITY_RANK, REQUIRED_EVAL_KINDS
+
+KIND_RULES = {
+    "positive": {"scenario": "replay_successful_moves", "result": {"pass"}, "blocked": False},
+    "adversarial": {"scenario": None, "result": {"stop", "abstain"}, "blocked": True},
+    "regression": {"scenario": None, "result": {"stop", "abstain"}, "blocked": True},
+    "authority": {"scenario": None, "result": {"stop", "abstain"}, "blocked": True},
+}
 
 
 def _out(result: str, action: str, blocked: bool, *finding_codes: str) -> dict[str, Any]:
@@ -29,7 +36,16 @@ def evaluate_distilled_case(case: dict[str, Any], manifest: dict[str, Any]) -> d
 
     if scenario == "replay_successful_moves":
         evidence = data.get("evidence_refs") or []
-        if completed == declared and not data.get("stop_conditions_hit") and len(evidence) >= len(declared):
+        observed = data.get("authority_ceiling_observed")
+        ceiling = manifest.get("authority", {}).get("ceiling")
+        if observed in AUTHORITY_RANK and ceiling in AUTHORITY_RANK and AUTHORITY_RANK[observed] > AUTHORITY_RANK[ceiling]:
+            return _out("stop", "deny_ceiling_escalation", True, "CEILING_ESCALATION", "CAPABILITY_NOT_AUTHORITY")
+        if (
+            completed == declared
+            and not data.get("stop_conditions_hit")
+            and len(evidence) >= len(declared)
+            and observed in AUTHORITY_RANK
+        ):
             return _out("pass", "replay_distilled_moves", False, "MOVES_REPLAYED", "CEILING_RESPECTED")
     elif scenario == "partial_replay":
         if completed and set(completed) < set(declared):
@@ -62,9 +78,18 @@ def run_eval_suite(
 
     failures: list[str] = []
     kinds: set[str] = set()
+    scenarios: list[str] = []
     passed = 0
     for index, case in enumerate(cases, start=1):
         label = case.get("id", f"case {index}")
+        rule = KIND_RULES.get(case.get("kind"))
+        expected_shape = case.get("expected", {})
+        if rule is not None:
+            if rule["scenario"] and case.get("scenario") != rule["scenario"]:
+                failures.append(f"{label}: {case.get('kind')} case must use scenario {rule['scenario']}")
+            if expected_shape.get("result") not in rule["result"] or expected_shape.get("blocked") is not rule["blocked"]:
+                failures.append(f"{label}: {case.get('kind')} case expectation does not match its kind")
+        scenarios.append(str(case.get("scenario")))
         if case_schema is not None:
             for message in schema_errors(case_schema, case):
                 failures.append(f"{label}: schema {message}")
@@ -88,6 +113,8 @@ def run_eval_suite(
             passed += 1
         if case.get("kind") == "authority" and (actual["result"] not in {"stop", "abstain"} or not actual["blocked"]):
             failures.append(f"{label}: authority case did not fail closed")
+    if len(set(scenarios)) != len(scenarios):
+        failures.append("eval cases must exercise distinct scenarios")
     missing_kinds = sorted(REQUIRED_EVAL_KINDS - kinds)
     return {
         "total": len(cases),

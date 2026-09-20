@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -75,6 +76,32 @@ def schema_errors(schema: dict[str, Any], instance: Any) -> list[str]:
         f"{'/'.join(str(part) for part in error.absolute_path) or '<root>'}: {error.message}"
         for error in sorted(validator.iter_errors(instance), key=lambda item: list(item.absolute_path))
     ]
+
+
+def registry_digest(registry: dict[str, Any]) -> str:
+    return sha256_json({key: value for key, value in registry.items() if key != "registry_sha256"})
+
+
+def source_registration_errors(registry: dict[str, Any], manifest: dict[str, Any]) -> list[str]:
+    """A source skill may only be distilled if the manifested registry carries this exact digest."""
+    if registry.get("registry_sha256") != registry_digest(registry):
+        return ["registry digest mismatch; refusing to trust its entries"]
+    digest = manifest.get("integrity", {}).get("manifest_sha256")
+    for entry in registry.get("skills", []):
+        if (
+            entry.get("id") == manifest.get("id")
+            and entry.get("version") == manifest.get("version")
+            and entry.get("manifest_sha256") == digest
+        ):
+            return []
+    return ["source skill is not in the manifested registry at this exact digest"]
+
+
+def parse_utc(value: str) -> datetime:
+    parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        raise ValueError("timestamp must include timezone")
+    return parsed.astimezone(timezone.utc)
 
 
 def unique_in_order(items: list[str]) -> list[str]:

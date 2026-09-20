@@ -137,6 +137,13 @@ def distilled_entry(ledger: dict[str, Any], candidate_id: str) -> dict[str, Any]
     return None
 
 
+def promotion_receipt_used(ledger: dict[str, Any], receipt_id: str) -> bool:
+    return any(
+        entry.get("refs", {}).get("promotion_receipt_ref") == receipt_id
+        for entry in ledger.get("entries", [])
+    )
+
+
 def receipt_already_distilled(ledger: dict[str, Any], source_receipt_id: str) -> bool:
     return any(
         entry.get("kind") == "distilled" and entry.get("source_receipt_id") == source_receipt_id

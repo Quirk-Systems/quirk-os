@@ -46,7 +46,9 @@ run receipt (immutable) + run trace
 - Raise the ceiling. The distilled ceiling is the lower of the source ceiling and the observed ceiling, and an observed ceiling above the source ceiling aborts distillation.
 - Author adversarial or regression eval cases. The starter suite carries the replay itself and the authority boundary, which the loop can state honestly. The missing kinds block promotion until a reviewer writes them.
 - Distill a distilled skill. Second-order distillation is refused.
-- Distill the same receipt twice.
+- Distill the same receipt twice, or let two receipts share one candidate id.
+- Distill a source that is not in the manifested registry at the exact digest that ran.
+- Count a move whose evidence the run receipt did not list.
 - Write to disk. `post_run_distill` returns the files and the updated ledger; the caller writes them. The CLI writes only with `--write`.
 
 ## What promotion will not do
@@ -56,7 +58,26 @@ run receipt (immutable) + run trace
 - Accept a receipt whose body was edited after attestation.
 - Accept a receipt without all four eval kinds passing for the exact candidate id and version.
 - Edit the candidate package, change its status, add it to the registry, or mark it admitted. The schema pins `promoted_to: reviewed_candidate` and `admission_effect`, `canon_effect`, `runtime_effect` to `none`.
-- Promote twice, or promote a rejected digest.
+- Promote twice, promote a rejected digest, reuse a receipt id, or accept a decision dated before the distillation.
+
+## Fight card
+
+Every row is a bout that landed against the first cut of this loop and is refused now. Two fighters: the kicker forces the gate, the swanger brandishes authority it does not have. Each refusal has one code, one control in `scripts/validate_distill_loop.py`, and one test in `tests/test_distill_loop.py`.
+
+| Bout | Fighter | Attack | Refusal |
+| --- | --- | --- | --- |
+| K1 | kicker | Second receipt hashes to an existing candidate id and overwrites its package | `CANDIDATE_ID_COLLISION` |
+| K2 | kicker | Two operators write against the same ledger; the later write silently drops the earlier chain | CLI `LEDGER_FORKED`; a write must match the ledger digest it read |
+| K3 | kicker | One attested promotion receipt replayed against a second candidate | promotion receipt ids are single use in the ledger |
+| K4 | kicker | Trace claims a move succeeded with evidence the run receipt never listed | move excluded, `EVIDENCE_UNRECEIPTED` |
+| K5 | kicker | Self-consistent forged source skill with a matching forged receipt | `SOURCE_NOT_REGISTERED`; source must sit in `skills/registry.json` at the exact digest, and the registry digest must verify |
+| K6 | kicker | Promotion receipt decided before the candidate was distilled | refused; `decided_at` must follow the distilled entry |
+| K7 | kicker | Run receipt that finished before it started | `RECEIPT_TIME_INVALID` |
+| S1 | swanger | Four copies of the positive case relabeled positive, adversarial, regression, authority | refused; each kind must carry its own shape (adversarial, regression, authority expect a blocked non-pass) and scenarios must be distinct |
+| S2 | swanger | Positive case emits `CEILING_RESPECTED` without stating an observed ceiling | positive case must state `authority_ceiling_observed`; above the manifest ceiling is `CEILING_ESCALATION` |
+| S3 | swanger | Eval suite swapped on disk after promotion; candidate still offered to the next run | quarantined; on-disk suite digest must match the promoted digest |
+
+The ledger's distilled entries now carry `source_manifest_sha256`, and the live-tree check refuses any entry whose source no longer resolves to the registry.
 
 ## Ledger
 

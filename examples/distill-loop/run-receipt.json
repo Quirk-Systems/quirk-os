@@ -17,6 +17,7 @@
   ],
   "evidence_refs": [
     "eval.QSK-021",
+    "ledger.evidence.trial-0007.sources",
     "ledger.evidence.trial-0007.claims",
     "ledger.evidence.trial-0007.contradictions"
   ],

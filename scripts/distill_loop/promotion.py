@@ -16,15 +16,15 @@ from sync_control_plane.skill_runtime import validate_manifest_integrity
 
 from .common import (
     LEDGER_PATH,
-    REQUIRED_EVAL_KINDS,
     TRIGGER_ACTOR,
+    parse_utc,
     pretty_json,
     schema_errors,
     sha256_json,
     sha256_json_without_keys,
 )
 from .evaluator import run_eval_suite
-from .ledger import append_entry, candidate_state, distilled_entry
+from .ledger import append_entry, candidate_state, distilled_entry, promotion_receipt_used
 
 
 def promotion_attestation(receipt: dict[str, Any]) -> str:
@@ -75,10 +75,18 @@ def validate_promotion_receipt(
     if integrity.get("source_blob_sha") != receipt["candidate_source_blob_sha"]:
         errors.append("promotion receipt source blob sha does not match candidate on disk")
 
+    if promotion_receipt_used(ledger, receipt["receipt_id"]):
+        errors.append("promotion receipt id already recorded in the ledger; receipts are single use")
+
     entry = distilled_entry(ledger, candidate_id)
     if entry is None:
         errors.append("candidate has no distilled ledger entry; unknown provenance cannot be promoted")
     else:
+        try:
+            if parse_utc(receipt["decided_at"]) < parse_utc(entry["recorded_at"]):
+                errors.append("promotion decided before the candidate was distilled")
+        except (ValueError, TypeError, KeyError):
+            errors.append("promotion or distillation timestamp is invalid")
         if entry.get("source_receipt_id") != receipt["source_run_receipt_ref"]:
             errors.append("promotion receipt source run reference does not match ledger provenance")
         refs = entry.get("refs", {})
@@ -128,7 +136,8 @@ def apply_promotion(
         schemas=schemas,
     )
     if errors:
-        return {"outcome": "refused", "errors": errors, "ledger": ledger, "files": {}}
+        return {"outcome": "refused", "errors": errors, "ledger": ledger, "files": {},
+                "ledger_input_sha256": ledger.get("ledger_sha256")}
 
     kind = "promoted" if receipt["decision"] == "promote" else "rejected"
     entry_source = distilled_entry(ledger, receipt["candidate_id"]) or {}
@@ -164,4 +173,5 @@ def apply_promotion(
             LEDGER_PATH: pretty_json(updated),
             receipt["eval_suite_ref"]: pretty_json(eval_suite),
         },
+        "ledger_input_sha256": ledger.get("ledger_sha256"),
     }

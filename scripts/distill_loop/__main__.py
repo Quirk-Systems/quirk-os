@@ -35,6 +35,17 @@ def _ledger(root: Path):
     return _load(path) if path.exists() else new_ledger()
 
 
+def _write_guarded(out: Path, result: dict) -> int:
+    """Refuse to write over a ledger that moved since this operation read it."""
+    path = out / LEDGER_PATH
+    on_disk = _load(path)["ledger_sha256"] if path.exists() else new_ledger()["ledger_sha256"]
+    if on_disk != result.get("ledger_input_sha256"):
+        print(json.dumps({"error": "LEDGER_FORKED", "detail": "on-disk ledger changed since this operation read it; re-run against the current ledger"}), file=sys.stderr)
+        return 1
+    write_files(out, result["files"])
+    return 0
+
+
 REPO_DEFAULT = Path(__file__).resolve().parents[2]
 
 
@@ -83,6 +94,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     schemas = load_schemas(repo)
+    registry = _load(repo / "skills" / "registry.json")
     if args.command == "distill":
         receipt = _load(args.receipt)
         trace = _load(args.trace)
@@ -94,12 +106,13 @@ def main(argv: list[str] | None = None) -> int:
             source_text=(skill_dir / "SKILL.md").read_text(encoding="utf-8"),
             ledger=_ledger(root),
             schemas=schemas,
+            registry=registry,
         )
         summary = {key: result[key] for key in ("outcome", "finding_codes", "candidate")}
         summary["files"] = sorted(result["files"])
         print(json.dumps(summary, indent=2))
         if args.write:
-            write_files(out, result["files"])
+            return _write_guarded(out, result)
         return 0
 
     receipt = _load(args.receipt)
@@ -119,7 +132,7 @@ def main(argv: list[str] | None = None) -> int:
     if result["errors"]:
         return 1
     if args.write:
-        write_files(out, result["files"])
+        return _write_guarded(out, result)
     return 0
 
 
