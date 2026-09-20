@@ -303,6 +303,29 @@ class FightCardTests(unittest.TestCase):
             worker.join(timeout=5)
             self.assertEqual(outcome, [0])
 
+    def test_k2e_no_lock_primitive_fails_closed_instead_of_writing_unlocked(self) -> None:
+        import tempfile
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+        from distill_loop import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            before = (root / "skills" / "distill-ledger.json").read_text()
+            base = self.distilled["ledger"]
+            nxt, _ = append_entry(base, kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                                  candidate_id=None, source_receipt_id="receipt.e.1", source_skill_id="quirk-e",
+                                  source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {"skills/distill-ledger.json": json.dumps(nxt)}, "ledger_input_sha256": base["ledger_sha256"]}
+            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", None):
+                self.assertEqual(cli._write_guarded(root, result), 1)
+                # two writers computed from the same input: neither may land unlocked
+                self.assertEqual(cli._write_guarded(root, result), 1)
+            self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
+            self.assertEqual(cli._write_guarded(root, result), 0)
+
     def test_k2d_redirected_write_initializes_an_empty_out_tree_and_refuses_a_diverged_one(self) -> None:
         import tempfile
 

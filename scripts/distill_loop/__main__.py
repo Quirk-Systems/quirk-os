@@ -22,8 +22,16 @@ from pathlib import Path
 
 try:
     import fcntl
-except ImportError:  # pragma: no cover - non-POSIX hosts fall back to the digest check alone
+except ImportError:  # pragma: no cover - non-POSIX hosts
     fcntl = None
+try:
+    import msvcrt
+except ImportError:  # pragma: no cover - POSIX hosts
+    msvcrt = None
+
+
+class LockUnavailable(RuntimeError):
+    """No reliable interprocess lock exists on this host; guarded writes fail closed."""
 
 from .common import LEDGER_PATH, load_schemas, write_files
 from .context import next_run_context
@@ -44,6 +52,36 @@ def _ledger(root: Path):
 LOCK_NAME = "distill-ledger.lock"
 
 
+def _lock_handle(handle) -> None:
+    """Take an exclusive, blocking interprocess lock or raise LockUnavailable.
+
+    POSIX uses flock. Windows uses msvcrt.locking, which blocks in ten one-second
+    attempts per call, so it is retried until it succeeds. Any other host has no
+    reliable primitive and must not write at all: an unlocked check-then-write is
+    exactly the lost-update the guard exists to prevent.
+    """
+    if fcntl is not None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        return
+    if msvcrt is not None:  # pragma: no cover - exercised on Windows only
+        handle.seek(0)
+        while True:
+            try:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+                return
+            except OSError:
+                continue
+    raise LockUnavailable("no interprocess lock primitive available on this host")
+
+
+def _unlock_handle(handle) -> None:
+    if fcntl is not None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    elif msvcrt is not None:  # pragma: no cover - exercised on Windows only
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+
+
 @contextlib.contextmanager
 def _ledger_lock(*roots: Path):
     """Hold an exclusive interprocess lock on every tree we will check or write.
@@ -51,6 +89,7 @@ def _ledger_lock(*roots: Path):
     The lock makes check-then-write one step: a second writer that computed its
     result against the same input ledger blocks here, then re-reads a ledger
     that has moved and is refused instead of silently replacing the first write.
+    Raises LockUnavailable before touching anything when no lock exists.
     """
     handles = []
     try:
@@ -58,14 +97,16 @@ def _ledger_lock(*roots: Path):
             lock_path = root / "skills" / LOCK_NAME
             lock_path.parent.mkdir(parents=True, exist_ok=True)
             handle = open(lock_path, "a+", encoding="utf-8")
-            if fcntl is not None:
-                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            try:
+                _lock_handle(handle)
+            except LockUnavailable:
+                handle.close()
+                raise
             handles.append(handle)
         yield
     finally:
         for handle in reversed(handles):
-            if fcntl is not None:
-                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+            _unlock_handle(handle)
             handle.close()
 
 
@@ -85,7 +126,14 @@ def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
     """
     out = out or root
     expected = result.get("ledger_input_sha256")
-    with _ledger_lock(root, out):
+    try:
+        lock = _ledger_lock(root, out)
+        lock.__enter__()
+    except LockUnavailable as exc:
+        print(json.dumps({"error": "LOCK_UNAVAILABLE", "detail": f"{exc}; refusing to write without an interprocess lock"}), file=sys.stderr)
+        return 1
+    with contextlib.ExitStack() as stack:
+        stack.push(lock)
         if _ledger_digest_on_disk(root) != expected:
             print(json.dumps({"error": "LEDGER_FORKED", "detail": "source ledger changed since this operation read it; re-run against the current ledger"}), file=sys.stderr)
             return 1
