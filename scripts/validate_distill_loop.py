@@ -355,8 +355,66 @@ def validate(repo: Path) -> dict[str, Any]:
                 swapped = next_run_context(promoted["ledger"], root=root)
                 controls["swapped_eval_suite_quarantined"] = swapped["context_sources"] == [] and bool(swapped["quarantined"])
 
+        # K2: the CLI write guard itself, exercised through the real function on temp trees.
+        import tempfile
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+        from distill_loop.common import write_files
+
+        base_ledger = distilled["ledger"]
+
+        def _entry(ledger, receipt_id):
+            updated, _ = append_entry(
+                ledger, kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                candidate_id=None, source_receipt_id=receipt_id, source_skill_id="quirk-x",
+                source_skill_version="0.1.0", finding_codes=[], refs={},
+            )
+            return updated
+
+        def _result(ledger, from_digest):
+            return {"files": {LEDGER_PATH: json.dumps(ledger)}, "ledger_input_sha256": from_digest}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "root"
+            write_files(root, distilled["files"])
+            writer_a = _entry(base_ledger, "receipt.a.1")
+            writer_b = _entry(base_ledger, "receipt.b.1")
+            first = cli._write_guarded(root, _result(writer_a, base_ledger["ledger_sha256"]))
+            second = cli._write_guarded(root, _result(writer_b, base_ledger["ledger_sha256"]))
+            on_disk = json.loads((root / LEDGER_PATH).read_text(encoding="utf-8"))
+            controls["k2_fork_refused_under_cas"] = first == 0 and second == 1 and on_disk["ledger_sha256"] == writer_a["ledger_sha256"]
+
+            nxt = _entry(writer_a, "receipt.c.1")
+            result = _result(nxt, writer_a["ledger_sha256"])
+            empty_out = Path(tmp) / "empty"
+            controls["k2_redirected_empty_out_initialized"] = (
+                cli._write_guarded(root, result, empty_out) == 0
+                and json.loads((empty_out / LEDGER_PATH).read_text(encoding="utf-8"))["ledger_sha256"] == nxt["ledger_sha256"]
+            )
+            diverged_out = Path(tmp) / "diverged"
+            write_files(diverged_out, {LEDGER_PATH: json.dumps(_entry(new_ledger(), "receipt.d.1"))})
+            controls["k2_redirected_diverged_out_refused"] = cli._write_guarded(root, result, diverged_out) == 1
+            cluttered_out = Path(tmp) / "cluttered"
+            write_files(cluttered_out, {"skills/quirk-distilled-stray/SKILL.md": "stray\n"})
+            controls["k2_nonempty_out_without_ledger_refused"] = (
+                cli._write_guarded(root, result, cluttered_out) == 1 and not (cluttered_out / LEDGER_PATH).exists()
+            )
+            before = (root / LEDGER_PATH).read_text(encoding="utf-8")
+            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", None):
+                unlocked = cli._write_guarded(root, result)
+            controls["k2_lock_unavailable_refused"] = unlocked == 1 and (root / LEDGER_PATH).read_text(encoding="utf-8") == before
+            if cli.fcntl is not None:
+                def _broken_flock(fd, op):
+                    raise OSError("flock not supported on this filesystem")
+                with mock.patch.object(cli.fcntl, "flock", _broken_flock):
+                    broken = cli._write_guarded(root, result)
+                controls["k2_lock_failure_refused"] = broken == 1 and (root / LEDGER_PATH).read_text(encoding="utf-8") == before
+
         for label in ("id_collision_abstains", "forged_source_abstains", "unreceipted_evidence_excluded",
-                      "inverted_receipt_time_abstains", "eval_ceiling_escalation_refused", "swapped_eval_suite_quarantined"):
+                      "inverted_receipt_time_abstains", "eval_ceiling_escalation_refused", "swapped_eval_suite_quarantined",
+                      "k2_fork_refused_under_cas", "k2_redirected_empty_out_initialized", "k2_redirected_diverged_out_refused",
+                      "k2_nonempty_out_without_ledger_refused", "k2_lock_unavailable_refused"):
             if not controls.get(label):
                 fail("FIGHT_CARD_FAIL_OPEN", label)
 

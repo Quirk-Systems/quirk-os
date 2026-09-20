@@ -379,6 +379,82 @@ class FightCardTests(unittest.TestCase):
                 self.assertEqual(cli._write_guarded(root, result), 0)
             self.assertEqual(json.loads((root / "skills" / "distill-ledger.json").read_text())["ledger_sha256"], nxt["ledger_sha256"])
 
+    def test_k2g_nonempty_out_tree_without_a_ledger_is_refused(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+        from distill_loop.__main__ import _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out = Path(tmp) / "root", Path(tmp) / "out"
+            write_files(root, self.distilled["files"])
+            write_files(out, {"skills/quirk-distilled-stray/SKILL.md": "stray\n"})
+            nxt, _ = append_entry(self.distilled["ledger"], kind="abstained", recorded_at="2026-09-19T00:00:00Z",
+                                  actor="agent.distill-loop", candidate_id=None, source_receipt_id="receipt.g.1",
+                                  source_skill_id="quirk-g", source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {"skills/distill-ledger.json": json.dumps(nxt)}, "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, result, out), 1)
+            self.assertFalse((out / "skills" / "distill-ledger.json").exists())
+
+    def test_k2h_flock_failure_is_a_structured_refusal(self) -> None:
+        import tempfile
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+        from distill_loop import write_files
+
+        if cli.fcntl is None:  # pragma: no cover
+            self.skipTest("no fcntl on this host")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            before = (root / "skills" / "distill-ledger.json").read_text()
+            result = {"files": {"skills/distill-ledger.json": "{}"}, "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+
+            def broken(fd, op):
+                raise OSError("operation not supported")
+
+            with mock.patch.object(cli.fcntl, "flock", broken):
+                self.assertEqual(cli._write_guarded(root, result), 1)
+            self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
+
+    def test_s1c_malformed_case_shapes_are_refused_not_raised(self) -> None:
+        from distill_loop.common import sha256_json
+
+        suite = copy.deepcopy(self.fx.reviewed_suite)
+        suite[1]["expected"] = []
+        suite[2]["input"] = "not an object"
+        suite.append("not a case")
+        report = run_eval_suite(suite, self.distilled["manifest"], case_schema=self.fx.schemas["skill_eval_case"])
+        self.assertTrue(report["failures"])
+        self.assertFalse(report["complete"])
+        receipt = attest_promotion({**self.fx.promotion_receipt, "eval_suite_sha256": sha256_json(suite)})
+        errors = self._validate(receipt, eval_suite=suite)
+        self.assertTrue(errors)
+        report = run_eval_suite(suite, self.distilled["manifest"])
+        self.assertTrue(any("must be objects" in f or "not an object" in f for f in report["failures"]), report["failures"])
+
+    def test_s3b_corrupted_suite_bytes_are_quarantined(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            write_files(root, self.promoted["files"])
+            suite_path = root / self.distilled["manifest"]["quality"]["eval_suite_ref"]
+            suite_path.write_bytes(b"\xff\xfe\x00 not utf-8 json")
+            context = next_run_context(self.promoted["ledger"], root=root)
+            self.assertEqual(context["context_sources"], [])
+            self.assertTrue(context["quarantined"])
+            manifest_path = root / self.distilled["candidate"]["manifest_path"]
+            suite_path.write_text("[]\n", encoding="utf-8")
+            manifest_path.write_bytes(b"\xff")
+            context = next_run_context(self.promoted["ledger"], root=root)
+            self.assertEqual(context["context_sources"], [])
+            self.assertTrue(any("unreadable" in p for p in context["quarantined"][0]["problems"]))
+
     def test_k2d_redirected_write_initializes_an_empty_out_tree_and_refuses_a_diverged_one(self) -> None:
         import tempfile
 

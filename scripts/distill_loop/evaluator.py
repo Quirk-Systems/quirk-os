@@ -33,8 +33,10 @@ def _out(result: str, action: str, blocked: bool, *finding_codes: str) -> dict[s
 
 
 def evaluate_distilled_case(case: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(case, dict):
+        return _out("abstain", FALLBACK_ACTION, True, "INSUFFICIENT_EVIDENCE")
     scenario = case.get("scenario")
-    data = case.get("input") or {}
+    data = case.get("input") if isinstance(case.get("input"), dict) else {}
     declared = list(manifest.get("method", {}).get("moves", []))
     completed = list(data.get("moves_completed") or [])
 
@@ -85,9 +87,20 @@ def run_eval_suite(
     scenarios: list[str] = []
     passed = 0
     for index, case in enumerate(cases, start=1):
+        if not isinstance(case, dict):
+            failures.append(f"case {index}: case is not an object")
+            continue
         label = case.get("id", f"case {index}")
+        if case_schema is not None:
+            problems = schema_errors(case_schema, case)
+            if problems:
+                failures.extend(f"{label}: schema {message}" for message in problems)
+                continue  # a schema-invalid case is never evaluated
+        expected_shape = case.get("expected")
+        if not isinstance(expected_shape, dict) or not isinstance(case.get("input"), dict):
+            failures.append(f"{label}: expected and input must be objects")
+            continue
         rule = KIND_RULES.get(case.get("kind"))
-        expected_shape = case.get("expected", {})
         if rule is not None:
             if case.get("scenario") not in rule["scenarios"]:
                 failures.append(
@@ -96,9 +109,6 @@ def run_eval_suite(
             if expected_shape.get("result") not in rule["result"] or expected_shape.get("blocked") is not rule["blocked"]:
                 failures.append(f"{label}: {case.get('kind')} case expectation does not match its kind")
         scenarios.append(str(case.get("scenario")))
-        if case_schema is not None:
-            for message in schema_errors(case_schema, case):
-                failures.append(f"{label}: schema {message}")
         expected_id = f"QSK-{index:03d}"
         if case.get("id") != expected_id:
             failures.append(f"{label}: expected id {expected_id}")
