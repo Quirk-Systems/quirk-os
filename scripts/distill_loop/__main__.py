@@ -161,6 +161,34 @@ def _out_tree_problems(out: Path) -> list[str]:
     return problems
 
 
+def _destination_problems(out: Path, relative_paths) -> list[str]:
+    """Refuse any destination whose existing components include a link or a non-directory.
+
+    Checked without following links, one component at a time, for every file about
+    to be written. This holds whether or not the output tree already carries a
+    ledger: a matching ledger says nothing about links planted deeper in the tree.
+    """
+    problems: list[str] = []
+    for relative in sorted(relative_paths):
+        current = out
+        parts = Path(relative).parts
+        for index, part in enumerate(parts):
+            current = current / part
+            is_last = index == len(parts) - 1
+            if current.is_symlink():
+                problems.append(f"{relative}: component {part!r} is a symlink")
+                break
+            if not current.exists():
+                break
+            if not is_last and not current.is_dir():
+                problems.append(f"{relative}: component {part!r} is not a directory")
+                break
+            if is_last and not current.is_file():
+                problems.append(f"{relative}: destination exists and is not a regular file")
+                break
+    return problems
+
+
 def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
     """Compare-and-swap the ledger under lock.
 
@@ -197,6 +225,10 @@ def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
                 if problems:
                     print(json.dumps({"error": "LEDGER_FORKED", "detail": "output tree is not empty and holds no ledger; refusing to write into it", "entries": problems}), file=sys.stderr)
                     return 1
+        unsafe = _destination_problems(out, result["files"])
+        if unsafe:
+            print(json.dumps({"error": "LEDGER_FORKED", "detail": "a destination path passes through a symlink or non-directory; refusing to write", "paths": unsafe}), file=sys.stderr)
+            return 1
         write_files(out, result["files"])
     return 0
 

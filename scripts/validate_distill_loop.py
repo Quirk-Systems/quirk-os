@@ -409,6 +409,17 @@ def validate(repo: Path) -> dict[str, Any]:
             controls["k2_symlinked_out_refused"] = (
                 cli._write_guarded(root, result, linked_out) == 1 and list(outside.iterdir()) == []
             )
+            nested_out = Path(tmp) / "nested"
+            write_files(nested_out, {LEDGER_PATH: json.dumps(writer_a)})
+            sentinel_dir = Path(tmp) / "sentinels" / "pkg"
+            sentinel_dir.mkdir(parents=True)
+            (sentinel_dir / "SKILL.md").write_text("sentinel\n", encoding="utf-8")
+            (nested_out / "skills" / manifest["id"]).symlink_to(sentinel_dir, target_is_directory=True)
+            nested_result = {"files": {**distilled["files"], LEDGER_PATH: json.dumps(nxt)}, "ledger_input_sha256": writer_a["ledger_sha256"]}
+            controls["k2_nested_symlink_refused_despite_matching_ledger"] = (
+                cli._write_guarded(root, nested_result, nested_out) == 1
+                and (sentinel_dir / "SKILL.md").read_text(encoding="utf-8") == "sentinel\n"
+            )
             before = (root / LEDGER_PATH).read_text(encoding="utf-8")
             with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", None):
                 unlocked = cli._write_guarded(root, result)
@@ -423,7 +434,8 @@ def validate(repo: Path) -> dict[str, Any]:
         mandatory = ["id_collision_abstains", "forged_source_abstains", "unreceipted_evidence_excluded",
                      "inverted_receipt_time_abstains", "eval_ceiling_escalation_refused", "swapped_eval_suite_quarantined",
                      "k2_fork_refused_under_cas", "k2_redirected_empty_out_initialized", "k2_redirected_diverged_out_refused",
-                     "k2_nonempty_out_without_ledger_refused", "k2_lock_unavailable_refused", "k2_symlinked_out_refused"]
+                     "k2_nonempty_out_without_ledger_refused", "k2_lock_unavailable_refused", "k2_symlinked_out_refused",
+                     "k2_nested_symlink_refused_despite_matching_ledger"]
         if cli.fcntl is not None:
             mandatory.append("k2_lock_failure_refused")
         for label in mandatory:
