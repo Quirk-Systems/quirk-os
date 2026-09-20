@@ -357,11 +357,32 @@ def validate(repo: Path) -> dict[str, Any]:
                 controls["swapped_eval_suite_quarantined"] = swapped["context_sources"] == [] and bool(swapped["quarantined"])
 
         # K2: the CLI write guard itself, exercised through the real function on temp trees.
+        import contextlib
+        import io
         import tempfile
         from unittest import mock
 
-        import distill_loop.__main__ as cli
+        import distill_loop.__main__ as _cli_module
         from distill_loop.common import write_files
+
+        class _Quiet:
+            """Run CLI entry points with their stdout/stderr captured so the report stays the only output."""
+
+            fcntl = _cli_module.fcntl
+            msvcrt = _cli_module.msvcrt
+            WINDOWS_LOCK_ATTEMPTS = _cli_module.WINDOWS_LOCK_ATTEMPTS
+
+            @staticmethod
+            def _write_guarded(*args, **kwargs):
+                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    return _cli_module._write_guarded(*args, **kwargs)
+
+            @staticmethod
+            def main(argv):
+                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    return _cli_module.main(argv)
+
+        cli = _Quiet
 
         base_ledger = distilled["ledger"]
 
@@ -430,13 +451,13 @@ def validate(repo: Path) -> dict[str, Any]:
             ])
             controls["k2_cli_symlinked_out_refused"] = cli_code == 1 and list(cli_outside.iterdir()) == []
             before = (root / LEDGER_PATH).read_text(encoding="utf-8")
-            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", None):
+            with mock.patch.object(_cli_module, "fcntl", None), mock.patch.object(_cli_module, "msvcrt", None):
                 unlocked = cli._write_guarded(root, result)
             controls["k2_lock_unavailable_refused"] = unlocked == 1 and (root / LEDGER_PATH).read_text(encoding="utf-8") == before
-            if cli.fcntl is not None:
+            if _cli_module.fcntl is not None:
                 def _broken_flock(fd, op):
                     raise OSError("flock not supported on this filesystem")
-                with mock.patch.object(cli.fcntl, "flock", _broken_flock):
+                with mock.patch.object(_cli_module.fcntl, "flock", _broken_flock):
                     broken = cli._write_guarded(root, result)
                 controls["k2_lock_failure_refused"] = broken == 1 and (root / LEDGER_PATH).read_text(encoding="utf-8") == before
 
@@ -445,7 +466,7 @@ def validate(repo: Path) -> dict[str, Any]:
                      "k2_fork_refused_under_cas", "k2_redirected_empty_out_initialized", "k2_redirected_diverged_out_refused",
                      "k2_nonempty_out_without_ledger_refused", "k2_lock_unavailable_refused", "k2_symlinked_out_refused",
                      "k2_nested_symlink_refused_despite_matching_ledger", "k2_cli_symlinked_out_refused"]
-        if cli.fcntl is not None:
+        if _cli_module.fcntl is not None:
             mandatory.append("k2_lock_failure_refused")
         for label in mandatory:
             if not controls.get(label):
