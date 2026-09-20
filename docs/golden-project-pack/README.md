@@ -219,7 +219,6 @@ Local timing + workload capture:
 
 ```bash
 python scripts/validate_golden_pack.py \
-  --repo . \
   --metrics-output evals/golden-pack/validate-golden-pack-metrics.json
 ```
 

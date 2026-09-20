@@ -29,7 +29,6 @@ jobs:
       - name: Validate Golden Project Pack
         run: |
           python scripts/validate_golden_pack.py \
-            --repo . \
             --metrics-output evals/golden-pack/validate-golden-pack-metrics.json \
             --write-step-summary
 

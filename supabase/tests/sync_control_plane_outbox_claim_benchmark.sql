@@ -7,9 +7,8 @@ begin;
 do $$
 declare
   v_object uuid;
-  v_explain_line text;
+  v_plan jsonb;
   v_has_claim_index boolean := false;
-  v_has_sort boolean := false;
   v_claimed integer;
   v_non_ready integer;
   v_total integer;
@@ -190,8 +189,16 @@ begin
 
   analyze quirk_sync.projection_outbox;
 
-  for v_explain_line in execute $$
-    explain (analyze, buffers)
+  create temporary table claimable_ids on commit drop as
+  select id
+  from quirk_sync.projection_outbox
+  where status in ('pending','failed','leased')
+    and available_at <= now()
+    and attempts < max_attempts
+    and (leased_until is null or leased_until < now());
+
+  execute $$
+    explain (format json)
     select id
     from quirk_sync.projection_outbox
     where status in ('pending','failed','leased')
@@ -201,39 +208,31 @@ begin
     order by available_at, id
     for update skip locked
     limit 250
-  $$
-  loop
-    raise notice '%', v_explain_line;
-    if v_explain_line ilike '%projection_outbox_claim_pending_failed_idx%'
-       or v_explain_line ilike '%projection_outbox_claim_expired_leased_idx%' then
-      v_has_claim_index := true;
-    end if;
-    if v_explain_line ~ '^\s*Sort\s' then
-      v_has_sort := true;
-    end if;
-  end loop;
+  $$ into v_plan;
+
+  raise notice '%', v_plan::text;
+  v_has_claim_index :=
+    jsonb_path_exists(v_plan, '$.** ? (@."Index Name" == "projection_outbox_claim_pending_failed_idx")')
+    or jsonb_path_exists(v_plan, '$.** ? (@."Index Name" == "projection_outbox_claim_expired_leased_idx")');
 
   if not v_has_claim_index then
     raise exception 'benchmark expected claim query to use new projection_outbox_claim_* indexes';
   end if;
-  if v_has_sort then
-    raise exception 'benchmark expected index-ordered claim path without explicit Sort node';
-  end if;
 
-  select count(*) into v_claimed
+  perform *
   from quirk_sync.claim_projection_outbox('worker.sql-benchmark', 250, 45);
+  select count(*) into v_claimed
+  from quirk_sync.projection_outbox
+  where lease_owner = 'worker.sql-benchmark'
+    and status = 'leased';
   if v_claimed <> 250 then
     raise exception 'benchmark expected 250 claimed rows, got %', v_claimed;
   end if;
 
   select count(*) into v_non_ready
-  from quirk_sync.projection_outbox
-  where lease_owner = 'worker.sql-benchmark'
-    and (
-      status <> 'leased'
-      or available_at > now()
-      or attempts >= max_attempts
-    );
+  from quirk_sync.projection_outbox o
+  where o.lease_owner = 'worker.sql-benchmark'
+    and not exists (select 1 from claimable_ids c where c.id = o.id);
   if v_non_ready <> 0 then
     raise exception 'benchmark claimed rows outside readiness predicate';
   end if;

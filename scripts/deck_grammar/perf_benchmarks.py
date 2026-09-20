@@ -21,6 +21,13 @@ from deck_grammar.access import build_access_pool
 from deck_grammar.hand import compile_hand
 
 
+def _positive_int(raw: str) -> int:
+    value = int(raw)
+    if value <= 0:
+        raise argparse.ArgumentTypeError("value must be > 0")
+    return value
+
+
 def _linear_build_access_pool(collection: dict[str, Any], entitlements: list[dict[str, Any]], *, as_of: datetime) -> list[dict[str, Any]]:
     from deck_grammar.access import DeckGrammarError, _slug, is_active_entitlement  # local import to mirror production behavior
 
@@ -324,15 +331,15 @@ def _profile_compile_hand(*, repeats: int, persona_instances: int, affordance_in
 def main() -> int:
     parser = argparse.ArgumentParser(description="Deterministic performance harnesses for deck grammar bottlenecks.")
     parser.add_argument("--scenario", choices=["build_access_pool", "compile_hand", "all"], default="all")
-    parser.add_argument("--repeats", type=int, default=7)
+    parser.add_argument("--repeats", type=_positive_int, default=7)
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--owned-instances", type=int, default=3500)
-    parser.add_argument("--entitlements", type=int, default=320)
-    parser.add_argument("--scope-size", type=int, default=28)
-    parser.add_argument("--persona-instances", type=int, default=600)
-    parser.add_argument("--affordance-instances", type=int, default=2800)
-    parser.add_argument("--slots", type=int, default=120)
-    parser.add_argument("--top-functions", type=int, default=12)
+    parser.add_argument("--owned-instances", type=_positive_int, default=3500)
+    parser.add_argument("--entitlements", type=_positive_int, default=320)
+    parser.add_argument("--scope-size", type=_positive_int, default=28)
+    parser.add_argument("--persona-instances", type=_positive_int, default=600)
+    parser.add_argument("--affordance-instances", type=_positive_int, default=2800)
+    parser.add_argument("--slots", type=_positive_int, default=120)
+    parser.add_argument("--top-functions", type=_positive_int, default=12)
     args = parser.parse_args()
 
     payload: dict[str, Any] = {
