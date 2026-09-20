@@ -7,7 +7,7 @@
     "admission_effect": "none",
     "meaning": "promoted distilled candidates offered as candidate source context only"
   },
-  "ledger_sha256": "3f3fc24eb4cbb145e88d1a0156ca26cb42d895a05a0c22fdbfc8dc279dfcd7d6",
+  "ledger_sha256": "551cff73feed92e1d02063918d05b2e09cbbd5bed2a37bdf1582ada6e206adb8",
   "ledger_errors": [],
   "context_sources": [
     {
@@ -18,6 +18,8 @@
       "manifest_path": "skills/quirk-distilled-decision-brief-2d699dfa/manifest.json",
       "manifest_sha256": "d5cdc2b0480dc07624b635d7a9c3d904056570912b0f9089b2b51f1f785aa5a1",
       "source_blob_sha": "4136bfb2806e9a0e75aec3a913f7824f03044a4e",
+      "eval_suite_ref": "evals/skills/distilled/quirk-distilled-decision-brief-2d699dfa.json",
+      "eval_suite_sha256": "2553c5e29912497bf025fdb005bbe701e180b4412d410fa362c695153b4b772d",
       "promotion_receipt_ref": "receipt.distill-promotion.quirk-distilled-decision-brief-2d699dfa.0001",
       "runtime_loadable": false
     }

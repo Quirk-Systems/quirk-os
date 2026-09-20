@@ -16,7 +16,7 @@ from typing import Any
 
 from sync_control_plane.skill_runtime import validate_manifest_integrity
 
-from .common import CANDIDATE_PREFIX
+from .common import CANDIDATE_PREFIX, sha256_json
 from .ledger import verify_ledger
 
 
@@ -72,6 +72,8 @@ def next_run_context(ledger: dict[str, Any], *, root: Path | None = None) -> dic
             "manifest_path": f"skills/{candidate_id}/manifest.json",
             "manifest_sha256": refs.get("manifest_sha256"),
             "source_blob_sha": refs.get("source_blob_sha"),
+            "eval_suite_ref": refs.get("eval_suite_ref"),
+            "eval_suite_sha256": refs.get("eval_suite_sha256"),
             "promotion_receipt_ref": refs.get("promotion_receipt_ref"),
             "runtime_loadable": False,
         }
@@ -89,8 +91,13 @@ def _on_disk_problems(root: Path, source: dict[str, Any]) -> list[str]:
     skill_path = root / source["source_path"]
     if not manifest_path.exists() or not skill_path.exists():
         return ["promoted candidate package is missing from disk"]
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    skill_text = skill_path.read_text(encoding="utf-8")
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        skill_text = skill_path.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return ["promoted candidate package on disk is unreadable or not valid JSON"]
+    if not isinstance(manifest, dict):
+        return ["promoted candidate manifest on disk is not an object"]
     problems = validate_manifest_integrity(manifest, skill_text)
     if manifest.get("integrity", {}).get("manifest_sha256") != source["manifest_sha256"]:
         problems.append("on-disk manifest digest drifted from promoted digest")
@@ -98,4 +105,15 @@ def _on_disk_problems(root: Path, source: dict[str, Any]) -> list[str]:
         problems.append("on-disk source blob drifted from promoted blob")
     if manifest.get("status") != "candidate":
         problems.append("promoted candidate status drifted from candidate")
+    suite_path = root / str(source.get("eval_suite_ref") or "")
+    if not source.get("eval_suite_ref") or not suite_path.exists():
+        problems.append("promoted eval suite is missing from disk")
+    else:
+        try:
+            suite = json.loads(suite_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            problems.append("promoted eval suite on disk is unreadable or not valid JSON")
+        else:
+            if sha256_json(suite) != source.get("eval_suite_sha256"):
+                problems.append("on-disk eval suite drifted from the promoted suite digest")
     return problems

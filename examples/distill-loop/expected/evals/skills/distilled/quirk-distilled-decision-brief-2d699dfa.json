@@ -18,7 +18,8 @@
         "ledger.evidence.trial-0007.contradictions",
         "asset.synthesis-pack.roadmap-q4-adoption.0007"
       ],
-      "stop_conditions_hit": []
+      "stop_conditions_hit": [],
+      "authority_ceiling_observed": "infer"
     },
     "expected": {
       "result": "pass",
