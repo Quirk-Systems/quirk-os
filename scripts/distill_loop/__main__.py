@@ -90,11 +90,14 @@ def _ledger_lock(root: Path):
     lock_path = root / "skills" / LOCK_NAME
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     handle = open(lock_path, "a+", encoding="utf-8")
+    locked = False
     try:
         _lock_handle(handle)
+        locked = True
         yield
     finally:
-        _unlock_handle(handle)
+        if locked:
+            _unlock_handle(handle)
         handle.close()
 
 
