@@ -342,6 +342,55 @@ class ContextTests(unittest.TestCase):
             self.assertEqual(context["quarantined"][0]["candidate_id"], distilled["manifest"]["id"])
 
 
+class CliLockTests(unittest.TestCase):
+    def test_windows_lock_failures_do_not_spin_forever(self) -> None:
+        import errno
+        import tempfile
+        from types import SimpleNamespace
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+
+        contention = getattr(errno, "EDEADLOCK", getattr(errno, "EDEADLK", 36))
+
+        def fake_msvcrt(sequence):
+            calls = []
+
+            def locking(fd, mode, nbytes):
+                if mode == 2:  # LK_UNLCK
+                    return None
+                calls.append(mode)
+                outcome = sequence[min(len(calls), len(sequence)) - 1]
+                if outcome is not None:
+                    raise outcome
+
+            return SimpleNamespace(locking=locking, LK_LOCK=1, LK_UNLCK=2, calls=calls)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = root / "skills" / "distill-ledger.json"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("before\n", encoding="utf-8")
+            files = {"skills/distill-ledger.json": "after\n"}
+
+            denied = fake_msvcrt([OSError(errno.EINVAL, "denied")])
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
+                self.assertEqual(cli._write_guarded(root, files), 1)
+            self.assertEqual(len(denied.calls), 1)
+            self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
+
+            busy = fake_msvcrt([OSError(contention, "busy")])
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", busy):
+                self.assertEqual(cli._write_guarded(root, files), 1)
+            self.assertEqual(len(busy.calls), cli.WINDOWS_LOCK_ATTEMPTS)
+            self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
+
+            eventually = fake_msvcrt([OSError(contention, "busy"), None])
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", eventually):
+                self.assertEqual(cli._write_guarded(root, files), 0)
+            self.assertEqual(target.read_text(encoding="utf-8"), "after\n")
+
+
 class ConformanceTests(unittest.TestCase):
     def test_validator_passes_and_reports_no_authority(self) -> None:
         result = subprocess.run(

@@ -15,9 +15,26 @@ what they would write. Nothing here admits or activates a skill.
 from __future__ import annotations
 
 import argparse
+import contextlib
+import errno
 import json
+import os
 import sys
+import time
 from pathlib import Path
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - non-POSIX hosts
+    fcntl = None
+try:
+    import msvcrt
+except ImportError:  # pragma: no cover - POSIX hosts
+    msvcrt = None
+
+
+class LockUnavailable(RuntimeError):
+    """No reliable interprocess lock exists on this host; guarded writes fail closed."""
 
 from .common import LEDGER_PATH, load_schemas, write_files
 from .context import next_run_context
@@ -33,6 +50,85 @@ def _load(path: Path):
 def _ledger(root: Path):
     path = root / LEDGER_PATH
     return _load(path) if path.exists() else new_ledger()
+
+
+LOCK_NAME = "distill-ledger.lock"
+WINDOWS_LOCK_ATTEMPTS = 6
+CONTENTION_ERRNOS = frozenset(
+    code
+    for code in (
+        getattr(errno, "EDEADLOCK", None),
+        getattr(errno, "EDEADLK", None),
+        getattr(errno, "EACCES", None),
+        getattr(errno, "EPERM", None),
+    )
+    if code
+)
+
+
+def _lock_handle(handle) -> None:
+    if os.name == "nt":
+        if msvcrt is None:
+            raise LockUnavailable("no interprocess lock primitive available on this host")
+        handle.seek(0)
+        for _ in range(WINDOWS_LOCK_ATTEMPTS):
+            try:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+                return
+            except OSError as exc:
+                if exc.errno not in CONTENTION_ERRNOS:
+                    raise LockUnavailable(f"lock primitive failed: {exc}") from exc
+                time.sleep(0.05)
+        raise LockUnavailable(f"lock still contended after {WINDOWS_LOCK_ATTEMPTS} attempts")
+    if fcntl is not None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        return
+    raise LockUnavailable("no interprocess lock primitive available on this host")
+
+
+def _unlock_handle(handle) -> None:
+    if os.name == "nt":
+        if msvcrt is None:
+            return
+        handle.seek(0)
+        with contextlib.suppress(OSError):
+            msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+    elif fcntl is not None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+@contextlib.contextmanager
+def _ledger_lock(root: Path):
+    lock_path = root / "skills" / LOCK_NAME
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    handle = open(lock_path, "a+b")
+    locked = False
+    try:
+        _lock_handle(handle)
+        locked = True
+        yield
+    finally:
+        if locked:
+            _unlock_handle(handle)
+        handle.close()
+
+
+def _write_guarded(root: Path, files: dict[str, str]) -> int:
+    try:
+        with _ledger_lock(root):
+            write_files(root, files)
+    except LockUnavailable as exc:
+        print(
+            json.dumps(
+                {
+                    "error": "LOCK_UNAVAILABLE",
+                    "detail": f"{exc}; refusing to write without an interprocess lock",
+                }
+            ),
+            file=sys.stderr,
+        )
+        return 1
+    return 0
 
 
 REPO_DEFAULT = Path(__file__).resolve().parents[2]
@@ -99,7 +195,7 @@ def main(argv: list[str] | None = None) -> int:
         summary["files"] = sorted(result["files"])
         print(json.dumps(summary, indent=2))
         if args.write:
-            write_files(out, result["files"])
+            return _write_guarded(out, result["files"])
         return 0
 
     receipt = _load(args.receipt)
@@ -119,7 +215,7 @@ def main(argv: list[str] | None = None) -> int:
     if result["errors"]:
         return 1
     if args.write:
-        write_files(out, result["files"])
+        return _write_guarded(out, result["files"])
     return 0
 
 
