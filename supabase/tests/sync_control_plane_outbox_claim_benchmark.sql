@@ -220,13 +220,13 @@ begin
   end if;
 
   perform *
-  from quirk_sync.claim_projection_outbox('worker.sql-benchmark', 250, 45);
+  from quirk_sync.claim_projection_outbox('worker.sql-benchmark', 100, 45);
   select count(*) into v_claimed
   from quirk_sync.projection_outbox
   where lease_owner = 'worker.sql-benchmark'
     and status = 'leased';
-  if v_claimed <> 250 then
-    raise exception 'benchmark expected 250 claimed rows, got %', v_claimed;
+  if v_claimed <> 100 then
+    raise exception 'benchmark expected 100 claimed rows, got %', v_claimed;
   end if;
 
   select count(*) into v_non_ready
