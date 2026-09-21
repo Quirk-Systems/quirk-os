@@ -9,9 +9,12 @@ resolved with evidence and a receipt.
 
 from __future__ import annotations
 
+import argparse
 import json
+import os
 import re
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -373,68 +376,125 @@ def validate_tribunal_queue(relative: str, status: str) -> tuple[int, list[str]]
     return errors, unresolved
 
 
+def _write_step_summary(metrics: dict[str, Any]) -> None:
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not summary_path:
+        return
+    lines = [
+        "## validate_golden_pack performance",
+        "",
+        "| metric | value |",
+        "| --- | ---: |",
+        f"| elapsed_seconds | {metrics['elapsed_seconds']:.6f} |",
+        f"| files_scanned | {metrics['files_scanned']} |",
+        f"| bytes_scanned | {metrics['bytes_scanned']} |",
+        f"| placeholder_hits | {metrics['placeholder_hits']} |",
+        "",
+    ]
+    with Path(summary_path).open("a", encoding="utf-8") as handle:
+        handle.write("\n".join(lines))
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Fail-closed Golden Project Pack validation.")
+    parser.add_argument("--metrics-output", type=Path, help="Optional JSON output path for wall-clock and workload metrics.")
+    parser.add_argument("--write-step-summary", action="store_true", help="Append metrics to GitHub step summary when available.")
+    args = parser.parse_args()
+    repo = ROOT
+
     errors = 0
-    for relative in REQUIRED_FILES:
-        if not (ROOT / relative).is_file():
-            fail(f"missing required file: {relative}")
-            errors += 1
-
-    status = pack_status()
-    if status is None:
-        fail("docs/golden-project-pack/README.md must declare **Status:**")
-        errors += 1
-        status = "UNKNOWN"
-    elif status not in CANDIDATE_STATUSES | ADMISSION_STATUSES:
-        fail(f"unsupported Golden Project Pack status {status!r}")
-        errors += 1
-
-    for path in sorted((ROOT / "schemas").glob("*.schema.json")):
-        try:
-            value = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            fail(f"invalid JSON in {path.relative_to(ROOT)}: {exc}")
-            errors += 1
-            continue
-        for key in ("$schema", "$id", "title", "type"):
-            if key not in value:
-                fail(f"{path.relative_to(ROOT)} missing {key}")
-                errors += 1
-
-    pack_path = ROOT / "docs/golden-project-pack/README.md"
-    if pack_path.is_file():
-        pack = pack_path.read_text(encoding="utf-8")
-        for law in CORE_LAWS:
-            if law not in pack:
-                fail(f"core law missing from pack: {law}")
-                errors += 1
-
-    prompt_path = ROOT / "prompts/QUIRK-GOLDEN-PROMPTS.md"
-    if prompt_path.is_file():
-        prompt_text = prompt_path.read_text(encoding="utf-8")
-        for prompt_id in PROMPT_IDS:
-            if prompt_id not in prompt_text:
-                fail(f"Golden Prompt missing: {prompt_id}")
-                errors += 1
-
+    start = time.perf_counter()
+    files_scanned = 0
+    bytes_scanned = 0
+    placeholder_hits = 0
+    status = "UNKNOWN"
     unresolved: list[str] = []
-    queue_relative = "proposed-moves/pr-3/queue.json"
-    if (ROOT / queue_relative).is_file():
-        queue_errors, unresolved = validate_tribunal_queue(queue_relative, status)
-        errors += queue_errors
-
-    for path in ROOT.rglob("*"):
-        if not path.is_file() or ".git" in path.parts:
-            continue
-        if path.suffix.lower() not in {".md", ".json", ".yaml", ".yml", ".py", ".sql"}:
-            continue
-        if path.resolve() == Path(__file__).resolve():
-            continue
-        text = path.read_text(encoding="utf-8", errors="replace").upper()
-        for placeholder in FORBIDDEN_PLACEHOLDERS:
-            if placeholder in text:
-                fail(f"unresolved placeholder {placeholder!r} in {path.relative_to(ROOT)}")
+    try:
+        for relative in REQUIRED_FILES:
+            if not (repo / relative).is_file():
+                fail(f"missing required file: {relative}")
                 errors += 1
+
+        status = pack_status()
+        if status is None:
+            fail("docs/golden-project-pack/README.md must declare **Status:**")
+            errors += 1
+            status = "UNKNOWN"
+        elif status not in CANDIDATE_STATUSES | ADMISSION_STATUSES:
+            fail(f"unsupported Golden Project Pack status {status!r}")
+            errors += 1
+
+        for path in sorted((repo / "schemas").glob("*.schema.json")):
+            try:
+                value = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as exc:
+                fail(f"invalid JSON in {path.relative_to(repo)}: {exc}")
+                errors += 1
+                continue
+            for key in ("$schema", "$id", "title", "type"):
+                if key not in value:
+                    fail(f"{path.relative_to(repo)} missing {key}")
+                    errors += 1
+
+        pack_path = repo / "docs/golden-project-pack/README.md"
+        if pack_path.is_file():
+            pack = pack_path.read_text(encoding="utf-8")
+            for law in CORE_LAWS:
+                if law not in pack:
+                    fail(f"core law missing from pack: {law}")
+                    errors += 1
+
+        prompt_path = repo / "prompts/QUIRK-GOLDEN-PROMPTS.md"
+        if prompt_path.is_file():
+            prompt_text = prompt_path.read_text(encoding="utf-8")
+            for prompt_id in PROMPT_IDS:
+                if prompt_id not in prompt_text:
+                    fail(f"Golden Prompt missing: {prompt_id}")
+                    errors += 1
+
+        queue_relative = "proposed-moves/pr-3/queue.json"
+        if (repo / queue_relative).is_file():
+            queue_errors, unresolved = validate_tribunal_queue(queue_relative, status)
+            errors += queue_errors
+
+        for path in repo.rglob("*"):
+            if not path.is_file() or ".git" in path.parts:
+                continue
+            if path.suffix.lower() not in {".md", ".json", ".yaml", ".yml", ".py", ".sql"}:
+                continue
+            if path.resolve() == Path(__file__).resolve():
+                continue
+            files_scanned += 1
+            try:
+                bytes_scanned += path.stat().st_size
+                text = path.read_text(encoding="utf-8", errors="replace").upper()
+            except OSError as exc:
+                fail(f"unable to read {path.relative_to(repo)}: {exc}")
+                errors += 1
+                continue
+            for placeholder in FORBIDDEN_PLACEHOLDERS:
+                if placeholder in text:
+                    fail(f"unresolved placeholder {placeholder!r} in {path.relative_to(repo)}")
+                    errors += 1
+                    placeholder_hits += 1
+    except Exception as exc:  # pragma: no cover - defensive fail-closed catch
+        fail(f"unexpected validator error: {exc}")
+        errors += 1
+    finally:
+        elapsed_seconds = time.perf_counter() - start
+        metrics = {
+            "validator": "validate_golden_pack.py",
+            "elapsed_seconds": elapsed_seconds,
+            "files_scanned": files_scanned,
+            "bytes_scanned": bytes_scanned,
+            "placeholder_hits": placeholder_hits,
+        }
+        if args.metrics_output:
+            metrics_output = args.metrics_output if args.metrics_output.is_absolute() else repo / args.metrics_output
+            metrics_output.parent.mkdir(parents=True, exist_ok=True)
+            metrics_output.write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
+        if args.write_step_summary:
+            _write_step_summary(metrics)
 
     if errors:
         print(f"Golden gates failed with {errors} error(s).", file=sys.stderr)

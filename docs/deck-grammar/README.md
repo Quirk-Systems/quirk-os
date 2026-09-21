@@ -67,7 +67,18 @@ python scripts/validate_deck_grammar.py \
   --repo . \
   --output evals/deck-grammar/conformance-results.json \
   --require-pass
+
+python scripts/deck_grammar/perf_benchmarks.py \
+  --scenario build_access_pool \
+  --output evals/deck-grammar/perf-build-access-pool.json
+
+python scripts/deck_grammar/perf_benchmarks.py \
+  --scenario compile_hand \
+  --output evals/deck-grammar/perf-compile-hand.json
 ```
+
+`perf-build-access-pool.json` compares the legacy linear duplicate-search behavior with the set-backed implementation and reports a relative speedup ratio instead of an absolute timing gate.  
+`perf-compile-hand.json` records workload shape plus `cProfile` cumulative hot paths for `compile_hand` without introducing flaky pass/fail thresholds.
 
 ## Admission posture
 

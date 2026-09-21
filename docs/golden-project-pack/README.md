@@ -215,6 +215,15 @@ A release fails when any required gate fails.
 - `.github/workflows/golden-gates.yml` — initial repository gate.
 - `scripts/validate_golden_pack.py` — fail-closed structural validation.
 
+Local timing + workload capture:
+
+```bash
+python scripts/validate_golden_pack.py \
+  --metrics-output evals/golden-pack/validate-golden-pack-metrics.json
+```
+
+`validate-golden-pack-metrics.json` records elapsed wall-clock seconds plus scanned file/byte counts so CI trends can be tracked as repository size grows.
+
 ## 11. Release evidence
 
 A Golden release must include:

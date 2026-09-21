@@ -7,6 +7,7 @@ from .common import DeckGrammarError, _slug, authority_not_above, content_hash, 
 
 def build_access_pool(collection: dict[str, Any], entitlements: list[dict[str, Any]], *, as_of: datetime) -> list[dict[str, Any]]:
     instances = [json.loads(json.dumps(item)) for item in collection['card_instances']]
+    instance_ids = {item['instance_id'] for item in instances}
     owned_card_ids = {item['card_id'] for item in instances if item['access_kind'] == 'owned' and item['ownership_claim'] == 'owned'}
     for entitlement in entitlements:
         if not is_active_entitlement(entitlement, as_of):
@@ -17,9 +18,10 @@ def build_access_pool(collection: dict[str, Any], entitlements: list[dict[str, A
             if card_id in owned_card_ids:
                 continue
             instance_id = 'card-instance.entitled.' + _slug(entitlement['entitlement_id'].removeprefix('entitlement.')) + '.' + _slug(card_id.removeprefix('card.'))
-            if any((existing['instance_id'] == instance_id for existing in instances)):
+            if instance_id in instance_ids:
                 continue
             instances.append({'instance_id': instance_id, 'card_id': card_id, 'holder_ref': entitlement['grantee_ref'], 'access_kind': entitlement['access_kind'], 'state': 'accessible', 'acquired_at': entitlement['starts_at'], 'expires_at': entitlement.get('ends_at'), 'entitlement_ref': entitlement['entitlement_id'], 'ownership_claim': 'not_owned', 'authority_effect': 'none', 'edition': None, 'provenance_refs': [entitlement['source_ref']], 'metadata': {'entitlement_state': entitlement['state']}})
+            instance_ids.add(instance_id)
     return instances
 
 def compile_deck(*, card_definitions: list[dict[str, Any]], collection: dict[str, Any], entitlements: list[dict[str, Any]], area: dict[str, Any], goal: dict[str, Any], intention: dict[str, Any], purpose_partition: str, platform: str, task_class: str, authority_ceiling: str, explicit_exclusions: list[str] | None=None, as_of: datetime, compiler_version: str='0.1.0') -> tuple[dict[str, Any], dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:

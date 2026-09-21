@@ -12,6 +12,7 @@ from referencing import Registry, Resource
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from deck_grammar.compiler import build_access_pool, compile_live_proof, content_hash, evaluate_adversarial_case
+from deck_grammar.access import _slug
 SCHEMA_FILES = ['active-hand.schema.json', 'aesthetic-contract.schema.json', 'affordance.schema.json', 'area.schema.json', 'art.schema.json', 'artifact.schema.json', 'asset.schema.json', 'card-definition.schema.json', 'card-instance.schema.json', 'collection.schema.json', 'eligible-deck.schema.json', 'entitlement-grant.schema.json', 'goal.schema.json', 'hand-preset.schema.json', 'intention.schema.json']
 
 def load_json(relative: str):
@@ -61,6 +62,75 @@ class DeckGrammarTests(unittest.TestCase):
         build_access_pool(self.collection, self.entitlements, as_of=self.as_of)
         after = content_hash(self.collection)
         self.assertEqual(before, after)
+
+    def test_build_access_pool_matches_linear_duplicate_check(self):
+        collection = {
+            'collection_id': 'collection.test.perf',
+            'owner_ref': 'human.test',
+            'card_instances': [
+                {
+                    'instance_id': f'card-instance.owned.{index:04d}',
+                    'card_id': f'card.affordance.{index:04d}',
+                    'holder_ref': 'human.test',
+                    'access_kind': 'owned',
+                    'state': 'accessible',
+                    'acquired_at': '2026-01-01T00:00:00Z',
+                    'ownership_claim': 'owned',
+                    'authority_effect': 'none',
+                    'edition': None,
+                    'provenance_refs': ['source.collection.test'],
+                    'metadata': {},
+                }
+                for index in range(400)
+            ],
+        }
+        entitlements = []
+        for ent_index in range(40):
+            scope = [f'card.affordance.{((ent_index * 5) + offset) % 800:04d}' for offset in range(24)]
+            scope.append(scope[0])
+            entitlements.append({
+                'entitlement_id': f'entitlement.test.{ent_index:04d}',
+                'grantee_ref': 'human.test',
+                'access_kind': 'premium',
+                'state': 'active',
+                'authority_effect': 'none',
+                'starts_at': '2026-08-01T00:00:00Z',
+                'ends_at': None,
+                'scope': {'card_ids': scope},
+                'source_ref': f'source.entitlement.{ent_index:04d}',
+            })
+
+        baseline = [json.loads(json.dumps(item)) for item in collection['card_instances']]
+        owned = {item['card_id'] for item in baseline if item['access_kind'] == 'owned' and item['ownership_claim'] == 'owned'}
+        for entitlement in entitlements:
+            for card_id in entitlement['scope']['card_ids']:
+                if card_id in owned:
+                    continue
+                instance_id = 'card-instance.entitled.' + _slug(entitlement['entitlement_id'].removeprefix('entitlement.')) + '.' + _slug(card_id.removeprefix('card.'))
+                if any((existing['instance_id'] == instance_id for existing in baseline)):
+                    continue
+                baseline.append({'instance_id': instance_id, 'card_id': card_id, 'holder_ref': entitlement['grantee_ref'], 'access_kind': entitlement['access_kind'], 'state': 'accessible', 'acquired_at': entitlement['starts_at'], 'expires_at': entitlement.get('ends_at'), 'entitlement_ref': entitlement['entitlement_id'], 'ownership_claim': 'not_owned', 'authority_effect': 'none', 'edition': None, 'provenance_refs': [entitlement['source_ref']], 'metadata': {'entitlement_state': entitlement['state']}})
+
+        actual = build_access_pool(collection, entitlements, as_of=self.as_of)
+        self.assertEqual(len(actual), len({item['instance_id'] for item in actual}))
+        self.assertEqual(baseline, actual)
+
+    def test_build_access_pool_deduplicates_repeated_scope_ids(self):
+        collection = {'collection_id': 'collection.test.scope', 'owner_ref': 'human.test', 'card_instances': []}
+        entitlements = [{
+            'entitlement_id': 'entitlement.test.dup',
+            'grantee_ref': 'human.test',
+            'access_kind': 'premium',
+            'state': 'active',
+            'authority_effect': 'none',
+            'starts_at': '2026-08-01T00:00:00Z',
+            'ends_at': None,
+            'scope': {'card_ids': ['card.affordance.alpha', 'card.affordance.alpha', 'card.affordance.alpha']},
+            'source_ref': 'source.entitlement.dup',
+        }]
+        actual = build_access_pool(collection, entitlements, as_of=self.as_of)
+        self.assertEqual(1, len(actual))
+        self.assertEqual('card.affordance.alpha', actual[0]['card_id'])
     def test_all_adversarial_cases_pass(self):
         manifest = load_json('evals/deck-grammar/fixtures.json')
         results = [evaluate_adversarial_case(load_json(ref['path']), as_of=self.as_of) for ref in manifest['cases']]
