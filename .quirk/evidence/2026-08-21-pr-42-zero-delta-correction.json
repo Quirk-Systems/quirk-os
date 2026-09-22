@@ -1,0 +1,53 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr-42-zero-delta-correction.2026-08-21",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "unverified",
+  "subject": {
+    "base_commit": "df6eaeb97304a84ab07b3ef7385d37e886e2e3e8",
+    "commit": "b219cc4d1fffccf04d27a3d151e5476a256bf1a1",
+    "changed_paths": []
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr-42-zero-delta-correction",
+      "claim_type": "correction",
+      "authority_effect": "none",
+      "statement": "PR 42 contains no changed files, so its proof statement does not establish the described PersonalizationEvidencePort, QIS-012 evaluation, or evidence artifact.",
+      "evidence_paths": []
+    }
+  ],
+  "artifacts": [],
+  "verification": {
+    "commands": [
+      {
+        "command": "git diff --name-only df6eaeb97304a84ab07b3ef7385d37e886e2e3e8..b219cc4d1fffccf04d27a3d151e5476a256bf1a1",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --name-only df6eaeb97304a84ab07b3ef7385d37e886e2e3e8..b0a7d42d982c91effe2e6c1882d846d189326764",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-08-21T04:22:31Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": {
+    "reason": "The proof statement describes implementation and evaluation evidence that is absent from the zero-file PR diff and merge result.",
+    "external_claim_refs": [
+      "https://github.com/Quirk-Systems/quirk-os/pull/42",
+      "https://github.com/Quirk-Systems/quirk-os/pull/42#issuecomment-5305957931"
+    ],
+    "observations": [
+      "The exact base-to-head diff contains zero files.",
+      "The exact base-to-merge diff contains zero files.",
+      "PersonalizationEvidencePort, the QIS-012 evaluation, and the described evidence artifact are absent from the PR head and merge result."
+    ]
+  },
+  "receipt_sha256": "sha256:9ac2505fa2b522dee86766552257ed97e678f115e13d48f5940126054a640685"
+}
