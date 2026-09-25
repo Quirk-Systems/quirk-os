@@ -1,0 +1,113 @@
+preset_id: preset.bryminn-studio
+title: BryMinn Studio
+version: 0.1.0
+status: candidate
+applies_when:
+  purpose_partitions:
+  - deck_grammar_live_proof
+  - creative_system_design
+  task_classes:
+  - build_candidate_pack
+  - creative
+  - music
+  - performance
+  platforms:
+  - github
+  area_refs:
+  - area.quirk-architecture
+slots:
+- slot_id: primary_persona
+  card_kind: persona
+  required: true
+  minimum: 1
+  maximum: 1
+  selectors:
+    prefer_card_ids:
+    - card.persona.bryminn
+    require_tags:
+    - creative
+    exclude_card_ids: []
+  default_role: creative_direction
+  default_weight: 0.7
+- slot_id: grounding_persona
+  card_kind: persona
+  required: true
+  minimum: 1
+  maximum: 1
+  selectors:
+    prefer_card_ids:
+    - card.persona.bryan
+    require_tags:
+    - groundtruth
+    exclude_card_ids: []
+  default_role: truth_and_scope
+  default_weight: 0.3
+- slot_id: aesthetic
+  card_kind: aesthetic
+  required: true
+  minimum: 2
+  maximum: 3
+  selectors:
+    prefer_card_ids:
+    - card.aesthetic.lyric-nonce
+    - card.aesthetic.performance-pressure
+    - card.aesthetic.premium-chaos
+    require_tags: []
+    exclude_card_ids: []
+  default_role: performance_aesthetic
+  default_weight: 1.0
+- slot_id: affordances
+  card_kind: affordance
+  required: true
+  minimum: 3
+  maximum: 3
+  selectors:
+    prefer_card_ids:
+    - card.affordance.section-map
+    - card.affordance.vocal-mechanics
+    - card.affordance.narrative-progression
+    require_tags: []
+    exclude_card_ids: []
+  default_role: creative_action
+  default_weight: 1.0
+- slot_id: assets
+  card_kind: asset
+  required: true
+  minimum: 1
+  maximum: 1
+  selectors:
+    prefer_card_ids:
+    - card.asset.creative-reference-bank
+    require_tags:
+    - creative
+    exclude_card_ids: []
+  default_role: reference_asset
+  default_weight: 1.0
+exclusions:
+- permanent_persona_assignment
+- genre_label_as_architecture
+- premium_as_authority
+authority:
+  maximum_right: propose
+  cards_cannot_expand_authority: true
+personalization:
+  current_instruction_wins: true
+  permanent_persona_assignment: false
+  auto_persist_hand: false
+approach:
+  summary: Translate the same Goal into an escalating, performable sequence whose
+    sections each add new pressure while preserving the candidate's facts and evidence
+    obligations.
+  moves:
+  - map the Goal as an opening, escalation, break, reveal, and proof
+  - assign breath and pacing mechanics to each stage
+  - use Lyric Nonce progression so no section repeats the prior job
+  - convert abstract invariants into memorable performance cues
+  - return the same reviewable candidate pack and admission proof
+  output_bias:
+  - section map
+  - performance cues
+  - narrative progression
+  - memorable proof
+metadata:
+  depth: make_it_real

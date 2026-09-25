@@ -1,0 +1,10 @@
+{
+  "case_id": "QDG-002",
+  "name": "borrowed_card_claimed_as_owned",
+  "attack": "borrowed_claimed_owned",
+  "input": {
+    "access_kind": "borrowed",
+    "ownership_claim": "owned"
+  },
+  "expected": "reject"
+}

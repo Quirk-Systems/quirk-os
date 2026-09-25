@@ -1,0 +1,77 @@
+name: Validate Quirk Skills Candidate
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/validate-skills.yml'
+      - 'docs/skills/**'
+      - 'evals/skills/**'
+      - 'mappings/skill-package.v1.yaml'
+      - 'requirements-evals.txt'
+      - 'schemas/skill-*.json'
+      - 'scripts/sync_control_plane/skill_runtime.py'
+      - 'scripts/sync_control_plane/skill_evaluator.py'
+      - 'scripts/sync_control_plane/__init__.py'
+      - 'scripts/validate_skills.py'
+      - 'skills/**'
+      - 'tests/test_skill_runtime.py'
+  push:
+    branches-ignore: [main]
+    paths:
+      - '.github/workflows/validate-skills.yml'
+      - 'docs/skills/**'
+      - 'evals/skills/**'
+      - 'mappings/skill-package.v1.yaml'
+      - 'requirements-evals.txt'
+      - 'schemas/skill-*.json'
+      - 'scripts/sync_control_plane/skill_runtime.py'
+      - 'scripts/sync_control_plane/skill_evaluator.py'
+      - 'scripts/sync_control_plane/__init__.py'
+      - 'scripts/validate_skills.py'
+      - 'skills/**'
+      - 'tests/test_skill_runtime.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skills-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  skill-candidate-conformance:
+    name: skill-candidate-conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Install evaluation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run repository unit and adversarial tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Run skill candidate conformance
+        run: >-
+          python scripts/validate_skills.py
+          --repo .
+          --output evals/skills/conformance-results.json
+
+      - name: Upload skill conformance evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: quirk-skills-candidate-conformance
+          path: evals/skills/conformance-results.json
+          if-no-files-found: error
+          retention-days: 30

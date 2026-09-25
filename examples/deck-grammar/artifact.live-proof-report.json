@@ -1,0 +1,16 @@
+{
+  "artifact_id": "artifact.deck-grammar.live-proof-report",
+  "title": "Deck Grammar Same-Goal Live Proof",
+  "artifact_type": "evaluation_report",
+  "created_by": "skill.quirk-deck-compiler",
+  "created_at": "2026-08-12T05:00:00Z",
+  "run_receipt_ref": "receipt.deck-grammar.live-proof.2026-08-12",
+  "source_refs": ["examples/deck-grammar/shared-goal.json", "presets/deck-grammar/canon-architect.preset.yaml", "presets/deck-grammar/bryminn-studio.preset.yaml"],
+  "version": "0.1.0",
+  "rights": {"status": "clear", "owner_ref": "human.bryan", "license_ref": null, "provenance_complete": true},
+  "status": "accepted",
+  "content_ref": "examples/deck-grammar/live-proof.json",
+  "content_hash": "828dc88ddc4817fb58636aaea85368e10a04c521796935039a50aeb7fbb12551",
+  "evaluation": {"suite_ref": "eval.deck-grammar.v0.1", "verdict": "pass"},
+  "metadata": {}
+}

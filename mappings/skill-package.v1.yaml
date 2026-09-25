@@ -1,0 +1,49 @@
+api_version: quirk.dev/mapping/v1alpha1
+kind: MappingContract
+metadata:
+  id: mapping.skill-package.v1
+  version: 1.0.0
+  status: candidate
+  owner: quirk-os
+purpose: >-
+  Preserve stable Quirk skill identity and authority while translating portable
+  skill packages into private runtime manifests and rebuildable projections.
+canonical_to_runtime:
+  manifest_key:
+    source: id
+    transform: prefix_with_skill_dot
+  manifest_version:
+    source: version
+  manifest_kind:
+    constant: skill
+  status:
+    source: status
+    rule: candidate_must_remain_candidate_until_external_transition
+  authority_ceiling:
+    source: authority.ceiling
+  content_hash:
+    source: integrity.manifest_sha256
+  source_blob_sha:
+    source: integrity.source_blob_sha
+  trigger_contract:
+    source: triggers
+  tool_scope:
+    source: tools
+  stop_conditions:
+    source: contract.stop_conditions
+runtime_to_canonical:
+  mode: proposed_move_only
+  direct_mutation: prohibited
+  required_evidence:
+    - runtime_receipt
+    - source_manifest_digest
+    - external_authority_grant
+    - human_or_separately_authorized_admission
+loss:
+  allowed: []
+  silent_loss: prohibited
+vendor_bindings:
+  rule: vendor_ids_are_bindings_not_quirk_identity
+versioning:
+  mapping_version_independent_from_adapter_version: true
+  downstream_pin_required: true

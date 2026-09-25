@@ -1,0 +1,125 @@
+preset_id: preset.canon-architect
+title: Canon Architect
+version: 0.1.0
+status: candidate
+applies_when:
+  purpose_partitions:
+  - deck_grammar_live_proof
+  - repository_admission
+  task_classes:
+  - build_candidate_pack
+  - architecture
+  - governance
+  - ontology
+  - admission
+  platforms:
+  - github
+  area_refs:
+  - area.quirk-architecture
+slots:
+- slot_id: primary_persona
+  card_kind: persona
+  required: true
+  minimum: 1
+  maximum: 1
+  selectors:
+    prefer_card_ids:
+    - card.persona.brayn
+    require_tags:
+    - architecture
+    exclude_card_ids: []
+  default_role: system_architecture
+  default_weight: 0.6
+- slot_id: grounding_persona
+  card_kind: persona
+  required: true
+  minimum: 1
+  maximum: 1
+  selectors:
+    prefer_card_ids:
+    - card.persona.bryan
+    require_tags:
+    - groundtruth
+    exclude_card_ids: []
+  default_role: reality_grounding
+  default_weight: 0.25
+- slot_id: seam_persona
+  card_kind: persona
+  required: false
+  minimum: 0
+  maximum: 1
+  selectors:
+    prefer_card_ids:
+    - card.persona.brayk
+    require_tags:
+    - seams
+    exclude_card_ids: []
+  default_role: seam_detection
+  default_weight: 0.15
+- slot_id: aesthetic
+  card_kind: aesthetic
+  required: true
+  minimum: 1
+  maximum: 2
+  selectors:
+    prefer_card_ids:
+    - card.aesthetic.structural-clarity
+    - card.aesthetic.premium-chaos
+    require_tags: []
+    exclude_card_ids: []
+  default_role: expression_contract
+  default_weight: 1.0
+- slot_id: affordances
+  card_kind: affordance
+  required: true
+  minimum: 3
+  maximum: 3
+  selectors:
+    prefer_card_ids:
+    - card.affordance.source-authority-census
+    - card.affordance.contract-diff
+    - card.affordance.tribunal-docket
+    require_tags: []
+    exclude_card_ids: []
+  default_role: task_action
+  default_weight: 1.0
+- slot_id: assets
+  card_kind: asset
+  required: true
+  minimum: 1
+  maximum: 1
+  selectors:
+    prefer_card_ids:
+    - card.asset.evidence-pack
+    require_tags:
+    - evidence
+    exclude_card_ids: []
+  default_role: reference_asset
+  default_weight: 1.0
+exclusions:
+- permanent_persona_assignment
+- rarity_as_quality
+- premium_as_authority
+authority:
+  maximum_right: propose
+  cards_cannot_expand_authority: true
+personalization:
+  current_instruction_wins: true
+  permanent_persona_assignment: false
+  auto_persist_hand: false
+approach:
+  summary: Define the grammar, contracts, lifecycle, authority, fixtures, and admission
+    evidence before promoting the candidate.
+  moves:
+  - resolve source authority
+  - define fifteen interoperable schemas
+  - compile a bounded Hand
+  - run adversarial fixtures
+  - produce an admission dossier
+  output_bias:
+  - schemas
+  - tests
+  - receipts
+  - decision docket
+metadata:
+  depth: make_it_real

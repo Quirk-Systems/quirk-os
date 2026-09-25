@@ -1,0 +1,18 @@
+{
+  "suite_id": "eval.deck-grammar.v0.1",
+  "status": "candidate",
+  "as_of": "2026-08-12T05:00:00Z",
+  "cases": [
+    {"id": "QDG-001", "path": "evals/deck-grammar/cases/QDG-001.json", "expected": "reject"},
+    {"id": "QDG-002", "path": "evals/deck-grammar/cases/QDG-002.json", "expected": "reject"},
+    {"id": "QDG-003", "path": "evals/deck-grammar/cases/QDG-003.json", "expected": "exclude"},
+    {"id": "QDG-004", "path": "evals/deck-grammar/cases/QDG-004.json", "expected": "reject"},
+    {"id": "QDG-005", "path": "evals/deck-grammar/cases/QDG-005.json", "expected": "reject"},
+    {"id": "QDG-006", "path": "evals/deck-grammar/cases/QDG-006.json", "expected": "exclude"},
+    {"id": "QDG-007", "path": "evals/deck-grammar/cases/QDG-007.json", "expected": "reject"},
+    {"id": "QDG-008", "path": "evals/deck-grammar/cases/QDG-008.json", "expected": "preserve_owned"},
+    {"id": "QDG-009", "path": "evals/deck-grammar/cases/QDG-009.json", "expected": "reject"},
+    {"id": "QDG-010", "path": "evals/deck-grammar/cases/QDG-010.json", "expected": "reject"},
+    {"id": "QDG-011", "path": "evals/deck-grammar/cases/QDG-011.json", "expected": "require_consent"}
+  ]
+}

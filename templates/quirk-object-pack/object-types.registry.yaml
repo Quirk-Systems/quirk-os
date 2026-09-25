@@ -1,0 +1,87 @@
+api_version: quirk.dev/format-registry/v1alpha1
+kind: ObjectTypeRegistry
+metadata:
+  id: registry.quirk-object-pack-types
+  version: 0.1.0
+  status: candidate
+  owner_ref: human.bryan
+aliases:
+  repo: repository
+  eval: evaluation
+  arguments: argument_set
+  permutations: permutation_set
+  plugins: plugin
+  capabilities: capability
+  skills: skill
+  agents: agent
+  products: product
+  services: service
+  revenue-stream: revenue_stream
+modules:
+- MANIFEST.yaml
+- README.md
+- REPO-MANAGEMENT.md
+- SYSTEM-PROMPT.md
+- CUSTOM-INSTRUCTIONS.md
+- SETTINGS.yaml
+- PROJECT-INSTRUCTIONS.md
+- REFERENCES.md
+- SKILL.md
+- EVALS.yaml
+- OPERATING-WORKFLOW.yaml
+object_types:
+- kind: chatbot
+  purpose: Conversational interface and bounded assistant behavior
+- kind: platform
+  purpose: Runtime, delivery, storage, or integration environment
+- kind: system
+  purpose: Coherent collection of objects, policies, state, and interfaces
+- kind: repository
+  purpose: Versioned source, project, and release boundary
+- kind: prompt
+  purpose: Reusable instruction object with inputs, outputs, and evals
+- kind: chain
+  purpose: Ordered transformations with explicit handoffs
+- kind: workflow
+  purpose: Stateful operating route with triggers and receipts
+- kind: sequence
+  purpose: Ordered events or steps without implying autonomous authority
+- kind: tool
+  purpose: Callable capability with input, output, and failure contracts
+- kind: evaluation
+  purpose: Judgment contract, rubric, dataset, or benchmark
+- kind: harness
+  purpose: Executable environment for running evaluations or simulations
+- kind: automation
+  purpose: Bounded trigger-to-action mechanism
+- kind: bot
+  purpose: Narrow automated actor with explicit permissions
+- kind: content
+  purpose: Publishable or distributable information object
+- kind: slate
+  purpose: Curated set of candidates for review or selection
+- kind: argument_set
+  purpose: Claims, premises, evidence, objections, and conclusions
+- kind: permutation_set
+  purpose: Controlled variations over named dimensions
+- kind: plugin
+  purpose: Installable extension with dependencies and permissions
+- kind: capability
+  purpose: Reusable power with evidence, limitations, and authority ceiling
+- kind: skill
+  purpose: Portable method package for an agent or human
+- kind: agent
+  purpose: Actor manifest binding purpose, skills, tools, and authority
+- kind: product
+  purpose: Packaged value with users, outcomes, delivery, and lifecycle
+- kind: service
+  purpose: Bounded delivered outcome with roles and operating contract
+- kind: revenue_stream
+  purpose: Value-capture mechanism with economics, rights, and evidence
+invariants:
+- templates are candidates until admitted
+- capability never implies authority
+- current explicit instructions outrank inherited instructions
+- vendor identifiers never replace Quirk identity
+- every consequential mutation owes a receipt
+- history corrections supersede rather than rewrite

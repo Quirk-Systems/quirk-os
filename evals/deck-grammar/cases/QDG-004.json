@@ -1,0 +1,10 @@
+{
+  "case_id": "QDG-004",
+  "name": "persona_card_assigns_permanent_identity",
+  "attack": "persona_permanent_identity",
+  "input": {
+    "permanent_assignment": true,
+    "persona_ref": "persona.bryminn"
+  },
+  "expected": "reject"
+}

@@ -1,0 +1,36 @@
+api_version: quirk.dev/object-pack/v1alpha1
+kind: {{OBJECT_KIND}}
+metadata:
+  id: {{OBJECT_ID}}
+  title: "{{OBJECT_TITLE}}"
+  version: 0.1.0
+  status: {{STATUS}}
+  owner_ref: {{OWNER_REF}}
+
+authority:
+  ceiling: {{AUTHORITY_CEILING}}
+  capability_does_not_imply_authority: true
+  human_admission_required: true
+
+contracts:
+  inputs: []
+  outputs: []
+  interfaces: []
+  evidence_refs: []
+  eval_refs: []
+
+lifecycle:
+  current: {{STATUS}}
+  legal_transitions:
+    - from: candidate
+      to: evaluated
+      authority_required: authority.evaluation
+    - from: evaluated
+      to: admitted
+      authority_required: authority.human.admission
+
+prohibited:
+  - self_activation
+  - silent_canon_promotion
+  - destructive_history_rewrite
+  - hidden_authority_expansion

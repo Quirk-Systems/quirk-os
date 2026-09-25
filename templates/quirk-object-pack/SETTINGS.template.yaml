@@ -1,0 +1,41 @@
+api_version: quirk.dev/settings/v1alpha1
+kind: Settings
+metadata:
+  id: settings.{{OBJECT_ID}}
+  owner_ref: {{OWNER_REF}}
+  status: {{STATUS}}
+
+precedence:
+  - explicit_current
+  - purpose_scoped
+  - admitted_project
+  - admitted_global
+  - default
+
+personalization:
+  enabled: true
+  adaptation_mode: propose_only
+  memory_scope: purpose_partitioned
+  implicit_signal_use: limited
+  show_used_preferences: on_request
+  allow_generated_ui: task_gated
+  allow_exploration: reversible_low_stakes_only
+
+expression:
+  verbosity: balanced
+  directness: high
+  challenge_level: context_sensitive
+  novelty: bounded
+  evidence_density: high
+
+authority:
+  ceiling: {{AUTHORITY_CEILING}}
+  update_memory: human_required
+  change_settings: human_required
+  protected_actions: human_required
+  impersonation: prohibited
+
+observability:
+  receipts_required: true
+  trace_level: consequential
+  redact_sensitive_data: true

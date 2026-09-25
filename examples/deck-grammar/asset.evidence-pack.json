@@ -1,0 +1,13 @@
+{
+  "asset_id": "asset.deck-grammar-evidence-pack",
+  "source_artifact_refs": ["artifact.deck-grammar.live-proof-report"],
+  "owner_ref": "human.bryan",
+  "title": "Deck Grammar Candidate Evidence Pack",
+  "intended_uses": ["admission review", "cross-repository scaffolding", "future regression testing"],
+  "rights": {"status": "clear", "provenance_complete": true, "license_ref": null, "commercial_use": "allowed"},
+  "versioning": {"version": "0.1.0", "supersedes": null, "migration_ref": null},
+  "quality": {"state": "reviewed", "score": null, "evidence_refs": ["eval.deck-grammar.v0.1"]},
+  "status": "candidate",
+  "retrieval_metadata": {"tags": ["deck-grammar", "schemas", "compiler", "fixtures"], "purpose_partition": "deck_grammar_live_proof"},
+  "metadata": {"golden": false}
+}

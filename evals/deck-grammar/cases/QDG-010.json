@@ -1,0 +1,10 @@
+{
+  "case_id": "QDG-010",
+  "name": "discard_deletes_underlying_history",
+  "attack": "discard_deletes_history",
+  "input": {
+    "discard": true,
+    "delete_underlying": true
+  },
+  "expected": "reject"
+}

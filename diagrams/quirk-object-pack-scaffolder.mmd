@@ -1,0 +1,20 @@
+flowchart LR
+  R["Object Type Registry"] --> S["Quirk Object Pack Scaffolder"]
+  T["Canonical GFM Templates"] --> S
+  U["ID · kind · title · owner · authority"] --> S
+  S --> M["MANIFEST.yaml"]
+  S --> RD["README.md"]
+  S --> RM["REPO-MANAGEMENT.md"]
+  S --> SP["SYSTEM-PROMPT.md"]
+  S --> CI["CUSTOM-INSTRUCTIONS.md"]
+  S --> ST["SETTINGS.yaml"]
+  S --> PI["PROJECT-INSTRUCTIONS.md"]
+  S --> RF["REFERENCES.md"]
+  S --> SK["SKILL.md"]
+  S --> EV["EVALS.yaml"]
+  S --> WF["OPERATING-WORKFLOW.yaml"]
+
+  M --> C{"Candidate admission"}
+  EV --> C
+  WF --> C
+  C -->|"human decision"| A["Admitted object pack"]

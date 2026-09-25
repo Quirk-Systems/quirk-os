@@ -1,0 +1,9 @@
+{
+  "case_id": "QDG-001",
+  "name": "premium_access_attempts_authority_expansion",
+  "attack": "premium_authority_escalation",
+  "input": {
+    "authority_effect": "execute_protected"
+  },
+  "expected": "reject"
+}
