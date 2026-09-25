@@ -1,9 +1,15 @@
 from __future__ import annotations
 
 import copy
+import contextlib
+import io
 import json
+import multiprocessing
 import subprocess
 import sys
+import tempfile
+import time
+import threading
 import unittest
 from pathlib import Path
 
@@ -33,6 +39,40 @@ EXAMPLE = ROOT / "examples" / "distill-loop"
 
 def _json(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _distill_worker(repo, root, receipt_path, trace_path, barrier, result_queue) -> None:
+    """Synchronize the compute phase when possible, then run the real CLI."""
+    sys.path.insert(0, str(Path(repo) / "scripts"))
+    import distill_loop.__main__ as cli
+
+    original = cli.post_run_distill
+
+    def synchronized_distill(*args, **kwargs):
+        try:
+            barrier.wait(timeout=0.3)
+        except threading.BrokenBarrierError:
+            pass
+        return original(*args, **kwargs)
+
+    cli.post_run_distill = synchronized_distill
+    with contextlib.redirect_stdout(io.StringIO()):
+        result_queue.put(cli.main([
+            "distill", "--receipt", str(receipt_path), "--trace", str(trace_path),
+            "--repo", str(repo), "--root", str(root), "--write",
+        ]))
+
+
+def _hold_windows_lock(lock_path, ready, release) -> None:
+    import msvcrt
+
+    with open(lock_path, "a+b") as handle:
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+        ready.set()
+        release.wait(5)
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
 
 
 class DistillFixture:
@@ -345,7 +385,6 @@ class ContextTests(unittest.TestCase):
 class CliLockTests(unittest.TestCase):
     def test_windows_lock_failures_do_not_spin_forever(self) -> None:
         import errno
-        import tempfile
         from types import SimpleNamespace
         from unittest import mock
 
@@ -357,14 +396,16 @@ class CliLockTests(unittest.TestCase):
             calls = []
 
             def locking(fd, mode, nbytes):
-                if mode == 2:  # LK_UNLCK
+                if mode == 0:  # LK_UNLCK
                     return None
                 calls.append(mode)
                 outcome = sequence[min(len(calls), len(sequence)) - 1]
                 if outcome is not None:
                     raise outcome
 
-            return SimpleNamespace(locking=locking, LK_LOCK=1, LK_UNLCK=2, calls=calls)
+            return SimpleNamespace(
+                locking=locking, LK_LOCK=1, LK_NBLCK=2, LK_UNLCK=0, calls=calls,
+            )
 
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -373,22 +414,123 @@ class CliLockTests(unittest.TestCase):
             target.write_text("before\n", encoding="utf-8")
             files = {"skills/distill-ledger.json": "after\n"}
 
+            def write():
+                cli.write_files(root, files)
+
             denied = fake_msvcrt([OSError(errno.EINVAL, "denied")])
             with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
-                self.assertEqual(cli._write_guarded(root, files), 1)
+                self.assertEqual(cli._write_guarded(root, write)[0], 1)
             self.assertEqual(len(denied.calls), 1)
+            self.assertEqual(denied.calls, [denied.LK_NBLCK])
             self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
 
             busy = fake_msvcrt([OSError(contention, "busy")])
             with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", busy):
-                self.assertEqual(cli._write_guarded(root, files), 1)
+                self.assertEqual(cli._write_guarded(root, write)[0], 1)
             self.assertEqual(len(busy.calls), cli.WINDOWS_LOCK_ATTEMPTS)
+            self.assertTrue(all(mode == busy.LK_NBLCK for mode in busy.calls))
             self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
 
             eventually = fake_msvcrt([OSError(contention, "busy"), None])
             with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", eventually):
-                self.assertEqual(cli._write_guarded(root, files), 0)
+                self.assertEqual(cli._write_guarded(root, write)[0], 0)
             self.assertEqual(target.read_text(encoding="utf-8"), "after\n")
+
+    @unittest.skipUnless(sys.platform == "win32", "requires the real Windows msvcrt lock primitive")
+    def test_windows_lock_contention_is_bounded(self) -> None:
+        import distill_loop.__main__ as cli
+
+        context = multiprocessing.get_context("spawn")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            lock_path = root / "skills" / cli.LOCK_NAME
+            lock_path.parent.mkdir(parents=True)
+            target = root / "skills" / "distill-ledger.json"
+            target.write_text("before\n", encoding="utf-8")
+            ready = context.Event()
+            release = context.Event()
+            holder = context.Process(target=_hold_windows_lock, args=(lock_path, ready, release))
+            holder.start()
+            self.assertTrue(ready.wait(2), "lock holder did not acquire the Windows lock")
+            try:
+                started = time.monotonic()
+                status, _ = cli._write_guarded(
+                    root, lambda: cli.write_files(root, {"skills/distill-ledger.json": "after\n"}),
+                )
+                elapsed = time.monotonic() - started
+            finally:
+                release.set()
+                holder.join(5)
+            self.assertEqual(status, 1)
+            self.assertLess(elapsed, 1.0, f"contention waited {elapsed:.3f}s")
+            self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
+            self.assertEqual(holder.exitcode, 0)
+
+    def test_lock_setup_failures_return_structured_lock_unavailable(self) -> None:
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+
+        for failure in ("mkdir", "open"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                stderr = io.StringIO()
+                patcher = (
+                    mock.patch.object(Path, "mkdir", side_effect=PermissionError("denied"))
+                    if failure == "mkdir"
+                    else mock.patch("builtins.open", side_effect=PermissionError("denied"))
+                )
+                with patcher, contextlib.redirect_stderr(stderr):
+                    status, result = cli._write_guarded(root, lambda: self.fail("transaction must not run"))
+                self.assertEqual(status, 1)
+                self.assertIsNone(result)
+                error = json.loads(stderr.getvalue())
+                self.assertEqual(error["error"], "LOCK_UNAVAILABLE")
+                self.assertIn("lock setup failed", error["detail"])
+
+    def test_two_process_distills_preserve_both_ledger_entries(self) -> None:
+        context = multiprocessing.get_context("spawn")
+        fixture = DistillFixture()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            receipts = []
+            traces = []
+            for suffix in ("one", "two"):
+                receipt = copy.deepcopy(fixture.receipt)
+                trace = copy.deepcopy(fixture.trace)
+                receipt["receipt_id"] = f"receipt.quirk-distillation-synthesizer.concurrent.{suffix}"
+                trace["receipt_id"] = receipt["receipt_id"]
+                trace["trace_id"] = f"trace.quirk-distillation-synthesizer.concurrent.{suffix}"
+                receipt_path = root / f"receipt-{suffix}.json"
+                trace_path = root / f"trace-{suffix}.json"
+                receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+                trace_path.write_text(json.dumps(trace), encoding="utf-8")
+                receipts.append(receipt_path)
+                traces.append(trace_path)
+
+            barrier = context.Barrier(2)
+            results = context.Queue()
+            workers = [
+                context.Process(
+                    target=_distill_worker,
+                    args=(ROOT, root, receipt_path, trace_path, barrier, results),
+                )
+                for receipt_path, trace_path in zip(receipts, traces)
+            ]
+            for worker in workers:
+                worker.start()
+            for worker in workers:
+                worker.join(10)
+                self.assertEqual(worker.exitcode, 0)
+            self.assertEqual(sorted(results.get(timeout=2) for _ in workers), [0, 0])
+
+            ledger = _json(root / "skills" / "distill-ledger.json")
+            self.assertEqual([entry["entry_id"] for entry in ledger["entries"]], ["dl.000001", "dl.000002"])
+            self.assertEqual(
+                {entry["source_receipt_id"] for entry in ledger["entries"]},
+                {"receipt.quirk-distillation-synthesizer.concurrent.one", "receipt.quirk-distillation-synthesizer.concurrent.two"},
+            )
+            self.assertEqual(verify_ledger(ledger), [])
 
 
 class ConformanceTests(unittest.TestCase):

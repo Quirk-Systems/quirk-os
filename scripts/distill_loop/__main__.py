@@ -73,7 +73,7 @@ def _lock_handle(handle) -> None:
         handle.seek(0)
         for _ in range(WINDOWS_LOCK_ATTEMPTS):
             try:
-                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
                 return
             except OSError as exc:
                 if exc.errno not in CONTENTION_ERRNOS:
@@ -100,8 +100,11 @@ def _unlock_handle(handle) -> None:
 @contextlib.contextmanager
 def _ledger_lock(root: Path):
     lock_path = root / "skills" / LOCK_NAME
-    lock_path.parent.mkdir(parents=True, exist_ok=True)
-    handle = open(lock_path, "a+b")
+    try:
+        lock_path.parent.mkdir(parents=True, exist_ok=True)
+        handle = open(lock_path, "a+b")
+    except OSError as exc:
+        raise LockUnavailable(f"lock setup failed: {exc}") from exc
     locked = False
     try:
         _lock_handle(handle)
@@ -113,10 +116,16 @@ def _ledger_lock(root: Path):
         handle.close()
 
 
-def _write_guarded(root: Path, files: dict[str, str]) -> int:
+def _write_guarded(root: Path, transaction):
+    """Run a read/compute/write transaction while holding the ledger lock.
+
+    Lock setup failures are normalized to ``LOCK_UNAVAILABLE``. Errors raised
+    by the transaction itself, including output-file write failures, retain
+    their original error semantics.
+    """
     try:
         with _ledger_lock(root):
-            write_files(root, files)
+            return 0, transaction()
     except LockUnavailable as exc:
         print(
             json.dumps(
@@ -127,8 +136,7 @@ def _write_guarded(root: Path, files: dict[str, str]) -> int:
             ),
             file=sys.stderr,
         )
-        return 1
-    return 0
+        return 1, None
 
 
 REPO_DEFAULT = Path(__file__).resolve().parents[2]
@@ -183,19 +191,35 @@ def main(argv: list[str] | None = None) -> int:
         receipt = _load(args.receipt)
         trace = _load(args.trace)
         skill_dir = repo / "skills" / str(receipt.get("skill_id"))
-        result = post_run_distill(
-            receipt=receipt,
-            trace=trace,
-            source_manifest=_load(skill_dir / "manifest.json"),
-            source_text=(skill_dir / "SKILL.md").read_text(encoding="utf-8"),
-            ledger=_ledger(root),
-            schemas=schemas,
-        )
+        source_manifest = _load(skill_dir / "manifest.json")
+        source_text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+
+        def distill(ledger):
+            return post_run_distill(
+                receipt=receipt,
+                trace=trace,
+                source_manifest=source_manifest,
+                source_text=source_text,
+                ledger=ledger,
+                schemas=schemas,
+            )
+
+        if args.write:
+            def write_distill():
+                result = distill(_ledger(out))
+                write_files(out, result["files"])
+                return result
+
+            status, result = _write_guarded(out, write_distill)
+            if result is None:
+                return status
+        else:
+            result = distill(_ledger(root))
         summary = {key: result[key] for key in ("outcome", "finding_codes", "candidate")}
         summary["files"] = sorted(result["files"])
         print(json.dumps(summary, indent=2))
         if args.write:
-            return _write_guarded(out, result["files"])
+            return status
         return 0
 
     receipt = _load(args.receipt)
@@ -203,19 +227,37 @@ def main(argv: list[str] | None = None) -> int:
     if not candidate_dir.exists():
         print(f"candidate package not found: {candidate_dir}", file=sys.stderr)
         return 1
-    result = apply_promotion(
-        receipt,
-        candidate_manifest=_load(candidate_dir / "manifest.json"),
-        candidate_source=(candidate_dir / "SKILL.md").read_text(encoding="utf-8"),
-        eval_suite=_load(args.eval_suite),
-        ledger=_ledger(root),
-        schemas=schemas,
-    )
+    candidate_manifest = _load(candidate_dir / "manifest.json")
+    candidate_source = (candidate_dir / "SKILL.md").read_text(encoding="utf-8")
+    eval_suite = _load(args.eval_suite)
+
+    def promote(ledger):
+        return apply_promotion(
+            receipt,
+            candidate_manifest=candidate_manifest,
+            candidate_source=candidate_source,
+            eval_suite=eval_suite,
+            ledger=ledger,
+            schemas=schemas,
+        )
+
+    if args.write:
+        def write_promotion():
+            result = promote(_ledger(out))
+            if not result["errors"]:
+                write_files(out, result["files"])
+            return result
+
+        status, result = _write_guarded(out, write_promotion)
+        if result is None:
+            return status
+    else:
+        result = promote(_ledger(root))
     print(json.dumps({"outcome": result["outcome"], "errors": result["errors"], "files": sorted(result["files"])}, indent=2))
     if result["errors"]:
         return 1
     if args.write:
-        return _write_guarded(out, result["files"])
+        return status
     return 0
 
 
