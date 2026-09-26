@@ -1,0 +1,73 @@
+{
+  "format": "quirk.unsigned-rationale",
+  "format_version": "0.1.0",
+  "id": "rationale.synthetic-clarity",
+  "revision": "fixture-v1",
+  "status": "CANDIDATE",
+  "sources": [
+    {
+      "id": "source-a",
+      "locator": "examples/unsigned-rationale/source-a.txt",
+      "inspected_at": "2026-09-10T01:45:38Z",
+      "revision": null,
+      "sha256": "8ade6c78c0a4618652d80c8f4d607fb50b331ebe6f35fab98e42fbece9464b12",
+      "revision_unavailable_reason": "Synthetic fixture has no independent revision; captured bytes are identified by SHA-256.",
+      "digest_unavailable_reason": null
+    },
+    {
+      "id": "source-b",
+      "locator": "examples/unsigned-rationale/source-b.txt",
+      "inspected_at": "2026-09-10T01:45:38Z",
+      "revision": null,
+      "sha256": "a73c0e5b167f779c2ba70477f4999855f7833b3150f631e5d803974155735195",
+      "revision_unavailable_reason": "Synthetic fixture has no independent revision; captured bytes are identified by SHA-256.",
+      "digest_unavailable_reason": null
+    }
+  ],
+  "question": "Which synthetic screen description makes the comparison question and unsigned export easier to understand?",
+  "claims": [
+    {
+      "id": "claim.a-question",
+      "text": "Source A places the decision question above both source cards.",
+      "assertion_class": "observed",
+      "source_ids": [
+        "source-a"
+      ],
+      "support_locator": "examples/unsigned-rationale/source-a.txt#line=2",
+      "unsupported_reason": null
+    },
+    {
+      "id": "claim.b-question",
+      "text": "Source B places the decision question in a collapsed drawer.",
+      "assertion_class": "observed",
+      "source_ids": [
+        "source-b"
+      ],
+      "support_locator": "examples/unsigned-rationale/source-b.txt#line=2",
+      "unsupported_reason": null
+    },
+    {
+      "id": "claim.clarity-inference",
+      "text": "The explicit question and export label in source A may reduce explanation needed to complete the comparison.",
+      "assertion_class": "inference",
+      "source_ids": [
+        "source-a",
+        "source-b"
+      ],
+      "support_locator": null,
+      "unsupported_reason": "A synthetic interpretation of the descriptions; no human-use observation or interface measurement supports this benefit."
+    }
+  ],
+  "rationale": "Synthetic fixture choice, authored for parser and export tests; this is not Bryan’s decision. Choose the first description provisionally because it exposes the question and names the unsigned export. Whether that improves actual comprehension remains untested.",
+  "outcome": "choose_first",
+  "unresolved_questions": [
+    "Would Bryan understand the two descriptions and the unsigned status without assistance?",
+    "Does either description correspond to an implemented screen?"
+  ],
+  "restrictions": {
+    "effects_allowed": false,
+    "training_allowed": false,
+    "preference_graph_apply_allowed": false
+  },
+  "signature": null
+}
