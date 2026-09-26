@@ -10,6 +10,9 @@ on:
       - ".github/workflows/agent-reliability.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   candidate-fixtures:
     runs-on: ubuntu-latest
