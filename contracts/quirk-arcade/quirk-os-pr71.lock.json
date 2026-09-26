@@ -1,0 +1,60 @@
+{
+  "schema_version": "quirk.arcade-dependency-lock/0.1",
+  "lock_id": "lock.quirk-arcade.receipt-run.quirk-os-pr71",
+  "status": "CANDIDATE_DEPENDENCY_LOCK",
+  "authority_effect": "none",
+  "repository": "Quirk-Systems/quirk-os",
+  "repository_base_sha": "499f94b8d12e29dd7804cc9b537fd70f6a8048d8",
+  "activation_parent_sha": "381a2df04f6c1986f9d921459bdfbdeb869d2e8c",
+  "imports": [
+    {
+      "contract_role": "card_definition",
+      "path": "schemas/card-definition.schema.json",
+      "source_url": "https://raw.githubusercontent.com/Quirk-Systems/quirk-os/381a2df04f6c1986f9d921459bdfbdeb869d2e8c/schemas/card-definition.schema.json",
+      "content_sha256": "95fdc6b17ba072775e3105a4e05d3c8e23eeec0ba0e9d234b1357b0a365f10bf"
+    },
+    {
+      "contract_role": "eligible_deck",
+      "path": "schemas/eligible-deck.schema.json",
+      "source_url": "https://raw.githubusercontent.com/Quirk-Systems/quirk-os/381a2df04f6c1986f9d921459bdfbdeb869d2e8c/schemas/eligible-deck.schema.json",
+      "content_sha256": "fd637415959a9dc427c219465761b0f3cd840d5dc5108878a7dbe5dc92054a92"
+    },
+    {
+      "contract_role": "hand_preset",
+      "path": "schemas/hand-preset.schema.json",
+      "source_url": "https://raw.githubusercontent.com/Quirk-Systems/quirk-os/381a2df04f6c1986f9d921459bdfbdeb869d2e8c/schemas/hand-preset.schema.json",
+      "content_sha256": "3ef9291de020ea84bb3e6a604bc7beaefcb43753f13b6e41355e6703bc23d678"
+    },
+    {
+      "contract_role": "active_hand",
+      "path": "schemas/active-hand.schema.json",
+      "source_url": "https://raw.githubusercontent.com/Quirk-Systems/quirk-os/381a2df04f6c1986f9d921459bdfbdeb869d2e8c/schemas/active-hand.schema.json",
+      "content_sha256": "fec2d3995bbf4d5b37c58d84bef15ffda01e510cf4f94d86311d55025e6be843"
+    },
+    {
+      "contract_role": "activation",
+      "path": "schemas/quirkverse-activation.schema.json",
+      "source_url": "https://raw.githubusercontent.com/Quirk-Systems/quirk-os/381a2df04f6c1986f9d921459bdfbdeb869d2e8c/schemas/quirkverse-activation.schema.json",
+      "content_sha256": "47678819a78011d8a44ca449e7129bf0bbdc68cdd88dd2e16edbd82c3408e15e"
+    },
+    {
+      "contract_role": "activation_receipt",
+      "path": "schemas/quirkverse-receipt.schema.json",
+      "source_url": "https://raw.githubusercontent.com/Quirk-Systems/quirk-os/381a2df04f6c1986f9d921459bdfbdeb869d2e8c/schemas/quirkverse-receipt.schema.json",
+      "content_sha256": "5920318d885fb95068ede77b27652fdbfb12799dd8a9eff48b2f9054425c8621"
+    },
+    {
+      "contract_role": "world_delta",
+      "path": "schemas/quirkverse-world-state-delta.schema.json",
+      "source_url": "https://raw.githubusercontent.com/Quirk-Systems/quirk-os/381a2df04f6c1986f9d921459bdfbdeb869d2e8c/schemas/quirkverse-world-state-delta.schema.json",
+      "content_sha256": "ee620b078bc7c41b1520bd31463e268f6b02b1e6e637abc00ad1e72cbccef73d"
+    }
+  ],
+  "claims_withheld": [
+    "dependency admission",
+    "parent schema safety",
+    "merge authority",
+    "runtime authority",
+    "Canon promotion"
+  ]
+}
