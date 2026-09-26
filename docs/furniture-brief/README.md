@@ -8,14 +8,19 @@ publication_state: NOT_AUTHORIZED
 
 # Furniture Brief: F3 -> F11 Grounded-to-Banger contract
 
-**Status: candidate, local-only.** This is a new module, not a promoted or
-Canon-admitted one. It grants itself no execution, admission, or publication
-authority. It was written and validated locally in one autonomous session
-and has not been staged, committed, or reviewed. Before it is trusted for
-anything beyond local experimentation it needs the same human plan review
-this repo already requires for other consequential additions (see
-`docs/applause-gate/` for the pattern: an exact-head review naming the
-reviewed commit, before any promotion).
+**Status: candidate, merged, not integrated.** This module was written and
+validated locally in one autonomous session, then merged to `main` via
+[PR #83](https://github.com/Quirk-Systems/quirk-os/pull/83). Per this
+repo's own convention (see `docs/applause-gate/ABG-03-MERGE-RECONCILIATION.md`):
+*repository reachability is not authority* -- a path appearing on `main` is
+not Canon promotion, and a merge is not admission. It grants itself no
+execution, admission, or publication authority (`authority_effect: none`
+on every receipt entry). It is not wired into any runtime, skill, or CLI --
+nothing currently calls `compile_batch()` except `validate_furniture_brief.py`
+and the test suite. Before it is trusted for anything beyond local
+experimentation and inspection, it needs the same explicit, exact-head plan
+review this repo already requires for other consequential additions before
+they carry any operative authority.
 
 ## What this is
 
@@ -48,7 +53,8 @@ generate audio, upload anything, publish anything, or send a message. See
 ## Run it
 
 ```
-pip install jsonschema==4.26.0 pytest==9.1.1   # already declared in requirements-evals.txt
+pip install -r requirements-evals.txt   # jsonschema
+pip install pytest                      # not in requirements-evals.txt; needed for the test suite only
 PYTHONPATH=scripts python3 scripts/validate_furniture_brief.py --require-pass
 PYTHONPATH=scripts python3 -m pytest tests/test_furniture_brief.py -v
 ```
