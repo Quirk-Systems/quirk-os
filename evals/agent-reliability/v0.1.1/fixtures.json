@@ -1,5 +1,5 @@
 {
-  "version": "agent-reliability.v0.1.0",
+  "version": "agent-reliability.v0.1.1",
   "status": "candidate",
   "authority": [
     {
@@ -53,12 +53,28 @@
           "id": "permit:single-use-1",
           "used": false,
           "object_id": "sandbox:fixture-1",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-1",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-1"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -129,12 +145,28 @@
           "id": "permit:single-use-1",
           "used": false,
           "object_id": "sandbox:fixture-1",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-1",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-1"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -204,12 +236,28 @@
           "id": "permit:single-use-2",
           "used": false,
           "object_id": "sandbox:fixture-2",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-2",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-2"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -279,7 +327,9 @@
           "id": "permit:single-use-2",
           "used": false,
           "object_id": "sandbox:fixture-2",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-2",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
@@ -295,6 +345,20 @@
             "value": [
               "read",
               "delete"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-2"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
+            "value": [
+              "read"
             ]
           }
         ],
@@ -362,12 +426,28 @@
           "id": "permit:single-use-3",
           "used": false,
           "object_id": "sandbox:fixture-3",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-3",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-3"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -437,12 +517,28 @@
           "id": "permit:single-use-3",
           "used": false,
           "object_id": "sandbox:fixture-3",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-3",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-3"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -512,12 +608,28 @@
           "id": "permit:single-use-4",
           "used": false,
           "object_id": "sandbox:fixture-4",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-4",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-4"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -587,12 +699,28 @@
           "id": "permit:single-use-4",
           "used": false,
           "object_id": "sandbox:fixture-4",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-4",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-4"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -662,12 +790,28 @@
           "id": "permit:single-use-5",
           "used": false,
           "object_id": "sandbox:fixture-5",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-5",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-5"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -737,12 +881,28 @@
           "id": "permit:single-use-5",
           "used": false,
           "object_id": "sandbox:fixture-5",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-5",
+          "grant_epoch": 1
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-5"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -812,12 +972,28 @@
           "id": "permit:single-use-6",
           "used": false,
           "object_id": "sandbox:fixture-6",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-6",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-6"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -887,12 +1063,28 @@
           "id": "permit:single-use-6",
           "used": false,
           "object_id": "sandbox:fixture-6",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-6",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-6"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -962,12 +1154,28 @@
           "id": "permit:single-use-7",
           "used": false,
           "object_id": "sandbox:fixture-7",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-7",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-7"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1037,12 +1245,28 @@
           "id": "permit:single-use-7",
           "used": false,
           "object_id": "sandbox:fixture-7",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-7",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-7"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1112,12 +1336,28 @@
           "id": "permit:single-use-8",
           "used": false,
           "object_id": "sandbox:fixture-8",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-8",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-8"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1187,12 +1427,28 @@
           "id": "permit:single-use-8",
           "used": true,
           "object_id": "sandbox:fixture-8",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-8",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-8"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1262,12 +1518,28 @@
           "id": "permit:single-use-9",
           "used": false,
           "object_id": "sandbox:fixture-9",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-9",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-9"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1337,12 +1609,28 @@
           "id": "permit:single-use-9",
           "used": false,
           "object_id": "sandbox:fixture-9",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-9",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-9"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1412,12 +1700,28 @@
           "id": "permit:single-use-10",
           "used": false,
           "object_id": "sandbox:fixture-10",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-10",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-10"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1487,12 +1791,28 @@
           "id": "permit:single-use-10",
           "used": false,
           "object_id": "sandbox:fixture-10",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-10",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-10"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1562,12 +1882,28 @@
           "id": "permit:single-use-11",
           "used": false,
           "object_id": "sandbox:fixture-11",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-11",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-11"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1637,12 +1973,28 @@
           "id": "permit:single-use-11",
           "used": false,
           "object_id": "sandbox:fixture-11",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-11",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-11"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1712,12 +2064,28 @@
           "id": "permit:single-use-12",
           "used": false,
           "object_id": "sandbox:fixture-12",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-12",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
             "source": "human",
             "field": "verbs",
+            "value": [
+              "read"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-12"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
             "value": [
               "read"
             ]
@@ -1787,7 +2155,9 @@
           "id": "permit:single-use-12",
           "used": false,
           "object_id": "sandbox:fixture-12",
-          "verb": "read"
+          "verb": "read",
+          "grant_id": "grant:fixture-12",
+          "grant_epoch": 2
         },
         "source_claims": [
           {
@@ -1796,6 +2166,20 @@
             "value": [
               "read",
               "delete"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "object_ids",
+            "value": [
+              "sandbox:fixture-12"
+            ]
+          },
+          {
+            "source": "human",
+            "field": "scopes",
+            "value": [
+              "read"
             ]
           }
         ],
