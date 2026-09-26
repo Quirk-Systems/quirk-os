@@ -27,9 +27,17 @@ The central `registry.json` is a rebuildable candidate inventory. It is not Cano
 | `quirk-probabilistic-forecaster` | decide | infer | forecast pack |
 | `quirk-roadmap-board-orchestrator` | connect | propose | roadmap projection |
 | `quirk-value-foundry` | productize | propose | reusable value candidate |
-| `quirk-deck-compiler` | structure | propose | purpose-filtered Deck, proposed Hand, and invariant proof |
+
+Separate draft candidates live alongside the manifested registry:
+
+| Candidate | Ceiling | Primary output |
+| --- | --- | --- |
+| `quirk-deck-compiler` | propose | purpose-filtered Deck, proposed Hand, and invariant proof |
+| `quirk-intent-shaper` | propose | reversible Intent × Persona × Affect × Affordance plan |
 
 `quirk-deck-compiler` remains a separate draft candidate under the Deck Grammar pack and is not part of the manifested registry.
+
+`quirk-intent-shaper` includes an exploratory `skill-scratchpad.md`. Scratchpad content remains candidate ideation until admitted through schemas, evaluations, evidence, and human authority.
 
 ## Applause Gate compatibility boundary
 

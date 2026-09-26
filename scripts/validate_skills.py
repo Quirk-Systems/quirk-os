@@ -28,7 +28,9 @@ CORE_SKILLS = {
 }
 EXTENSION_SKILLS = {"quirk-applause-gate"}
 EXPECTED_SKILLS = CORE_SKILLS | EXTENSION_SKILLS
-DRAFT_CANDIDATE_SKILLS = {"quirk-deck-compiler"}
+# Draft packages remain source-visible but cannot join the manifested runtime
+# registry until their separate admission dockets pass.
+DRAFT_CANDIDATE_SKILLS = {"quirk-deck-compiler", "quirk-intent-shaper"}
 DISTILLED_PREFIX = "quirk-distilled-"
 REQUIRED_KINDS = {"positive", "adversarial", "regression", "authority"}
 PLACEHOLDER_MARKERS = ("TO" + "DO", "FIX" + "ME", "T" + "BD", "X" + "XX")
