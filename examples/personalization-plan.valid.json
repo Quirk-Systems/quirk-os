@@ -1,6 +1,6 @@
 {
   "plan_id": "personalization.plan.intent-shaper-example",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "candidate",
   "intent": {
     "summary": "Design a governed personalization compiler",
@@ -11,7 +11,7 @@
     "audience": "Quirk maintainers",
     "constraints": ["candidate only", "no memory mutation"],
     "non_goals": ["permanent persona assignment"],
-    "completion_evidence": ["schema valid", "eleven cases pass"]
+    "completion_evidence": ["schema valid", "twenty cases pass"]
   },
   "purpose_partition": {
     "purpose": "personalization architecture",
@@ -20,8 +20,26 @@
     "excluded_scopes": ["music.performance"]
   },
   "persona_hand": {
-    "primary": {"ref": "persona.brayn", "role": "system_architecture", "weight": 0.7},
-    "supporting": [{"ref": "persona.bryan", "role": "reality_grounding", "weight": 0.3}],
+    "primary": {
+      "ref": "persona.brayn",
+      "role": "system_architecture",
+      "weight": 0.7,
+      "selection_basis": "declared_function",
+      "sensitive_inference": false,
+      "impersonates_user": false,
+      "consent_ref": null
+    },
+    "supporting": [
+      {
+        "ref": "persona.bryan",
+        "role": "reality_grounding",
+        "weight": 0.3,
+        "selection_basis": "declared_function",
+        "sensitive_inference": false,
+        "impersonates_user": false,
+        "consent_ref": null
+      }
+    ],
     "selection_reason": "Architecture needs structure with reality grounding",
     "user_confirmed": false
   },
@@ -74,11 +92,12 @@
     "challenge_level": 8,
     "creativity": 8,
     "evidence_mode": "strict",
-    "generated_ui": "task_gated",
+    "generated_ui": "off",
     "implicit_signal_use": "limited"
   },
   "authority": {
     "ceiling": "propose",
+    "admission_ref": null,
     "human_required": ["update_memory", "change_settings", "activate_skill"],
     "prohibited": ["self_promote", "impersonate_user", "write_canon"]
   },
@@ -96,7 +115,8 @@
   "learning": {
     "feedback_receipt_required": true,
     "auto_apply": false,
-    "allowed_updates": ["propose_preference_edge", "propose_setting_change"]
+    "allowed_updates": ["propose_preference_edge", "propose_setting_change"],
+    "feedback_evidence": null
   },
   "created_at": "2026-08-11T23:30:00-05:00"
 }

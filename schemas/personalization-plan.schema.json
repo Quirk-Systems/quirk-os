@@ -168,7 +168,14 @@
       ],
       "properties": {
         "primary": {
-          "$ref": "#/$defs/personaSelection"
+          "oneOf": [
+            {
+              "$ref": "#/$defs/personaSelection"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "supporting": {
           "type": "array",
@@ -370,9 +377,15 @@
           "enum": [
             "observe",
             "infer",
-            "propose",
-            "execute_reversible"
+            "propose"
           ]
+        },
+        "admission_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
         },
         "human_required": {
           "type": "array",
@@ -460,7 +473,8 @@
       "required": [
         "feedback_receipt_required",
         "auto_apply",
-        "allowed_updates"
+        "allowed_updates",
+        "feedback_evidence"
       ],
       "properties": {
         "feedback_receipt_required": {
@@ -475,6 +489,16 @@
             "type": "string"
           },
           "uniqueItems": true
+        },
+        "feedback_evidence": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/feedbackEvidenceBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -490,7 +514,10 @@
       "required": [
         "ref",
         "role",
-        "weight"
+        "weight",
+        "selection_basis",
+        "sensitive_inference",
+        "impersonates_user"
       ],
       "properties": {
         "ref": {
@@ -505,6 +532,26 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1
+        },
+        "selection_basis": {
+          "enum": [
+            "explicit_current",
+            "explicit_saved",
+            "declared_function",
+            "inferred_nonsensitive"
+          ]
+        },
+        "sensitive_inference": {
+          "const": false
+        },
+        "impersonates_user": {
+          "const": false
+        },
+        "consent_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -527,6 +574,7 @@
         "source": {
           "enum": [
             "explicit_current",
+            "purpose_scoped_setting",
             "explicit_saved",
             "observed",
             "inferred",
@@ -644,7 +692,6 @@
             "code_patch",
             "simulation",
             "batch_review",
-            "generated_ui",
             "draft",
             "diagram",
             "other"
@@ -667,6 +714,33 @@
             "string",
             "null"
           ]
+        }
+      }
+    },
+    "feedbackEvidenceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_ref",
+        "receipt_digest",
+        "immutable",
+        "proposal_ref"
+      ],
+      "properties": {
+        "receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "immutable": {
+          "const": true
+        },
+        "proposal_ref": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }
@@ -694,6 +768,126 @@
           "approval_ref": {
             "type": "string",
             "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "candidate"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "authority": {
+            "properties": {
+              "ceiling": {
+                "enum": [
+                  "observe",
+                  "infer",
+                  "propose"
+                ]
+              }
+            }
+          },
+          "settings": {
+            "properties": {
+              "generated_ui": {
+                "const": "off"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "settings": {
+            "properties": {
+              "personalization_enabled": {
+                "const": false
+              }
+            },
+            "required": [
+              "personalization_enabled"
+            ]
+          }
+        },
+        "required": [
+          "settings"
+        ]
+      },
+      "then": {
+        "properties": {
+          "persona_hand": {
+            "properties": {
+              "primary": {
+                "type": "null"
+              },
+              "supporting": {
+                "maxItems": 0
+              }
+            }
+          },
+          "voice": {
+            "properties": {
+              "profile_ref": {
+                "type": "null"
+              }
+            }
+          },
+          "aesthetic": {
+            "properties": {
+              "profile_ref": {
+                "type": "null"
+              }
+            }
+          },
+          "preferences": {
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/preferenceUse"
+                },
+                {
+                  "properties": {
+                    "source": {
+                      "const": "explicit_current"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "settings": {
+            "properties": {
+              "adaptation_mode": {
+                "const": "off"
+              },
+              "implicit_signal_use": {
+                "const": "off"
+              },
+              "generated_ui": {
+                "const": "off"
+              }
+            }
+          },
+          "learning": {
+            "properties": {
+              "allowed_updates": {
+                "maxItems": 0
+              },
+              "feedback_evidence": {
+                "type": "null"
+              }
+            }
           }
         }
       }

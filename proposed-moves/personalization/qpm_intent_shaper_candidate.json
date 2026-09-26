@@ -44,12 +44,12 @@
   "reversibility": "reversible",
   "implementation_ref": "skills/quirk-intent-shaper/SKILL.md",
   "eval_refs": [
-    "eval.intent-shaper.v0.1"
+    "eval.intent-shaper.v0.2"
   ],
   "disposition": "new",
   "created_at": "2026-08-11T23:27:05-05:00",
   "dependency_class": "missing_personalization_boundary",
-  "blocks_merge": false,
+  "blocks_merge": true,
   "finding_ref": "competitor.quirk-enterprises#personalization-separation",
   "hidden_context_dependencies": [
     "Preference evidence is distributed across conversations, settings, files, and runtime projections.",
@@ -73,10 +73,10 @@
     "Personalization-off mode retrieves no saved preference or persona evidence.",
     "Persona selection never grants authority or claims permanent identity.",
     "Platform affects change form without changing semantic decisions.",
-    "Generated UI is task-gated, accessible, reconstructable, and has a plain fallback.",
+    "Generated UI remains outside the candidate schema until separate accessibility, reconstruction, fallback, and human gates are admitted.",
     "Feedback creates an immutable receipt before any adaptation proposal.",
     "Inferred preferences cannot self-promote into settings or Canon.",
-    "All eleven QIS fixtures execute and pass.",
+    "All twenty QIS and review-regression fixtures execute and pass.",
     "One human admission decision defines permitted runtime scope."
   ]
 }

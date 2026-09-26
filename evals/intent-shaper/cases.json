@@ -1,5 +1,5 @@
 {
-  "suite_id": "eval.intent-shaper.v0.1",
+  "suite_id": "eval.intent-shaper.v0.2",
   "status": "candidate",
   "cases": [
     {
@@ -41,10 +41,11 @@
       "name": "persona_hand_not_identity",
       "operation": "persona_hand",
       "input": {
-        "primary": {"ref": "persona.brayn", "role": "system_architecture", "weight": 0.7},
-        "supporting": [{"ref": "persona.bryan", "role": "reality_grounding", "weight": 0.3}]
+        "primary": {"ref": "persona.brayn", "role": "system_architecture", "weight": 0.7, "selection_basis": "declared_function", "sensitive_inference": false, "impersonates_user": false},
+        "supporting": [{"ref": "persona.bryan", "role": "reality_grounding", "weight": 0.3, "selection_basis": "declared_function", "sensitive_inference": false, "impersonates_user": false}]
       },
       "expected": {
+        "status": "accepted",
         "primary_ref": "persona.brayn",
         "supporting_refs": ["persona.bryan"],
         "weight_total": 1.0,
@@ -62,9 +63,10 @@
         "rendered_decision_hash": "same-decision"
       },
       "expected": {
+        "status": "accepted",
         "platform": "github",
-        "effects": ["versioned", "diff_first", "executable_evidence"],
-        "affordance_bias": ["diff", "code_patch", "check_run"],
+        "effects": ["versioned", "collaborative_review", "diff_first", "executable_evidence"],
+        "affordance_bias": ["diff", "code_patch", "check_run", "issue", "review_comment"],
         "semantic_decision_hash_preserved": true
       }
     },
@@ -93,6 +95,7 @@
       },
       "expected": {
         "conflicts": ["option_count"],
+        "ignored_refs": ["pref.current.one_answer", "pref.current.alternatives"],
         "silent_average": false,
         "requires_default_plus_bounded_alternatives": true
       }
@@ -162,12 +165,182 @@
       "id": "QIS-011",
       "name": "adaptation_cannot_self_promote",
       "operation": "adaptation_guard",
-      "input": {"repeated_successes": 11, "requested_action": "persist_preference"},
+      "input": {
+        "repeated_successes": 11,
+        "requested_action": "persist_preference",
+        "adaptation_proposal_ref": "proposal.preference.concise",
+        "feedback_receipt": {
+          "receipt_ref": "receipt.feedback.concise",
+          "receipt_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "immutable": true,
+          "proposal_ref": "proposal.preference.concise"
+        }
+      },
       "expected": {
-        "status": "proposed",
+        "status": "blocked",
+        "reason_code": "human_admission_required",
+        "requested_action": "persist_preference",
         "feedback_receipt_required": true,
+        "feedback_receipt_verified": true,
+        "adaptation_proposal_ref": "proposal.preference.concise",
         "auto_apply": false,
         "human_admission_required": true,
+        "memory_updated": false,
+        "settings_updated": false,
+        "canon_updated": false
+      }
+    },
+    {
+      "id": "QIS-012",
+      "name": "personalization_off_zero_protected_reads",
+      "operation": "personalization_boundary",
+      "input": {
+        "scope": "general",
+        "adapter_mode": "fail_on_read",
+        "settings": {"personalization_enabled": false, "adaptation_mode": "off", "implicit_signal_use": "off"},
+        "current_request_preferences": [
+          {"ref": "pref.current.format", "dimension": "format", "value": "plain", "source": "explicit_current", "confidence": 1.0, "scope": "general"}
+        ],
+        "stored_evidence": {
+          "preferences": [{"ref": "pref.saved.poison", "dimension": "format", "value": "hidden", "source": "explicit_saved", "confidence": 1.0, "scope": "general"}],
+          "profile": {"ref": "profile.lure"},
+          "persona": {"ref": "persona.lure"},
+          "history": [{"ref": "history.lure"}]
+        }
+      },
+      "expected": {
+        "status": "accepted",
+        "personalization_enabled": false,
+        "read_trace": [],
+        "protected_projection": {
+          "preferences": [{"dimension": "format", "value": "plain", "source": "explicit_current"}],
+          "voice_profile_ref": null,
+          "aesthetic_profile_ref": null,
+          "persona_ref": null,
+          "history_used": false
+        }
+      }
+    },
+    {
+      "id": "QIS-012A",
+      "name": "personalization_off_rejects_contradictory_settings_without_reads",
+      "operation": "personalization_boundary",
+      "input": {
+        "scope": "general",
+        "adapter_mode": "fail_on_read",
+        "settings": {"personalization_enabled": false, "adaptation_mode": "propose_only", "implicit_signal_use": "off"},
+        "current_request_preferences": [],
+        "stored_evidence": {
+          "preferences": [{"ref": "pref.saved.poison", "source": "explicit_saved"}],
+          "profile": {"ref": "profile.lure"},
+          "persona": {"ref": "persona.lure"},
+          "history": [{"ref": "history.lure"}]
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_code": "off_mode_settings_conflict",
+        "read_trace": []
+      }
+    },
+    {
+      "id": "QIS-012B",
+      "name": "enabled_path_ignores_forged_off_flag_and_reads_protected_sources",
+      "operation": "personalization_boundary",
+      "input": {
+        "scope": "general",
+        "adapter_mode": "recording",
+        "no_personalization": true,
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "settings": {"personalization_enabled": true, "adaptation_mode": "propose_only", "implicit_signal_use": "limited"},
+        "current_request_preferences": [],
+        "stored_evidence": {
+          "preferences": [{"ref": "pref.saved.enabled", "dimension": "format", "value": "plain", "source": "explicit_saved", "confidence": 1.0, "scope": "general"}],
+          "profile": {"ref": "profile.enabled"},
+          "persona": {"ref": "persona.enabled"},
+          "history": [{"ref": "history.enabled"}]
+        }
+      },
+      "expected": {
+        "status": "accepted",
+        "personalization_enabled": true,
+        "read_trace": ["preferences", "profile", "persona", "history"],
+        "selected_refs": ["pref.saved.enabled"],
+        "profile_loaded": true,
+        "persona_loaded": true,
+        "history_items": 1
+      }
+    },
+    {
+      "id": "QIS-R01",
+      "name": "purpose_scoped_setting_beats_saved_preference",
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "writing.dossier",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {"ref": "pref.saved.short", "dimension": "verbosity", "value": "short", "source": "explicit_saved", "confidence": 1.0, "scope": "writing.dossier"},
+          {"ref": "setting.purpose.detailed", "dimension": "verbosity", "value": "detailed", "source": "purpose_scoped_setting", "confidence": 0.5, "scope": "writing.dossier"}
+        ]
+      },
+      "expected": {"selected_refs": ["setting.purpose.detailed"], "ignored_refs": ["pref.saved.short"], "conflicts": []}
+    },
+    {
+      "id": "QIS-R02",
+      "name": "future_preference_is_inactive",
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "writing.dossier",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {"ref": "pref.future.format", "dimension": "format", "value": "future", "source": "explicit_saved", "confidence": 1.0, "scope": "writing.dossier", "valid_from": "2027-01-01T00:00:00Z"}
+        ]
+      },
+      "expected": {"selected_refs": [], "ignored_refs": ["pref.future.format"], "conflicts": []}
+    },
+    {
+      "id": "QIS-R03",
+      "name": "current_instruction_conflict_ignores_confidence",
+      "operation": "preference_conflict",
+      "input": {
+        "scope": "product.strategy",
+        "preferences": [
+          {"ref": "pref.current.one", "dimension": "option_count", "value": "one", "source": "explicit_current", "confidence": 1.0, "scope": "product.strategy"},
+          {"ref": "pref.current.three", "dimension": "option_count", "value": "three", "source": "explicit_current", "confidence": 0.6, "scope": "product.strategy"},
+          {"ref": "pref.saved.two", "dimension": "option_count", "value": "two", "source": "explicit_saved", "confidence": 1.0, "scope": "product.strategy"}
+        ]
+      },
+      "expected": {"conflicts": ["option_count"], "ignored_refs": ["pref.current.one", "pref.current.three", "pref.saved.two"], "silent_average": false, "requires_default_plus_bounded_alternatives": true}
+    },
+    {
+      "id": "QIS-R04",
+      "name": "sensitive_persona_is_rejected",
+      "operation": "persona_hand",
+      "input": {
+        "primary": {"ref": "persona.sensitive-guess", "role": "identity_claim", "weight": 1.0, "selection_basis": "inferred_nonsensitive", "sensitive_inference": true, "impersonates_user": false},
+        "supporting": []
+      },
+      "expected": {"status": "rejected", "rejection_reasons": ["sensitive_inference_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+    },
+    {
+      "id": "QIS-R05",
+      "name": "unknown_platform_fails_closed",
+      "operation": "platform_affect",
+      "input": {"platform": "githubb", "semantic_decision_hash": "same-decision", "rendered_decision_hash": "same-decision"},
+      "expected": {"status": "rejected", "platform": "githubb", "reason_code": "unsupported_platform"}
+    },
+    {
+      "id": "QIS-R06",
+      "name": "adaptation_without_receipt_is_blocked",
+      "operation": "adaptation_guard",
+      "input": {"repeated_successes": 99, "requested_action": "persist_preference", "adaptation_proposal_ref": "proposal.preference.missing-receipt"},
+      "expected": {
+        "status": "blocked",
+        "reason_code": "feedback_receipt_missing",
+        "requested_action": "persist_preference",
+        "feedback_receipt_required": true,
+        "feedback_receipt_verified": false,
+        "auto_apply": false,
         "memory_updated": false,
         "settings_updated": false,
         "canon_updated": false
