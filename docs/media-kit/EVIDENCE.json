@@ -1,0 +1,120 @@
+{
+  "schema_version": "media-kit-evaluation.v1",
+  "status": "candidate",
+  "base_commit": "499f94b8d12e29dd7804cc9b537fd70f6a8048d8",
+  "actor": "agent.codex",
+  "started_at": "2026-09-10T02:43:22.286053+00:00",
+  "completed_at": "2026-09-10T02:43:22.623264+00:00",
+  "checks": [
+    {
+      "check": "focused-tests",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_media_kit.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.272742,
+      "stdout": "",
+      "stderr": ".......................................\n----------------------------------------------------------------------\nRan 39 tests in 0.171s\n\nOK\n"
+    },
+    {
+      "check": "golden-candidate-gate",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/validate_golden_pack.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.054758,
+      "stdout": "HOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_system_identity_topology\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_canonical_vocabulary_strange_intact\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_operator_personalization_boundaries\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_authority_approval_manifest\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_executable_vertical_slice_bootstrap\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_complete_contracts_queue_semantics\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_eval_threat_model_tribunal_harness\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_google_drive_workplane_manifest\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_supabase_projection_contract\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_supabase_security_reconciliation\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_vercel_deployment_decision\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_cloudflare_edge_decision\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_research_top_minds_evidence\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_multimedia_rights_accessibility_provenance\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_release_migrations_supply_chain\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_merge_blocking_receipt_outcome_gate\nCandidate merge gates passed with 16 Golden-admission hold(s). No admission, activation, canonization, or runtime authority is implied.\n",
+      "stderr": ""
+    }
+  ],
+  "focused_tests_passed": 39,
+  "golden_admission_holds": 16,
+  "artifact_sha256": {
+    "README.md": "af97e5ea9949f8d588c5282b7d9afadc53aee6fa51f1ddd24db169819c82ad9d",
+    ".github/workflows/media-kit-conformance.yml": "f5fafbda0b6c8578a4ca037874e56334833b29682d7695ef961816d518de572a",
+    "scripts/media_kit.py": "f76cb8ade16ce23d64a59c3108beca4a0047c450c410434abf7bb01d6f6a2aea",
+    "schemas/media-kit-project.schema.json": "728e3ac572ca38a1f104e0268a2e0532969a0faa70325f784e18c776193de441",
+    "schemas/media-derivative.schema.json": "d96497a86b90c5f39d44dcd1fc683e5ffb58dcd6c9776a8c0c1993b28edf0076",
+    "docs/media-kit/README.md": "85a71cdee47de4e83df48022670bb275ddf8cd9522444b4def460f25dea2c453",
+    "tests/test_media_kit.py": "80265bf6ea41bd6f5404b87785764f998b4f36c29945bae57e98de4c1931335d",
+    "examples/media-kit/project.json": "67ec5db63e28544f8b20443ea501377cc3829172a67c35d0f86f9c8eaf877dca",
+    "examples/media-kit/source-first-card.md": "f99a39e22fa22064d70094e773b41c2ca82bf8976ddcc4bca49d9009e202a6fd",
+    "examples/media-kit/family-summary.md": "12d9938789868efb17c60f091ac52a91804acb2ca999bf3b0a8698bf788a77d7"
+  },
+  "source_sha256": "1de3f133e2405bdd32d34d611ed225dd584d4b6b7e234d84656d654b10598686",
+  "kit_zip_sha256": "a564466df56a5fbfb2287c2dad07573743157cf4dabe17a90da7e09aacc8a514",
+  "reopen_result": {
+    "schema_version": "media-kit-check.v1",
+    "operation": "verify",
+    "kit_id": "qmk_source_first_demo",
+    "tool_version": "0.1.0",
+    "integrity": "verified",
+    "scope": "local package consistency; not authenticity, source truth, rights clearance, or release approval",
+    "file_count": 3,
+    "file_bytes": 8049,
+    "content_sha256": "f76d536e6f46ba3b75672c3411e49a1cb04050dc81957e1fa4f699c7c39a8e0d",
+    "project_sha256": "85b10c8d5561f72755de0b542ba4960d54647e32ab4dc4ef575482adba09e5fb",
+    "selection_actor_type": "agent",
+    "signature_status": "unsigned",
+    "authority": {
+      "ceiling": "candidate",
+      "publish_allowed": false,
+      "graph_application_allowed": false,
+      "training_allowed": false,
+      "canon_promotion_allowed": false
+    },
+    "human_benefit": "unobserved",
+    "open_reviews": {
+      "rights": [
+        "qmd_source_first_card",
+        "qmd_family_summary"
+      ],
+      "accessibility": [
+        "qmd_source_first_card",
+        "qmd_family_summary"
+      ]
+    }
+  },
+  "html_structure": {
+    "links_resolved": 8,
+    "script_elements": 0,
+    "language": "en",
+    "viewport_meta": true
+  },
+  "browser_visual_review": {
+    "status": "blocked",
+    "reason": "Local preview navigation returned net::ERR_BLOCKED_BY_CLIENT."
+  },
+  "benefit": {
+    "intended_beneficiaries": [
+      "Bryan assembling media work",
+      "collaborator reopening a media family"
+    ],
+    "observed_mechanical_effect": "The three included files are byte-identical after pack/reopen, and the selection record is preserved. The matched schema control accepts metadata while the packer rejects a stale source-byte pin.",
+    "human_task_success": null,
+    "time_saved_minutes": null,
+    "human_acceptance": null,
+    "independent_reuse": null
+  },
+  "limits": [
+    "39 local tests are bounded synthetic/fixture evidence, not runtime safety or human benefit proof.",
+    "Public release, rights clearance, full transitive receipt resolution, rendering, and real BryMinn audio are outside this slice.",
+    "Dependency installation was rejected by automatic approval review; this slice and its verification use the standard library. Broader dependency-based suites were not run locally.",
+    "Remote CI and independent review were not yet observed at this evidence capture."
+  ],
+  "authority": {
+    "ceiling": "candidate",
+    "publish_allowed": false,
+    "graph_application_allowed": false,
+    "training_allowed": false,
+    "canon_promotion_allowed": false
+  }
+}

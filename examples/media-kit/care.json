@@ -1,0 +1,38 @@
+{
+  "schema_version": "media-care.v1",
+  "kit_content_sha256": "67d092b4c54b52a1fcff2a8a596ae0ccf934c0f8240c2bfa29b533f096219131",
+  "classification_version": "media-classification.v1",
+  "authority": {"ceiling": "candidate", "publish_allowed": false, "graph_application_allowed": false, "training_allowed": false, "canon_promotion_allowed": false},
+  "maintenance_owner": "unassigned",
+  "proposed_by": "agent.codex",
+  "assets": [
+    {
+      "asset_ref": "src_multimedia_design",
+      "title": "Multimedia production design",
+      "family": "document", "origin": "unknown", "use_role": "reference", "sensitivity": "public",
+      "state": "candidate", "state_reason": "Retain the pinned repository design as the source; its authorship and admission are not established by this kit.",
+      "review_on": "2026-09-17"
+    },
+    {
+      "asset_ref": "qmd_source_first_card",
+      "title": "Find the source — inspection card",
+      "family": "document", "origin": "generated", "use_role": "working", "sensitivity": "public",
+      "state": "candidate", "state_reason": "Agent-written candidate selected for a human trial; no human choice or benefit has been observed.",
+      "review_on": "2026-09-17"
+    },
+    {
+      "asset_ref": "qmd_family_summary",
+      "title": "Media family — brief orientation",
+      "family": "document", "origin": "generated", "use_role": "working", "sensitivity": "public",
+      "state": "candidate", "state_reason": "Retain the shorter alternative so a person can compare orientation with an actionable inspection sequence.",
+      "review_on": "2026-09-17"
+    }
+  ],
+  "art_direction": {
+    "intent": "Help a person recover the source and make a considered version choice. Give the work enough character to be remembered and enough clarity to be used.",
+    "preserve": ["The original source, its exact words, and its relationship to both adaptations.", "A direct question, readable hierarchy, and a distinct purpose for each version."],
+    "avoid": ["Decorative variations that add no useful difference.", "Claims that the source, chosen version, rights, accessibility, or human benefit have been approved."],
+    "craft_questions": ["Which version helps you finish the inspection, and what did you still have to reconstruct?", "Does the title make the purpose clear without reading the metadata?", "What expression from the source should survive the next adaptation?"],
+    "human_judgment": "unobserved"
+  }
+}

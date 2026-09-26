@@ -1,0 +1,300 @@
+{
+  "schema_version": "media-kit-evaluation.v1",
+  "status": "candidate",
+  "scope": "media care refinement",
+  "base_commit": "f38bc0b9e5bebe5d28196568e8ef3880e05274ce",
+  "actor": "agent.codex",
+  "started_at": "2026-09-10T03:37:27.302002+00:00",
+  "completed_at": "2026-09-10T03:37:27.924468+00:00",
+  "checks": [
+    {
+      "check": "focused-tests",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_media_*.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.551969,
+      "stdout": "",
+      "stderr": "----------------------------------------------------------------------\nRan 68 tests in 0.423s\n\nOK\n"
+    },
+    {
+      "check": "golden-candidate-gate",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/validate_golden_pack.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.061604,
+      "stdout": "HOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_system_identity_topology\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_canonical_vocabulary_strange_intact\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_operator_personalization_boundaries\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_authority_approval_manifest\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_executable_vertical_slice_bootstrap\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_complete_contracts_queue_semantics\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_eval_threat_model_tribunal_harness\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_google_drive_workplane_manifest\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_supabase_projection_contract\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_supabase_security_reconciliation\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_vercel_deployment_decision\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_cloudflare_edge_decision\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_research_top_minds_evidence\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_multimedia_rights_accessibility_provenance\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_release_migrations_supply_chain\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_merge_blocking_receipt_outcome_gate\nCandidate merge gates passed with 16 Golden-admission hold(s). No admission, activation, canonization, or runtime authority is implied.\n",
+      "stderr": ""
+    }
+  ],
+  "focused_tests_passed": 68,
+  "golden_admission_holds": 16,
+  "artifact_sha256": {
+    "README.md": "8ee25bee4e4066cd76c3aa4f6f427f34482a989d6d0a1935f5c34f21f9193a71",
+    ".github/workflows/media-kit-conformance.yml": "757159872ee5c1d7503dde2d251819a3353cd9c34ef67417dab753a23d70275a",
+    "scripts/media_kit.py": "2ffef2b2f456d08c113a521b07c67ecd54cda21c98a0fa1ec63352a916badeac",
+    "scripts/media_care.py": "2d336a1d6a1e9b98aef1a0f95a1f7bdf943eef7b8ced5b70a82cbace6b884104",
+    "schemas/media-kit-project.schema.json": "728e3ac572ca38a1f104e0268a2e0532969a0faa70325f784e18c776193de441",
+    "schemas/media-derivative.schema.json": "d96497a86b90c5f39d44dcd1fc683e5ffb58dcd6c9776a8c0c1993b28edf0076",
+    "schemas/media-care.schema.json": "4492bd88335422018d38660195835634489cf43d379afd725a5cae9e5c2d789a",
+    "docs/media-kit/README.md": "c8742110a51f95bbbddad893e0d86e2719a453f72b4705bbc07235108b3fc064",
+    "docs/media-kit/CARE.md": "bff90fee0b72f388e4c197e4c5f5c73e3f2e8adad5a13fcfa3db811b9f031d83",
+    "docs/media-kit/CARE-RECEIPT.md": "56cc87f81bd03c76577ff10ee345564b5dcc9b70324ecf45a795afdc7e40ae87",
+    "docs/media-kit/classification.v1.json": "bcc245077dbe6b0c773b6cba3f2519467ae76f1ac62ea6cc38c484ddcc06c1a2",
+    "tests/test_media_kit.py": "7cfcb103d28e3811b1c24c1863fe3bd3f74317bc57268a1a674a3268ca65e027",
+    "tests/test_media_care.py": "b0b850c45533faa286c8236e70843e82993dd8ad43f0bbffcbd5c400cd2e4c38",
+    "examples/media-kit/project.json": "67ec5db63e28544f8b20443ea501377cc3829172a67c35d0f86f9c8eaf877dca",
+    "examples/media-kit/care.json": "153e1abaae0f2beb210953b34b6f5d2c7f1148da6163044c5b836582182646e3",
+    "examples/media-kit/legacy-v0.1.0.zip": "a564466df56a5fbfb2287c2dad07573743157cf4dabe17a90da7e09aacc8a514",
+    "examples/media-kit/source-first-card.md": "f99a39e22fa22064d70094e773b41c2ca82bf8976ddcc4bca49d9009e202a6fd",
+    "examples/media-kit/family-summary.md": "12d9938789868efb17c60f091ac52a91804acb2ca999bf3b0a8698bf788a77d7"
+  },
+  "kit_zip_sha256": "ec474abdc95cbfd1fbaa5b1fb3ef83b29b014e9b0d8455fda7b01608eb31bdb0",
+  "reopen_result": {
+    "schema_version": "media-kit-check.v1",
+    "operation": "verify",
+    "kit_id": "qmk_source_first_demo",
+    "tool_version": "0.2.0",
+    "integrity": "verified",
+    "scope": "local package consistency; not authenticity, source truth, rights clearance, or release approval",
+    "file_count": 3,
+    "file_bytes": 8049,
+    "content_sha256": "67d092b4c54b52a1fcff2a8a596ae0ccf934c0f8240c2bfa29b533f096219131",
+    "project_sha256": "85b10c8d5561f72755de0b542ba4960d54647e32ab4dc4ef575482adba09e5fb",
+    "selection_actor_type": "agent",
+    "signature_status": "unsigned",
+    "authority": {
+      "ceiling": "candidate",
+      "publish_allowed": false,
+      "graph_application_allowed": false,
+      "training_allowed": false,
+      "canon_promotion_allowed": false
+    },
+    "human_benefit": "unobserved",
+    "open_reviews": {
+      "rights": [
+        "qmd_source_first_card",
+        "qmd_family_summary"
+      ],
+      "accessibility": [
+        "qmd_source_first_card",
+        "qmd_family_summary"
+      ]
+    }
+  },
+  "legacy_reopen_result": {
+    "schema_version": "media-kit-check.v1",
+    "operation": "verify",
+    "kit_id": "qmk_source_first_demo",
+    "tool_version": "0.2.0",
+    "integrity": "verified",
+    "scope": "local package consistency; not authenticity, source truth, rights clearance, or release approval",
+    "file_count": 3,
+    "file_bytes": 8049,
+    "content_sha256": "f76d536e6f46ba3b75672c3411e49a1cb04050dc81957e1fa4f699c7c39a8e0d",
+    "project_sha256": "85b10c8d5561f72755de0b542ba4960d54647e32ab4dc4ef575482adba09e5fb",
+    "selection_actor_type": "agent",
+    "signature_status": "unsigned",
+    "authority": {
+      "ceiling": "candidate",
+      "publish_allowed": false,
+      "graph_application_allowed": false,
+      "training_allowed": false,
+      "canon_promotion_allowed": false
+    },
+    "human_benefit": "unobserved",
+    "open_reviews": {
+      "rights": [
+        "qmd_source_first_card",
+        "qmd_family_summary"
+      ],
+      "accessibility": [
+        "qmd_source_first_card",
+        "qmd_family_summary"
+      ]
+    }
+  },
+  "reproducible_zip": true,
+  "care_result": {
+    "schema_version": "media-care-check.v1",
+    "tool_version": "0.2.0",
+    "as_of": "2026-09-10",
+    "kit_id": "qmk_source_first_demo",
+    "kit_content_sha256": "67d092b4c54b52a1fcff2a8a596ae0ccf934c0f8240c2bfa29b533f096219131",
+    "care_sha256": "f984549adb9a26dc010b85362d9538c03f75578e7646bc4be44d8747a74d0d5a",
+    "classification_sha256": "d3c076d5bfd02e9970fd2378a4452be76815f4ccb203b8afefea2a9ca50337f6",
+    "integrity": "verified",
+    "status": "needs_attention",
+    "authority": {
+      "ceiling": "candidate",
+      "publish_allowed": false,
+      "graph_application_allowed": false,
+      "training_allowed": false,
+      "canon_promotion_allowed": false
+    },
+    "human_benefit": "unobserved",
+    "scope": "Internal consistency, declared care, extension evidence, and companion text presence; not authenticity, decoding, malware scanning, rights clearance, accessibility quality, or release approval.",
+    "maintenance_owner": "unassigned",
+    "owner_acceptance": "unverified",
+    "proposed_by": "agent.codex",
+    "selection": {
+      "asset_ref": "qmd_source_first_card",
+      "needs_attention": true,
+      "review_refs": [
+        "qmd_source_first_card",
+        "src_multimedia_design"
+      ],
+      "actor_type": "agent",
+      "signature_status": "unsigned"
+    },
+    "assets": [
+      {
+        "asset_ref": "src_multimedia_design",
+        "title": "Multimedia production design",
+        "archive_path": "assets/000-MULTIMEDIA-MULTIPLIZIERT.md",
+        "provenance_role": "source",
+        "family": "document",
+        "extension_family": "document",
+        "origin": "unknown",
+        "use_role": "reference",
+        "sensitivity": "public",
+        "state": "candidate",
+        "state_reason": "Retain the pinned repository design as the source; its authorship and admission are not established by this kit.",
+        "review_on": "2026-09-17",
+        "replacement_ref": null,
+        "selected": false,
+        "depends_on": [],
+        "alt_text_presence": "absent",
+        "companions": {}
+      },
+      {
+        "asset_ref": "qmd_source_first_card",
+        "title": "Find the source — inspection card",
+        "archive_path": "assets/001-source-first-card.md",
+        "provenance_role": "derivative",
+        "family": "document",
+        "extension_family": "document",
+        "origin": "generated",
+        "use_role": "working",
+        "sensitivity": "public",
+        "state": "candidate",
+        "state_reason": "Agent-written candidate selected for a human trial; no human choice or benefit has been observed.",
+        "review_on": "2026-09-17",
+        "replacement_ref": null,
+        "selected": true,
+        "depends_on": [
+          "src_multimedia_design"
+        ],
+        "alt_text_presence": "absent",
+        "companions": {}
+      },
+      {
+        "asset_ref": "qmd_family_summary",
+        "title": "Media family — brief orientation",
+        "archive_path": "assets/002-family-summary.md",
+        "provenance_role": "derivative",
+        "family": "document",
+        "extension_family": "document",
+        "origin": "generated",
+        "use_role": "working",
+        "sensitivity": "public",
+        "state": "candidate",
+        "state_reason": "Retain the shorter alternative so a person can compare orientation with an actionable inspection sequence.",
+        "review_on": "2026-09-17",
+        "replacement_ref": null,
+        "selected": false,
+        "depends_on": [
+          "src_multimedia_design"
+        ],
+        "alt_text_presence": "absent",
+        "companions": {}
+      }
+    ],
+    "findings": [
+      {
+        "code": "owner_needed",
+        "asset_ref": null,
+        "message": "Nominate a maintenance owner and record their acceptance separately."
+      },
+      {
+        "code": "origin_unknown",
+        "asset_ref": "src_multimedia_design",
+        "message": "Origin is unknown; inspect source evidence before describing how this was made."
+      },
+      {
+        "code": "rights_review_open",
+        "asset_ref": "qmd_source_first_card",
+        "message": "Source permissions have not been declared verified; inspect rights evidence before sharing."
+      },
+      {
+        "code": "accessibility_review_open",
+        "asset_ref": "qmd_source_first_card",
+        "message": "Accessibility review remains open. Companion presence alone cannot close it."
+      },
+      {
+        "code": "rights_review_open",
+        "asset_ref": "qmd_family_summary",
+        "message": "Source permissions have not been declared verified; inspect rights evidence before sharing."
+      },
+      {
+        "code": "accessibility_review_open",
+        "asset_ref": "qmd_family_summary",
+        "message": "Accessibility review remains open. Companion presence alone cannot close it."
+      }
+    ],
+    "art_direction": {
+      "intent": "Help a person recover the source and make a considered version choice. Give the work enough character to be remembered and enough clarity to be used.",
+      "preserve": [
+        "The original source, its exact words, and its relationship to both adaptations.",
+        "A direct question, readable hierarchy, and a distinct purpose for each version."
+      ],
+      "avoid": [
+        "Decorative variations that add no useful difference.",
+        "Claims that the source, chosen version, rights, accessibility, or human benefit have been approved."
+      ],
+      "craft_questions": [
+        "Which version helps you finish the inspection, and what did you still have to reconstruct?",
+        "Does the title make the purpose clear without reading the metadata?",
+        "What expression from the source should survive the next adaptation?"
+      ],
+      "human_judgment": "unobserved"
+    }
+  },
+  "html_structure": {
+    "asset_rows": 3,
+    "script_elements": 0,
+    "external_resources": [],
+    "event_handlers": [],
+    "language": "en",
+    "viewport_meta": true,
+    "content_security_policy": true
+  },
+  "browser_visual_review": {
+    "status": "unverified",
+    "reason": "Prior local preview navigation returned net::ERR_BLOCKED_BY_CLIENT; not bypassed or retried. New care page checked structurally only."
+  },
+  "human_benefit": "unobserved",
+  "authority": {
+    "ceiling": "candidate",
+    "publish_allowed": false,
+    "graph_application_allowed": false,
+    "training_allowed": false,
+    "canon_promotion_allowed": false
+  },
+  "limits": [
+    "Opaque file custody; no decoder, active-content inspection, or malware scan.",
+    "Unsigned declarations and reports; no authorship, owner acceptance, rights clearance, or release approval.",
+    "Companion text presence is not accessibility quality or artistic judgment.",
+    "Local stdlib verification only; remote CI to be observed at the new PR head."
+  ]
+}

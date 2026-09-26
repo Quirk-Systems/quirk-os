@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "media-care.schema.json",
+  "title": "Quirk Media Care — candidate declarations bound to one kit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kit_content_sha256", "classification_version", "authority", "maintenance_owner", "proposed_by", "assets", "art_direction"],
+  "properties": {
+    "schema_version": {"const": "media-care.v1"},
+    "kit_content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "classification_version": {"const": "media-classification.v1"},
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["ceiling", "publish_allowed", "graph_application_allowed", "training_allowed", "canon_promotion_allowed"],
+      "properties": {
+        "ceiling": {"const": "candidate"},
+        "publish_allowed": {"type": "boolean", "const": false},
+        "graph_application_allowed": {"type": "boolean", "const": false},
+        "training_allowed": {"type": "boolean", "const": false},
+        "canon_promotion_allowed": {"type": "boolean", "const": false}
+      }
+    },
+    "maintenance_owner": {"type": "string", "minLength": 1, "maxLength": 160, "description": "Declared owner, or the literal unassigned. A name does not prove acceptance."},
+    "proposed_by": {"type": "string", "minLength": 1, "maxLength": 160},
+    "assets": {
+      "type": "array", "minItems": 2, "maxItems": 64,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["asset_ref", "title", "family", "origin", "use_role", "sensitivity", "state", "state_reason", "review_on"],
+        "properties": {
+          "asset_ref": {"type": "string", "pattern": "^(src_|qmd_)[A-Za-z0-9_-]+$", "maxLength": 8192},
+          "title": {"type": "string", "minLength": 1, "maxLength": 160},
+          "family": {"type": "string", "enum": ["image", "video", "audio", "presentation", "document", "data", "unknown"]},
+          "origin": {"type": "string", "enum": ["captured", "authored", "generated", "mixed", "unknown"]},
+          "use_role": {"type": "string", "enum": ["reference", "master", "working", "delivery_candidate", "accessibility_companion"]},
+          "sensitivity": {"type": "string", "enum": ["public", "internal", "confidential", "restricted", "unknown"]},
+          "state": {"type": "string", "enum": ["candidate", "review_needed", "superseded", "withdrawn"]},
+          "state_reason": {"type": "string", "minLength": 1, "maxLength": 1000},
+          "review_on": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+          "replacement_ref": {"type": "string", "pattern": "^(src_|qmd_)[A-Za-z0-9_-]+$", "maxLength": 8192},
+          "alt_text": {"type": "string", "minLength": 1, "maxLength": 2000},
+          "companions": {
+            "type": "object", "additionalProperties": false,
+            "properties": {
+              "captions": {"type": "string", "minLength": 1, "maxLength": 8192},
+              "transcript": {"type": "string", "minLength": 1, "maxLength": 8192},
+              "speaker_notes": {"type": "string", "minLength": 1, "maxLength": 8192},
+              "audio_description": {"type": "string", "minLength": 1, "maxLength": 8192}
+            }
+          }
+        }
+      }
+    },
+    "art_direction": {
+      "type": "object", "additionalProperties": false,
+      "required": ["intent", "preserve", "avoid", "craft_questions", "human_judgment"],
+      "properties": {
+        "intent": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "preserve": {"type": "array", "minItems": 1, "maxItems": 12, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 1000}},
+        "avoid": {"type": "array", "minItems": 1, "maxItems": 12, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 1000}},
+        "craft_questions": {"type": "array", "minItems": 1, "maxItems": 12, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 1000}},
+        "human_judgment": {"const": "unobserved"}
+      }
+    }
+  }
+}
