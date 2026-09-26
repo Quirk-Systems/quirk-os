@@ -43,6 +43,9 @@ def run_pack(pack: dict[str, Any], observations: dict[str, Any] | None = None) -
     if observations is not None:
         if not isinstance(observations, dict) or not {"panels", "revisions", "simulation", "persona", "provenance"}.issubset(observations):
             raise ValueError("observations require panels, revisions, simulation, persona, and provenance")
-        report["observations"] = score_observations(observations)
+        try:
+            report["observations"] = score_observations(observations)
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError("invalid observations") from error
         report["observation_status"] = "SYNTHETIC_EXAMPLE" if observations.get("provenance") == "synthetic_example" else "UNVERIFIED_TRACE"
     return report

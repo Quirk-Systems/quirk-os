@@ -4,6 +4,7 @@ import copy
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -81,6 +82,13 @@ class CandidateAuthorityTests(unittest.TestCase):
         self.assertFalse(result["eligible_candidate"])
         self.assertIn("invalid_fixture", result["reasons"])
 
+    def test_non_string_timestamp_fails_closed(self):
+        case = copy.deepcopy(self.safe)
+        case["grant"]["expires_at"] = 123
+        result = evaluate_authority(case)
+        self.assertFalse(result["eligible_candidate"])
+        self.assertIn("invalid_fixture", result["reasons"])
+
 
 class CompletionTests(unittest.TestCase):
     def setUp(self):
@@ -153,6 +161,14 @@ class ObservationalScoringTests(unittest.TestCase):
         data["simulation"][0].pop("production_score")
         self.assertEqual("NO_MATCHED_PRODUCTION", score_observations(data)["simulation_status"])
 
+    def test_invalid_panel_counts_are_rejected(self):
+        data = copy.deepcopy(sample()["observations"])
+        data["panels"][0]["attackers"] = -1
+        self.assertEqual("INVALID_MATCH", score_observations(data)["panel_status"])
+        data = copy.deepcopy(sample()["observations"])
+        data["panels"][0]["attackers"] = "1"
+        self.assertEqual("INVALID_MATCH", score_observations(data)["panel_status"])
+
 
 class FixturePackTests(unittest.TestCase):
     def test_every_registered_authority_and_completion_case_has_expected_outcome(self):
@@ -195,9 +211,32 @@ class FixturePackTests(unittest.TestCase):
         example = run_pack(sample(), sample()["observations"])
         self.assertEqual("SYNTHETIC_EXAMPLE", example["observation_status"])
 
+    def test_runner_rejects_malformed_nested_observations(self):
+        data = copy.deepcopy(sample()["observations"])
+        data["revisions"] = [{}]
+        with self.assertRaises(ValueError):
+            run_pack(sample(), data)
+
     def test_cli_invalid_observation_is_a_clean_error(self):
         fixture_path = "evals/agent-reliability/v0.1.0/fixtures.json"
         result = subprocess.run([sys.executable, "scripts/validate_agent_reliability.py", "--observations", fixture_path], cwd=ROOT, capture_output=True, text=True, check=False)
+        self.assertEqual(2, result.returncode)
+        self.assertIn("invalid observations", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_cli_malformed_nested_observation_is_a_clean_error(self):
+        data = copy.deepcopy(sample()["observations"])
+        data["revisions"] = [{}]
+        with tempfile.TemporaryDirectory(dir="/tmp") as temp_dir:
+            observation_path = Path(temp_dir) / "observations.json"
+            observation_path.write_text(json.dumps(data), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, "scripts/validate_agent_reliability.py", "--observations", str(observation_path)],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
         self.assertEqual(2, result.returncode)
         self.assertIn("invalid observations", result.stderr)
         self.assertNotIn("Traceback", result.stderr)

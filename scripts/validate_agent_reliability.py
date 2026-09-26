@@ -19,7 +19,7 @@ def main() -> int:
     observations = json.loads(args.observations.read_text(encoding="utf-8")) if args.observations else None
     try:
         result = run_pack(pack, observations)
-    except ValueError as error:
+    except (KeyError, TypeError, ValueError) as error:
         print(f"invalid observations or fixture version: {error}", file=sys.stderr)
         return 2
     print(json.dumps(result, sort_keys=True, indent=2))
