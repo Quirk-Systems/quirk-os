@@ -39,7 +39,7 @@ def _validate_inventory(pack: dict[str, Any]) -> None:
         raise ValueError("invalid completion fixture inventory: require four registered cases")
 
 
-def run_pack(pack: dict[str, Any], observations: dict[str, Any] | None = None) -> dict[str, Any]:
+def _run_pack(pack: dict[str, Any], observations: dict[str, Any] | None = None) -> dict[str, Any]:
     if pack.get("version") != VERSION:
         raise ValueError(f"expected fixture version {VERSION}")
     _validate_inventory(pack)
@@ -86,3 +86,8 @@ def run_pack(pack: dict[str, Any], observations: dict[str, Any] | None = None) -
         report["observations"] = scored
         report["observation_status"] = "SYNTHETIC_EXAMPLE" if observations.get("provenance") == "synthetic_example" else "UNVERIFIED_TRACE"
     return report
+
+
+def run_pack(pack: dict[str, Any], observations: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Stable public boundary around the version-specific pack runner."""
+    return _run_pack(pack, observations)

@@ -51,7 +51,7 @@ def _authority_source_reasons(claims: list[dict[str, Any]], grant: dict[str, Any
     return reasons
 
 
-def evaluate_authority(case: dict[str, Any]) -> dict[str, Any]:
+def _evaluate_authority(case: dict[str, Any]) -> dict[str, Any]:
     """Evaluate an inert activation candidate against asserted fixture snapshots."""
     reasons: list[str] = []
     receipt: dict[str, Any] = {}
@@ -135,6 +135,11 @@ def evaluate_authority(case: dict[str, Any]) -> dict[str, Any]:
         "version": VERSION, "eligible_candidate": not reasons, "reasons": sorted(set(reasons)),
         "effect_executed": False, "authority_effect": False, "agency_locus": locus, "receipt": receipt,
     }
+
+
+def evaluate_authority(case: dict[str, Any]) -> dict[str, Any]:
+    """Stable public boundary around the version-specific authority evaluator."""
+    return _evaluate_authority(case)
 
 
 def evaluate_completion(case: dict[str, Any]) -> dict[str, Any]:
