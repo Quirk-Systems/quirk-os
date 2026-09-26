@@ -20,7 +20,7 @@ def main() -> int:
     try:
         result = run_pack(pack, observations)
     except (KeyError, TypeError, ValueError) as error:
-        print(f"invalid observations or fixture version: {error}", file=sys.stderr)
+        print(f"invalid observations or fixture input: {error}", file=sys.stderr)
         return 2
     print(json.dumps(result, sort_keys=True, indent=2))
     return 1 if result["failed_fixture_ids"] else 0
