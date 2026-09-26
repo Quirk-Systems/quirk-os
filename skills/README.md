@@ -35,6 +35,10 @@ The central `registry.json` is a rebuildable candidate inventory. It is not Cano
 
 Applause Gate's package family is `challenge`, because that is the repository's existing schema vocabulary for evidence-challenging procedures. Its four shared cases live in `evals/skills/applause-gate-conformance.json`; the immutable 44-case v0.2 core suite remains unchanged. The conformance adapter under `scripts/applause_gate/skill_conformance.py` is evaluation-only and is intentionally not added to `scripts/sync_control_plane/skill_evaluator.py`.
 
+## Distilled candidates
+
+The post-run distill loop (`scripts/distill_loop/`, [`docs/distill-loop/README.md`](../docs/distill-loop/README.md)) may write packages into this directory under the `quirk-distilled-*` namespace. They are a tier below the manifested candidates above: auto-written from an immutable run receipt, recorded in the append-only [`distill-ledger.json`](distill-ledger.json), never part of `registry.json`, and never visible to a later run until a distill promotion receipt with distinct requester and approver binds their exact digest. Promotion moves them to reviewed candidate only; admission stays a separate external decision. `scripts/validate_skills.py` excludes the namespace from the twelve-skill drift gate and fails if a distilled id ever appears in the registry.
+
 ## Runtime rule
 
 The runtime loader rejects candidate or unadmitted versions, over-ceiling grants, self-approved grants, expired grants, undeclared actions, manifest tampering, and source tampering. Passing evals remain evidence—not admission.
