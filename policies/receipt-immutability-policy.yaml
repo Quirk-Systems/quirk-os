@@ -12,3 +12,4 @@ rules:
 implementation_refs:
   - quirk_sync.prevent_append_only_mutation
   - schemas/sync-run-receipt.schema.json
+correction_route: docs/sync-control-plane/CORRECTION-ROUTE.md

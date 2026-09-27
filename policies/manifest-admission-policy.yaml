@@ -8,23 +8,37 @@ invariant: capability_never_implies_authority
 rules:
   - id: no_self_approval
     require: admission.requested_by != admission.approved_by
+    regression_test: AdmissionPolicyRegressionTests.test_no_self_approval
   - id: evaluated_hash_matches
     require: admission.evaluated_content_hash == content_hash
+    regression_test: AdmissionPolicyRegressionTests.test_evaluated_hash_must_match_content_hash
   - id: explicit_grant
     require: admission.authority_grant_ref
+    regression_test: AdmissionPolicyRegressionTests.test_active_requires_authority_grant_ref
   - id: legal_transition
     require: admission.transition_ref
+    regression_test: AdmissionPolicyRegressionTests.test_active_requires_transition_ref
   - id: active_requires_evidence
     require: eval_refs and stop_conditions and admission.evidence_refs
+    regression_tests:
+      - AdmissionPolicyRegressionTests.test_active_requires_decision_ref
+      - AdmissionPolicyRegressionTests.test_active_requires_admission_block
+      - AdmissionPolicyRegressionTests.test_active_requires_eval_refs
+      - AdmissionPolicyRegressionTests.test_active_requires_stop_conditions
+      - AdmissionPolicyRegressionTests.test_active_requires_evidence_refs
   - id: rights_before_productization
     when: domains contains data_productization
     require: rights_review.outcome == approved and rights_review.license_verified and rights_review.privacy_review == approved and rights_review.provenance_complete
+    regression_test: AdmissionPolicyRegressionTests.test_rights_before_productization
   - id: collisions_fail_closed
     when: manifest_kind == orchestrator and len(skill_refs) > 1
     require: trigger_contract.collision_behavior == block
+    regression_test: AdmissionPolicyRegressionTests.test_collisions_fail_closed
 protected_actions:
   - activate_manifest
   - promote_canon
   - expand_authority
   - merge_pull_request
   - deploy_production
+correction_route: docs/sync-control-plane/CORRECTION-ROUTE.md
+regression_suite: tests/test_sync_control_plane.py::AdmissionPolicyRegressionTests

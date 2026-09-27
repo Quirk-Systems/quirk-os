@@ -6,6 +6,7 @@ on:
       - '.github/workflows/sync-control-plane-conformance.yml'
       - 'agents/quirk-sync-steward/**'
       - 'decisions/ADR-0001-cloudflare-boundary.md'
+      - 'docs/sync-control-plane/**'
       - 'evals/sync-control-plane/**'
       - 'mappings/sync-control-plane.v1.yaml'
       - 'platform/cloudflare.manifest.yaml'
