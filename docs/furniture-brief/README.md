@@ -8,14 +8,15 @@ publication_state: NOT_AUTHORIZED
 
 # Furniture Brief: F3 -> F11 Grounded-to-Banger contract
 
-**Status: candidate, local-only.** This is a new module, not a promoted or
-Canon-admitted one. It grants itself no execution, admission, or publication
-authority. It was written and validated locally in one autonomous session
-and has not been staged, committed, or reviewed. Before it is trusted for
-anything beyond local experimentation it needs the same human plan review
-this repo already requires for other consequential additions (see
-`docs/applause-gate/` for the pattern: an exact-head review naming the
-reviewed commit, before any promotion).
+**Status: merged candidate, non-operative.** This module's source is committed
+to `main` (merged via [PR #83](https://github.com/Quirk-Systems/quirk-os/pull/83)).
+It is a new module, not a Canon-admitted one, and it grants itself no
+execution, admission, or publication authority. Repository reachability is
+not authority: before it is trusted for anything beyond local experimentation
+it needs the same human plan review this repo already requires for other
+consequential additions (see `docs/applause-gate/` for the pattern: an
+exact-head review naming the reviewed commit, before any promotion). It is
+not wired into any runtime, skill, or CLI.
 
 ## What this is
 
@@ -48,9 +49,9 @@ generate audio, upload anything, publish anything, or send a message. See
 ## Run it
 
 ```
-pip install jsonschema==4.26.0 pytest==9.1.1   # already declared in requirements-evals.txt
+python3 -m pip install -r requirements-evals.txt   # jsonschema, PyYAML; pytest is not pinned here
 PYTHONPATH=scripts python3 scripts/validate_furniture_brief.py --require-pass
-PYTHONPATH=scripts python3 -m pytest tests/test_furniture_brief.py -v
+PYTHONPATH=scripts python3 -m unittest discover -s tests -p 'test_furniture_brief*.py' -v
 ```
 
 ## The contract, briefly
@@ -94,8 +95,19 @@ PYTHONPATH=scripts python3 -m pytest tests/test_furniture_brief.py -v
 5. `GRIP_BELOW_THRESHOLD` -- Furniture and consent pass, but the total is 6/8.
 6. `LINEAGE_INVALID` -- a child asset references a parent that does not exist in the batch.
 
-Plus, independently: a tampered or reordered or truncated receipt chain is
-detected by `verify_chain()` (`tests/test_furniture_brief.py::ReceiptChainIntegrityTests`).
+Plus, independently: a mutated or reordered entry, or an entry dropped from
+the middle, is detected by `verify_chain()`
+(`tests/test_furniture_brief.py::ReceiptChainIntegrityTests`). Tail
+truncation is a different case: a valid prefix of a hash chain is itself a
+structurally valid chain, so unanchored verification cannot see a dropped
+tail. `verify_chain()` accepts optional `expected_count`/`expected_tip`
+anchors -- a count or hash the caller trusts from somewhere other than the
+chain under inspection (e.g. a separately logged receipt count) -- and only
+with one of those supplied is tail-truncation detected
+(`tests/test_furniture_brief.py::ReceiptChainIntegrityTests::test_trusted_anchor_detects_tail_truncation`,
+`tests/test_furniture_brief_receipt_anchors.py`). Deriving the anchor from
+the chain being checked would defeat the protection. Unkeyed hashes prove
+internal consistency, not authorship or immutable storage.
 
 Exactly one fixture (`case-001-success`) reaches `FINALIZE` and produces a
 Song Brief + receipt.
