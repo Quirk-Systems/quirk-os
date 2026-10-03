@@ -21,6 +21,11 @@ The first project pack defines the accountable machinery beneath Quirk Core:
 
 Start here: [`docs/golden-project-pack/README.md`](docs/golden-project-pack/README.md)
 
+## Working procedures
+
+- [Distinctions workflow](docs/workflows/distinctions-workflow.md) — bounded manual work, separate evidence and authority, and GitHub review handoff.
+- [Distinctions run receipt](templates/distinctions-run-receipt.md) — copy per run; usefulness and effort remain unmeasured until observed.
+
 ## Core laws
 
 - Every consequential mutation owes a receipt.
