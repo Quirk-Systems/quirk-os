@@ -24,6 +24,14 @@ def _parse_dt(value: str) -> datetime:
 # not depend on JSON Schema having run first: callers use
 # `validate_manifest_admission` directly, and a bare `"human."` would satisfy a
 # prefix test while naming nobody.
+#
+# What this does NOT establish: `approved_by` is a string the judged manifest
+# supplies, so `human.fabricated` with invented decision and grant references
+# passes. This rule removes the structural bypass — the self-declared flag and
+# the `agent.` approver — but it does not prove a human approved anything, and
+# no approval registry or attestation exists in this path to check against.
+# Closing that needs a record the manifest cannot author; the design and the
+# decisions it waits on are in docs/briefs/2026-10-03-approval-attestation.md.
 _INDEPENDENT_APPROVER = re.compile(r"human\.[a-z0-9._-]+")
 
 

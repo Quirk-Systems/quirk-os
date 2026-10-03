@@ -17,11 +17,52 @@
 -- The whole principal is matched, not its prefix, so a bare 'human.' naming
 -- nobody is refused. There is no schema layer in front of the database.
 --
+-- What this does NOT establish: `approved_by` is still text the inserting
+-- caller supplies, so 'human.fabricated' with arbitrary non-null decision and
+-- grant references satisfies this predicate. The rule constrains which
+-- principal may appear, not whether that principal approved anything. Proving
+-- that needs an approval record the caller cannot author, which is a component
+-- this repository does not have; see
+-- docs/briefs/2026-10-03-approval-attestation.md.
+--
 -- Deliberately unchanged: the `evaluated_content_hash <> content_hash` test
 -- below still compares two columns of the same row, and nothing computes either
 -- from the manifest body. That is a missing specification rather than a bug with
 -- a patch; see docs/briefs/2026-10-03-manifest-content-hash-preimage.md, which
 -- names the two decisions it needs first.
+
+-- Checked BEFORE the function is replaced, deliberately. Replacing the function
+-- only guards the next write: rows admitted under the old rule stay `active`
+-- and usable until something happens to touch them, so installing the guard
+-- without looking at the existing data would leave the persisted hole open
+-- while reading as closed.
+--
+-- The order matters because psql autocommits each statement unless the runner
+-- wraps the file in a transaction. Verified on PostgreSQL 16.13: with this
+-- block placed after the function, the replacement committed and only then did
+-- the check raise, leaving the migration half applied. Read-only first means a
+-- refusal changes nothing, under either transaction mode.
+--
+-- It refuses rather than mutating anyone's rows: revoking or re-admitting a
+-- live manifest is an authority act, not a migration's to take. It names the
+-- count and the keys so an operator can act on them.
+do $$
+declare
+  v_offending bigint;
+  v_keys text;
+begin
+  select count(*), string_agg(manifest_key || '@' || version, ', ' order by manifest_key)
+    into v_offending, v_keys
+    from quirk_sync.manifest_registry
+    where status = 'active'
+      and (approved_by is null or approved_by !~ '^human\.[a-z0-9._-]+$');
+
+  if v_offending > 0 then
+    raise exception
+      'refusing to complete: % active manifest(s) carry an approver that is not an independent human principal (%). Revoke or re-admit each one, then re-apply.',
+      v_offending, v_keys;
+  end if;
+end $$;
 
 create or replace function quirk_sync.guard_manifest_activation() returns trigger
 language plpgsql set search_path=pg_catalog,quirk_sync as $$

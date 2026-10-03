@@ -91,6 +91,18 @@ class DeckGrammarTests(unittest.TestCase):
         deck, _, _ = self.compile_pool(pool)
         validator = Draft202012Validator(self.schemas['eligible-deck.schema.json'], registry=self.registry)
         self.assertEqual([], list(validator.iter_errors(deck)))
+    def test_persisted_live_proof_records_the_current_compiler_version(self):
+        """A Deck's provenance has to name the semantics that produced it.
+
+        Paired with test_persisted_live_proof_is_reproducible, this means an
+        eligibility change cannot land without both a version bump and a
+        regenerated proof: otherwise two compilers emit different Decks under
+        identical source hashes and an identical compiler version.
+        """
+        from deck_grammar.access import COMPILER_VERSION
+        persisted = load_json('examples/deck-grammar/live-proof.json')
+        self.assertEqual(COMPILER_VERSION, persisted['deck']['compiler_version'])
+        self.assertEqual(COMPILER_VERSION, self.compile_pool(self.card_pool)[0]['compiler_version'])
     def test_wildcard_match_separates_an_absent_list_from_an_empty_one(self):
         """An empty allow-list used to permit everything, so the check could not fail."""
         self.assertTrue(wildcard_match(None, 'github'))

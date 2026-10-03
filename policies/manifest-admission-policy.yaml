@@ -13,8 +13,17 @@ rules:
   # system. are refused until an allow-list of authorized service approvers
   # exists. Replaces the former metadata.self_requested rule, which the judged
   # document set for itself.
+  #
+  # The whole principal is matched, not its prefix, so a bare "human." naming
+  # nobody is refused here exactly as it is in both enforcement surfaces.
+  #
+  # This rule constrains WHICH principal may appear, not whether that principal
+  # really approved. approved_by is still a string the judged manifest supplies,
+  # so a fabricated human.* value satisfies it. Establishing authenticity needs
+  # an attestation the manifest cannot author; see
+  # docs/briefs/2026-10-03-approval-attestation.md.
   - id: independent_human_approval
-    require: admission.approved_by starts_with "human."
+    require: admission.approved_by matches "^human\\.[a-z0-9._-]+$"
   - id: evaluated_hash_matches
     require: admission.evaluated_content_hash == content_hash
   - id: explicit_grant

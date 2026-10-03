@@ -4,6 +4,16 @@ from typing import Any
 import json
 from .common import DeckGrammarError, _slug, authority_not_above, content_hash, is_active_entitlement, parse_datetime, wildcard_match
 
+# Bump whenever eligibility changes for input that was already schema-valid.
+# A Deck records `compiler_version` beside `source_hashes` so a reader can tell
+# which semantics produced it; leaving it at 0.1.0 after changing which cards
+# are eligible would let two different compilers emit different Decks that
+# claim identical provenance.
+#
+# 0.2.0 excludes deprecated and retired cards, and stops reading an empty
+# compatibility list as a wildcard.
+COMPILER_VERSION = '0.2.0'
+
 # A card definition's lifecycle, per schemas/card-definition.schema.json, runs
 # candidate -> evaluated -> admitted -> deprecated -> retired. The two terminal
 # states are the ones that make a card ineligible; the compiler must not
@@ -29,7 +39,7 @@ def build_access_pool(collection: dict[str, Any], entitlements: list[dict[str, A
             instances.append({'instance_id': instance_id, 'card_id': card_id, 'holder_ref': entitlement['grantee_ref'], 'access_kind': entitlement['access_kind'], 'state': 'accessible', 'acquired_at': entitlement['starts_at'], 'expires_at': entitlement.get('ends_at'), 'entitlement_ref': entitlement['entitlement_id'], 'ownership_claim': 'not_owned', 'authority_effect': 'none', 'edition': None, 'provenance_refs': [entitlement['source_ref']], 'metadata': {'entitlement_state': entitlement['state']}})
     return instances
 
-def compile_deck(*, card_definitions: list[dict[str, Any]], collection: dict[str, Any], entitlements: list[dict[str, Any]], area: dict[str, Any], goal: dict[str, Any], intention: dict[str, Any], purpose_partition: str, platform: str, task_class: str, authority_ceiling: str, explicit_exclusions: list[str] | None=None, as_of: datetime, compiler_version: str='0.1.0') -> tuple[dict[str, Any], dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+def compile_deck(*, card_definitions: list[dict[str, Any]], collection: dict[str, Any], entitlements: list[dict[str, Any]], area: dict[str, Any], goal: dict[str, Any], intention: dict[str, Any], purpose_partition: str, platform: str, task_class: str, authority_ceiling: str, explicit_exclusions: list[str] | None=None, as_of: datetime, compiler_version: str=COMPILER_VERSION) -> tuple[dict[str, Any], dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
     cards_by_id = {card['card_id']: card for card in card_definitions}
     access_instances = build_access_pool(collection, entitlements, as_of=as_of)
     instances_by_id = {instance['instance_id']: instance for instance in access_instances}
