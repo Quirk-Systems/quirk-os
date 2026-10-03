@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/action-contract.v1.schema.json",
+  "title": "Quirk Candidate Action Contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "action_id",
+    "idempotency_key",
+    "grant_id",
+    "skill_id",
+    "skill_version",
+    "skill_manifest_sha256",
+    "operation",
+    "target",
+    "target_sha256",
+    "arguments",
+    "arguments_sha256",
+    "objective",
+    "postcondition",
+    "effect_limit",
+    "recovery"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "action-contract/v1"
+    },
+    "action_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "grant_id": {
+      "type": "string",
+      "pattern": "^grant\\.[a-z0-9._-]+$"
+    },
+    "skill_id": {
+      "type": "string",
+      "pattern": "^quirk-[a-z0-9-]+$"
+    },
+    "skill_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "skill_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "operation": {
+      "enum": [
+        "read_resource",
+        "prepare_candidate"
+      ]
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "target_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "arguments": {
+      "type": "object"
+    },
+    "arguments_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "postcondition": {
+      "enum": [
+        "content_digest_matches",
+        "candidate_prepared"
+      ]
+    },
+    "effect_limit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_resources",
+        "max_bytes",
+        "max_spend"
+      ],
+      "properties": {
+        "max_resources": {
+          "const": 1
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        },
+        "max_spend": {
+          "const": 0
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retry",
+        "timeout_seconds"
+      ],
+      "properties": {
+        "retry": {
+          "const": "reconcile_only"
+        },
+        "timeout_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "read_resource"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "arguments": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {}
+          },
+          "postcondition": {
+            "const": "content_digest_matches"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "arguments": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "body"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "body": {
+                "type": "string",
+                "maxLength": 65536
+              }
+            }
+          },
+          "postcondition": {
+            "const": "candidate_prepared"
+          }
+        }
+      }
+    }
+  ]
+}

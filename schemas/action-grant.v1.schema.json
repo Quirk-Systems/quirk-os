@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/action-grant.v1.schema.json",
+  "title": "Quirk Candidate Action Grant v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "runtime_grant",
+    "target",
+    "target_sha256",
+    "arguments_sha256",
+    "policy_ref",
+    "effect_limit"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "action-grant/v1"
+    },
+    "runtime_grant": {
+      "title": "Quirk Skill Runtime Grant",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grant_id",
+        "skill_id",
+        "skill_version",
+        "skill_manifest_sha256",
+        "decision",
+        "admission_ref",
+        "requested_by",
+        "approved_by",
+        "issued_at",
+        "expires_at",
+        "authority_ceiling",
+        "allowed_actions",
+        "purpose"
+      ],
+      "properties": {
+        "grant_id": {
+          "type": "string",
+          "pattern": "^grant\\.[a-z0-9._-]+$"
+        },
+        "skill_id": {
+          "type": "string",
+          "pattern": "^quirk-[a-z0-9-]+$"
+        },
+        "skill_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "skill_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "decision": {
+          "const": "approved"
+        },
+        "admission_ref": {
+          "type": "string",
+          "minLength": 8
+        },
+        "requested_by": {
+          "type": "string",
+          "minLength": 2
+        },
+        "approved_by": {
+          "type": "string",
+          "minLength": 2
+        },
+        "issued_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "authority_ceiling": {
+          "enum": [
+            "observe",
+            "infer",
+            "propose",
+            "execute_bounded"
+          ]
+        },
+        "allowed_actions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "read_resource",
+              "prepare_candidate"
+            ]
+          }
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 12
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "target_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "arguments_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "policy_ref": {
+      "const": "policy.local-candidate.v1"
+    },
+    "effect_limit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_resources",
+        "max_bytes",
+        "max_spend"
+      ],
+      "properties": {
+        "max_resources": {
+          "const": 1
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        },
+        "max_spend": {
+          "const": 0
+        }
+      }
+    }
+  }
+}

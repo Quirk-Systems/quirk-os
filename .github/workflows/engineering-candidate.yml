@@ -1,0 +1,107 @@
+name: Engineering Candidate Conformance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/engineering-candidate.yml'
+      - 'requirements-evals.txt'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'skills/**'
+      - 'evals/**'
+      - 'examples/engineering/**'
+      - 'supabase/migrations/*engineering*'
+      - 'supabase/tests/engineering_projection.sql'
+      - 'supabase/tests/run_engineering_projection.mjs'
+      - 'supabase/tests/package*.json'
+  push:
+    branches-ignore: [main]
+    paths:
+      - '.github/workflows/engineering-candidate.yml'
+      - 'requirements-evals.txt'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'skills/**'
+      - 'evals/**'
+      - 'examples/engineering/**'
+      - 'supabase/migrations/*engineering*'
+      - 'supabase/tests/engineering_projection.sql'
+      - 'supabase/tests/run_engineering_projection.mjs'
+      - 'supabase/tests/package*.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: engineering-candidate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  candidate-conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12.13'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: supabase/tests/package-lock.json
+
+      - name: Prepare report directory
+        run: mkdir -p "$RUNNER_TEMP/engineering-reports"
+
+      - name: Install pinned Python dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run full Python unit and adversarial suite
+        run: python -m unittest discover -s tests -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/engineering-reports/python-tests.txt"
+
+      - name: Validate skills and truthful receipt schemas
+        run: python scripts/validate_skills.py --repo . --output "$RUNNER_TEMP/engineering-reports/skills.json"
+
+      - name: Validate engineering schemas and loop compatibility
+        run: python scripts/validate_engineering.py --repo . --output "$RUNNER_TEMP/engineering-reports/engineering-schemas.json"
+
+      - name: Verify frozen regression manifest and execute its eleven cases
+        run: python evals/engineering/run_regression.py 2>&1 | tee "$RUNNER_TEMP/engineering-reports/regression-manifest.txt"
+
+      - name: Execute local candidate pilot
+        run: |
+          python scripts/run_engineering_pilot.py \
+            --input examples/engineering/runtime-pr2.json \
+            --state-dir "$RUNNER_TEMP/engineering-pilot-state" \
+            --output "$RUNNER_TEMP/engineering-reports/pilot.json" \
+            --now '2026-09-10T12:00:00Z'
+
+      - name: Install pinned SQL test runtime
+        run: npm ci --prefix supabase/tests --ignore-scripts
+
+      - name: Verify private candidate SQL projection
+        run: npm run --prefix supabase/tests test:engineering 2>&1 | tee "$RUNNER_TEMP/engineering-reports/sql-tests.txt"
+
+      - name: Upload candidate verification reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: engineering-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/engineering-reports/
+          if-no-files-found: warn
+          retention-days: 30

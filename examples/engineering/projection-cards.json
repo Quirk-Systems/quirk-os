@@ -1,0 +1,209 @@
+[
+  {
+    "record_id": "action.local-pilot.20260910",
+    "record_kind": "ACTION",
+    "candidate_id": "candidate.engineering-adoption.v0.1",
+    "run_id": "run.engineering.79106f68ebb156a27b76",
+    "graph_node_id": "candidate.engineering-adoption.v0.1.action.local-pilot.20260910",
+    "action_id": "action.79106f68ebb156a27b76",
+    "evidence_id": "",
+    "subject_key": "quirk.engineering.candidate",
+    "state": "OBSERVED",
+    "platform": "Local",
+    "external_id": "action.79106f68ebb156a27b76",
+    "external_url": "",
+    "source_refs": [
+      "examples/engineering/pilot-observation.json"
+    ],
+    "evidence_refs": [],
+    "outcome": "Local candidate prepared with observed local postconditions; historical receipt retained and current grant rechecked. Human usefulness remains unmeasured.",
+    "payload": {
+      "operation": "prepare_candidate",
+      "status": "REVIEW_READY",
+      "evaluator_digest": "1c671d55f5c7f42b651367ee823a061ceb4f2dec7542a0ed4356743370b1a3a9",
+      "synthetic": true
+    },
+    "observed_at": "2026-09-10T08:10:35.801391+00:00"
+  },
+  {
+    "record_id": "evidence.runtime-proof.20260910",
+    "record_kind": "EVIDENCE",
+    "candidate_id": "candidate.engineering-adoption.v0.1",
+    "run_id": "run.engineering.79106f68ebb156a27b76",
+    "graph_node_id": "candidate.engineering-adoption.v0.1.evidence.runtime-proof.20260910",
+    "action_id": "",
+    "evidence_id": "evidence.runtime-proof.20260910",
+    "subject_key": "quirk.engineering.candidate",
+    "state": "OBSERVED",
+    "platform": "Cloudflare",
+    "external_id": "runtime-test-tree.013357869bb8f0a977dcc704de7771d9aaf79ff2",
+    "external_url": "https://github.com/Quirk-Systems/quirk-run/pull/3",
+    "source_refs": [
+      "https://github.com/Quirk-Systems/quirk-run/commit/bb55e136d055e4474ee3923b494f00e3382a86cb",
+      "https://github.com/Quirk-Systems/quirk-run/actions/runs/34453457259"
+    ],
+    "evidence_refs": [
+      "evidence.runtime-proof.20260910"
+    ],
+    "outcome": "33 host and 5 local workerd tests passed; independent review passed. Hosted CI succeeded at the identical published tree. Production recovery remains unproved.",
+    "payload": {
+      "metrics": {
+        "passed": 38,
+        "failed": 0
+      },
+      "source_revision": "bb55e136d055e4474ee3923b494f00e3382a86cb",
+      "status": "LOCAL_PROOF_AND_HOSTED_CI"
+    },
+    "observed_at": "2026-09-10T08:10:35.801391+00:00"
+  },
+  {
+    "record_id": "binding.runtime-pr3",
+    "record_kind": "BINDING",
+    "candidate_id": "candidate.engineering-adoption.v0.1",
+    "run_id": "run.engineering.79106f68ebb156a27b76",
+    "graph_node_id": "candidate.engineering-adoption.v0.1.binding.runtime-pr3",
+    "action_id": "",
+    "evidence_id": "",
+    "subject_key": "quirk.engineering.candidate",
+    "state": "OBSERVED",
+    "platform": "GitHub",
+    "external_id": "Quirk-Systems/quirk-run/pull/3",
+    "external_url": "https://github.com/Quirk-Systems/quirk-run/pull/3",
+    "source_refs": [
+      "https://github.com/Quirk-Systems/quirk-run/pull/3"
+    ],
+    "evidence_refs": [],
+    "outcome": "Draft candidate follow-up to PR2; no merge or deployment.",
+    "payload": {
+      "source_revision": "bb55e136d055e4474ee3923b494f00e3382a86cb",
+      "status": "DRAFT_CANDIDATE"
+    },
+    "observed_at": "2026-09-10T08:10:35.801391+00:00"
+  },
+  {
+    "record_id": "binding.supabase-candidate",
+    "record_kind": "BINDING",
+    "candidate_id": "candidate.engineering-adoption.v0.1",
+    "run_id": "run.engineering.79106f68ebb156a27b76",
+    "graph_node_id": "candidate.engineering-adoption.v0.1.binding.supabase-candidate",
+    "action_id": "",
+    "evidence_id": "",
+    "subject_key": "quirk.engineering.candidate",
+    "state": "BLOCKED",
+    "platform": "Supabase",
+    "external_id": "gcebodogotmozwbnsflf",
+    "external_url": "",
+    "source_refs": [
+      "supabase/migrations/20260910074902_engineering_evidence_candidate.sql",
+      "supabase/tests/engineering_projection.sql"
+    ],
+    "evidence_refs": [],
+    "outcome": "Connected project was inactive. Candidate migration passed 14 local PostgreSQL behavior groups; no remote migration applied.",
+    "payload": {
+      "status": "PROJECT_INACTIVE",
+      "metrics": {
+        "passed": 14,
+        "failed": 0
+      }
+    },
+    "observed_at": "2026-09-10T08:10:35.801391+00:00"
+  },
+  {
+    "record_id": "binding.hugging-face-export",
+    "record_kind": "BINDING",
+    "candidate_id": "candidate.engineering-adoption.v0.1",
+    "run_id": "run.engineering.79106f68ebb156a27b76",
+    "graph_node_id": "candidate.engineering-adoption.v0.1.binding.hugging-face-export",
+    "action_id": "",
+    "evidence_id": "",
+    "subject_key": "quirk.engineering.candidate",
+    "state": "BLOCKED",
+    "platform": "Hugging Face",
+    "external_id": "BryanSayler",
+    "external_url": "https://huggingface.co/BryanSayler",
+    "source_refs": [
+      "evals/engineering/README.md"
+    ],
+    "evidence_refs": [],
+    "outcome": "Portable synthetic regression JSONL prepared. Connected identity has read-repos but lacks write-repos; no upload or paid job.",
+    "payload": {
+      "status": "REPOSITORY_WRITE_SCOPE_UNAVAILABLE"
+    },
+    "observed_at": "2026-09-10T08:10:35.801391+00:00"
+  },
+  {
+    "record_id": "evidence.agent-ready-scan",
+    "record_kind": "EVIDENCE",
+    "candidate_id": "candidate.engineering-adoption.v0.1",
+    "run_id": "run.engineering.79106f68ebb156a27b76",
+    "graph_node_id": "candidate.engineering-adoption.v0.1.evidence.agent-ready-scan",
+    "action_id": "",
+    "evidence_id": "evidence.agent-ready.K30D-KRg20",
+    "subject_key": "quirk.engineering.candidate",
+    "state": "BLOCKED",
+    "platform": "Agent Ready",
+    "external_id": "K30D-KRg20",
+    "external_url": "https://agent-ready.dev/scan/K30D-KRg20",
+    "source_refs": [
+      "https://agent-ready.dev/scan/K30D-KRg20"
+    ],
+    "evidence_refs": [
+      "evidence.agent-ready.K30D-KRg20"
+    ],
+    "outcome": "TLS handshake timed out after 5000 ms; zero pages scanned. Scores and missing-file results cannot establish site quality or absence.",
+    "payload": {
+      "status": "SCAN_FETCH_FAILED",
+      "reason_codes": [
+        "TLS_TIMEOUT",
+        "ZERO_PAGES_SCANNED"
+      ]
+    },
+    "observed_at": "2026-09-10T08:10:35.801391+00:00"
+  },
+  {
+    "record_id": "binding.cloudflare-runtime",
+    "record_kind": "BINDING",
+    "candidate_id": "candidate.engineering-adoption.v0.1",
+    "run_id": "run.engineering.79106f68ebb156a27b76",
+    "graph_node_id": "candidate.engineering-adoption.v0.1.binding.cloudflare-runtime",
+    "action_id": "",
+    "evidence_id": "",
+    "subject_key": "quirk.engineering.candidate",
+    "state": "BLOCKED",
+    "platform": "Cloudflare",
+    "external_id": "Quirk-Systems/quirk-run",
+    "external_url": "https://github.com/Quirk-Systems/quirk-run/pull/3",
+    "source_refs": [
+      "https://github.com/Quirk-Systems/quirk-run/pull/3"
+    ],
+    "evidence_refs": [],
+    "outcome": "Actual local workerd integration is tested. No direct Cloudflare account connector was available; no live deployment.",
+    "payload": {
+      "status": "LIVE_ACCOUNT_UNBOUND"
+    },
+    "observed_at": "2026-09-10T08:10:35.801391+00:00"
+  },
+  {
+    "record_id": "binding.airtable-candidate",
+    "record_kind": "BINDING",
+    "candidate_id": "candidate.engineering-adoption.v0.1",
+    "run_id": "run.engineering.79106f68ebb156a27b76",
+    "graph_node_id": "candidate.engineering-adoption.v0.1.binding.airtable-candidate",
+    "action_id": "",
+    "evidence_id": "",
+    "subject_key": "quirk.engineering.candidate",
+    "state": "OBSERVED",
+    "platform": "Airtable",
+    "external_id": "tblyZVemDCb77wb8y",
+    "external_url": "https://airtable.com/appYP3w5BrARBp9Yq/tblyZVemDCb77wb8y",
+    "source_refs": [
+      "https://airtable.com/appYP3w5BrARBp9Yq/tblyZVemDCb77wb8y"
+    ],
+    "evidence_refs": [],
+    "outcome": "Additive Candidate Loop Records table created in the existing candidate registry. Rows are rebuildable projections with no admission effect.",
+    "payload": {
+      "status": "TABLE_CREATED"
+    },
+    "observed_at": "2026-09-10T08:10:35.801391+00:00"
+  }
+]

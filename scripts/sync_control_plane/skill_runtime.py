@@ -180,7 +180,13 @@ def build_run_receipt(
     finding_codes: list[str],
     proposed_mutations: list[str],
 ) -> dict[str, Any]:
+    """Build a v2 declaration; references and requested status are not observations.
+
+    The historical v1 schema is retained for reading old records. Runtime effect
+    observations require the separately versioned action receipt boundary.
+    """
     return {
+        "schema_version": "skill-run-receipt/v2",
         "receipt_id": receipt_id,
         "skill_id": manifest["id"],
         "skill_version": manifest["version"],
@@ -194,9 +200,15 @@ def build_run_receipt(
         "evidence_refs": evidence_refs,
         "finding_codes": finding_codes,
         "proposed_mutations": proposed_mutations,
-        "authority_ceiling_observed": grant["authority_ceiling"],
-        "no_authority_escalation": True,
-        "immutable": True,
+        "authority_ceiling_declared": grant["authority_ceiling"],
+        "authority_ceiling_observed": None,
+        "no_authority_escalation": None,
+        "immutable": None,
+        "evidence_status": "unverified",
+        "limitations": [
+            "Caller-provided status and evidence references have not been independently verified.",
+            "This helper observes no effects and enforces no immutable storage.",
+        ],
     }
 
 

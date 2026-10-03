@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/loop-spec.v1.schema.json",
+  "title": "Bounded candidate loop specification v1",
+  "description": "Frozen run input. Non-PREPARE authority values are valid inputs that the runner pauses before dispatch; this schema never grants authority. The runtime additionally checks the supplied evaluator digest, finite JSON values, and Python integer budget representation.",
+  "type": "object",
+  "required": ["schema_version", "run_id", "objective", "source_digest", "evaluator_digest", "acceptance", "authority", "limits"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {"const": "loop-spec/v1"},
+    "run_id": {"type": "string", "pattern": "\\S"},
+    "objective": {"type": "string", "pattern": "\\S"},
+    "authority": {
+      "type": "string",
+      "pattern": "\\S",
+      "description": "Only CANDIDATE_PREPARE permits the candidate runner to proceed. Other nonempty values cause PAUSED_AUTHORITY_CHANGE."
+    },
+    "source_digest": {"type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[0-9a-f]{64}$"},
+    "evaluator_digest": {"type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[0-9a-f]{64}$"},
+    "acceptance": {"type": "object", "minProperties": 1},
+    "limits": {
+      "type": "object",
+      "required": ["steps", "repairs", "seconds"],
+      "additionalProperties": true,
+      "properties": {
+        "steps": {"type": "integer", "minimum": 1, "maximum": 100},
+        "repairs": {"type": "integer", "minimum": 0, "maximum": 99},
+        "seconds": {"type": "integer", "minimum": 1, "maximum": 3600}
+      }
+    }
+  }
+}
