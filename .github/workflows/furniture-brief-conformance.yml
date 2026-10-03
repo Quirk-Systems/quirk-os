@@ -1,0 +1,72 @@
+name: Furniture Brief Conformance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/furniture-brief-conformance.yml'
+      - 'scripts/furniture_brief/**'
+      - 'scripts/applause_gate/receipt.py'
+      - 'scripts/validate_furniture_brief.py'
+      - 'tests/test_furniture_brief*.py'
+      - 'schemas/furniture-brief-contract.schema.json'
+      - 'evals/furniture-brief/**'
+      - 'docs/furniture-brief/**'
+      - 'requirements-evals.txt'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: furniture-brief-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  candidate-furniture-brief-conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+
+      - name: Record tested head
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p evidence/furniture-brief
+          git rev-parse HEAD > evidence/furniture-brief/head.sha
+          test "$(cat evidence/furniture-brief/head.sha)" = "$EXPECTED_HEAD"
+
+      - name: Install evaluation dependencies
+        id: dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run repository unit and adversarial tests
+        env:
+          PYTHONPATH: scripts
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tests -p 'test_*.py' -v 2>&1 | tee evidence/furniture-brief/tests.log
+
+      - name: Run furniture fixture corpus
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          PYTHONPATH: scripts
+        run: python scripts/validate_furniture_brief.py --require-pass > evidence/furniture-brief/fixtures.json
+
+      - name: Upload candidate evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: furniture-brief-${{ github.event.pull_request.head.sha }}
+          path: evidence/furniture-brief/
+          if-no-files-found: error
+          retention-days: 30

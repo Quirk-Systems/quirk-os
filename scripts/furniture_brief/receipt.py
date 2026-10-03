@@ -92,8 +92,10 @@ def verify_chain(
     derived from the very chain being checked, or they prove nothing.
 
     Returns ``{"valid": bool, "broken_at": int | None, "reason": str | None}``.
-    ``broken_at`` is the 0-based index of the first entry that fails to
-    reproduce its stored hash or chain correctly to its predecessor.
+    ``broken_at`` is the 0-based entry index for an entry failure, or
+    ``None`` for an invalid chain container or anchor. A count mismatch
+    reports ``min(len(chain), expected_count)``: the first missing or extra
+    position. A tip mismatch reports the end boundary, ``len(chain)``.
     """
 
     def invalid(index: int | None, reason: str) -> dict[str, Any]:
@@ -123,6 +125,8 @@ def verify_chain(
         body = {key: value for key, value in entry.items() if key != "entry_hash"}
         try:
             recomputed_hash = sha256_json(body)
+        except RecursionError:
+            return invalid(index, "entry exceeds JSON serialization recursion limit")
         except (TypeError, ValueError):
             return invalid(index, "entry must be JSON-serializable")
         if recomputed_hash != stored_hash:
