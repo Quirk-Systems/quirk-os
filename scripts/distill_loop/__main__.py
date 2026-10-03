@@ -116,7 +116,7 @@ def _ledger_lock(root: Path):
         handle.close()
 
 
-def _write_guarded(root: Path, transaction):
+def _write_guarded(root: Path, transaction, *, source_root: Path | None = None):
     """Run a read/compute/write transaction while holding the ledger lock.
 
     Lock setup failures are normalized to ``LOCK_UNAVAILABLE``. Errors raised
@@ -124,7 +124,11 @@ def _write_guarded(root: Path, transaction):
     their original error semantics.
     """
     try:
-        with _ledger_lock(root):
+        with contextlib.ExitStack() as locks:
+            # Stable ordering prevents deadlocks for opposite-direction exports.
+            roots = {root.resolve(), (source_root or root).resolve()}
+            for locked_root in sorted(roots, key=str):
+                locks.enter_context(_ledger_lock(locked_root))
             return 0, transaction()
     except LockUnavailable as exc:
         print(
@@ -148,7 +152,7 @@ def _add_roots(command) -> None:
     command.add_argument("--root", type=Path, default=None,
                          help="tree holding the distill ledger and distilled candidates (default: --repo)")
     command.add_argument("--out", type=Path, default=None,
-                         help="write under this root instead of --root")
+                         help="export from the --root ledger to this destination; destination ledger is not an input")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -206,11 +210,11 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.write:
             def write_distill():
-                result = distill(_ledger(out))
+                result = distill(_ledger(root))
                 write_files(out, result["files"])
                 return result
 
-            status, result = _write_guarded(out, write_distill)
+            status, result = _write_guarded(out, write_distill, source_root=root)
             if result is None:
                 return status
         else:
@@ -243,12 +247,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.write:
         def write_promotion():
-            result = promote(_ledger(out))
+            result = promote(_ledger(root))
             if not result["errors"]:
                 write_files(out, result["files"])
             return result
 
-        status, result = _write_guarded(out, write_promotion)
+        status, result = _write_guarded(out, write_promotion, source_root=root)
         if result is None:
             return status
     else:

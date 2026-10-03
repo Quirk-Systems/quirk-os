@@ -382,6 +382,103 @@ class ContextTests(unittest.TestCase):
             self.assertEqual(context["quarantined"][0]["candidate_id"], distilled["manifest"]["id"])
 
 
+class RedirectedWriteTests(unittest.TestCase):
+    def _run(self, args):
+        import distill_loop.__main__ as cli
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            status = cli.main(args)
+        return status, json.loads(output.getvalue())
+
+    def test_redirected_transaction_locks_both_roots_in_stable_order(self):
+        from unittest import mock
+        import distill_loop.__main__ as cli
+        held = []
+        acquired = []
+
+        @contextlib.contextmanager
+        def lock(root):
+            acquired.append(root)
+            held.append(root)
+            try:
+                yield
+            finally:
+                held.remove(root)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            first, second = Path(tmp) / "a", Path(tmp) / "z"
+            def transaction():
+                self.assertEqual(held, [first, second])
+                return "written"
+            with mock.patch.object(cli, "_ledger_lock", lock):
+                self.assertEqual(cli._write_guarded(first, transaction, source_root=second), (0, "written"))
+                self.assertEqual(cli._write_guarded(second, transaction, source_root=first), (0, "written"))
+            self.assertEqual(acquired, [first, second, first, second])
+            self.assertEqual(held, [])
+
+    def test_redirected_distill_preserves_source_chain_and_preview(self):
+        from distill_loop.common import write_files
+        fx = DistillFixture()
+        seeded = fx.distill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out = Path(tmp) / "source", Path(tmp) / "output"
+            write_files(root, seeded["files"])
+            before = (root / "skills/distill-ledger.json").read_bytes()
+            receipt = {**fx.receipt, "receipt_id": fx.receipt["receipt_id"] + ".redirected"}
+            trace = {**fx.trace, "receipt_id": receipt["receipt_id"]}
+            receipt_path, trace_path = Path(tmp) / "receipt.json", Path(tmp) / "trace.json"
+            receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+            trace_path.write_text(json.dumps(trace), encoding="utf-8")
+            args = ["distill", "--repo", str(ROOT), "--root", str(root),
+                    "--out", str(out), "--receipt", str(receipt_path),
+                    "--trace", str(trace_path)]
+            for destination in (None, new_ledger(), {"invalid": True}):
+                with self.subTest(destination=destination):
+                    if destination is not None:
+                        write_files(out, {"skills/distill-ledger.json": json.dumps(destination)})
+                    preview_status, preview = self._run(args)
+                    status, result = self._run([*args, "--write"])
+                    self.assertEqual((status, result), (preview_status, preview))
+                    self.assertEqual(result["outcome"], "distilled")
+                    ledger = _json(out / "skills/distill-ledger.json")
+                    self.assertEqual(ledger["entries"][:-1], seeded["ledger"]["entries"])
+                    self.assertEqual(ledger["entries"][-1]["entry_id"], "dl.000002")
+                    self.assertEqual(verify_ledger(ledger), [])
+                    self.assertEqual((root / "skills/distill-ledger.json").read_bytes(), before)
+
+    def test_redirected_promotion_uses_source_provenance(self):
+        from distill_loop.common import write_files
+        fx = DistillFixture()
+        seeded = fx.distill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out = Path(tmp) / "source", Path(tmp) / "output"
+            write_files(root, seeded["files"])
+            before = (root / "skills/distill-ledger.json").read_bytes()
+            args = ["promote", "--repo", str(ROOT), "--root", str(root),
+                    "--out", str(out), "--receipt", str(EXAMPLE / "promotion-receipt.json"),
+                    "--eval-suite", str(EXAMPLE / "reviewed-eval-suite.json")]
+            for destination in (None, new_ledger(), {"invalid": True}):
+                with self.subTest(destination=destination):
+                    if destination is not None:
+                        write_files(out, {"skills/distill-ledger.json": json.dumps(destination)})
+                    preview_status, preview = self._run(args)
+                    status, result = self._run([*args, "--write"])
+                    self.assertEqual(status, 0)
+                    self.assertEqual((status, result), (preview_status, preview))
+                    self.assertEqual(result["outcome"], "promoted")
+                    ledger = _json(out / "skills/distill-ledger.json")
+                    self.assertEqual(ledger["entries"][:-1], seeded["ledger"]["entries"])
+                    self.assertEqual(ledger["entries"][-1]["entry_id"], "dl.000002")
+                    self.assertEqual(verify_ledger(ledger), [])
+                    self.assertEqual((root / "skills/distill-ledger.json").read_bytes(), before)
+            # Output provenance cannot authorize a source lacking provenance.
+            write_files(root, {"skills/distill-ledger.json": json.dumps(new_ledger())})
+            output_before = (out / "skills/distill-ledger.json").read_bytes()
+            self.assertEqual(self._run(args), self._run([*args, "--write"]))
+            self.assertEqual(self._run(args)[0], 1)
+            self.assertEqual((out / "skills/distill-ledger.json").read_bytes(), output_before)
+
+
 class CliLockTests(unittest.TestCase):
     def test_windows_lock_failures_do_not_spin_forever(self) -> None:
         import errno

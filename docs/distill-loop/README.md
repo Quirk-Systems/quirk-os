@@ -107,3 +107,17 @@ PYTHONPATH=scripts python scripts/validate_distill_loop.py --repo . --require-pa
 ## Decision ceiling
 
 This pack justifies candidate completeness only. It cannot by itself mark a distilled package reviewed, admitted, active, current, chooseable, useable, canonical, or deployed.
+
+### Redirected ledger writes
+
+`--root` selects the provenance ledger for preview and write. `--out` only
+selects the export destination: any existing destination ledger is replaced
+by the source chain plus the new entry and is never used as input. The source
+ledger remains unchanged when exporting to a different tree. To continue from
+an exported ledger, use that tree as `--root` on the next invocation.
+
+Writes hold source and destination ledger locks in sorted, resolved-path order
+(with one lock when they are the same tree), then read the source ledger and
+compute/write the result. Promotion cannot borrow provenance from the output
+tree when the source ledger lacks it. Preview is informational; writes re-read
+the current source under lock and can differ if the source changed meanwhile.
