@@ -1,7 +1,7 @@
 # Quirk Distinctions Workflow v0.1
 
 Date: 2026-10-03
-Status: Working procedure authorized in this conversation; effectiveness unmeasured.
+Status: Repository review candidate; manual procedure authorized by Bryan on 2026-10-03; effectiveness unmeasured.
 Source: Bryan's distinctions drill and instruction, “Apply Workflow Changes as Recommended.”
 Implementation scope: reusable manual checklist and receipt. No runtime enforcement or systemwide installation is claimed.
 
@@ -58,7 +58,7 @@ For the next real task, time preparation, review, and correction separately; rec
 - Separated structural validation, behavioral checks, usefulness, and authorization.
 - Added explicit scope for reuse and evidence for capability claims.
 - Added effort tracking with unknown values preserved.
-- No performance gain measured; no runtime, repository, or automation changed.
+- Repository documentation added on an isolated review branch; no performance gain measured and no runtime or automation changed.
 
 
 ## Repository placement and GitHub workflow
