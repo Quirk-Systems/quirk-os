@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quirk://schemas/beauty/outcome-observation/0.1.0",
+  "title": "OutcomeObservation",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "actorId": { "type": "string" },
+    "purpose": { "type": "string" },
+    "recommendationId": { "type": "string" },
+    "optionId": { "type": "string" },
+    "kind": { "enum": ["preferred", "rejected", "mixed", "not_tested"] },
+    "explicit": { "const": true },
+    "testedInRealWorld": { "type": "boolean" },
+    "sourceType": { "const": "explicit_human_report" },
+    "note": { "type": "string" },
+    "observedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["id", "actorId", "purpose", "recommendationId", "optionId", "kind", "explicit", "testedInRealWorld", "sourceType", "note", "observedAt"]
+}
