@@ -95,6 +95,12 @@ both surfaces reject it.
   idiom: sha256 over `json.dumps(value, sort_keys=True,
   separators=(',', ':'), ensure_ascii=False)`. A preimage spec can adopt it
   rather than invent one.
+- VERIFIED — the independent-approver rule was ported into the trigger as its
+  own logic on this branch (`37cf36ea379d8cf82cbc76da39fce0b2b039b415`) rather
+  than having the database trust the Python gate. For that one rule the
+  database is an enforcement surface, not a projection. This is precedent for
+  the second decision under Residue, not a resolution of it: porting a string
+  comparison is cheap, and porting a canonical-JSON digest may not be.
 - UNKNOWN — whether PostgreSQL can reproduce that canonicalization. `jsonb`
   does not preserve key order or duplicate keys and normalizes numbers, so
   `jsonb` round-tripping may not agree with Python's `json.dumps`. Resolved by
