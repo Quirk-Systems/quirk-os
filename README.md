@@ -23,6 +23,9 @@ Start here: [`docs/golden-project-pack/README.md`](docs/golden-project-pack/READ
 
 ## Working procedures
 
+- [Workflow conventions and defaults](docs/workflows/README.md) — repository placement, delivery sequence, and setup before automation.
+- [Quirk Checklists candidate](docs/checklists/README.md) and [run template](templates/checklist-run.md) — version-bound criteria, evidence, and explicit unresolved states.
+
 - [Distinctions workflow](docs/workflows/distinctions-workflow.md) — bounded manual work, separate evidence and authority, and GitHub review handoff.
 - [Distinctions run receipt](templates/distinctions-run-receipt.md) — copy per run; usefulness and effort remain unmeasured until observed.
 
