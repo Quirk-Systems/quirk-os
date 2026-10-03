@@ -84,6 +84,100 @@ begin
   end if;
 end $$;
 
+-- An omitted JSON key must not pass a guard that exists to require it.
+-- `->>` on a missing key is NULL and `NULL <> 'approved'` is NULL, so the old
+-- `<>` form let omission through while refusing a wrong value.
+do $$
+declare
+  v_rejected boolean := false;
+  v_hash text := repeat('1', 64);
+begin
+  begin
+    insert into quirk_sync.manifest_registry (
+      manifest_key, manifest_kind, version, status, requested_status,
+      canonical_uri, content_hash, authority_ceiling, tools,
+      inputs_schema_ref, outputs_schema_ref, eval_refs, stop_conditions,
+      requested_by, approved_by, admission_decision_ref, authority_grant_ref,
+      evaluated_content_hash, transition_evidence_ref, admitted_at, domains,
+      rights_review
+    ) values (
+      'agent.sql-rights-omitted', 'agent', '9.9.7', 'active', 'active',
+      'https://github.com/Quirk-Systems/quirk-os/pull/113', v_hash, 'propose', '[]'::jsonb,
+      'schemas/source-binding.schema.json', 'schemas/sync-run-receipt.schema.json',
+      '["eval.omitted"]'::jsonb, '["none"]'::jsonb,
+      'agent.sql-rights-omitted', 'human.bryan', 'decision.omitted', 'grant.omitted',
+      v_hash, 'evidence.omitted', now(), '["data_productization"]'::jsonb,
+      '{"license_verified":true,"provenance_complete":true}'::jsonb
+    );
+  exception when others then
+    v_rejected := position('data productization requires' in sqlerrm) > 0;
+  end;
+  if not v_rejected then
+    raise exception 'rights review with outcome and privacy_review omitted was accepted';
+  end if;
+end $$;
+
+-- Same NULL-logic class on the orchestrator routing guard.
+do $$
+declare
+  v_rejected boolean := false;
+  v_hash text := repeat('2', 64);
+begin
+  begin
+    insert into quirk_sync.manifest_registry (
+      manifest_key, manifest_kind, version, status, requested_status,
+      canonical_uri, content_hash, authority_ceiling, tools,
+      inputs_schema_ref, outputs_schema_ref, eval_refs, stop_conditions,
+      requested_by, approved_by, admission_decision_ref, authority_grant_ref,
+      evaluated_content_hash, transition_evidence_ref, admitted_at, domains,
+      skill_refs, trigger_contract
+    ) values (
+      'orchestrator.sql-collision-omitted', 'orchestrator', '9.9.8', 'active', 'active',
+      'https://github.com/Quirk-Systems/quirk-os/pull/113', v_hash, 'propose', '[]'::jsonb,
+      'schemas/source-binding.schema.json', 'schemas/sync-run-receipt.schema.json',
+      '["eval.collision"]'::jsonb, '["none"]'::jsonb,
+      'agent.sql-collision-requester', 'human.bryan', 'decision.collision', 'grant.collision',
+      v_hash, 'evidence.collision', now(), '["sync"]'::jsonb,
+      '["skill.a","skill.b"]'::jsonb, '{"routing_policy":"explicit_priority"}'::jsonb
+    );
+  exception when others then
+    v_rejected := position('fail-closed trigger contract' in sqlerrm) > 0;
+  end;
+  if not v_rejected then
+    raise exception 'orchestrator with collision_behavior omitted was accepted';
+  end if;
+end $$;
+
+-- The requester had no shape check at all. The JSON schema constrains that
+-- field for manifests arriving as documents; nothing constrained the column.
+do $$
+declare
+  v_rejected boolean := false;
+  v_hash text := repeat('3', 64);
+begin
+  begin
+    insert into quirk_sync.manifest_registry (
+      manifest_key, manifest_kind, version, status, requested_status,
+      canonical_uri, content_hash, authority_ceiling, tools,
+      inputs_schema_ref, outputs_schema_ref, eval_refs, stop_conditions,
+      requested_by, approved_by, admission_decision_ref, authority_grant_ref,
+      evaluated_content_hash, transition_evidence_ref, admitted_at, domains
+    ) values (
+      'agent.sql-bad-requester', 'agent', '9.9.9', 'active', 'active',
+      'https://github.com/Quirk-Systems/quirk-os/pull/113', v_hash, 'propose', '[]'::jsonb,
+      'schemas/source-binding.schema.json', 'schemas/sync-run-receipt.schema.json',
+      '["eval.requester"]'::jsonb, '["none"]'::jsonb,
+      'NOT-A-PRINCIPAL', 'human.bryan', 'decision.requester', 'grant.requester',
+      v_hash, 'evidence.requester', now(), '["sync"]'::jsonb
+    );
+  exception when others then
+    v_rejected := position('well-formed principal' in sqlerrm) > 0;
+  end;
+  if not v_rejected then
+    raise exception 'a malformed requester principal was accepted';
+  end if;
+end $$;
+
 -- A principal naming nobody is refused. There is no schema layer in front of
 -- the database, so the guard matches the whole principal, not its prefix.
 do $$

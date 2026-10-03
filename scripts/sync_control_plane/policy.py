@@ -34,6 +34,17 @@ def _parse_dt(value: str) -> datetime:
 # decisions it waits on are in docs/briefs/2026-10-03-approval-attestation.md.
 _INDEPENDENT_APPROVER = re.compile(r"human\.[a-z0-9._-]+")
 
+# Any well-formed principal, mirroring schemas/runtime-manifest.schema.json. The
+# requester's shape is checked for the same reason the approver's whole value is:
+# this function is called directly, so it cannot assume JSON Schema ran. The
+# SQL trigger had no requester check at all, which let `'NOT-A-PRINCIPAL'`
+# activate a manifest; the two surfaces agree now.
+_PRINCIPAL = re.compile(r"(human|agent|service|system)\.[a-z0-9._-]+")
+
+
+def _is_principal(value: Any) -> bool:
+    return isinstance(value, str) and _PRINCIPAL.fullmatch(value) is not None
+
 
 def _is_independent_approver(approved_by: Any) -> bool:
     return isinstance(approved_by, str) and _INDEPENDENT_APPROVER.fullmatch(approved_by) is not None
@@ -59,6 +70,8 @@ def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:
         errors.append("active manifest requires authority grant reference")
     if not admission.get("transition_ref"):
         errors.append("active manifest requires legal transition evidence")
+    if not _is_principal(requested_by):
+        errors.append("manifest requester must be a well-formed principal")
     if requested_by == approved_by:
         errors.append("requester may not approve its own manifest transition")
     if admission.get("evaluated_content_hash") != manifest.get("content_hash"):

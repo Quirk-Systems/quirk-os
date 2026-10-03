@@ -84,6 +84,21 @@ class SyncControlPlaneTests(unittest.TestCase):
                     validate_manifest_admission(manifest),
                 )
 
+    def test_a_malformed_requester_is_refused_on_the_python_surface_too(self):
+        """The SQL trigger had no requester check; `'NOT-A-PRINCIPAL'` activated a manifest.
+
+        The schema constrains that field for manifests arriving as documents, but
+        this function is called directly, so it checks the shape itself.
+        """
+        for requested_by in ("NOT-A-PRINCIPAL", "human.", "", "agent"):
+            with self.subTest(requested_by=requested_by):
+                manifest = load("evals/sync-control-plane/valid-active-manifest.json")
+                manifest["admission"]["requested_by"] = requested_by
+                self.assertIn(
+                    "manifest requester must be a well-formed principal",
+                    validate_manifest_admission(manifest),
+                )
+
     def test_a_principal_naming_nobody_is_refused_without_help_from_the_schema(self):
         """The gate is called directly, so it may not lean on schema validation.
 
