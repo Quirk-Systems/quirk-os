@@ -6,15 +6,20 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `e63fd9642694c78dff23aee84f8a9a4e497d7dde9c3e9393678005c4c3202c8d`
+**Content hash (SHA-256):** `0ac9f28d508c1e7f3d38b867b27189fc4b0865dcf243a6bb6d71677f08a3d4c8`
 
-> Digest updated when the admission policy changed. The previous value,
-> `ab07a616af2effda9a93a1edca3c8284e6c764479bd5de7a234bd93998d6a76b`, covered a
-> conformance payload recording the retired error
-> `self-requested activation requires independent human or authorized service approval`.
-> That rule was replaced by an independent-human-approver check, so the payload
-> and therefore this digest moved with it. The decision above is unchanged and
-> still is not admission.
+> Digest history, recorded because a hash replaced without a note is
+> indistinguishable from one that was always that value. The decision above is
+> unchanged throughout and still is not admission.
+>
+> - `ab07a616…` — covered a payload recording the retired error
+>   `self-requested activation requires independent human or authorized service approval`.
+>   Superseded when that rule became an independent-human-approver check.
+> - `e63fd964…` — covered the replacement error and the first two migration
+>   static checks. Superseded when those checks were scoped to the rule
+>   function, because a whole-file search for a predicate stayed satisfied even
+>   when the enforcing definition had lost it.
+> - `0ac9f28d…` — current.
 
 This document consolidates the technical evidence for each admission criterion. It does not constitute admission. Bryan's explicit approve, revise, reject, or supersede decision is required before any activation, Canon promotion, merge, authority expansion, or production deployment.
 

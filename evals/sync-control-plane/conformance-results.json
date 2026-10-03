@@ -231,8 +231,6 @@
   },
   "migration_static": {
     "manifest_guard": true,
-    "independent_human_approver": true,
-    "legacy_approval_data_check": true,
     "append_only_receipts": true,
     "transition_ledger": true,
     "proposed_move_store": true,
@@ -241,7 +239,14 @@
     "drift_controller": true,
     "projection_rebuild": true,
     "cloudflare_binding": true,
-    "browser_roles_revoked": true
+    "browser_roles_revoked": true,
+    "rule_independent_human_approver": true,
+    "rule_well_formed_requester": true,
+    "rule_null_safe_rights_review": true,
+    "rule_null_safe_trigger_contract": true,
+    "guard_delegates_to_rules": true,
+    "audit_uses_rule_function": true,
+    "audit_holds_write_lock": true
   },
   "mapping_proof": {
     "binding_schema_errors": [],
@@ -249,5 +254,5 @@
     "binding_roundtrip_stable": true,
     "receipt_roundtrip_stable": true
   },
-  "content_hash_sha256": "e63fd9642694c78dff23aee84f8a9a4e497d7dde9c3e9393678005c4c3202c8d"
+  "content_hash_sha256": "0ac9f28d508c1e7f3d38b867b27189fc4b0865dcf243a6bb6d71677f08a3d4c8"
 }

@@ -38,20 +38,53 @@ def validate(schema: dict[str, Any], instance: dict[str, Any]) -> list[str]:
     return [error.message for error in sorted(validator.iter_errors(instance), key=lambda item: list(item.path))]
 
 
+def _function_body(sql: str, name: str) -> str:
+    """The text of one `create or replace function <name>` definition, or ''.
+
+    Needed because a token can appear in a migration without appearing in the
+    function that has to enforce it. The approver predicate is written twice in
+    `20261003090000`: once in the rule function and once, previously, in the
+    pre-install audit, so a whole-file search for it stayed satisfied even if
+    the enforcing definition had lost it.
+    """
+    lower = sql.lower()
+    # The LAST definition, because applying the migrations in order leaves that
+    # one installed. `guard_manifest_activation` is defined twice across these
+    # files, and reading the earlier one would report the older body's contents.
+    start = lower.rfind(f"create or replace function quirk_sync.{name}")
+    if start < 0:
+        return ""
+    end = lower.find("end $$;", start)
+    return lower[start : end + len("end $$;")] if end > start else lower[start:]
+
+
 def static_migration_checks(sql: str) -> dict[str, bool]:
     """Presence checks over the concatenated migration text.
 
-    These prove a token appears somewhere in the migrations, not that the
-    function currently installed in a database contains it. A static read cannot
-    establish the latter; `supabase/tests/sync_control_plane_hardening.sql` is
-    what exercises the installed behaviour, and nothing in this repository runs
-    it in CI.
+    These prove a token appears in the migrations — and, where the name says
+    `rule_`, inside the definition that has to enforce it. None of them proves
+    what a database currently has installed. A static read cannot;
+    `supabase/tests/sync_control_plane_hardening.sql` exercises the installed
+    behaviour, and nothing in this repository runs it in CI, so these checks are
+    a spelling test and not conformance.
     """
     lower = sql.lower()
+    rules = _function_body(sql, "manifest_activation_violation")
+    scoped = {
+        # Scoped to the rule function, so the audit query cannot satisfy them.
+        "rule_independent_human_approver": "approved_by !~ '^human\\.[a-z0-9._-]+$'" in rules,
+        "rule_well_formed_requester": "requested_by !~ '^(human|agent|service|system)\\.[a-z0-9._-]+$'" in rules,
+        "rule_null_safe_rights_review": "->>'outcome' is distinct from 'approved'" in rules,
+        "rule_null_safe_trigger_contract": "->>'collision_behavior' is distinct from 'block'" in rules,
+        # The guard must delegate to the rule function rather than restate it.
+        "guard_delegates_to_rules": "manifest_activation_violation(new)"
+        in _function_body(sql, "guard_manifest_activation"),
+        # The audit must be driven by the same function, not its own copy.
+        "audit_uses_rule_function": "where quirk_sync.manifest_activation_violation(m) is not null" in lower,
+        "audit_holds_write_lock": "lock table quirk_sync.manifest_registry in exclusive mode" in lower,
+    }
     tokens = {
         "manifest_guard": "guard_manifest_activation",
-        "independent_human_approver": "approved_by !~ '^human\\.[a-z0-9._-]+$'",
-        "legacy_approval_data_check": "carry an approver that is not an independent human principal",
         "append_only_receipts": "prevent_append_only_mutation",
         "transition_ledger": "manifest_transition_ledger",
         "proposed_move_store": "create table if not exists quirk_sync.proposed_moves",
@@ -62,7 +95,7 @@ def static_migration_checks(sql: str) -> dict[str, bool]:
         "cloudflare_binding": "'cloudflare'",
         "browser_roles_revoked": "revoke all on schema quirk_sync from authenticated",
     }
-    return {name: token in lower for name, token in tokens.items()}
+    return {**{name: token in lower for name, token in tokens.items()}, **scoped}
 
 
 def mapping_roundtrip(binding_schema: dict[str, Any], receipt_schema: dict[str, Any]) -> dict[str, Any]:
