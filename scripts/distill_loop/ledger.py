@@ -64,6 +64,8 @@ def append_entry(
     """Return (new_ledger, entry). The input ledger is never mutated."""
     if kind not in ENTRY_KINDS:
         raise ValueError(f"unknown ledger entry kind: {kind}")
+    if kind == "distilled" and not (refs.get("manifest_sha256") and refs.get("source_manifest_sha256")):
+        raise ValueError("a distilled entry must carry manifest_sha256 and source_manifest_sha256 provenance")
     errors = verify_ledger(ledger)
     if errors:
         raise ValueError("refusing to append to a ledger that fails verification: " + "; ".join(errors))
@@ -135,6 +137,13 @@ def distilled_entry(ledger: dict[str, Any], candidate_id: str) -> dict[str, Any]
         if entry.get("kind") == "distilled" and entry.get("candidate_id") == candidate_id:
             return entry
     return None
+
+
+def promotion_receipt_used(ledger: dict[str, Any], receipt_id: str) -> bool:
+    return any(
+        entry.get("refs", {}).get("promotion_receipt_ref") == receipt_id
+        for entry in ledger.get("entries", [])
+    )
 
 
 def receipt_already_distilled(ledger: dict[str, Any], source_receipt_id: str) -> bool:

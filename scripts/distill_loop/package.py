@@ -315,6 +315,7 @@ def build_starter_eval_suite(
                 "moves_completed": move_names,
                 "evidence_refs": [item["evidence_ref"] for item in successful_moves],
                 "stop_conditions_hit": [],
+                "authority_ceiling_observed": manifest["authority"]["ceiling"],
             },
             "expected": {
                 "result": "pass",

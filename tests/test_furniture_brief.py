@@ -98,6 +98,28 @@ class ReceiptChainIntegrityTests(unittest.TestCase):
         verdict = self.verify_chain(truncated)
         self.assertFalse(verdict["valid"])
 
+    def test_unanchored_tail_truncation_is_structurally_valid(self) -> None:
+        # A dropped middle entry breaks linkage, but a dropped *tail* entry
+        # leaves a chain that is a valid prefix of itself: without an
+        # independently trusted count/tip, this is undetectable. Documented
+        # here so the limitation is a known fact, not a silent gap.
+        truncated = copy.deepcopy(self.chain)
+        del truncated[-1]
+        verdict = self.verify_chain(truncated)
+        self.assertTrue(verdict["valid"])
+
+    def test_trusted_anchor_detects_tail_truncation(self) -> None:
+        true_count = len(self.chain)
+        true_tip = self.chain[-1]["entry_hash"]
+        truncated = copy.deepcopy(self.chain)
+        del truncated[-1]
+        verdict = self.verify_chain(truncated, expected_count=true_count, expected_tip=true_tip)
+        self.assertFalse(verdict["valid"])
+        # And the untampered chain matches its own trusted anchors.
+        self.assertTrue(
+            self.verify_chain(self.chain, expected_count=true_count, expected_tip=true_tip)["valid"]
+        )
+
 
 class ABryFurnitureSpecificityExperimentTests(unittest.TestCase):
     """One A/Bry-style local experiment: same synthetic root, Furniture specificity is

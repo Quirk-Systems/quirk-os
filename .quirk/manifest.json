@@ -1,0 +1,10 @@
+{
+  "repository": "Quirk-Systems/quirk-os",
+  "class": "kernel",
+  "lifecycle": "candidate",
+  "admission": "not_admitted",
+  "authority": "Quirk-Systems/.github",
+  "owner": {
+    "state": "open"
+  }
+}

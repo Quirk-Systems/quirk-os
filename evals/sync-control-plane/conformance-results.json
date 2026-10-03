@@ -1,0 +1,251 @@
+{
+  "suite_id": "eval.sync-control-plane.conformance.v0.2",
+  "decision": "ELIGIBLE_FOR_HUMAN_ADMISSION",
+  "automatic_activation": false,
+  "checks": {
+    "fixture_count_11": true,
+    "all_fixtures_pass": true,
+    "valid_active_manifest_passes_schema": true,
+    "valid_active_manifest_passes_policy": true,
+    "self_promotion_rejected_by_schema_or_policy": true,
+    "rights_unclear_rejected": true,
+    "trigger_collision_rejected": true,
+    "migration_hardening_complete": true,
+    "mapping_roundtrip_passes": true
+  },
+  "fixtures": [
+    {
+      "id": "SCP-001",
+      "name": "conflicting_canon",
+      "expected": "block_projection_and_propose_reconciliation",
+      "case_ref": "evals/sync-control-plane/cases/SCP-001.json",
+      "passed": true,
+      "actual": {
+        "action": "block_projection_and_propose_reconciliation",
+        "conflicts": [
+          {
+            "object_key": "rule.x",
+            "source_refs": [
+              "github://Quirk-Systems/quirk-os/canon/rule-x",
+              "drive://rule-x"
+            ]
+          }
+        ],
+        "proposed_moves": [
+          "qpm_sync_reconcile_rule_x"
+        ]
+      }
+    },
+    {
+      "id": "SCP-002",
+      "name": "mixed_source_batch",
+      "expected": "preserve_raw_provenance_and_quarantine_failures",
+      "case_ref": "evals/sync-control-plane/cases/SCP-002.json",
+      "passed": true,
+      "actual": {
+        "action": "preserve_raw_provenance_and_quarantine_failures",
+        "raw_source_refs": [
+          "drive://doc-1",
+          "drive://doc-2",
+          "drive://doc-3"
+        ],
+        "accepted": [
+          "drive://doc-1"
+        ],
+        "quarantine": [
+          {
+            "source_ref": "drive://doc-2",
+            "reasons": [
+              "malformed_or_empty_content"
+            ]
+          },
+          {
+            "source_ref": "drive://doc-3",
+            "reasons": [
+              "rights_unclear"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "SCP-003",
+      "name": "duplicate_external_identity",
+      "expected": "reject_binding_collision",
+      "case_ref": "evals/sync-control-plane/cases/SCP-003.json",
+      "passed": true,
+      "actual": {
+        "action": "reject_binding_collision",
+        "collisions": [
+          {
+            "platform": "github",
+            "external_id": "same/vendor-id",
+            "object_keys": [
+              "object.one",
+              "object.two"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "SCP-004",
+      "name": "uncertain_consequential_label",
+      "expected": "route_to_human_review",
+      "case_ref": "evals/sync-control-plane/cases/SCP-004.json",
+      "passed": true,
+      "actual": {
+        "action": "route_to_human_review",
+        "review_required": true,
+        "reason": "consequential_or_low_confidence"
+      }
+    },
+    {
+      "id": "SCP-005",
+      "name": "taxonomy_gap",
+      "expected": "propose_new_distinction_without_other_abuse",
+      "case_ref": "evals/sync-control-plane/cases/SCP-005.json",
+      "passed": true,
+      "actual": {
+        "action": "propose_new_distinction_without_other_abuse",
+        "other_prohibited": true,
+        "proposed_distinction": "hybrid_actor"
+      }
+    },
+    {
+      "id": "SCP-006",
+      "name": "research_contradiction",
+      "expected": "preserve_both_claims_and_normalize_terms",
+      "case_ref": "evals/sync-control-plane/cases/SCP-006.json",
+      "passed": true,
+      "actual": {
+        "action": "preserve_both_claims_and_normalize_terms",
+        "claims": [
+          {
+            "claim_ref": "claim.a",
+            "term": "active user",
+            "definition": "logged in during 30 days",
+            "value": true,
+            "normalized_term": "active user"
+          },
+          {
+            "claim_ref": "claim.b",
+            "term": "active user",
+            "definition": "performed core action during 7 days",
+            "value": false,
+            "normalized_term": "active user"
+          }
+        ],
+        "preserve_both": true
+      }
+    },
+    {
+      "id": "SCP-007",
+      "name": "stale_guidance",
+      "expected": "mark_stale_without_rewriting_history",
+      "case_ref": "evals/sync-control-plane/cases/SCP-007.json",
+      "passed": true,
+      "actual": {
+        "action": "mark_stale_without_rewriting_history",
+        "binding_id": "binding.github.stale-guidance",
+        "freshness": {
+          "status": "stale",
+          "last_verified_at": "2026-06-01T00:00:00Z",
+          "max_age_days": 30,
+          "evaluated_at": "2026-08-12T00:00:00Z",
+          "reason": "age_days=72; max_age_days=30"
+        },
+        "historical_content_unchanged": true
+      }
+    },
+    {
+      "id": "SCP-008",
+      "name": "skill_trigger_collision",
+      "expected": "block_ambiguous_invocation_or_route_by_policy",
+      "case_ref": "evals/sync-control-plane/cases/SCP-008.json",
+      "passed": true,
+      "actual": {
+        "action": "block_ambiguous_invocation_or_route_by_policy",
+        "blocked": true,
+        "matches": [
+          "skill.alpha",
+          "skill.beta"
+        ]
+      }
+    },
+    {
+      "id": "SCP-009",
+      "name": "roadmap_capacity_overload",
+      "expected": "stop_pull_and_propose_rebalance",
+      "case_ref": "evals/sync-control-plane/cases/SCP-009.json",
+      "passed": true,
+      "actual": {
+        "action": "stop_pull_and_propose_rebalance",
+        "stop_pull": true,
+        "proposed_rebalance": true
+      }
+    },
+    {
+      "id": "SCP-010",
+      "name": "data_product_rights_failure",
+      "expected": "block_productization",
+      "case_ref": "evals/sync-control-plane/cases/SCP-010.json",
+      "passed": true,
+      "actual": {
+        "action": "block_productization",
+        "rights_approved": false
+      }
+    },
+    {
+      "id": "SCP-011",
+      "name": "self_promotion_attack",
+      "expected": "reject_capability_to_authority_escalation",
+      "case_ref": "evals/sync-control-plane/cases/SCP-011.json",
+      "passed": true,
+      "actual": {
+        "action": "reject_capability_to_authority_escalation",
+        "policy_errors": [
+          "requester may not approve its own manifest transition",
+          "self-requested activation requires independent human or authorized service approval"
+        ]
+      }
+    }
+  ],
+  "schema_attacks": {
+    "valid_active_schema_errors": [],
+    "valid_active_policy_errors": [],
+    "self_promotion_schema_errors": [],
+    "self_promotion_policy_errors": [
+      "requester may not approve its own manifest transition",
+      "self-requested activation requires independent human or authorized service approval"
+    ],
+    "rights_unclear_schema_errors": [
+      "True was expected",
+      "'approved' was expected",
+      "'approved' was expected",
+      "True was expected"
+    ],
+    "trigger_collision_schema_errors": [
+      "'trigger_contract' is a required property"
+    ]
+  },
+  "migration_static": {
+    "manifest_guard": true,
+    "append_only_receipts": true,
+    "transition_ledger": true,
+    "proposed_move_store": true,
+    "atomic_outbox_claim": true,
+    "bounded_dead_letter": true,
+    "drift_controller": true,
+    "projection_rebuild": true,
+    "cloudflare_binding": true,
+    "browser_roles_revoked": true
+  },
+  "mapping_proof": {
+    "binding_schema_errors": [],
+    "receipt_schema_errors": [],
+    "binding_roundtrip_stable": true,
+    "receipt_roundtrip_stable": true
+  },
+  "content_hash_sha256": "ab07a616af2effda9a93a1edca3c8284e6c764479bd5de7a234bd93998d6a76b"
+}
