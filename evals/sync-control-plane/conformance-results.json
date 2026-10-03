@@ -206,7 +206,7 @@
         "action": "reject_capability_to_authority_escalation",
         "policy_errors": [
           "requester may not approve its own manifest transition",
-          "self-requested activation requires independent human or authorized service approval"
+          "activation requires approval by an independent human principal"
         ]
       }
     }
@@ -217,7 +217,7 @@
     "self_promotion_schema_errors": [],
     "self_promotion_policy_errors": [
       "requester may not approve its own manifest transition",
-      "self-requested activation requires independent human or authorized service approval"
+      "activation requires approval by an independent human principal"
     ],
     "rights_unclear_schema_errors": [
       "True was expected",
@@ -231,6 +231,8 @@
   },
   "migration_static": {
     "manifest_guard": true,
+    "independent_human_approver": true,
+    "legacy_approval_data_check": true,
     "append_only_receipts": true,
     "transition_ledger": true,
     "proposed_move_store": true,
@@ -247,5 +249,5 @@
     "binding_roundtrip_stable": true,
     "receipt_roundtrip_stable": true
   },
-  "content_hash_sha256": "ab07a616af2effda9a93a1edca3c8284e6c764479bd5de7a234bd93998d6a76b"
+  "content_hash_sha256": "e63fd9642694c78dff23aee84f8a9a4e497d7dde9c3e9393678005c4c3202c8d"
 }

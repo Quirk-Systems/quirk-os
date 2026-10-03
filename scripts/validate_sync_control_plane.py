@@ -39,9 +39,19 @@ def validate(schema: dict[str, Any], instance: dict[str, Any]) -> list[str]:
 
 
 def static_migration_checks(sql: str) -> dict[str, bool]:
+    """Presence checks over the concatenated migration text.
+
+    These prove a token appears somewhere in the migrations, not that the
+    function currently installed in a database contains it. A static read cannot
+    establish the latter; `supabase/tests/sync_control_plane_hardening.sql` is
+    what exercises the installed behaviour, and nothing in this repository runs
+    it in CI.
+    """
     lower = sql.lower()
     tokens = {
         "manifest_guard": "guard_manifest_activation",
+        "independent_human_approver": "approved_by !~ '^human\\.[a-z0-9._-]+$'",
+        "legacy_approval_data_check": "carry an approver that is not an independent human principal",
         "append_only_receipts": "prevent_append_only_mutation",
         "transition_ledger": "manifest_transition_ledger",
         "proposed_move_store": "create table if not exists quirk_sync.proposed_moves",
@@ -165,7 +175,13 @@ def main() -> int:
     collision.pop("trigger_contract", None)
     collision_schema_errors = validate(schemas["manifest"], collision)
 
-    migration_paths = sorted((repo / "supabase/migrations").glob("2026081203000*_sync_control_plane_*.sql"))
+    # Every sync-control-plane migration, not a hardcoded timestamp prefix. The
+    # previous glob pinned `2026081203000*`, so a migration added later was not
+    # read at all: `manifest_guard` still matched `guard_manifest_activation` in
+    # the August file and `migration_hardening_complete` stayed true however the
+    # newer migration was written. Broadening is safe because every static check
+    # tests for a token's presence, so more SQL can only satisfy more of them.
+    migration_paths = sorted((repo / "supabase/migrations").glob("*_sync_control_plane_*.sql"))
     migration_sql = "\n".join(path.read_text(encoding="utf-8") for path in migration_paths)
     static = static_migration_checks(migration_sql)
     mappings = mapping_roundtrip(schemas["binding"], schemas["receipt"])
