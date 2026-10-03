@@ -1,25 +1,51 @@
 # Quirk Sync Control Plane v0.2 — Admission Evidence
 
 **Candidate:** `program.quirk-sync-control-plane` v0.2.0  
-**Candidate commit:** `f344af21ff96e9e748a0a0c65dbc20ae71912222`  
+**Candidate commit (the subject evaluated):** `f344af21ff96e9e748a0a0c65dbc20ae71912222`  
 **PR:** Quirk-Systems/quirk-os#5  
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `0ac9f28d508c1e7f3d38b867b27189fc4b0865dcf243a6bb6d71677f08a3d4c8`
+**Content hash (SHA-256):** `0ac9f28d508c1e7f3d38b867b27189fc4b0865dcf243a6bb6d71677f08a3d4c8`  
+**Evidence revision (the tree that reproduces that hash):** `b2b95cd56878e27e42a050828b4262efd4e12bca`
 
-> Digest history, recorded because a hash replaced without a note is
+> **Why two revisions.** The candidate commit names the subject that was
+> evaluated. The evidence revision names the tree whose validator and inputs
+> produce the hash above, and they are not the same commit:
+> `evals/sync-control-plane/conformance-results.json` does not exist at
+> `f344af21`, so that revision cannot reproduce this digest and never could.
+> Pairing a candidate commit with a regenerated hash and nothing else invited
+> the reading that the hash was the digest of the evidence at that commit,
+> which was not true.
+>
+> Reproduce with:
+>
+> ```sh
+> git checkout b2b95cd56878e27e42a050828b4262efd4e12bca
+> python scripts/validate_sync_control_plane.py --repo . \
+>   --output evals/sync-control-plane/conformance-results.json --require-admit
+> ```
+>
+> Observed on PostgreSQL-independent inputs at that revision:
+> `0ac9f28d508c1e7f3d38b867b27189fc4b0865dcf243a6bb6d71677f08a3d4c8`, matching
+> both the tracked artifact and the line above.
+
+> **Digest history**, recorded because a hash replaced without a note is
 > indistinguishable from one that was always that value. The decision above is
 > unchanged throughout and still is not admission.
 >
 > - `ab07a616…` — covered a payload recording the retired error
 >   `self-requested activation requires independent human or authorized service approval`.
->   Superseded when that rule became an independent-human-approver check.
+>   Superseded when that rule became an independent-human-approver check. Its
+>   producing revision is not recorded anywhere in this repository and is not
+>   guessed here; the artifact reached `main` through a merge rather than a
+>   generation step.
 > - `e63fd964…` — covered the replacement error and the first two migration
->   static checks. Superseded when those checks were scoped to the rule
->   function, because a whole-file search for a predicate stayed satisfied even
->   when the enforcing definition had lost it.
-> - `0ac9f28d…` — current.
+>   static checks. Produced at `be80180e2d2548346809c83b96842aac92c826c1`.
+>   Superseded when those checks were scoped to the rule function, because a
+>   whole-file search for a predicate stayed satisfied even when the enforcing
+>   definition had lost it.
+> - `0ac9f28d…` — current, produced at `b2b95cd` as above.
 
 This document consolidates the technical evidence for each admission criterion. It does not constitute admission. Bryan's explicit approve, revise, reject, or supersede decision is required before any activation, Canon promotion, merge, authority expansion, or production deployment.
 
