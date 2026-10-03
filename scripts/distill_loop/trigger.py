@@ -13,7 +13,9 @@ Fail-closed rules:
 - only moves the source skill declared and that succeeded are distilled;
 - fewer than three such moves is not a skill, so the trigger abstains;
 - the observed ceiling may never exceed the source ceiling;
-- one receipt distills at most once;
+- one receipt distills at most once, and one candidate id belongs to one receipt;
+- the source skill must sit in the manifested registry at the exact digest that ran;
+- a move counts only if the receipt itself lists its evidence;
 - every decision, including abstention, appends a ledger entry.
 """
 
@@ -28,11 +30,13 @@ from .common import (
     LEDGER_PATH,
     MIN_SUCCESSFUL_MOVES,
     TRIGGER_ACTOR,
+    parse_utc,
     pretty_json,
     schema_errors,
     sha256_json,
+    source_registration_errors,
 )
-from .ledger import append_entry, receipt_already_distilled
+from .ledger import append_entry, distilled_entry, receipt_already_distilled
 from .package import (
     build_candidate_manifest,
     build_starter_eval_suite,
@@ -71,6 +75,7 @@ def _abstain(
         "files": {LEDGER_PATH: pretty_json(updated)},
         "ledger": updated,
         "ledger_entry": entry,
+        "ledger_input_sha256": ledger.get("ledger_sha256"),
     }
 
 
@@ -82,6 +87,7 @@ def post_run_distill(
     source_text: str,
     ledger: dict[str, Any],
     schemas: dict[str, dict[str, Any]],
+    registry: dict[str, Any],
     recorded_at: str | None = None,
 ) -> dict[str, Any]:
     recorded_at = recorded_at or str(receipt.get("finished_at") or "")
@@ -107,6 +113,13 @@ def post_run_distill(
         return _abstain(ledger, codes=["RUN_NOT_COMPLETED"], receipt=receipt, trace=trace,
                         recorded_at=recorded_at, candidate_id=candidate_id)
 
+    try:
+        if parse_utc(receipt["finished_at"]) < parse_utc(receipt["started_at"]):
+            raise ValueError("finished before started")
+    except (ValueError, TypeError):
+        return _abstain(ledger, codes=["RECEIPT_TIME_INVALID"], receipt=receipt, trace=trace,
+                        recorded_at=recorded_at, candidate_id=candidate_id)
+
     if validate_manifest_integrity(source_manifest, source_text):
         return _abstain(ledger, codes=["SOURCE_INTEGRITY_FAILURE"], receipt=receipt, trace=trace,
                         recorded_at=recorded_at, candidate_id=candidate_id)
@@ -120,6 +133,10 @@ def post_run_distill(
         or trace["skill_version"] != source_manifest["version"]
     ):
         return _abstain(ledger, codes=["RECEIPT_SOURCE_MISMATCH"], receipt=receipt, trace=trace,
+                        recorded_at=recorded_at, candidate_id=candidate_id)
+
+    if source_registration_errors(registry, source_manifest):
+        return _abstain(ledger, codes=["SOURCE_NOT_REGISTERED"], receipt=receipt, trace=trace,
                         recorded_at=recorded_at, candidate_id=candidate_id)
 
     if source_manifest["id"].startswith("quirk-distilled-"):
@@ -136,6 +153,12 @@ def post_run_distill(
         return _abstain(ledger, codes=["ALREADY_DISTILLED"], receipt=receipt, trace=trace,
                         recorded_at=recorded_at, candidate_id=candidate_id)
 
+    prior = distilled_entry(ledger, candidate_id)
+    if prior is not None and prior.get("source_receipt_id") != receipt["receipt_id"]:
+        return _abstain(ledger, codes=["CANDIDATE_ID_COLLISION"], receipt=receipt, trace=trace,
+                        recorded_at=recorded_at, candidate_id=candidate_id)
+
+    receipted_refs = set(receipt["evidence_refs"]) | set(receipt["output_refs"]) | set(receipt["input_refs"])
     declared = declared_actions(source_manifest)
     successful: list[dict[str, Any]] = []
     excluded: list[dict[str, Any]] = []
@@ -148,6 +171,10 @@ def post_run_distill(
         if move not in declared:
             excluded.append({"move": move, "reason": "not declared by the source skill; excluded, never distilled"})
             codes.append("UNDECLARED_MOVE_EXCLUDED")
+            continue
+        if item["evidence_ref"] not in receipted_refs:
+            excluded.append({"move": move, "reason": "evidence is not listed on the run receipt; excluded"})
+            codes.append("EVIDENCE_UNRECEIPTED")
             continue
         if move in seen:
             excluded.append({"move": move, "reason": "duplicate of an earlier successful move"})
@@ -212,6 +239,7 @@ def post_run_distill(
             "source_blob_sha": manifest["integrity"]["source_blob_sha"],
             "eval_suite_ref": eval_suite_ref,
             "eval_suite_sha256": sha256_json(eval_suite),
+            "source_manifest_sha256": source_digest,
             "excluded_moves": sorted({item["move"] for item in excluded}),
         },
     )
@@ -245,4 +273,5 @@ def post_run_distill(
         "files": files,
         "ledger": updated,
         "ledger_entry": entry,
+        "ledger_input_sha256": ledger.get("ledger_sha256"),
     }

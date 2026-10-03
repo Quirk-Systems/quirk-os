@@ -6,7 +6,7 @@
   "candidate_source_blob_sha": "4136bfb2806e9a0e75aec3a913f7824f03044a4e",
   "source_run_receipt_ref": "receipt.quirk-distillation-synthesizer.trial.0007",
   "eval_suite_ref": "evals/skills/distilled/quirk-distilled-decision-brief-2d699dfa.json",
-  "eval_suite_sha256": "7d86951a6984a7052505b735127bfc6e01640c2ca60330ff9ffd2d2badd9b366",
+  "eval_suite_sha256": "2553c5e29912497bf025fdb005bbe701e180b4412d410fa362c695153b4b772d",
   "decision": "promote",
   "promoted_to": "reviewed_candidate",
   "admission_effect": "none",
@@ -19,6 +19,6 @@
   "immutable": true,
   "attestation": {
     "algorithm": "sha256-canonical-json-v1",
-    "digest": "9590fb45ab5c7a6fb82bf472d8c2506fe29f7016b45ff7654f7abd5d81a04cae"
+    "digest": "212f6c897c2268a31eea82c1a66dc563d4b5812920536002ae51e65300360f13"
   }
 }

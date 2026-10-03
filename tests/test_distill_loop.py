@@ -22,6 +22,7 @@ from distill_loop import (  # noqa: E402
     apply_promotion,
     attest_promotion,
     candidate_state,
+    evaluate_distilled_case,
     load_schemas,
     new_ledger,
     next_run_context,
@@ -85,15 +86,17 @@ class DistillFixture:
         self.source_text = (source_dir / "SKILL.md").read_text(encoding="utf-8")
         self.promotion_receipt = _json(EXAMPLE / "promotion-receipt.json")
         self.reviewed_suite = _json(EXAMPLE / "reviewed-eval-suite.json")
+        self.registry = _json(ROOT / "skills" / "registry.json")
 
-    def distill(self, *, receipt=None, trace=None, ledger=None):
+    def distill(self, *, receipt=None, trace=None, ledger=None, source_manifest=None, source_text=None, registry=None):
         return post_run_distill(
             receipt=receipt or self.receipt,
             trace=trace or self.trace,
-            source_manifest=self.source_manifest,
-            source_text=self.source_text,
+            source_manifest=source_manifest or self.source_manifest,
+            source_text=source_text or self.source_text,
             ledger=ledger or new_ledger(),
             schemas=self.schemas,
+            registry=registry or self.registry,
         )
 
 
@@ -221,9 +224,552 @@ class TriggerTests(unittest.TestCase):
         trace.update({"receipt_id": receipt["receipt_id"], "skill_id": manifest["id"], "skill_version": manifest["version"]})
         outcome = post_run_distill(
             receipt=receipt, trace=trace, source_manifest=manifest, source_text=self.result["skill_text"],
-            ledger=new_ledger(), schemas=self.fx.schemas,
+            ledger=new_ledger(), schemas=self.fx.schemas, registry=self.fx.registry,
         )
-        self.assertIn("RECURSIVE_DISTILLATION_DENIED", outcome["finding_codes"])
+        # a distilled candidate is never in the registry, so the registry gate fires first
+        self.assertTrue({"SOURCE_NOT_REGISTERED", "RECURSIVE_DISTILLATION_DENIED"} & set(outcome["finding_codes"]))
+        self.assertEqual(outcome["outcome"], "abstained")
+
+
+class FightCardTests(unittest.TestCase):
+    """Each test is one bout that landed on main before hardening and must be refused now."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.fx = DistillFixture()
+        cls.distilled = cls.fx.distill()
+        cls.promoted = apply_promotion(
+            cls.fx.promotion_receipt, candidate_manifest=cls.distilled["manifest"], candidate_source=cls.distilled["skill_text"],
+            eval_suite=cls.fx.reviewed_suite, ledger=cls.distilled["ledger"], schemas=cls.fx.schemas,
+        )
+        assert cls.promoted["outcome"] == "promoted", cls.promoted["errors"]
+
+    def _validate(self, receipt=None, **overrides):
+        kwargs = {
+            "candidate_manifest": self.distilled["manifest"], "candidate_source": self.distilled["skill_text"],
+            "eval_suite": self.fx.reviewed_suite, "ledger": self.distilled["ledger"], "schemas": self.fx.schemas,
+        }
+        kwargs.update(overrides)
+        return validate_promotion_receipt(receipt or self.fx.promotion_receipt, **kwargs)
+
+    def test_k1_candidate_id_collision_abstains(self) -> None:
+        ledger, _ = append_entry(
+            new_ledger(), kind="distilled", recorded_at="2026-09-01T00:00:00Z", actor="agent.distill-loop",
+            candidate_id=self.distilled["manifest"]["id"], source_receipt_id="receipt.other.0001",
+            source_skill_id=self.fx.source_manifest["id"], source_skill_version=self.fx.source_manifest["version"],
+            finding_codes=["DISTILLED_CANDIDATE_WRITTEN"],
+            refs={"manifest_sha256": "a" * 64, "source_manifest_sha256": self.fx.source_manifest["integrity"]["manifest_sha256"]},
+        )
+        out = self.fx.distill(ledger=ledger)
+        self.assertEqual(out["outcome"], "abstained")
+        self.assertIn("CANDIDATE_ID_COLLISION", out["finding_codes"])
+
+    def test_k5c_distilled_entry_without_source_digest_cannot_exist_or_promote(self) -> None:
+        from distill_loop.ledger import entry_digest, seal_ledger
+
+        with self.assertRaises(ValueError):
+            append_entry(
+                new_ledger(), kind="distilled", recorded_at="2026-09-01T00:00:00Z", actor="agent.distill-loop",
+                candidate_id=self.distilled["manifest"]["id"], source_receipt_id="receipt.x.1",
+                source_skill_id="quirk-x", source_skill_version="0.1.0", finding_codes=[], refs={"manifest_sha256": "a" * 64},
+            )
+        # a ledger hand-built without the field, with valid hashes, is schema-invalid and unpromotable
+        stripped = copy.deepcopy(self.distilled["ledger"])
+        stripped["entries"][0]["refs"].pop("source_manifest_sha256")
+        stripped["entries"][0]["entry_sha256"] = entry_digest(stripped["entries"][0])
+        stripped = seal_ledger(stripped)
+        self.assertTrue(schema_errors(self.fx.schemas["distill_ledger"], stripped))
+        errors = self._validate(ledger=stripped)
+        self.assertTrue(any("source_manifest_sha256" in error for error in errors), errors)
+        # a ledger whose chain is broken is refused outright
+        broken = copy.deepcopy(self.distilled["ledger"])
+        broken["entries"][0]["finding_codes"] = []
+        errors = self._validate(ledger=broken)
+        self.assertTrue(any(error.startswith("ledger:") for error in errors), errors)
+
+    def test_s1d_non_array_suite_is_refused_not_raised(self) -> None:
+        from distill_loop.common import sha256_json
+
+        for suite in (None, False, {"cases": []}, "[]"):
+            report = run_eval_suite(suite, self.distilled["manifest"], case_schema=self.fx.schemas["skill_eval_case"])
+            self.assertFalse(report["complete"])
+            self.assertTrue(report["failures"])
+            receipt = attest_promotion({**self.fx.promotion_receipt, "eval_suite_sha256": sha256_json(suite)})
+            self.assertTrue(self._validate(receipt, eval_suite=suite))
+
+    def test_k2_cli_refuses_to_write_over_a_forked_ledger(self) -> None:
+        import subprocess
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            from distill_loop import write_files
+
+            write_files(root, self.distilled["files"])
+            # fork: the on-disk ledger moves after the operation read it
+            forked, _ = append_entry(
+                self.distilled["ledger"], kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                candidate_id=None, source_receipt_id="receipt.elsewhere.0001", source_skill_id="quirk-x",
+                source_skill_version="0.1.0", finding_codes=["RUN_NOT_COMPLETED"], refs={},
+            )
+            # promote computes against the ledger it reads; simulate the race by racing the file after read
+            # via a stale copy: write the fork *before* promote reads means no fork, so instead exercise the guard directly.
+            from distill_loop.__main__ import _write_guarded
+
+            stale_result = {"files": {"skills/distill-ledger.json": "{}"}, "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            (root / "skills" / "distill-ledger.json").write_text(json.dumps(forked), encoding="utf-8")
+            self.assertEqual(_write_guarded(root, stale_result), 1)
+            self.assertEqual(json.loads((root / "skills" / "distill-ledger.json").read_text())["ledger_sha256"], forked["ledger_sha256"])
+            fresh_result = {"files": {"skills/distill-ledger.json": json.dumps(forked)}, "ledger_input_sha256": forked["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, fresh_result), 0)
+
+    def test_k2b_two_writers_with_the_same_input_cannot_both_land(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+        from distill_loop.__main__ import _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            base = self.distilled["ledger"]
+            writer_a, _ = append_entry(base, kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                                       candidate_id=None, source_receipt_id="receipt.a.1", source_skill_id="quirk-a",
+                                       source_skill_version="0.1.0", finding_codes=[], refs={})
+            writer_b, _ = append_entry(base, kind="abstained", recorded_at="2026-09-19T00:00:01Z", actor="agent.distill-loop",
+                                       candidate_id=None, source_receipt_id="receipt.b.1", source_skill_id="quirk-b",
+                                       source_skill_version="0.1.0", finding_codes=[], refs={})
+            result_a = {"files": {"skills/distill-ledger.json": json.dumps(writer_a)}, "ledger_input_sha256": base["ledger_sha256"]}
+            result_b = {"files": {"skills/distill-ledger.json": json.dumps(writer_b)}, "ledger_input_sha256": base["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, result_a), 0)
+            self.assertEqual(_write_guarded(root, result_b), 1)
+            on_disk = json.loads((root / "skills" / "distill-ledger.json").read_text())
+            self.assertEqual(on_disk["ledger_sha256"], writer_a["ledger_sha256"])
+            self.assertEqual(on_disk["entries"][-1]["source_receipt_id"], "receipt.a.1")
+
+    def test_k2c_write_blocks_while_another_process_holds_the_ledger_lock(self) -> None:
+        import tempfile
+        import threading
+        import time
+
+        try:
+            import fcntl
+        except ImportError:  # pragma: no cover
+            self.skipTest("no fcntl on this host")
+        from distill_loop import write_files
+        from distill_loop.__main__ import LOCK_NAME, _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            lock_path = root / "skills" / LOCK_NAME
+            holder = open(lock_path, "a+", encoding="utf-8")
+            fcntl.flock(holder.fileno(), fcntl.LOCK_EX)
+            result = {"files": {"skills/distill-ledger.json": json.dumps(self.distilled["ledger"])},
+                      "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            outcome: list[int] = []
+            worker = threading.Thread(target=lambda: outcome.append(_write_guarded(root, result)))
+            worker.start()
+            time.sleep(0.3)
+            self.assertTrue(worker.is_alive(), "writer must wait for the ledger lock")
+            fcntl.flock(holder.fileno(), fcntl.LOCK_UN)
+            holder.close()
+            worker.join(timeout=5)
+            self.assertEqual(outcome, [0])
+
+    def test_k2e_no_lock_primitive_fails_closed_instead_of_writing_unlocked(self) -> None:
+        import tempfile
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+        from distill_loop import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            before = (root / "skills" / "distill-ledger.json").read_text()
+            base = self.distilled["ledger"]
+            nxt, _ = append_entry(base, kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                                  candidate_id=None, source_receipt_id="receipt.e.1", source_skill_id="quirk-e",
+                                  source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {"skills/distill-ledger.json": json.dumps(nxt)}, "ledger_input_sha256": base["ledger_sha256"]}
+            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", None):
+                self.assertEqual(cli._write_guarded(root, result), 1)
+                # two writers computed from the same input: neither may land unlocked
+                self.assertEqual(cli._write_guarded(root, result), 1)
+            self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
+            self.assertEqual(cli._write_guarded(root, result), 0)
+
+    def test_k2f_windows_lock_path_fails_closed_instead_of_spinning(self) -> None:
+        import errno
+        import tempfile
+        from types import SimpleNamespace
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+        from distill_loop import write_files
+
+        contention = getattr(errno, "EDEADLOCK", getattr(errno, "EDEADLK", 36))
+
+        def fake_msvcrt(sequence):
+            calls = []
+
+            def locking(fd, mode, nbytes):
+                if mode == 0:  # LK_UNLCK
+                    return None
+                calls.append(mode)
+                outcome = sequence[min(len(calls), len(sequence)) - 1]
+                if outcome is not None:
+                    raise outcome
+            return SimpleNamespace(locking=locking, LK_LOCK=1, LK_NBLCK=2, LK_UNLCK=0, calls=calls)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            before = (root / "skills" / "distill-ledger.json").read_text()
+            base = self.distilled["ledger"]
+            nxt, _ = append_entry(base, kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                                  candidate_id=None, source_receipt_id="receipt.w.1", source_skill_id="quirk-w",
+                                  source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {"skills/distill-ledger.json": json.dumps(nxt)}, "ledger_input_sha256": base["ledger_sha256"]}
+
+            # persistent non-contention failure: refused at once, never retried
+            denied = fake_msvcrt([OSError(errno.EINVAL, "denied")])
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
+                self.assertEqual(cli._write_guarded(root, result), 1)
+            self.assertEqual(len(denied.calls), 1)
+            self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
+
+            # endless contention: bounded retries, then refused
+            busy = fake_msvcrt([OSError(contention, "busy")])
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", busy):
+                self.assertEqual(cli._write_guarded(root, result), 1)
+            self.assertEqual(len(busy.calls), cli.WINDOWS_LOCK_ATTEMPTS)
+            self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
+
+            # one round of contention then success: the write lands
+            eventually = fake_msvcrt([OSError(contention, "busy"), None])
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", eventually):
+                self.assertEqual(cli._write_guarded(root, result), 0)
+            self.assertEqual(json.loads((root / "skills" / "distill-ledger.json").read_text())["ledger_sha256"], nxt["ledger_sha256"])
+
+    def test_k2g_nonempty_out_tree_without_a_ledger_is_refused(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+        from distill_loop.__main__ import _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out = Path(tmp) / "root", Path(tmp) / "out"
+            write_files(root, self.distilled["files"])
+            write_files(out, {"skills/quirk-distilled-stray/SKILL.md": "stray\n"})
+            nxt, _ = append_entry(self.distilled["ledger"], kind="abstained", recorded_at="2026-09-19T00:00:00Z",
+                                  actor="agent.distill-loop", candidate_id=None, source_receipt_id="receipt.g.1",
+                                  source_skill_id="quirk-g", source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {"skills/distill-ledger.json": json.dumps(nxt)}, "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, result, out), 1)
+            self.assertFalse((out / "skills" / "distill-ledger.json").exists())
+
+    def test_k2i_symlinked_out_tree_never_writes_outside_it(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+        from distill_loop.__main__ import _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out, outside = Path(tmp) / "root", Path(tmp) / "out", Path(tmp) / "outside"
+            write_files(root, self.distilled["files"])
+            outside.mkdir()
+            out.mkdir()
+            (out / "skills").symlink_to(outside, target_is_directory=True)
+            nxt, _ = append_entry(self.distilled["ledger"], kind="abstained", recorded_at="2026-09-19T00:00:00Z",
+                                  actor="agent.distill-loop", candidate_id=None, source_receipt_id="receipt.s.1",
+                                  source_skill_id="quirk-s", source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {"skills/distill-ledger.json": json.dumps(nxt), "skills/quirk-distilled-x/SKILL.md": "x\n"},
+                      "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, result, out), 1)
+            self.assertEqual(list(outside.iterdir()), [], "nothing may land outside the output tree, not even the lock")
+            # the output tree itself as a symlink is refused the same way
+            linked_out = Path(tmp) / "linked"
+            linked_out.symlink_to(outside, target_is_directory=True)
+            self.assertEqual(_write_guarded(root, result, linked_out), 1)
+            self.assertEqual(list(outside.iterdir()), [])
+
+    def test_k2j_matching_ledger_does_not_exempt_nested_symlinks(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+        from distill_loop.__main__ import _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out, outside = Path(tmp) / "root", Path(tmp) / "out", Path(tmp) / "outside"
+            write_files(root, self.distilled["files"])
+            # out carries the matching ledger, plus planted nested links under it
+            write_files(out, {"skills/distill-ledger.json": json.dumps(self.distilled["ledger"])})
+            cid = self.distilled["manifest"]["id"]
+            (outside / "pkg").mkdir(parents=True)
+            (outside / "evals").mkdir()
+            (outside / "pkg" / "SKILL.md").write_text("sentinel\n", encoding="utf-8")
+            (outside / "evals" / f"{cid}.json").write_text("sentinel\n", encoding="utf-8")
+            (out / "skills" / cid).symlink_to(outside / "pkg", target_is_directory=True)
+            (out / "evals" / "skills").mkdir(parents=True)
+            (out / "evals" / "skills" / "distilled").symlink_to(outside / "evals", target_is_directory=True)
+            nxt, _ = append_entry(self.distilled["ledger"], kind="abstained", recorded_at="2026-09-19T00:00:00Z",
+                                  actor="agent.distill-loop", candidate_id=None, source_receipt_id="receipt.n.1",
+                                  source_skill_id="quirk-n", source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {**self.distilled["files"], "skills/distill-ledger.json": json.dumps(nxt)},
+                      "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, result, out), 1)
+            self.assertEqual((outside / "pkg" / "SKILL.md").read_text(encoding="utf-8"), "sentinel\n")
+            self.assertEqual((outside / "evals" / f"{cid}.json").read_text(encoding="utf-8"), "sentinel\n")
+            self.assertEqual(json.loads((out / "skills" / "distill-ledger.json").read_text())["ledger_sha256"],
+                             self.distilled["ledger"]["ledger_sha256"], "ledger must not advance when any destination is unsafe")
+            # a symlinked final file is refused too
+            (out / "skills" / cid).unlink()
+            (out / "evals" / "skills" / "distilled").unlink()
+            (out / "skills" / cid).mkdir()
+            (out / "skills" / cid / "SKILL.md").symlink_to(outside / "pkg" / "SKILL.md")
+            self.assertEqual(_write_guarded(root, result, out), 1)
+            self.assertEqual((outside / "pkg" / "SKILL.md").read_text(encoding="utf-8"), "sentinel\n")
+
+    def test_k2k_cli_refuses_a_symlinked_out_as_given(self) -> None:
+        import tempfile
+
+        import distill_loop.__main__ as cli
+        from distill_loop import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, outside = Path(tmp) / "root", Path(tmp) / "outside"
+            write_files(root, self.distilled["files"])
+            outside.mkdir()
+            linked_out = Path(tmp) / "linked"
+            linked_out.symlink_to(outside, target_is_directory=True)
+            code = cli.main([
+                "distill", "--receipt", str(EXAMPLE / "run-receipt.json"), "--trace", str(EXAMPLE / "run-trace.json"),
+                "--repo", str(ROOT), "--root", str(root), "--out", str(linked_out), "--write",
+            ])
+            self.assertEqual(code, 1)
+            self.assertEqual(list(outside.iterdir()), [], "a symlinked --out given on the CLI must never be written through")
+            # the same command against a real empty --out succeeds and lands the ledger there
+            real_out = Path(tmp) / "real"
+            code = cli.main([
+                "distill", "--receipt", str(EXAMPLE / "run-receipt.json"), "--trace", str(EXAMPLE / "run-trace.json"),
+                "--repo", str(ROOT), "--root", str(root), "--out", str(real_out), "--write",
+            ])
+            self.assertEqual(code, 0)
+            self.assertTrue((real_out / "skills" / "distill-ledger.json").exists())
+
+    def test_k2l_temp_files_are_exclusive_unpredictable_and_cleaned_up(self) -> None:
+        import tempfile
+        from unittest import mock
+
+        from distill_loop import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, outside = Path(tmp) / "root", Path(tmp) / "outside"
+            outside.mkdir()
+            (outside / "victim").write_text("sentinel\n", encoding="utf-8")
+            target_dir = root / "skills" / "pkg"
+            target_dir.mkdir(parents=True)
+            # the old predictable sibling name, planted as a link, must never be followed
+            (target_dir / "manifest.json.tmp").symlink_to(outside / "victim")
+            write_files(root, {"skills/pkg/manifest.json": "{}\n"})
+            self.assertEqual((outside / "victim").read_text(encoding="utf-8"), "sentinel\n")
+            self.assertEqual((target_dir / "manifest.json").read_text(encoding="utf-8"), "{}\n")
+            self.assertEqual([p.name for p in target_dir.iterdir() if p.name.endswith(".tmp") and not p.is_symlink()], [],
+                             "no temp residue after a successful write")
+            # a failure mid-write removes the temp and leaves the destination untouched
+            with mock.patch("os.replace", side_effect=OSError("disk full")):
+                with self.assertRaises(OSError):
+                    write_files(root, {"skills/pkg/manifest.json": "changed\n"})
+            self.assertEqual((target_dir / "manifest.json").read_text(encoding="utf-8"), "{}\n")
+            self.assertEqual([p.name for p in target_dir.iterdir() if p.name.endswith(".tmp") and not p.is_symlink()], [])
+
+    def test_k2h_flock_failure_is_a_structured_refusal(self) -> None:
+        import tempfile
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+        from distill_loop import write_files
+
+        if cli.fcntl is None:  # pragma: no cover
+            self.skipTest("no fcntl on this host")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            before = (root / "skills" / "distill-ledger.json").read_text()
+            result = {"files": {"skills/distill-ledger.json": "{}"}, "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+
+            def broken(fd, op):
+                raise OSError("operation not supported")
+
+            with mock.patch.object(cli.fcntl, "flock", broken):
+                self.assertEqual(cli._write_guarded(root, result), 1)
+            self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
+
+    def test_s1c_malformed_case_shapes_are_refused_not_raised(self) -> None:
+        from distill_loop.common import sha256_json
+
+        suite = copy.deepcopy(self.fx.reviewed_suite)
+        suite[1]["expected"] = []
+        suite[2]["input"] = "not an object"
+        suite.append("not a case")
+        report = run_eval_suite(suite, self.distilled["manifest"], case_schema=self.fx.schemas["skill_eval_case"])
+        self.assertTrue(report["failures"])
+        self.assertFalse(report["complete"])
+        receipt = attest_promotion({**self.fx.promotion_receipt, "eval_suite_sha256": sha256_json(suite)})
+        errors = self._validate(receipt, eval_suite=suite)
+        self.assertTrue(errors)
+        report = run_eval_suite(suite, self.distilled["manifest"])
+        self.assertTrue(any("must be objects" in f or "not an object" in f for f in report["failures"]), report["failures"])
+
+    def test_s3b_corrupted_suite_bytes_are_quarantined(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            write_files(root, self.promoted["files"])
+            suite_path = root / self.distilled["manifest"]["quality"]["eval_suite_ref"]
+            suite_path.write_bytes(b"\xff\xfe\x00 not utf-8 json")
+            context = next_run_context(self.promoted["ledger"], root=root)
+            self.assertEqual(context["context_sources"], [])
+            self.assertTrue(context["quarantined"])
+            manifest_path = root / self.distilled["candidate"]["manifest_path"]
+            suite_path.write_text("[]\n", encoding="utf-8")
+            manifest_path.write_bytes(b"\xff")
+            context = next_run_context(self.promoted["ledger"], root=root)
+            self.assertEqual(context["context_sources"], [])
+            self.assertTrue(any("unreadable" in p for p in context["quarantined"][0]["problems"]))
+
+    def test_k2d_redirected_write_initializes_an_empty_out_tree_and_refuses_a_diverged_one(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+        from distill_loop.__main__ import _write_guarded
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, empty_out, diverged_out = Path(tmp) / "root", Path(tmp) / "empty", Path(tmp) / "diverged"
+            write_files(root, self.distilled["files"])  # non-genesis source ledger
+            nxt, _ = append_entry(self.distilled["ledger"], kind="abstained", recorded_at="2026-09-19T00:00:00Z",
+                                  actor="agent.distill-loop", candidate_id=None, source_receipt_id="receipt.c.1",
+                                  source_skill_id="quirk-c", source_skill_version="0.1.0", finding_codes=[], refs={})
+            result = {"files": {"skills/distill-ledger.json": json.dumps(nxt)}, "ledger_input_sha256": self.distilled["ledger"]["ledger_sha256"]}
+            self.assertEqual(_write_guarded(root, result, empty_out), 0)
+            self.assertEqual(json.loads((empty_out / "skills" / "distill-ledger.json").read_text())["ledger_sha256"], nxt["ledger_sha256"])
+            other, _ = append_entry(new_ledger(), kind="abstained", recorded_at="2026-09-19T00:00:00Z", actor="agent.distill-loop",
+                                    candidate_id=None, source_receipt_id="receipt.d.1", source_skill_id="quirk-d",
+                                    source_skill_version="0.1.0", finding_codes=[], refs={})
+            write_files(diverged_out, {"skills/distill-ledger.json": json.dumps(other)})
+            self.assertEqual(_write_guarded(root, result, diverged_out), 1)
+            self.assertEqual(json.loads((diverged_out / "skills" / "distill-ledger.json").read_text())["ledger_sha256"], other["ledger_sha256"])
+
+    def test_k3_promotion_receipt_is_single_use(self) -> None:
+        errors = self._validate(ledger=self.promoted["ledger"])
+        self.assertTrue(any("single use" in error for error in errors), errors)
+
+    def test_k4_unreceipted_evidence_is_excluded(self) -> None:
+        trace = copy.deepcopy(self.fx.trace)
+        trace["moves"][0]["evidence_ref"] = "ledger.evidence.never-receipted"
+        out = self.fx.distill(trace=trace)
+        self.assertIn("EVIDENCE_UNRECEIPTED", out["finding_codes"])
+        self.assertEqual(out["outcome"], "distilled")
+        self.assertNotIn(trace["moves"][0]["move"], out["manifest"]["method"]["moves"])
+        self.assertIn(trace["moves"][0]["move"], out["ledger_entry"]["refs"]["excluded_moves"])
+
+    def test_k5_source_outside_registry_abstains(self) -> None:
+        from sync_control_plane.skill_runtime import git_blob_sha, manifest_digest
+
+        forged = copy.deepcopy(self.fx.source_manifest)
+        forged["purpose"] += " (forged)"
+        text = self.fx.source_text + "\nforged\n"
+        forged["integrity"]["source_blob_sha"] = git_blob_sha(text)
+        forged["integrity"]["manifest_sha256"] = "0" * 64
+        forged["integrity"]["manifest_sha256"] = manifest_digest(forged)
+        receipt = copy.deepcopy(self.fx.receipt)
+        receipt["skill_manifest_sha256"] = forged["integrity"]["manifest_sha256"]
+        out = self.fx.distill(receipt=receipt, source_manifest=forged, source_text=text)
+        self.assertEqual(out["outcome"], "abstained")
+        self.assertIn("SOURCE_NOT_REGISTERED", out["finding_codes"])
+
+    def test_k5b_tampered_registry_is_not_trusted(self) -> None:
+        registry = copy.deepcopy(self.fx.registry)
+        registry["skills"][0]["manifest_sha256"] = "f" * 64
+        out = self.fx.distill(registry=registry)
+        self.assertIn("SOURCE_NOT_REGISTERED", out["finding_codes"])
+
+    def test_k6_time_travel_promotion_refused(self) -> None:
+        receipt = attest_promotion({**self.fx.promotion_receipt, "decided_at": "2026-01-01T00:00:00Z"})
+        errors = self._validate(receipt)
+        self.assertTrue(any("before the candidate was distilled" in error for error in errors), errors)
+        distilled_at = self.distilled["ledger_entry"]["recorded_at"]
+        equal = attest_promotion({**self.fx.promotion_receipt, "decided_at": distilled_at})
+        errors = self._validate(equal)
+        self.assertTrue(any("strictly follow" in error for error in errors), errors)
+        one_second_later = distilled_at.replace("Z", "+00:00")
+        from datetime import datetime, timedelta
+        later = (datetime.fromisoformat(one_second_later) + timedelta(seconds=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        self.assertEqual(self._validate(attest_promotion({**self.fx.promotion_receipt, "decided_at": later})), [])
+
+    def test_k7_receipt_finished_before_started_abstains(self) -> None:
+        receipt = copy.deepcopy(self.fx.receipt)
+        receipt["started_at"] = "2026-09-18T15:00:00Z"
+        out = self.fx.distill(receipt=receipt)
+        self.assertEqual(out["outcome"], "abstained")
+        self.assertIn("RECEIPT_TIME_INVALID", out["finding_codes"])
+
+    def test_s1_posturing_suite_refused(self) -> None:
+        from distill_loop.common import sha256_json
+
+        positive = self.fx.reviewed_suite[0]
+        posturing = [dict(positive, id=f"QSK-{i:03d}", kind=kind)
+                     for i, kind in enumerate(["positive", "adversarial", "regression", "authority"], start=1)]
+        receipt = attest_promotion({**self.fx.promotion_receipt, "eval_suite_sha256": sha256_json(posturing)})
+        errors = self._validate(receipt, eval_suite=posturing)
+        self.assertTrue(any("does not match its kind" in error for error in errors), errors)
+        self.assertTrue(any("distinct scenarios" in error for error in errors), errors)
+
+    def test_s1b_unknown_scenarios_cannot_stand_in_for_real_cases(self) -> None:
+        from distill_loop.common import sha256_json
+
+        suite = copy.deepcopy(self.fx.reviewed_suite)
+        for case, scenario in zip(suite[1:], ("unknown_adversarial_probe", "unknown_regression_probe", "unknown_authority_probe")):
+            case["scenario"] = scenario
+            case["input"] = {"anything": True}
+            case["expected"] = {"result": "abstain", "action": "request_missing_evidence", "blocked": True,
+                                "required_codes": ["INSUFFICIENT_EVIDENCE"], "prohibited_codes": []}
+        receipt = attest_promotion({**self.fx.promotion_receipt, "eval_suite_sha256": sha256_json(suite)})
+        errors = self._validate(receipt, eval_suite=suite)
+        self.assertTrue(any("not an approved scenario" in error for error in errors), errors)
+        self.assertTrue(any("generic fallback" in error for error in errors), errors)
+
+    def test_s2_eval_refuses_ceiling_escalation(self) -> None:
+        case = dict(self.fx.reviewed_suite[0])
+        case["input"] = dict(case["input"], authority_ceiling_observed="execute_bounded")
+        verdict = evaluate_distilled_case(case, self.distilled["manifest"])
+        self.assertEqual(verdict["result"], "stop")
+        self.assertIn("CEILING_ESCALATION", verdict["finding_codes"])
+        missing = dict(self.fx.reviewed_suite[0])
+        missing["input"] = {k: v for k, v in missing["input"].items() if k != "authority_ceiling_observed"}
+        self.assertNotEqual(evaluate_distilled_case(missing, self.distilled["manifest"])["result"], "pass")
+
+    def test_s3_swapped_eval_suite_is_quarantined(self) -> None:
+        import tempfile
+
+        from distill_loop import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_files(root, self.distilled["files"])
+            write_files(root, self.promoted["files"])
+            self.assertTrue(next_run_context(self.promoted["ledger"], root=root)["context_sources"])
+            (root / self.distilled["manifest"]["quality"]["eval_suite_ref"]).write_text("[]\n", encoding="utf-8")
+            context = next_run_context(self.promoted["ledger"], root=root)
+            self.assertEqual(context["context_sources"], [])
+            self.assertTrue(any("eval suite" in problem for problem in context["quarantined"][0]["problems"]))
+
 
 
 class LedgerTests(unittest.TestCase):
@@ -388,7 +934,161 @@ class RedirectedWriteTests(unittest.TestCase):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
             status = cli.main(args)
-        return status, json.loads(output.getvalue())
+        return status, json.loads(output.getvalue()) if output.getvalue().strip() else None
+
+    def _seed_pair(self, root):
+        from distill_loop.common import write_files
+
+        fx = DistillFixture()
+        first = fx.distill()
+        receipt = {**fx.receipt, "receipt_id": fx.receipt["receipt_id"] + ".second"}
+        trace = {**fx.trace, "receipt_id": receipt["receipt_id"]}
+        second = fx.distill(receipt=receipt, trace=trace, ledger=first["ledger"])
+        self.assertEqual(second["outcome"], "distilled")
+        write_files(root, first["files"])
+        write_files(root, second["files"])
+        return fx, first, second
+
+    def _promotion_args(self, root, out):
+        return ["promote", "--repo", str(ROOT), "--root", str(root), "--out", str(out),
+                "--receipt", str(EXAMPLE / "promotion-receipt.json"),
+                "--eval-suite", str(EXAMPLE / "reviewed-eval-suite.json")]
+
+    def test_export_can_promote_a_carried_pending_candidate_without_original_root(self):
+        from distill_loop.common import sha256_json
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out = Path(tmp) / "source", Path(tmp) / "output"
+            fx, first, second = self._seed_pair(root)
+            self.assertEqual(self._run([*self._promotion_args(root, out), "--write"])[0], 0)
+            # Make the original unavailable before reading and extending the export.
+            root.rename(Path(tmp) / "unavailable")
+            status, context = self._run(["context", "--root", str(out)])
+            self.assertEqual(status, 0)
+            self.assertEqual(context["quarantined"], [])
+            self.assertEqual(context["pending_review"], [second["manifest"]["id"]])
+            suite = [{**case, "skill_id": second["manifest"]["id"]} for case in fx.reviewed_suite]
+            suite_path = out / second["manifest"]["quality"]["eval_suite_ref"]
+            suite_path.write_text(json.dumps(suite), encoding="utf-8")
+            receipt = attest_promotion({
+                **fx.promotion_receipt,
+                "receipt_id": fx.promotion_receipt["receipt_id"] + ".second",
+                "candidate_id": second["manifest"]["id"],
+                "candidate_manifest_sha256": second["manifest"]["integrity"]["manifest_sha256"],
+                "candidate_source_blob_sha": second["manifest"]["integrity"]["source_blob_sha"],
+                "source_run_receipt_ref": second["ledger_entry"]["source_receipt_id"],
+                "eval_suite_ref": second["manifest"]["quality"]["eval_suite_ref"],
+                "eval_suite_sha256": sha256_json(suite),
+            })
+            receipt_path = Path(tmp) / "second-promotion.json"
+            receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+            status, promoted = self._run([
+                "promote", "--repo", str(ROOT), "--root", str(out),
+                "--receipt", str(receipt_path), "--eval-suite", str(suite_path), "--write",
+            ])
+            self.assertEqual(status, 0, promoted)
+            _, context = self._run(["context", "--root", str(out)])
+            self.assertEqual(context["quarantined"], [])
+            self.assertEqual({item["candidate_id"] for item in context["context_sources"]},
+                             {first["manifest"]["id"], second["manifest"]["id"]})
+            self.assertTrue(all(not item["runtime_loadable"] for item in context["context_sources"]))
+            self.assertEqual(verify_ledger(_json(out / "skills/distill-ledger.json")), [])
+
+    def test_incomplete_carried_package_refuses_before_any_export_payload(self):
+        for failure in ("missing_source", "missing_manifest", "missing_suite", "drifted_source", "malformed_manifest"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as tmp:
+                root, out = Path(tmp) / "source", Path(tmp) / "output"
+                _, _, second = self._seed_pair(root)
+                package = root / "skills" / second["manifest"]["id"]
+                if failure.startswith("missing"):
+                    path = {"missing_source": package / "SKILL.md", "missing_manifest": package / "manifest.json",
+                            "missing_suite": root / second["manifest"]["quality"]["eval_suite_ref"]}[failure]
+                    path.unlink()
+                elif failure == "drifted_source":
+                    (package / "SKILL.md").write_text("tampered\n", encoding="utf-8")
+                else:
+                    (package / "manifest.json").write_text("{", encoding="utf-8")
+                before = (root / "skills/distill-ledger.json").read_bytes()
+                for write in (False, True):
+                    stderr = io.StringIO()
+                    with contextlib.redirect_stderr(stderr):
+                        status, summary = self._run([*self._promotion_args(root, out), *(["--write"] if write else [])])
+                    self.assertEqual(status, 1)
+                    self.assertIsNone(summary)
+                    self.assertEqual(json.loads(stderr.getvalue())["error"], "EXPORT_INCOMPLETE")
+                    self.assertEqual((root / "skills/distill-ledger.json").read_bytes(), before)
+                    self.assertFalse((out / "skills/distill-ledger.json").exists())
+                    self.assertFalse((out / "evals").exists())
+                    self.assertEqual(list((out / "skills").glob("quirk-*")), [])
+
+    def test_payload_write_failure_never_commits_a_promoted_ledger(self):
+        from unittest import mock
+        import distill_loop.common as common
+
+        for existing in (False, True):
+            for failed_name in ("SKILL.md", "manifest.json"):
+                with self.subTest(existing=existing, failed_name=failed_name), tempfile.TemporaryDirectory() as tmp:
+                    root, out = Path(tmp) / "source", Path(tmp) / "output"
+                    fx = DistillFixture()
+                    seeded = fx.distill()
+                    common.write_files(root, seeded["files"])
+                    if existing:
+                        common.write_files(out, seeded["files"])
+                    before = (root / "skills/distill-ledger.json").read_bytes()
+                    replace = common.os.replace
+
+                    def fail_package_write(source, destination):
+                        if destination.name == failed_name:
+                            raise OSError("injected package write failure")
+                        return replace(source, destination)
+
+                    stderr = io.StringIO()
+                    with mock.patch.object(common.os, "replace", fail_package_write), contextlib.redirect_stderr(stderr):
+                        status, summary = self._run([*self._promotion_args(root, out), "--write"])
+                    self.assertEqual(status, 1)
+                    self.assertIsNone(summary)
+                    self.assertEqual(json.loads(stderr.getvalue())["error"], "WRITE_FAILED")
+                    self.assertEqual((root / "skills/distill-ledger.json").read_bytes(), before)
+                    if existing:
+                        self.assertEqual((out / "skills/distill-ledger.json").read_bytes(), before)
+                    else:
+                        self.assertFalse((out / "skills/distill-ledger.json").exists())
+                    self.assertEqual(list(out.rglob("*.tmp")), [])
+
+    def test_redirected_promotion_preserves_package_bytes_and_preview_does_not_write(self):
+        from distill_loop.common import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out = Path(tmp) / "source", Path(tmp) / "output"
+            seeded = DistillFixture().distill()
+            write_files(root, seeded["files"])
+            package = root / "skills" / seeded["manifest"]["id"]
+            for name in ("SKILL.md", "manifest.json"):
+                path = package / name
+                path.write_bytes(path.read_bytes().replace(b"\n", b"\r\n"))
+            args = self._promotion_args(root, out)
+            preview = self._run(args)
+            self.assertFalse(out.exists())
+            self.assertEqual(self._run([*args, "--write"]), preview)
+            for name in ("SKILL.md", "manifest.json"):
+                self.assertEqual((out / "skills" / package.name / name).read_bytes(), (package / name).read_bytes())
+
+    def test_redirected_promotion_refuses_diverged_or_invalid_output_ledger(self):
+        from distill_loop.common import write_files
+
+        for ledger in (new_ledger(), {"invalid": True}):
+            with self.subTest(ledger=ledger), tempfile.TemporaryDirectory() as tmp:
+                root, out = Path(tmp) / "source", Path(tmp) / "output"
+                write_files(root, DistillFixture().distill()["files"])
+                write_files(out, {"skills/distill-ledger.json": json.dumps(ledger)})
+                before = (out / "skills/distill-ledger.json").read_bytes()
+                stderr = io.StringIO()
+                with contextlib.redirect_stderr(stderr):
+                    status, summary = self._run([*self._promotion_args(root, out), "--write"])
+                self.assertEqual(status, 1)
+                self.assertIsNone(summary)
+                self.assertEqual(json.loads(stderr.getvalue())["error"], "LEDGER_FORKED")
+                self.assertEqual((out / "skills/distill-ledger.json").read_bytes(), before)
 
     def test_redirected_transaction_locks_both_roots_in_stable_order(self):
         from unittest import mock
@@ -406,13 +1106,13 @@ class RedirectedWriteTests(unittest.TestCase):
                 held.remove(root)
 
         with tempfile.TemporaryDirectory() as tmp:
-            first, second = Path(tmp) / "a", Path(tmp) / "z"
+            first, second = (Path(tmp) / "a").resolve(), (Path(tmp) / "z").resolve()
             def transaction():
                 self.assertEqual(held, [first, second])
                 return "written"
             with mock.patch.object(cli, "_ledger_lock", lock):
-                self.assertEqual(cli._write_guarded(first, transaction, source_root=second), (0, "written"))
-                self.assertEqual(cli._write_guarded(second, transaction, source_root=first), (0, "written"))
+                self.assertEqual(cli._transaction_guarded(first, transaction, source_root=second), (0, "written"))
+                self.assertEqual(cli._transaction_guarded(second, transaction, source_root=first), (0, "written"))
             self.assertEqual(acquired, [first, second, first, second])
             self.assertEqual(held, [])
 
@@ -432,8 +1132,11 @@ class RedirectedWriteTests(unittest.TestCase):
             args = ["distill", "--repo", str(ROOT), "--root", str(root),
                     "--out", str(out), "--receipt", str(receipt_path),
                     "--trace", str(trace_path)]
-            for destination in (None, new_ledger(), {"invalid": True}):
+            for destination in (None, seeded["ledger"]):
                 with self.subTest(destination=destination):
+                    if out.exists():
+                        import shutil
+                        shutil.rmtree(out)
                     if destination is not None:
                         write_files(out, {"skills/distill-ledger.json": json.dumps(destination)})
                     preview_status, preview = self._run(args)
@@ -457,8 +1160,11 @@ class RedirectedWriteTests(unittest.TestCase):
             args = ["promote", "--repo", str(ROOT), "--root", str(root),
                     "--out", str(out), "--receipt", str(EXAMPLE / "promotion-receipt.json"),
                     "--eval-suite", str(EXAMPLE / "reviewed-eval-suite.json")]
-            for destination in (None, new_ledger(), {"invalid": True}):
+            for destination in (None, seeded["ledger"]):
                 with self.subTest(destination=destination):
+                    if out.exists():
+                        import shutil
+                        shutil.rmtree(out)
                     if destination is not None:
                         write_files(out, {"skills/distill-ledger.json": json.dumps(destination)})
                     preview_status, preview = self._run(args)
@@ -471,12 +1177,43 @@ class RedirectedWriteTests(unittest.TestCase):
                     self.assertEqual(ledger["entries"][-1]["entry_id"], "dl.000002")
                     self.assertEqual(verify_ledger(ledger), [])
                     self.assertEqual((root / "skills/distill-ledger.json").read_bytes(), before)
+                    for name in ("SKILL.md", "manifest.json"):
+                        relative = Path("skills") / seeded["manifest"]["id"] / name
+                        self.assertEqual((out / relative).read_bytes(), (root / relative).read_bytes())
+                    context_status, context = self._run(["context", "--root", str(out)])
+                    self.assertEqual(context_status, 0)
+                    self.assertEqual(context["quarantined"], [])
+                    self.assertEqual([item["candidate_id"] for item in context["context_sources"]],
+                                     [seeded["manifest"]["id"]])
+                    self.assertFalse(context["context_sources"][0]["runtime_loadable"])
+                    # Reusing the export reaches the duplicate-promotion gate,
+                    # rather than failing because the package is missing.
+                    reused = ["promote", "--repo", str(ROOT), "--root", str(out),
+                              "--receipt", str(EXAMPLE / "promotion-receipt.json"),
+                              "--eval-suite", str(out / fx.promotion_receipt["eval_suite_ref"]), "--write"]
+                    reused_status, refused = self._run(reused)
+                    self.assertEqual(reused_status, 1)
+                    self.assertTrue(any("already promoted" in error for error in refused["errors"]))
+                    self.assertEqual(_json(out / "skills/distill-ledger.json"), ledger)
             # Output provenance cannot authorize a source lacking provenance.
             write_files(root, {"skills/distill-ledger.json": json.dumps(new_ledger())})
             output_before = (out / "skills/distill-ledger.json").read_bytes()
             self.assertEqual(self._run(args), self._run([*args, "--write"]))
             self.assertEqual(self._run(args)[0], 1)
             self.assertEqual((out / "skills/distill-ledger.json").read_bytes(), output_before)
+
+    def test_lock_order_with_symlinked_temporary_directory(self):
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as tmp:
+            target, alias = Path(tmp) / "real", Path(tmp) / "alias"
+            target.mkdir()
+            try:
+                alias.symlink_to(target, target_is_directory=True)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"directory symlinks unavailable: {exc}")
+            with mock.patch.object(tempfile, "TemporaryDirectory", return_value=contextlib.nullcontext(str(alias))):
+                self.test_redirected_transaction_locks_both_roots_in_stable_order()
 
 
 class CliLockTests(unittest.TestCase):
@@ -516,21 +1253,21 @@ class CliLockTests(unittest.TestCase):
 
             denied = fake_msvcrt([OSError(errno.EINVAL, "denied")])
             with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
-                self.assertEqual(cli._write_guarded(root, write)[0], 1)
+                self.assertEqual(cli._transaction_guarded(root, write)[0], 1)
             self.assertEqual(len(denied.calls), 1)
             self.assertEqual(denied.calls, [denied.LK_NBLCK])
             self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
 
             busy = fake_msvcrt([OSError(contention, "busy")])
             with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", busy):
-                self.assertEqual(cli._write_guarded(root, write)[0], 1)
+                self.assertEqual(cli._transaction_guarded(root, write)[0], 1)
             self.assertEqual(len(busy.calls), cli.WINDOWS_LOCK_ATTEMPTS)
             self.assertTrue(all(mode == busy.LK_NBLCK for mode in busy.calls))
             self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
 
             eventually = fake_msvcrt([OSError(contention, "busy"), None])
             with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", eventually):
-                self.assertEqual(cli._write_guarded(root, write)[0], 0)
+                self.assertEqual(cli._transaction_guarded(root, write)[0], 0)
             self.assertEqual(target.read_text(encoding="utf-8"), "after\n")
 
     @unittest.skipUnless(sys.platform == "win32", "requires the real Windows msvcrt lock primitive")
@@ -551,7 +1288,7 @@ class CliLockTests(unittest.TestCase):
             self.assertTrue(ready.wait(2), "lock holder did not acquire the Windows lock")
             try:
                 started = time.monotonic()
-                status, _ = cli._write_guarded(
+                status, _ = cli._transaction_guarded(
                     root, lambda: cli.write_files(root, {"skills/distill-ledger.json": "after\n"}),
                 )
                 elapsed = time.monotonic() - started
@@ -578,7 +1315,7 @@ class CliLockTests(unittest.TestCase):
                     else mock.patch("builtins.open", side_effect=PermissionError("denied"))
                 )
                 with patcher, contextlib.redirect_stderr(stderr):
-                    status, result = cli._write_guarded(root, lambda: self.fail("transaction must not run"))
+                    status, result = cli._transaction_guarded(root, lambda: self.fail("transaction must not run"))
                 self.assertEqual(status, 1)
                 self.assertIsNone(result)
                 error = json.loads(stderr.getvalue())
