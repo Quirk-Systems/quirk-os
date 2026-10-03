@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime, timezone
 from typing import Any
 
@@ -18,11 +19,16 @@ def _parse_dt(value: str) -> datetime:
 #   - `service.` and `system.` are refused rather than assumed, because no
 #     allow-list of authorized service principals exists in this repository.
 #     Add one and this predicate is where it belongs.
-_INDEPENDENT_APPROVER_PREFIXES = ("human.",)
+#
+# The whole principal is matched rather than just its prefix, so the gate does
+# not depend on JSON Schema having run first: callers use
+# `validate_manifest_admission` directly, and a bare `"human."` would satisfy a
+# prefix test while naming nobody.
+_INDEPENDENT_APPROVER = re.compile(r"human\.[a-z0-9._-]+")
 
 
 def _is_independent_approver(approved_by: Any) -> bool:
-    return isinstance(approved_by, str) and approved_by.startswith(_INDEPENDENT_APPROVER_PREFIXES)
+    return isinstance(approved_by, str) and _INDEPENDENT_APPROVER.fullmatch(approved_by) is not None
 
 
 def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:

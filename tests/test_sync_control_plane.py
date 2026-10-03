@@ -84,6 +84,21 @@ class SyncControlPlaneTests(unittest.TestCase):
                     validate_manifest_admission(manifest),
                 )
 
+    def test_a_principal_naming_nobody_is_refused_without_help_from_the_schema(self):
+        """The gate is called directly, so it may not lean on schema validation.
+
+        `"human."` satisfies a prefix test while naming no one. The schema would
+        also reject it, but `validate_manifest_admission` has callers of its own.
+        """
+        manifest = load("evals/sync-control-plane/cases/SCP-011.json")["manifest"]
+        manifest["metadata"] = {}
+        manifest["admission"]["approved_by"] = "human."
+        self.assertTrue(self.validate(self.manifest_schema, manifest))
+        self.assertIn(
+            "activation requires approval by an independent human principal",
+            validate_manifest_admission(manifest),
+        )
+
     def test_declaring_self_request_honestly_is_not_itself_a_violation(self):
         """Self-request is permitted; self-approval is not.
 
