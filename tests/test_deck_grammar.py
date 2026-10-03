@@ -11,7 +11,7 @@ from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from deck_grammar.compiler import build_access_pool, compile_deck, compile_live_proof, content_hash, evaluate_adversarial_case
+from deck_grammar.compiler import build_access_pool, compile_deck, compile_live_proof, content_hash, evaluate_adversarial_case, wildcard_match
 SCHEMA_FILES = ['active-hand.schema.json', 'aesthetic-contract.schema.json', 'affordance.schema.json', 'area.schema.json', 'art.schema.json', 'artifact.schema.json', 'asset.schema.json', 'card-definition.schema.json', 'card-instance.schema.json', 'collection.schema.json', 'eligible-deck.schema.json', 'entitlement-grant.schema.json', 'goal.schema.json', 'hand-preset.schema.json', 'intention.schema.json']
 
 def load_json(relative: str):
@@ -91,6 +91,32 @@ class DeckGrammarTests(unittest.TestCase):
         deck, _, _ = self.compile_pool(pool)
         validator = Draft202012Validator(self.schemas['eligible-deck.schema.json'], registry=self.registry)
         self.assertEqual([], list(validator.iter_errors(deck)))
+    def test_wildcard_match_separates_an_absent_list_from_an_empty_one(self):
+        """An empty allow-list used to permit everything, so the check could not fail."""
+        self.assertTrue(wildcard_match(None, 'github'))
+        self.assertFalse(wildcard_match([], 'github'))
+        self.assertTrue(wildcard_match(['*'], 'github'))
+        self.assertTrue(wildcard_match(['github'], 'github'))
+        self.assertFalse(wildcard_match(['gitlab'], 'github'))
+    def test_a_card_declaring_no_platforms_is_not_universally_eligible(self):
+        for dimension, reason in (('platforms', 'platform_mismatch'), ('purpose_partitions', 'purpose_mismatch'), ('task_classes', 'task_mismatch')):
+            with self.subTest(dimension=dimension):
+                pool = json.loads(json.dumps(self.card_pool))
+                pool[0]['compatibility'][dimension] = []
+                card_id = pool[0]['card_id']
+                deck, _, instances_by_id = self.compile_pool(pool)
+                live = {instances_by_id[i]['card_id'] for i in deck['card_instance_ids']}
+                self.assertNotIn(card_id, live)
+                excluded = [item['reason_code'] for item in deck['excluded_cards'] if instances_by_id[item['instance_id']]['card_id'] == card_id]
+                self.assertEqual([reason], excluded)
+    def test_a_card_omitting_the_optional_area_key_stays_unconstrained_by_area(self):
+        """`area_refs` is optional in the card schema, so leaving it out must still match."""
+        pool = json.loads(json.dumps(self.card_pool))
+        pool[0]['compatibility'].pop('area_refs')
+        card_id = pool[0]['card_id']
+        deck, _, instances_by_id = self.compile_pool(pool)
+        live = {instances_by_id[i]['card_id'] for i in deck['card_instance_ids']}
+        self.assertIn(card_id, live)
     def test_all_adversarial_cases_pass(self):
         manifest = load_json('evals/deck-grammar/fixtures.json')
         results = [evaluate_adversarial_case(load_json(ref['path']), as_of=self.as_of) for ref in manifest['cases']]

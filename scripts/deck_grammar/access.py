@@ -53,7 +53,7 @@ def compile_deck(*, card_definitions: list[dict[str, Any]], collection: dict[str
             reason = 'explicitly_excluded'
         elif not wildcard_match(card['compatibility']['purpose_partitions'], purpose_partition):
             reason = 'purpose_mismatch'
-        elif not wildcard_match(card['compatibility'].get('area_refs', []), area['area_id']):
+        elif not wildcard_match(card['compatibility'].get('area_refs'), area['area_id']):
             reason = 'area_mismatch'
         elif not wildcard_match(card['compatibility']['platforms'], platform):
             reason = 'platform_mismatch'
