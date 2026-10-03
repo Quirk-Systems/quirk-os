@@ -11,7 +11,7 @@ from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from deck_grammar.compiler import build_access_pool, compile_live_proof, content_hash, evaluate_adversarial_case
+from deck_grammar.compiler import build_access_pool, compile_deck, compile_live_proof, content_hash, evaluate_adversarial_case
 SCHEMA_FILES = ['active-hand.schema.json', 'aesthetic-contract.schema.json', 'affordance.schema.json', 'area.schema.json', 'art.schema.json', 'artifact.schema.json', 'asset.schema.json', 'card-definition.schema.json', 'card-instance.schema.json', 'collection.schema.json', 'eligible-deck.schema.json', 'entitlement-grant.schema.json', 'goal.schema.json', 'hand-preset.schema.json', 'intention.schema.json']
 
 def load_json(relative: str):
@@ -61,6 +61,36 @@ class DeckGrammarTests(unittest.TestCase):
         build_access_pool(self.collection, self.entitlements, as_of=self.as_of)
         after = content_hash(self.collection)
         self.assertEqual(before, after)
+    def compile_pool(self, pool):
+        return compile_deck(card_definitions=pool, collection=self.collection, entitlements=self.entitlements, area=self.area, goal=self.goal, intention=self.intention, purpose_partition='deck_grammar_live_proof', platform='github', task_class='build_candidate_pack', authority_ceiling='propose', as_of=self.as_of)
+    def retire_one_card(self, status: str):
+        pool = json.loads(json.dumps(self.card_pool))
+        target = pool[0]
+        target['status'] = status
+        return (pool, target['card_id'])
+    def test_retired_and_deprecated_cards_leave_the_deck(self):
+        """Retiring a card has to remove it. The compiler used to never read `status`."""
+        for status in ('retired', 'deprecated'):
+            with self.subTest(status=status):
+                pool, card_id = self.retire_one_card(status)
+                deck, _, instances_by_id = self.compile_pool(pool)
+                live = {instances_by_id[i]['card_id'] for i in deck['card_instance_ids']}
+                self.assertNotIn(card_id, live)
+                excluded = [item for item in deck['excluded_cards'] if instances_by_id[item['instance_id']]['card_id'] == card_id]
+                self.assertEqual([('card_status_ineligible', status)], [(item['reason_code'], item['detail']) for item in excluded])
+    def test_a_card_in_a_live_status_stays_in_the_deck(self):
+        """The guard excludes the two terminal statuses only, never a candidate."""
+        for status in ('candidate', 'evaluated', 'admitted'):
+            with self.subTest(status=status):
+                pool, card_id = self.retire_one_card(status)
+                deck, _, instances_by_id = self.compile_pool(pool)
+                live = {instances_by_id[i]['card_id'] for i in deck['card_instance_ids']}
+                self.assertIn(card_id, live)
+    def test_deck_with_a_retired_card_still_validates(self):
+        pool, _ = self.retire_one_card('retired')
+        deck, _, _ = self.compile_pool(pool)
+        validator = Draft202012Validator(self.schemas['eligible-deck.schema.json'], registry=self.registry)
+        self.assertEqual([], list(validator.iter_errors(deck)))
     def test_all_adversarial_cases_pass(self):
         manifest = load_json('evals/deck-grammar/fixtures.json')
         results = [evaluate_adversarial_case(load_json(ref['path']), as_of=self.as_of) for ref in manifest['cases']]

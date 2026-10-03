@@ -4,6 +4,13 @@ from typing import Any
 import json
 from .common import DeckGrammarError, _slug, authority_not_above, content_hash, is_active_entitlement, parse_datetime, wildcard_match
 
+# A card definition's lifecycle, per schemas/card-definition.schema.json, runs
+# candidate -> evaluated -> admitted -> deprecated -> retired. The two terminal
+# states are the ones that make a card ineligible; the compiler must not
+# require 'admitted', because a candidate pool is the normal case and every
+# card in examples/deck-grammar/card-pool.json is still a candidate.
+RETIRED_CARD_STATUSES = frozenset({'deprecated', 'retired'})
+
 
 def build_access_pool(collection: dict[str, Any], entitlements: list[dict[str, Any]], *, as_of: datetime) -> list[dict[str, Any]]:
     instances = [json.loads(json.dumps(item)) for item in collection['card_instances']]
@@ -35,6 +42,9 @@ def compile_deck(*, card_definitions: list[dict[str, Any]], collection: dict[str
         card = cards_by_id.get(instance['card_id'])
         if card is None:
             reason = 'unknown_card'
+        elif card.get('status') in RETIRED_CARD_STATUSES:
+            reason = 'card_status_ineligible'
+            detail = card['status']
         elif instance['state'] in {'expired', 'revoked', 'transferred'}:
             reason = 'expired_access' if instance['state'] == 'expired' else 'revoked_access'
         elif (expires := parse_datetime(instance.get('expires_at'))) and as_of >= expires:
