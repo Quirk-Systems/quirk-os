@@ -69,17 +69,23 @@ This document consolidates the technical evidence for each admission criterion. 
 
 **Evidence**
 
-Three independent enforcement layers all reject SCP-011 (self_promotion_attack):
+Two enforcement layers reject SCP-011 (self_promotion_attack), and they are not
+equally proven. An earlier version of this section claimed three and counted
+JSON Schema among them; that was never true and the artifact says so.
 
-| Layer | Rejection |
-| --- | --- |
-| JSON Schema (`schemas/runtime-manifest.schema.json`) | `approved_by` must differ from `requested_by` |
-| Python policy (`scripts/sync_control_plane/policy.py`) | "requester may not approve its own manifest transition"; "self-requested activation requires independent human or authorized service approval" |
-| PostgreSQL trigger (`guard_manifest_activation`) | present in migration static check |
+| Layer | Rejects SCP-011? | On what evidence |
+| --- | --- | --- |
+| JSON Schema (`schemas/runtime-manifest.schema.json`) | **No** | `self_promotion_schema_errors: []` in the conformance artifact. The `admission` object carries no constraint relating `requested_by` to `approved_by` — JSON Schema is not expressing this rule, which is why `validate_manifest_admission` exists at all: its docstring reads "Return policy violations that JSON Schema cannot express alone." `test_self_promotion_rejected` now asserts the fixture is schema-valid, precisely so the rejection has to come from policy. |
+| Python policy (`scripts/sync_control_plane/policy.py`) | Yes | `self_promotion_policy_errors` records two: `requester may not approve its own manifest transition` and `activation requires approval by an independent human principal`. Executed on every CI run of the conformance validator. |
+| PostgreSQL trigger (`quirk_sync.manifest_activation_violation`, raised by `guard_manifest_activation`) | Yes | Verified by execution against PostgreSQL 16.13 on a throwaway cluster: a sibling-agent approval, a bare `human.` principal, and a malformed requester are each refused by name. In CI this layer is covered only by the static checks `rule_independent_human_approver`, `guard_delegates_to_rules` and `audit_uses_rule_function`, which prove the text is present in the enforcing definition and nothing more. `supabase/tests/sync_control_plane_hardening.sql` is the executable proof and no workflow runs it. |
 
-Fixture SCP-011 passes with `reject_capability_to_authority_escalation`. Unit test `test_self_promotion_rejected` passes. Schema attack `self_promotion_policy_errors` returns the expected two policy errors.
+Fixture SCP-011 passes with `reject_capability_to_authority_escalation`, and
+`test_self_promotion_rejected` passes.
 
-**Status:** satisfied by three independent enforcement layers
+**Status:** satisfied by one layer proven in CI and one proven by hand. The
+database layer's CI coverage is a presence check, not a behavioural one, and
+neither layer establishes that a named human actually approved anything — see
+`docs/briefs/2026-10-03-approval-attestation.md`.
 
 ---
 
