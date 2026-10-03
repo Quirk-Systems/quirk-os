@@ -53,6 +53,67 @@ begin
   end if;
 end $$;
 
+-- A sibling agent's approval is still capability granting authority.
+-- The self-approval test above passes on string inequality alone, so it never
+-- caught this: naming any second agent cleared the guard.
+do $$
+declare
+  v_rejected boolean := false;
+  v_hash text := repeat('e', 64);
+begin
+  begin
+    insert into quirk_sync.manifest_registry (
+      manifest_key, manifest_kind, version, status, requested_status,
+      canonical_uri, content_hash, authority_ceiling, tools,
+      inputs_schema_ref, outputs_schema_ref, eval_refs, stop_conditions,
+      requested_by, approved_by, admission_decision_ref, authority_grant_ref,
+      evaluated_content_hash, transition_evidence_ref, admitted_at, domains
+    ) values (
+      'agent.sql-escalate', 'agent', '9.9.5', 'active', 'active',
+      'https://github.com/Quirk-Systems/quirk-os/pull/113', v_hash, 'execute_protected', '[]'::jsonb,
+      'schemas/source-binding.schema.json', 'schemas/sync-run-receipt.schema.json',
+      '["eval.sibling"]'::jsonb, '["none"]'::jsonb,
+      'agent.sql-escalate', 'agent.sql-sibling', 'decision.sibling', 'grant.sibling',
+      v_hash, 'evidence.sibling', now(), '["sync","governance"]'::jsonb
+    );
+  exception when others then
+    v_rejected := position('independent human principal' in sqlerrm) > 0;
+  end;
+  if not v_rejected then
+    raise exception 'sibling-agent approval was not rejected';
+  end if;
+end $$;
+
+-- A principal naming nobody is refused. There is no schema layer in front of
+-- the database, so the guard matches the whole principal, not its prefix.
+do $$
+declare
+  v_rejected boolean := false;
+  v_hash text := repeat('f', 64);
+begin
+  begin
+    insert into quirk_sync.manifest_registry (
+      manifest_key, manifest_kind, version, status, requested_status,
+      canonical_uri, content_hash, authority_ceiling, tools,
+      inputs_schema_ref, outputs_schema_ref, eval_refs, stop_conditions,
+      requested_by, approved_by, admission_decision_ref, authority_grant_ref,
+      evaluated_content_hash, transition_evidence_ref, admitted_at, domains
+    ) values (
+      'agent.sql-empty-principal', 'agent', '9.9.6', 'active', 'active',
+      'https://github.com/Quirk-Systems/quirk-os/pull/113', v_hash, 'propose', '[]'::jsonb,
+      'schemas/source-binding.schema.json', 'schemas/sync-run-receipt.schema.json',
+      '["eval.empty"]'::jsonb, '["none"]'::jsonb,
+      'agent.sql-empty-principal', 'human.', 'decision.empty', 'grant.empty',
+      v_hash, 'evidence.empty', now(), '["sync"]'::jsonb
+    );
+  exception when others then
+    v_rejected := position('independent human principal' in sqlerrm) > 0;
+  end;
+  if not v_rejected then
+    raise exception 'a principal naming nobody was accepted as an approver';
+  end if;
+end $$;
+
 -- Data productization without approved rights must be rejected.
 do $$
 declare
