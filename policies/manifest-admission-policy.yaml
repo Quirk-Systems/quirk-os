@@ -2,12 +2,19 @@ api_version: quirk.dev/policy/v1alpha1
 kind: Policy
 metadata:
   id: policy.manifest-admission
-  version: 0.2.0
+  version: 0.3.0
   status: candidate
 invariant: capability_never_implies_authority
 rules:
   - id: no_self_approval
     require: admission.requested_by != admission.approved_by
+  # A manifest may request its own activation; it may never approve one.
+  # agent. is refused because capability never implies authority. service. and
+  # system. are refused until an allow-list of authorized service approvers
+  # exists. Replaces the former metadata.self_requested rule, which the judged
+  # document set for itself.
+  - id: independent_human_approval
+    require: admission.approved_by starts_with "human."
   - id: evaluated_hash_matches
     require: admission.evaluated_content_hash == content_hash
   - id: explicit_grant

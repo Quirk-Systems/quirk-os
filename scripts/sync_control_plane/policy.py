@@ -8,6 +8,23 @@ def _parse_dt(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
 
 
+# Principals are drawn from `^(human|agent|service|system)\.` by
+# schemas/runtime-manifest.schema.json. Only a human principal counts as an
+# independent approver of an activation:
+#
+#   - `agent.` can never be independent. A capability approving an activation
+#     is capability granting authority, which the policy's own
+#     `capability_never_implies_authority` invariant forbids outright.
+#   - `service.` and `system.` are refused rather than assumed, because no
+#     allow-list of authorized service principals exists in this repository.
+#     Add one and this predicate is where it belongs.
+_INDEPENDENT_APPROVER_PREFIXES = ("human.",)
+
+
+def _is_independent_approver(approved_by: Any) -> bool:
+    return isinstance(approved_by, str) and approved_by.startswith(_INDEPENDENT_APPROVER_PREFIXES)
+
+
 def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:
     """Return policy violations that JSON Schema cannot express alone."""
     errors: list[str] = []
@@ -32,8 +49,13 @@ def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:
         errors.append("requester may not approve its own manifest transition")
     if admission.get("evaluated_content_hash") != manifest.get("content_hash"):
         errors.append("evaluated content hash must match manifest content hash")
-    if manifest.get("metadata", {}).get("self_requested") and requested_by == manifest.get("manifest_key"):
-        errors.append("self-requested activation requires independent human or authorized service approval")
+    # Deliberately not read from `metadata.self_requested`. That flag was set
+    # by the same document this gate judges, so omitting it disabled the check;
+    # and a manifest that set it honestly was rejected even when a human had
+    # approved. Who approved is the thing that matters, and it is now checked
+    # for every activation, self-requested or not.
+    if not _is_independent_approver(approved_by):
+        errors.append("activation requires approval by an independent human principal")
 
     domains = set(manifest.get("domains", []))
     if "data_productization" in domains:

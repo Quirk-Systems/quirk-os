@@ -48,7 +48,55 @@ class SyncControlPlaneTests(unittest.TestCase):
 
     def test_self_promotion_rejected(self):
         manifest = load("evals/sync-control-plane/cases/SCP-011.json")["manifest"]
-        self.assertTrue(self.validate(self.manifest_schema, manifest) or validate_manifest_admission(manifest))
+        # The manifest is schema-valid, so the rejection has to come from policy.
+        self.assertEqual([], self.validate(self.manifest_schema, manifest))
+        self.assertIn(
+            "activation requires approval by an independent human principal",
+            validate_manifest_admission(manifest),
+        )
+
+    def test_sibling_agent_approval_is_rejected(self):
+        """A second agent approving an activation is still capability granting authority.
+
+        The former gate only fired when the manifest set `metadata.self_requested`
+        and named itself as requester, so omitting the flag and naming any other
+        agent as approver walked straight through it.
+        """
+        manifest = load("evals/sync-control-plane/cases/SCP-011.json")["manifest"]
+        manifest["metadata"] = {}
+        manifest["admission"]["approved_by"] = "agent.quirk-sibling"
+        self.assertEqual([], self.validate(self.manifest_schema, manifest))
+        self.assertIn(
+            "activation requires approval by an independent human principal",
+            validate_manifest_admission(manifest),
+        )
+
+    def test_service_and_system_approval_are_refused(self):
+        """No allow-list of authorized service approvers exists, so neither is assumed."""
+        for principal in ("service.quirk-admitter", "system.quirk-runtime"):
+            with self.subTest(approved_by=principal):
+                manifest = load("evals/sync-control-plane/cases/SCP-011.json")["manifest"]
+                manifest["metadata"] = {}
+                manifest["admission"]["approved_by"] = principal
+                self.assertEqual([], self.validate(self.manifest_schema, manifest))
+                self.assertIn(
+                    "activation requires approval by an independent human principal",
+                    validate_manifest_admission(manifest),
+                )
+
+    def test_declaring_self_request_honestly_is_not_itself_a_violation(self):
+        """Self-request is permitted; self-approval is not.
+
+        The valid fixture is already self-requested (`requested_by` equals
+        `manifest_key`) and passes on a human approver. The former gate rejected
+        a manifest that declared the same fact in `metadata`, which punished the
+        honest declaration and rewarded omitting it.
+        """
+        manifest = load("evals/sync-control-plane/valid-active-manifest.json")
+        self.assertEqual(manifest["admission"]["requested_by"], manifest["manifest_key"])
+        manifest["metadata"] = {"self_requested": True}
+        self.assertEqual([], self.validate(self.manifest_schema, manifest))
+        self.assertEqual([], validate_manifest_admission(manifest))
 
     def test_cloudflare_deferred_binding_is_valid(self):
         binding = {
