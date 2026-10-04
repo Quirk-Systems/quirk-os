@@ -53,7 +53,7 @@ def main():
         if role == 'just_outside':
             frozen['authority'] = 'synthetic scoped review at old head'
         receipt_id = 'receipt.' + name
-        receipts.append({'receipt_id':receipt_id,'boundary_id':'boundary.manifest-review-proposal','contract_version':'0.1.0',
+        receipts.append({'receipt_id':receipt_id,'boundary_id':'boundary.manifest-review-proposal','contract_version':'0.1.1',
                          'decision':observed,'reason_codes':[reason],'subject':frozen['subject'],
                          'object_hash':candidate['content_hash'],'purpose':frozen['purpose'],
                          'authority_source_ids':['authority.approved-design'], 'decided_at':executed,
@@ -87,7 +87,7 @@ def main():
                 'enforcement_surfaces':['prepare_projection','GitHubApprovalVerifier'],
                 'non_goals':['live GitHub authenticity demonstration','database independence','admission','consumer expiry enforcement'],
                 'invalidators':['implementation/profile/ownership/subject/environment/approval/evidence changes']}
-    bundle = {'bundle_id':'boundary-bundle.manifest-review-proposal','version':'0.1.0','status':'candidate',
+    bundle = {'bundle_id':'boundary-bundle.manifest-review-proposal','version':'0.1.1','status':'candidate',
               'proof_profile':'demonstration','coverage_profile':'focused','authority_basis':'declared',
               'authority_ceiling':{'may':['inspect','test','propose'],'may_not':['self_admit','activate','merge','deploy','grant_authority','canonize','infer_consent']},
               'authority_sources':[{'source_id':'authority.approved-design','kind':'human_rule','owner':'Bryan',
