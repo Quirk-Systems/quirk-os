@@ -1,0 +1,131 @@
+{
+  "schema_version": "media-kit-project.v1",
+  "id": "qmk_source_first_demo",
+  "title": "Where did this come from?",
+  "purpose": "Reopen one media family with its source, two candidate expressions, and the reason one was selected.",
+  "owner": "Quirk Media / Quirk Creation + Quirk Asset",
+  "status": "candidate",
+  "authority": {
+    "ceiling": "candidate",
+    "publish_allowed": false,
+    "graph_application_allowed": false,
+    "training_allowed": false,
+    "canon_promotion_allowed": false
+  },
+  "sources": [
+    {
+      "id": "src_multimedia_design",
+      "path": "docs/golden-project-pack/MULTIMEDIA-MULTIPLIZIERT.md",
+      "object_ref": "quirk.media_multiplication",
+      "version": "499f94b8d12e29dd7804cc9b537fd70f6a8048d8",
+      "receipt_ref": "https://github.com/Quirk-Systems/quirk-os/blob/499f94b8d12e29dd7804cc9b537fd70f6a8048d8/docs/golden-project-pack/MULTIMEDIA-MULTIPLIZIERT.md",
+      "sha256": "1de3f133e2405bdd32d34d611ed225dd584d4b6b7e234d84656d654b10598686",
+      "source_status": "candidate",
+      "rights_note": "Quirk repository design captured for private candidate inspection. Public redistribution and media release rights are not established by this kit."
+    }
+  ],
+  "derivatives": [
+    {
+      "path": "examples/media-kit/source-first-card.md",
+      "sha256": "f99a39e22fa22064d70094e773b41c2ca82bf8976ddcc4bca49d9009e202a6fd",
+      "source_id": "src_multimedia_design",
+      "metadata": {
+        "id": "qmd_source_first_card",
+        "schema_version": "media-derivative.v1",
+        "canonical_source": {
+          "object_ref": "quirk.media_multiplication",
+          "version": "499f94b8d12e29dd7804cc9b537fd70f6a8048d8",
+          "receipt_ref": "https://github.com/Quirk-Systems/quirk-os/blob/499f94b8d12e29dd7804cc9b537fd70f6a8048d8/docs/golden-project-pack/MULTIMEDIA-MULTIPLIZIERT.md"
+        },
+        "medium": "prompt-card",
+        "audience": [
+          "Quirk media operator"
+        ],
+        "job": "Guide an operator through one media-family inspection.",
+        "transformation_type": "agent-written adaptation for private candidate review",
+        "medium_native_affordance": [
+          "participatory-review"
+        ],
+        "claims": {
+          "preserved": [
+            "Every derivative should retain source provenance and a medium-specific reason to exist.",
+            "Rights, accessibility, fidelity, and human review remain separate obligations."
+          ],
+          "added": [
+            "Seven-question inspection sequence; portable-kit reopen step."
+          ],
+          "omitted": [
+            "Full component catalog, eleven surfaces, and detailed production procedure."
+          ]
+        },
+        "accessibility": {
+          "status": "in_progress"
+        },
+        "rights": {
+          "owner": "Quirk Systems (declared project owner)",
+          "licenses": [],
+          "source_permissions_verified": false
+        },
+        "provenance": {
+          "quirk_receipt_ref": "docs/media-kit/RECEIPT.md"
+        },
+        "status": "draft"
+      }
+    },
+    {
+      "path": "examples/media-kit/family-summary.md",
+      "sha256": "12d9938789868efb17c60f091ac52a91804acb2ca999bf3b0a8698bf788a77d7",
+      "source_id": "src_multimedia_design",
+      "metadata": {
+        "id": "qmd_family_summary",
+        "schema_version": "media-derivative.v1",
+        "canonical_source": {
+          "object_ref": "quirk.media_multiplication",
+          "version": "499f94b8d12e29dd7804cc9b537fd70f6a8048d8",
+          "receipt_ref": "https://github.com/Quirk-Systems/quirk-os/blob/499f94b8d12e29dd7804cc9b537fd70f6a8048d8/docs/golden-project-pack/MULTIMEDIA-MULTIPLIZIERT.md"
+        },
+        "medium": "readme",
+        "audience": [
+          "Quirk media operator"
+        ],
+        "job": "Give a reader a short orientation to the media-family design.",
+        "transformation_type": "agent-written adaptation for private candidate review",
+        "medium_native_affordance": [
+          "compression"
+        ],
+        "claims": {
+          "preserved": [
+            "Every derivative should retain source provenance and a medium-specific reason to exist.",
+            "Rights, accessibility, fidelity, and human review remain separate obligations."
+          ],
+          "added": [],
+          "omitted": [
+            "Full production procedure, component list, and eleven-surface catalog."
+          ]
+        },
+        "accessibility": {
+          "status": "in_progress"
+        },
+        "rights": {
+          "owner": "Quirk Systems (declared project owner)",
+          "licenses": [],
+          "source_permissions_verified": false
+        },
+        "provenance": {
+          "quirk_receipt_ref": "docs/media-kit/RECEIPT.md"
+        },
+        "status": "draft"
+      }
+    }
+  ],
+  "selection": {
+    "derivative_id": "qmd_source_first_card",
+    "rationale": "Agent proposal: the card gives the operator a concrete inspection task. The summary is retained as a comparison; Bryan has not judged this choice.",
+    "completion_condition": "A human reopens this kit, identifies the source and selected version without prompting, then reports whether the card helped them finish the inspection.",
+    "actor": {
+      "id": "agent.codex",
+      "type": "agent"
+    },
+    "signature_status": "unsigned"
+  }
+}
