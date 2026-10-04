@@ -401,6 +401,7 @@ def main() -> int:
     parser.add_argument("--write-step-summary", action="store_true", help="Append metrics to GitHub step summary when available.")
     args = parser.parse_args()
     repo = ROOT
+    metrics_output = (repo / args.metrics_output).resolve() if args.metrics_output else None
 
     errors = 0
     start = time.perf_counter()
@@ -462,7 +463,7 @@ def main() -> int:
                 continue
             if path.suffix.lower() not in {".md", ".json", ".yaml", ".yml", ".py", ".sql"}:
                 continue
-            if path.resolve() == Path(__file__).resolve():
+            if path.resolve() in {Path(__file__).resolve(), metrics_output}:
                 continue
             files_scanned += 1
             try:
@@ -489,8 +490,7 @@ def main() -> int:
             "bytes_scanned": bytes_scanned,
             "placeholder_hits": placeholder_hits,
         }
-        if args.metrics_output:
-            metrics_output = args.metrics_output if args.metrics_output.is_absolute() else repo / args.metrics_output
+        if metrics_output:
             metrics_output.parent.mkdir(parents=True, exist_ok=True)
             metrics_output.write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
         if args.write_step_summary:

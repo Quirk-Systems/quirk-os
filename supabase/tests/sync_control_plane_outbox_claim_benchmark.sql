@@ -197,7 +197,7 @@ begin
     and attempts < max_attempts
     and (leased_until is null or leased_until < now());
 
-  execute $$
+  execute $plan$
     explain (format json)
     select id
     from quirk_sync.projection_outbox
@@ -208,15 +208,14 @@ begin
     order by available_at, id
     for update skip locked
     limit 250
-  $$ into v_plan;
+  $plan$ into v_plan;
 
   raise notice '%', v_plan::text;
   v_has_claim_index :=
-    jsonb_path_exists(v_plan, '$.** ? (@."Index Name" == "projection_outbox_claim_pending_failed_idx")')
-    or jsonb_path_exists(v_plan, '$.** ? (@."Index Name" == "projection_outbox_claim_expired_leased_idx")');
+    jsonb_path_exists(v_plan, '$.** ? (@."Index Name" == "projection_outbox_claim_ready_idx")');
 
   if not v_has_claim_index then
-    raise exception 'benchmark expected claim query to use new projection_outbox_claim_* indexes';
+    raise exception 'benchmark expected claim query to use projection_outbox_claim_ready_idx';
   end if;
 
   perform *

@@ -322,7 +322,7 @@ def _profile_compile_hand(*, repeats: int, persona_instances: int, affordance_in
         "timing_seconds": {
             "samples": samples,
             "median": statistics.median(samples),
-            "p95": max(samples),
+            "p95": statistics.quantiles(samples, n=100, method="inclusive")[94] if len(samples) > 1 else samples[0],
         },
         "cprofile_top": profile_lines,
     }

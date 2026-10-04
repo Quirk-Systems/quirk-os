@@ -7,11 +7,36 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
 
 
 class ValidatorMetricsTests(unittest.TestCase):
+    def test_golden_metrics_output_is_excluded_from_repeated_scans(self):
+        import validate_golden_pack
+
+        for absolute in (False, True):
+            with self.subTest(absolute=absolute), tempfile.TemporaryDirectory() as temporary:
+                repo = Path(temporary)
+                source = repo / "source.md"
+                source.write_text("Stable scan input.\n", encoding="utf-8")
+                metrics_path = repo / "metrics.json"
+                output = str(metrics_path) if absolute else "metrics.json"
+                with patch.object(validate_golden_pack, "ROOT", repo), \
+                     patch.object(validate_golden_pack, "REQUIRED_FILES", []), \
+                     patch.object(validate_golden_pack, "pack_status", return_value="CANDIDATE"), \
+                     patch.object(sys, "argv", ["validate_golden_pack.py", "--metrics-output", output]):
+                    self.assertEqual(validate_golden_pack.main(), 0)
+                    first = json.loads(metrics_path.read_text(encoding="utf-8"))
+                    self.assertEqual(validate_golden_pack.main(), 0)
+                    second = json.loads(metrics_path.read_text(encoding="utf-8"))
+                for metrics in (first, second):
+                    self.assertEqual(metrics["files_scanned"], 1)
+                    self.assertEqual(metrics["bytes_scanned"], source.stat().st_size)
+                    self.assertEqual(metrics["placeholder_hits"], 0)
+
     def _run(self, script: str, *args: str, extra_env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
         env = os.environ.copy()
         if extra_env:

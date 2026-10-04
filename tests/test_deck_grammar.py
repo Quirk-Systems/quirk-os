@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import yaml
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
@@ -359,6 +360,19 @@ class ContentHashBindingTests(unittest.TestCase):
         )
         mutated = {**referenced, 'verdict': 'NOT_THE_REAL_VERDICT'}
         self.assertNotEqual(content_hash(referenced), content_hash(mutated))
+
+
+class CompileHandPerformanceTests(unittest.TestCase):
+    def test_profile_reports_inclusive_p95(self):
+        from deck_grammar.perf_benchmarks import _profile_compile_hand
+
+        for samples, expected in (([1.0], 1.0), ([1.0, 2.0, 3.0], 2.9)):
+            with self.subTest(samples=samples):
+                clock = [value for sample in samples for value in (0.0, sample)]
+                with patch('deck_grammar.perf_benchmarks.time.perf_counter', side_effect=clock):
+                    result = _profile_compile_hand(repeats=len(samples), persona_instances=1, affordance_instances=1, slot_count=1, top_functions=1)
+                self.assertEqual(result['timing_seconds']['samples'], samples)
+                self.assertAlmostEqual(result['timing_seconds']['p95'], expected)
 
 
 if __name__ == '__main__':
