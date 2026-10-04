@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import subprocess
 from pathlib import Path
 import sys
 import unittest
@@ -12,7 +13,13 @@ import yaml
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 
-from intent_shaper.policy import evaluate_case, evaluate_cases  # noqa: E402
+from intent_shaper.policy import (  # noqa: E402
+    evaluate_case,
+    evaluate_cases,
+    evaluate_reconstruction_adversarial_cases,
+    evaluate_reconstruction_mutations,
+    evaluate_reconstruction_plan,
+)
 from validate_intent_shaper import validate_policy  # noqa: E402
 
 
@@ -21,6 +28,7 @@ class IntentShaperContractTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.schema = json.loads((REPO / "schemas/personalization-plan.schema.json").read_text())
         cls.sample = json.loads((REPO / "examples/personalization-plan.valid.json").read_text())
+        cls.generated_ui_sample = json.loads((REPO / "examples/personalization-plan.generated-ui.valid.json").read_text())
         cls.suite = json.loads((REPO / "evals/intent-shaper/cases.json").read_text())
         cls.validator = Draft202012Validator(cls.schema, format_checker=FormatChecker())
 
@@ -74,11 +82,12 @@ class IntentShaperContractTests(unittest.TestCase):
         errors = list(self.validator.iter_errors(plan))
         self.assertTrue(any(list(error.path) == ["settings", "generated_ui"] for error in errors))
 
-    def test_generated_ui_affordance_is_out_of_candidate_scope(self) -> None:
-        plan = copy.deepcopy(self.sample)
-        plan["task_affordances"][0]["type"] = "generated_ui"
-        errors = list(self.validator.iter_errors(plan))
-        self.assertTrue(any("generated_ui" in error.message for error in errors))
+    def test_generated_ui_reconstruction_stays_candidate_only(self) -> None:
+        errors = list(self.validator.iter_errors(self.generated_ui_sample))
+        self.assertEqual([], errors)
+        self.assertEqual("candidate", self.generated_ui_sample["status"])
+        self.assertEqual("off", self.generated_ui_sample["settings"]["generated_ui"])
+        self.assertEqual("propose", self.generated_ui_sample["authority"]["ceiling"])
 
     def test_personalization_off_has_schema_representable_empty_persona(self) -> None:
         plan = copy.deepcopy(self.sample)
@@ -209,6 +218,55 @@ class IntentShaperContractTests(unittest.TestCase):
         self.assertEqual("blocked", actual["status"])
         self.assertEqual("feedback_receipt_missing", actual["reason_code"])
         self.assertFalse(actual["feedback_receipt_verified"])
+
+
+    def test_generated_ui_plan_is_valid(self) -> None:
+        self.assertEqual([], list(self.validator.iter_errors(self.generated_ui_sample)))
+
+    def test_qis_015_cold_reconstruction_is_deterministic(self) -> None:
+        expected = self.suite["reconstruction_suite"]["expected"]
+        command = [
+            sys.executable,
+            str(REPO / "scripts/validate_intent_shaper.py"),
+            "--repo",
+            str(REPO),
+            "--emit-reconstruction-run",
+        ]
+        first = subprocess.run(command, check=True, capture_output=True, text=True)
+        second = subprocess.run(command, check=True, capture_output=True, text=True)
+        first_result = json.loads(first.stdout)
+        second_result = json.loads(second.stdout)
+        self.assertEqual("passed", first_result["status"])
+        self.assertEqual(first_result, second_result)
+        self.assertEqual(expected["semantic_hash"], first_result["semantic_hash"])
+        self.assertEqual(expected["subhashes"], first_result["subhashes"])
+
+    def test_qis_015_mutation_suite(self) -> None:
+        results = evaluate_reconstruction_mutations(
+            self.generated_ui_sample,
+            self.suite["reconstruction_suite"]["mutations"],
+            self.validator,
+        )
+        failures = [result for result in results if not result["passed"]]
+        self.assertEqual([], failures)
+        self.assertEqual(5, len(results))
+
+    def test_qis_015_adversarial_suite(self) -> None:
+        results = evaluate_reconstruction_adversarial_cases(
+            self.generated_ui_sample,
+            self.suite["reconstruction_suite"]["adversarial_cases"],
+            self.validator,
+        )
+        failures = [result for result in results if not result["passed"]]
+        self.assertEqual([], failures)
+        self.assertEqual(6, len(results))
+
+    def test_qis_015_semantic_projection_matches_expected_hashes(self) -> None:
+        expected = self.suite["reconstruction_suite"]["expected"]
+        result = evaluate_reconstruction_plan(self.generated_ui_sample, self.validator)
+        self.assertEqual("passed", result["status"])
+        self.assertEqual(expected["semantic_hash"], result["semantic_hash"])
+        self.assertEqual(expected["subhashes"], result["subhashes"])
 
 
 if __name__ == "__main__":
