@@ -66,12 +66,16 @@ jobs:
           python scripts/validate_skills.py
           --repo .
           --output evals/skills/conformance-results.json
+          --metrics-output evals/skills/conformance-metrics.json
+          --write-step-summary
 
       - name: Upload skill conformance evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: quirk-skills-candidate-conformance
-          path: evals/skills/conformance-results.json
+          path: |
+            evals/skills/conformance-results.json
+            evals/skills/conformance-metrics.json
           if-no-files-found: error
           retention-days: 30

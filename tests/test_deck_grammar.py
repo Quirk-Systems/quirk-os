@@ -7,12 +7,14 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import yaml
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from deck_grammar.compiler import build_access_pool, compile_deck, compile_live_proof, content_hash, evaluate_adversarial_case, wildcard_match
+from deck_grammar.access import _slug
 SCHEMA_FILES = ['active-hand.schema.json', 'aesthetic-contract.schema.json', 'affordance.schema.json', 'area.schema.json', 'art.schema.json', 'artifact.schema.json', 'asset.schema.json', 'card-definition.schema.json', 'card-instance.schema.json', 'collection.schema.json', 'eligible-deck.schema.json', 'entitlement-grant.schema.json', 'goal.schema.json', 'hand-preset.schema.json', 'intention.schema.json']
 
 def committed_json(relative: str):
@@ -83,6 +85,75 @@ class DeckGrammarTests(unittest.TestCase):
         build_access_pool(self.collection, self.entitlements, as_of=self.as_of)
         after = content_hash(self.collection)
         self.assertEqual(before, after)
+
+    def test_build_access_pool_matches_linear_duplicate_check(self):
+        collection = {
+            'collection_id': 'collection.test.perf',
+            'owner_ref': 'human.test',
+            'card_instances': [
+                {
+                    'instance_id': f'card-instance.owned.{index:04d}',
+                    'card_id': f'card.affordance.{index:04d}',
+                    'holder_ref': 'human.test',
+                    'access_kind': 'owned',
+                    'state': 'accessible',
+                    'acquired_at': '2026-01-01T00:00:00Z',
+                    'ownership_claim': 'owned',
+                    'authority_effect': 'none',
+                    'edition': None,
+                    'provenance_refs': ['source.collection.test'],
+                    'metadata': {},
+                }
+                for index in range(400)
+            ],
+        }
+        entitlements = []
+        for ent_index in range(40):
+            scope = [f'card.affordance.{((ent_index * 5) + offset) % 800:04d}' for offset in range(24)]
+            scope.append(scope[0])
+            entitlements.append({
+                'entitlement_id': f'entitlement.test.{ent_index:04d}',
+                'grantee_ref': 'human.test',
+                'access_kind': 'premium',
+                'state': 'active',
+                'authority_effect': 'none',
+                'starts_at': '2026-08-01T00:00:00Z',
+                'ends_at': None,
+                'scope': {'card_ids': scope},
+                'source_ref': f'source.entitlement.{ent_index:04d}',
+            })
+
+        baseline = [json.loads(json.dumps(item)) for item in collection['card_instances']]
+        owned = {item['card_id'] for item in baseline if item['access_kind'] == 'owned' and item['ownership_claim'] == 'owned'}
+        for entitlement in entitlements:
+            for card_id in entitlement['scope']['card_ids']:
+                if card_id in owned:
+                    continue
+                instance_id = 'card-instance.entitled.' + _slug(entitlement['entitlement_id'].removeprefix('entitlement.')) + '.' + _slug(card_id.removeprefix('card.'))
+                if any((existing['instance_id'] == instance_id for existing in baseline)):
+                    continue
+                baseline.append({'instance_id': instance_id, 'card_id': card_id, 'holder_ref': entitlement['grantee_ref'], 'access_kind': entitlement['access_kind'], 'state': 'accessible', 'acquired_at': entitlement['starts_at'], 'expires_at': entitlement.get('ends_at'), 'entitlement_ref': entitlement['entitlement_id'], 'ownership_claim': 'not_owned', 'authority_effect': 'none', 'edition': None, 'provenance_refs': [entitlement['source_ref']], 'metadata': {'entitlement_state': entitlement['state']}})
+
+        actual = build_access_pool(collection, entitlements, as_of=self.as_of)
+        self.assertEqual(len(actual), len({item['instance_id'] for item in actual}))
+        self.assertEqual(baseline, actual)
+
+    def test_build_access_pool_deduplicates_repeated_scope_ids(self):
+        collection = {'collection_id': 'collection.test.scope', 'owner_ref': 'human.test', 'card_instances': []}
+        entitlements = [{
+            'entitlement_id': 'entitlement.test.dup',
+            'grantee_ref': 'human.test',
+            'access_kind': 'premium',
+            'state': 'active',
+            'authority_effect': 'none',
+            'starts_at': '2026-08-01T00:00:00Z',
+            'ends_at': None,
+            'scope': {'card_ids': ['card.affordance.alpha', 'card.affordance.alpha', 'card.affordance.alpha']},
+            'source_ref': 'source.entitlement.dup',
+        }]
+        actual = build_access_pool(collection, entitlements, as_of=self.as_of)
+        self.assertEqual(1, len(actual))
+        self.assertEqual('card.affordance.alpha', actual[0]['card_id'])
     def compile_pool(self, pool):
         return compile_deck(card_definitions=pool, collection=self.collection, entitlements=self.entitlements, area=self.area, goal=self.goal, intention=self.intention, purpose_partition='deck_grammar_live_proof', platform='github', task_class='build_candidate_pack', authority_ceiling='propose', as_of=self.as_of)
     def retire_one_card(self, status: str):
@@ -289,6 +360,19 @@ class ContentHashBindingTests(unittest.TestCase):
         )
         mutated = {**referenced, 'verdict': 'NOT_THE_REAL_VERDICT'}
         self.assertNotEqual(content_hash(referenced), content_hash(mutated))
+
+
+class CompileHandPerformanceTests(unittest.TestCase):
+    def test_profile_reports_inclusive_p95(self):
+        from deck_grammar.perf_benchmarks import _profile_compile_hand
+
+        for samples, expected in (([1.0], 1.0), ([1.0, 2.0, 3.0], 2.9)):
+            with self.subTest(samples=samples):
+                clock = [value for sample in samples for value in (0.0, sample)]
+                with patch('deck_grammar.perf_benchmarks.time.perf_counter', side_effect=clock):
+                    result = _profile_compile_hand(repeats=len(samples), persona_instances=1, affordance_instances=1, slot_count=1, top_functions=1)
+                self.assertEqual(result['timing_seconds']['samples'], samples)
+                self.assertAlmostEqual(result['timing_seconds']['p95'], expected)
 
 
 if __name__ == '__main__':
