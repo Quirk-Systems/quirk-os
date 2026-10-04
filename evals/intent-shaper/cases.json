@@ -830,10 +830,10 @@
             "input_refs": [
               "input.intent",
               "input.preferences",
-              "input.component.issue-intake-form"
+              "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
+            "replay_hash_sha256": "381888c4da889043c1b84d01f5368974b14e86277a22b648d83aa93cfc81220d"
           },
           "accessibility": {
             "machine_checks": {
@@ -938,10 +938,10 @@
             "input_refs": [
               "input.intent",
               "input.preferences",
-              "input.component.issue-intake-form"
+              "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
+            "replay_hash_sha256": "381888c4da889043c1b84d01f5368974b14e86277a22b648d83aa93cfc81220d"
           },
           "accessibility": {
             "machine_checks": {
@@ -1025,7 +1025,8 @@
         "reason_codes": [
           "ACCESSIBILITY_MACHINE_CHECK_FAILED",
           "COMPONENT_MANIFEST_MISSING",
-          "GENERATED_UI_PLAN_INVALID"
+          "GENERATED_UI_PLAN_INVALID",
+          "RECONSTRUCTION_INPUTS_MISSING"
         ]
       }
     },
@@ -1076,10 +1077,10 @@
             "input_refs": [
               "input.intent",
               "input.preferences",
-              "input.component.issue-intake-form"
+              "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
+            "replay_hash_sha256": "381888c4da889043c1b84d01f5368974b14e86277a22b648d83aa93cfc81220d"
           },
           "accessibility": {
             "machine_checks": {
@@ -1215,10 +1216,10 @@
             "input_refs": [
               "input.intent",
               "input.preferences",
-              "input.component.issue-intake-form"
+              "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
+            "replay_hash_sha256": "381888c4da889043c1b84d01f5368974b14e86277a22b648d83aa93cfc81220d"
           },
           "accessibility": {
             "machine_checks": {
@@ -1351,10 +1352,10 @@
             "input_refs": [
               "input.intent",
               "input.preferences",
-              "input.component.issue-intake-form"
+              "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
+            "replay_hash_sha256": "381888c4da889043c1b84d01f5368974b14e86277a22b648d83aa93cfc81220d"
           },
           "accessibility": {
             "machine_checks": {
@@ -1437,7 +1438,8 @@
         "status": "rejected",
         "reason_codes": [
           "ACCESSIBILITY_MACHINE_CHECK_FAILED",
-          "COMPONENT_MANIFEST_INACCESSIBLE"
+          "COMPONENT_MANIFEST_INACCESSIBLE",
+          "RECONSTRUCTION_INPUTS_MISSING"
         ]
       }
     },
@@ -1488,10 +1490,10 @@
             "input_refs": [
               "input.intent",
               "input.preferences",
-              "input.component.issue-intake-form"
+              "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
+            "replay_hash_sha256": "381888c4da889043c1b84d01f5368974b14e86277a22b648d83aa93cfc81220d"
           },
           "accessibility": {
             "machine_checks": {
@@ -1625,10 +1627,10 @@
             "input_refs": [
               "input.intent",
               "input.preferences",
-              "input.component.issue-intake-form"
+              "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
+            "replay_hash_sha256": "381888c4da889043c1b84d01f5368974b14e86277a22b648d83aa93cfc81220d"
           },
           "accessibility": {
             "machine_checks": {
@@ -1764,10 +1766,10 @@
             "input_refs": [
               "input.intent",
               "input.preferences",
-              "input.component.issue-intake-form"
+              "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
+            "replay_hash_sha256": "381888c4da889043c1b84d01f5368974b14e86277a22b648d83aa93cfc81220d"
           },
           "accessibility": {
             "machine_checks": {
@@ -1900,10 +1902,10 @@
             "input_refs": [
               "input.intent",
               "input.preferences",
-              "input.component.issue-intake-form"
+              "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
+            "replay_hash_sha256": "381888c4da889043c1b84d01f5368974b14e86277a22b648d83aa93cfc81220d"
           },
           "accessibility": {
             "machine_checks": {
@@ -1986,7 +1988,8 @@
         "status": "rejected",
         "reason_codes": [
           "ACCESSIBILITY_MACHINE_CHECK_FAILED",
-          "COMPONENT_HASH_UNVERIFIABLE"
+          "COMPONENT_HASH_UNVERIFIABLE",
+          "RECONSTRUCTION_INPUTS_MISSING"
         ]
       }
     },
@@ -2037,10 +2040,10 @@
             "input_refs": [
               "input.intent",
               "input.preferences",
-              "input.component.issue-intake-form"
+              "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
+            "replay_hash_sha256": "381888c4da889043c1b84d01f5368974b14e86277a22b648d83aa93cfc81220d"
           },
           "accessibility": {
             "machine_checks": {

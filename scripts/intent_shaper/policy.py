@@ -691,17 +691,32 @@ def _verified_manual_evidence(
     return reviewed_at is not None and reviewed_at <= as_of
 
 
-def _reconstruction_hash(renderer_ref: Any, input_refs: Any) -> str | None:
+def _reconstruction_hash(renderer_ref: Any, input_refs: Any, component_manifests: Any) -> str | None:
     if not isinstance(renderer_ref, str) or renderer_ref not in SUPPORTED_RENDERERS:
         return None
     if not isinstance(input_refs, list) or not input_refs:
         return None
+    if not isinstance(component_manifests, list) or not component_manifests:
+        return None
+    required_components: dict[str, str] = {}
+    for component in component_manifests:
+        if not isinstance(component, Mapping):
+            return None
+        manifest_ref = component.get("manifest_ref")
+        content_hash = component.get("content_hash_sha256")
+        if (
+            not isinstance(manifest_ref, str)
+            or not isinstance(content_hash, str)
+            or manifest_ref in required_components
+        ):
+            return None
+        required_components[manifest_ref] = content_hash
     inputs: list[dict[str, str]] = []
     aliases = {
         "input.intent": "examples/personalization-plan.valid.json",
         "input.preferences": "examples/personalization-plan.valid.json",
-        "input.component.issue-intake-form": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
     }
+    verified_component_refs: set[str] = set()
     for ref in input_refs:
         resolved_ref = aliases.get(ref, ref) if isinstance(ref, str) else ref
         loaded = _contained_json(resolved_ref)
@@ -711,7 +726,14 @@ def _reconstruction_hash(renderer_ref: Any, input_refs: Any) -> str | None:
         if not isinstance(value, (Mapping, list)):
             return None
         canonical = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-        inputs.append({"ref": ref, "content_hash_sha256": hashlib.sha256(canonical).hexdigest()})
+        content_hash = hashlib.sha256(canonical).hexdigest()
+        if resolved_ref in required_components:
+            if content_hash != required_components[resolved_ref]:
+                return None
+            verified_component_refs.add(resolved_ref)
+        inputs.append({"ref": ref, "content_hash_sha256": content_hash})
+    if verified_component_refs != set(required_components):
+        return None
     preimage = {"renderer_ref": renderer_ref, "inputs": inputs}
     return hashlib.sha256(
         json.dumps(preimage, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
@@ -861,7 +883,11 @@ def _evaluate_generated_ui_gate(
         input_refs = reconstruction.get("input_refs")
         replay_hash = str(reconstruction.get("replay_hash_sha256", ""))
         deterministic_renderer_ref = str(reconstruction.get("deterministic_renderer_ref", ""))
-        computed_replay_hash = _reconstruction_hash(deterministic_renderer_ref, input_refs)
+        computed_replay_hash = _reconstruction_hash(
+            deterministic_renderer_ref,
+            input_refs,
+            components,
+        )
         if (
             computed_replay_hash is None
             or not SHA256_RE.fullmatch(replay_hash)

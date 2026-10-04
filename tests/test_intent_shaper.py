@@ -269,6 +269,15 @@ class IntentShaperContractTests(unittest.TestCase):
         self.assertEqual(["GENERATED_UI_PLAN_INVALID"], evaluate_case(malformed_time_type)["actual"]["reason_codes"])
         self.assertIn("RECONSTRUCTION_INPUTS_MISSING", evaluate_case(replay_mismatch)["actual"]["reason_codes"])
 
+    def test_reconstruction_requires_each_pinned_component_manifest(self) -> None:
+        case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-GUI-001"))
+        input_refs = case["input"]["generated_ui_plan"]["reconstruction_contract"]["input_refs"]
+        input_refs[-1] = "examples/personalization-plan.valid.json"
+        actual = evaluate_case(case)["actual"]
+        self.assertEqual("rejected", actual["status"])
+        self.assertIn("RECONSTRUCTION_INPUTS_MISSING", actual["reason_codes"])
+        self.assertEqual([], list(self.receipt_validator.iter_errors(actual)))
+
     def test_generated_ui_receipt_schema_rejects_contradictory_reasons(self) -> None:
         result = next(
             item["actual"]
