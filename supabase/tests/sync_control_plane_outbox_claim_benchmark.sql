@@ -207,7 +207,7 @@ begin
       and (leased_until is null or leased_until < now())
     order by available_at, id
     for update skip locked
-    limit 250
+    limit 100
   $plan$ into v_plan;
 
   raise notice '%', v_plan::text;
@@ -254,4 +254,4 @@ rollback;
 --   AND (leased_until IS NULL OR leased_until < now())
 -- ORDER BY available_at, id
 -- FOR UPDATE SKIP LOCKED
--- LIMIT 250;
+-- LIMIT 100;

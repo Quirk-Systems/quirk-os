@@ -43,6 +43,7 @@ on:
       - 'supabase/tests/sync_control_plane_hardening.sql'
       - 'supabase/tests/sync_control_plane_outbox_claim_benchmark.sql'
       - 'tests/test_sync_control_plane.py'
+      - 'tests/test_validator_metrics.py'
       - 'workflows/quirk-sync-control-plane.workflow.yaml'
   workflow_dispatch:
 
@@ -273,3 +274,6 @@ jobs:
           psql -v ON_ERROR_STOP=1 -t -A -c \
             "select count(*) from quirk_sync.manifest_registry" | tee /tmp/rows.txt
           grep -qx 0 /tmp/rows.txt
+
+      - name: Verify outbox claim index and supported batch size
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/sync_control_plane_outbox_claim_benchmark.sql

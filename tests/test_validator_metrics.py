@@ -56,6 +56,8 @@ class ValidatorMetricsTests(unittest.TestCase):
                 "scripts/validate_sync_control_plane.py",
                 "--repo",
                 str(ROOT),
+                "--output",
+                str(Path(temporary) / "conformance-results.json"),
                 "--metrics-output",
                 str(metrics_path),
             )
