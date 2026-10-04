@@ -1,0 +1,127 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.qis-014-generated-ui-gate.2007f2ddb46b",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "2347cb050bd4fda1c0cb70b10fb907be20e20974",
+    "commit": "2007f2ddb46b6a13161f808c85a8bf976777230d",
+    "changed_paths": [
+      ".github/workflows/intent-shaper-conformance.yml",
+      ".gitignore",
+      "evals/intent-shaper/cases.json",
+      "schemas/generated-ui-gate-receipt.schema.json",
+      "schemas/personalization-plan.schema.json",
+      "scripts/intent_shaper/policy.py",
+      "scripts/validate_intent_shaper.py",
+      "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+      "tests/test_intent_shaper.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.qis-014-generated-ui-gate.2007f2ddb46b",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Binds the nine-path diff of PR 37 head 2007f2ddb46b6a13161f808c85a8bf976777230d (QIS-014 fail-closed generated-UI admission gate for Intent Shaper candidates) against its Evidence Binding range base 2347cb050bd4fda1c0cb70b10fb907be20e20974. PR 37 merged as ca168180c8c165ad086495344f490823c3c886ba without a receipt; this receipt is recorded after the merge on a tree byte-identical to the subject. Observed on that tree: the Intent Shaper unit tests pass, validate_intent_shaper.py exits 0, the full unittest suite (206 tests) passes, and git diff --check is clean. Not established: hosted Intent Shaper Conformance behavior (its checkout is shallow), generated-UI admission sufficiency, or admission, activation, merge, or release authority.",
+      "evidence_paths": [
+        ".github/workflows/intent-shaper-conformance.yml",
+        ".gitignore",
+        "evals/intent-shaper/cases.json",
+        "schemas/generated-ui-gate-receipt.schema.json",
+        "schemas/personalization-plan.schema.json",
+        "scripts/intent_shaper/policy.py",
+        "scripts/validate_intent_shaper.py",
+        "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+        "tests/test_intent_shaper.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/intent-shaper-conformance.yml",
+      "state": "present",
+      "git_blob": "7f06c1108bad94c4461c8a7a50f5feb0e2d4a4ad",
+      "sha256": "sha256:ee6937c63f27ed9d0b8ddd9e48dfcbd54ff08814d422cce0c812562e73aad5b7"
+    },
+    {
+      "path": ".gitignore",
+      "state": "present",
+      "git_blob": "758c956a26732643529982c2e7cea273db50aab4",
+      "sha256": "sha256:6edcf74e140dacc04cc6e7ab6631d25d3ca66c52d9185ce833ba75d6497b4c35"
+    },
+    {
+      "path": "evals/intent-shaper/cases.json",
+      "state": "present",
+      "git_blob": "f62d1990e00cceecbbb51c506c65c7ce7a1cab1c",
+      "sha256": "sha256:13d71341e67e873870b9a13b47f2983cc1109a357f8e6cfa35b619a9a8cda9e6"
+    },
+    {
+      "path": "schemas/generated-ui-gate-receipt.schema.json",
+      "state": "present",
+      "git_blob": "1f9906307196724eae4ab276dca860585e4b29a7",
+      "sha256": "sha256:06f03167e2d52168689836bfb1a3fb6e8cebf1b0f4b9df5e040078ed6ef3a52e"
+    },
+    {
+      "path": "schemas/personalization-plan.schema.json",
+      "state": "present",
+      "git_blob": "2250cf7054704ba8badb4288d2c8cd21c75c351f",
+      "sha256": "sha256:cf7b2d1c1ce019415c623285228d32150b401c89e073a37bce7554accaa3ceeb"
+    },
+    {
+      "path": "scripts/intent_shaper/policy.py",
+      "state": "present",
+      "git_blob": "7512ee82720d26530f08d38477bf800b47a039dc",
+      "sha256": "sha256:e7e02e9ca9fe413995f17a5fb16aee39e6ab05f7579daa25619837d3de8d7ac4"
+    },
+    {
+      "path": "scripts/validate_intent_shaper.py",
+      "state": "present",
+      "git_blob": "3a7a69fc525a5aaf9660900d1d77f80d67ca47f5",
+      "sha256": "sha256:b403ca0c31f3c16890ca1ef5ef425177ee31309f432ad3811212c47920fd7e23"
+    },
+    {
+      "path": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+      "state": "present",
+      "git_blob": "267e8871b8c9651ffe32a1c217cc426adebde0f6",
+      "sha256": "sha256:90fdb246006afb0d41d023d03d3ca1d5971fbbaf6ead129a1a91031848c1511f"
+    },
+    {
+      "path": "tests/test_intent_shaper.py",
+      "state": "present",
+      "git_blob": "8becb971b6a9994f8f6ef931812affa0f388de03",
+      "sha256": "sha256:8768332970c08c981d52db282a0fa82e0c2ebe878067c79f9ae819f8644143d8"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "git diff --check 2347cb050bd4fda1c0cb70b10fb907be20e20974..2007f2ddb46b6a13161f808c85a8bf976777230d",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest tests.test_intent_shaper -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /tmp/qis-014.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T13:07:02Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:fd86475e36f0f10e7c299d1ce66483fc7460d7b561017cf17d96f031fe785282"
+}
