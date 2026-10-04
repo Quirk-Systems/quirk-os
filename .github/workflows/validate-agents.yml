@@ -1,0 +1,77 @@
+name: Validate Quirk Agents Candidate
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/validate-agents.yml'
+      - 'agents/**'
+      - 'evals/sync-control-plane/**'
+      - 'policies/manifest-admission-policy.yaml'
+      - 'requirements-evals.txt'
+      - 'schemas/agent-*.json'
+      - 'schemas/runtime-manifest.schema.json'
+      - 'scripts/validate_agents.py'
+      - 'skills/registry.json'
+      - 'tests/test_agent_manifest.py'
+  push:
+    branches-ignore: [main]
+    paths:
+      - '.github/workflows/validate-agents.yml'
+      - 'agents/**'
+      - 'evals/sync-control-plane/**'
+      - 'policies/manifest-admission-policy.yaml'
+      - 'requirements-evals.txt'
+      - 'schemas/agent-*.json'
+      - 'schemas/runtime-manifest.schema.json'
+      - 'scripts/validate_agents.py'
+      - 'skills/registry.json'
+      - 'tests/test_agent_manifest.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agents-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  agent-candidate-conformance:
+    name: agent-candidate-conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Install evaluation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run agent manifest unit and adversarial tests
+        run: python -m unittest tests.test_agent_manifest -v
+
+      - name: Run agent candidate conformance
+        run: >-
+          python scripts/validate_agents.py
+          --repo .
+          --output evals/agents/conformance-results.json
+          --metrics-output evals/agents/conformance-metrics.json
+          --write-step-summary
+
+      - name: Upload agent conformance evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: quirk-agents-candidate-conformance
+          path: |
+            evals/agents/conformance-results.json
+            evals/agents/conformance-metrics.json
+          if-no-files-found: error
+          retention-days: 30

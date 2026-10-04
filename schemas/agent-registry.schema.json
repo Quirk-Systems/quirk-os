@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.dev/schemas/agent-registry.schema.json",
+  "title": "Quirk Agent Registry v1alpha1",
+  "description": "Rebuildable candidate inventory of agents/<slug>/agent.yaml manifests. The registry carries no semantic or runtime authority and cannot admit or activate anything.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["api_version", "kind", "status", "version", "authority", "digest_policy", "agents", "registry_sha256"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "api_version": {"const": "quirk.dev/agent-registry/v1alpha1"},
+    "kind": {"const": "AgentRegistry"},
+    "status": {"const": "candidate"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semantic_authority", "runtime_authority", "projection_only"],
+      "properties": {
+        "semantic_authority": {"const": false},
+        "runtime_authority": {"const": false},
+        "projection_only": {"const": true}
+      }
+    },
+    "digest_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_algorithm", "manifest_algorithm", "content_algorithm", "registry_algorithm"],
+      "properties": {
+        "source_algorithm": {"const": "git-blob-sha1-raw-bytes"},
+        "manifest_algorithm": {"const": "sha256-canonical-json-of-parsed-yaml-v1"},
+        "content_algorithm": {"const": "sha256-canonical-json-of-parsed-yaml-without-admission-v1"},
+        "registry_algorithm": {"const": "sha256-canonical-json-without-registry_sha256-v1"}
+      }
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "version", "status", "authority_ceiling", "manifest_path", "source_blob_sha", "manifest_sha256"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^agent\\.[a-z0-9][a-z0-9-]*$"},
+          "version": {"$ref": "runtime-manifest.schema.json#/properties/version"},
+          "status": {"$ref": "runtime-manifest.schema.json#/properties/status"},
+          "authority_ceiling": {"$ref": "runtime-manifest.schema.json#/properties/authority_ceiling"},
+          "manifest_path": {"type": "string", "pattern": "^agents/[a-z0-9][a-z0-9-]*/agent\\.yaml$"},
+          "source_blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "registry_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

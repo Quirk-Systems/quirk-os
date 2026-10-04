@@ -1,0 +1,30 @@
+{
+  "$schema": "../schemas/agent-registry.schema.json",
+  "api_version": "quirk.dev/agent-registry/v1alpha1",
+  "kind": "AgentRegistry",
+  "status": "candidate",
+  "version": "0.1.0",
+  "authority": {
+    "semantic_authority": false,
+    "runtime_authority": false,
+    "projection_only": true
+  },
+  "digest_policy": {
+    "source_algorithm": "git-blob-sha1-raw-bytes",
+    "manifest_algorithm": "sha256-canonical-json-of-parsed-yaml-v1",
+    "content_algorithm": "sha256-canonical-json-of-parsed-yaml-without-admission-v1",
+    "registry_algorithm": "sha256-canonical-json-without-registry_sha256-v1"
+  },
+  "agents": [
+    {
+      "id": "agent.quirk-sync-steward",
+      "version": "0.2.0",
+      "status": "candidate",
+      "authority_ceiling": "propose",
+      "manifest_path": "agents/quirk-sync-steward/agent.yaml",
+      "source_blob_sha": "7e4f54c8ed0ac373ca82a1199115cbe6e027ff79",
+      "manifest_sha256": "0dc8d2132b8e00f1f9f14c8f340f745ffbd8ddbfc644119dc817f439c29754d1"
+    }
+  ],
+  "registry_sha256": "eca73c0720b87ff6c0666338573f3d32d3d1f2e9fe9ffa7fde962c73a165a2a0"
+}
