@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/quirkverse-activation.schema.json",
+  "title": "Quirkverse Activation Candidate",
+  "description": "Candidate contract for routing a signal through Quirkverse narrative mechanics into governed work, proof, and an evidence-bounded world-state delta.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "activation_id",
+    "status",
+    "signal",
+    "why_now",
+    "world_route",
+    "story_pressure",
+    "activation_format",
+    "capability_pursuit",
+    "rules_and_gates",
+    "proof_object_stack",
+    "cheapest_disproof",
+    "adversarial_fixture_refs",
+    "human_gate",
+    "receipt_ref",
+    "continuity_delta_ref"
+  ],
+  "properties": {
+    "schema_version": {"const": "quirk.quirkverse-activation/0.1"},
+    "activation_id": {"type": "string", "pattern": "^activation\\.[a-z0-9._-]+$"},
+    "title": {"type": "string", "minLength": 1},
+    "status": {"enum": ["DRAFT", "CANDIDATE", "TESTED", "ADMITTED", "CANON", "FAILED", "BONEYARD", "PRESERVED_AS_LINEAGE"]},
+    "authority_effect": {"enum": ["none", "context_only", "proposal_only", "requires_reauthorization"], "default": "none"},
+    "signal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "source_refs", "signal_type"],
+      "properties": {
+        "summary": {"type": "string", "minLength": 1},
+        "source_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+        "signal_type": {"enum": ["opportunity", "threat", "contradiction", "capability_opening", "resident_consequence", "location_change", "storyline_pressure", "competition_candidate", "commercial_opening", "creative_mutation", "governance_breach", "historical_turning_point"]},
+        "observed_at": {"type": ["string", "null"], "format": "date-time"},
+        "evidence_state": {"enum": ["direct", "reported", "inferred", "mixed"]}
+      }
+    },
+    "why_now": {"type": "string", "minLength": 1},
+    "world_route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plane", "location", "resident_cast", "existing_storyline"],
+      "properties": {
+        "plane": {"type": "string"},
+        "location": {"type": "string"},
+        "resident_cast": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+        "specialist_guild_or_capability": {"type": ["string", "null"]},
+        "existing_storyline": {"type": ["string", "null"]},
+        "related_recent_changes": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      }
+    },
+    "story_pressure": {"type": "string", "minLength": 1},
+    "activation_format": {"enum": ["resident_dispatch", "character_encounter", "location_event", "quest", "bounty", "tournament", "challenge", "tribunal", "town_hall", "broadcast", "museum_exhibit", "merchant_drop", "performance", "playable_release", "world_patch_notes", "teams_work_receipt", "skill_trial", "capability_admission"]},
+    "activation_body": {"type": ["string", "null"]},
+    "capability_pursuit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_sought", "current_state", "required_proof", "forbidden_self_promotion", "human_judgment_retained"],
+      "properties": {
+        "capability_sought": {"type": "string"},
+        "current_state": {"enum": ["SIGNAL", "PROPOSAL", "CANDIDATE", "TESTED", "ADMITTED", "CANON", "FAILED", "BONEYARD", "PRESERVED_AS_LINEAGE"]},
+        "required_proof": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "forbidden_self_promotion": {"type": "boolean", "const": true},
+        "human_judgment_retained": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+      }
+    },
+    "rules_and_gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in_scope", "non_goals", "authority", "effect_class", "stop_conditions", "scope_change_triggers", "reversibility"],
+      "properties": {
+        "in_scope": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "non_goals": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "authority": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "effect_class": {"enum": ["READ", "INFER", "RECOMMEND", "PREPARE", "MUTATE_DIGITAL_STATE", "COMMIT_MONEY", "MOVE_PHYSICAL_STATE", "CREATE_IRREVERSIBLE_CONSEQUENCE"]},
+        "stop_conditions": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "scope_change_triggers": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "reversibility": {"enum": ["reversible", "repairable", "compensatable", "irreversible", "forbidden"]}
+      }
+    },
+    "proof_object_stack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operational_artifact", "evidence_receipt", "lineage_edge", "world_state_delta"],
+      "properties": {
+        "experience_or_story_artifact": {"type": ["string", "null"]},
+        "operational_artifact": {"type": "string"},
+        "evidence_receipt": {"type": "string"},
+        "lineage_edge": {"type": "string"},
+        "skill_or_capability_candidate": {"type": ["string", "null"]},
+        "communication_artifact": {"type": ["string", "null"]},
+        "world_state_delta": {"type": "string"}
+      }
+    },
+    "cheapest_disproof": {"type": "string", "minLength": 1},
+    "adversarial_fixture_refs": {"type": "array", "items": {"type": "string"}, "minItems": 5, "uniqueItems": true},
+    "human_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "reviewer", "judge", "publisher", "shutdown_authority"],
+      "properties": {
+        "owner": {"type": "string"},
+        "reviewer": {"type": "string"},
+        "judge": {"type": "string"},
+        "publisher": {"type": "string"},
+        "shutdown_authority": {"type": "string"}
+      }
+    },
+    "receipt_ref": {"type": "string"},
+    "continuity_delta_ref": {"type": "string"},
+    "external_classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "keep": {"type": "array", "items": {"type": "string"}},
+        "steal": {"type": "array", "items": {"type": "string"}},
+        "mutate": {"type": "array", "items": {"type": "string"}},
+        "kill": {"type": "array", "items": {"type": "string"}},
+        "boneyard": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "one_move": {"type": ["string", "null"]},
+    "projection_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+  }
+}

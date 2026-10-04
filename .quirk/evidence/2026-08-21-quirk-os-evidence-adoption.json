@@ -1,0 +1,97 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os-evidence-adoption.2026-08-21",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "b0a7d42d982c91effe2e6c1882d846d189326764",
+    "commit": "d33ddad4dc814ada5b644a3fac662841fc92fea5",
+    "changed_paths": [
+      ".github/workflows/evidence-binding.yml",
+      ".quirk/evidence/2026-08-21-pr-42-zero-delta-correction.json",
+      ".quirk/manifest.json",
+      "docs/evidence/PR_42_CORRECTION.md"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.quirk-os-evidence-adoption",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "The candidate manifest, pinned pull-request evidence control, PR 42 zero-delta correction, and correction document are byte-bound to the remote subject commit without granting admission or release authority.",
+      "evidence_paths": [
+        ".github/workflows/evidence-binding.yml",
+        ".quirk/evidence/2026-08-21-pr-42-zero-delta-correction.json",
+        ".quirk/manifest.json",
+        "docs/evidence/PR_42_CORRECTION.md"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/evidence-binding.yml",
+      "state": "present",
+      "git_blob": "2a84cbe59bbaeabeb7363c16f831818ccf9ef8cf",
+      "sha256": "sha256:b0a2e67e1f93d3ff19b44184968ae812f5d4e7b08cd743927c59c24ff96e7087"
+    },
+    {
+      "path": ".quirk/evidence/2026-08-21-pr-42-zero-delta-correction.json",
+      "state": "present",
+      "git_blob": "e2136a6109db2cda6bfac433bd05d684d70c751a",
+      "sha256": "sha256:a48a6d5f4f7995cbd3148e35ad47f173548e5aabd935640a42825b146a3b698a"
+    },
+    {
+      "path": ".quirk/manifest.json",
+      "state": "present",
+      "git_blob": "e8daa5f8189c35049a8973255734017537bc1f6a",
+      "sha256": "sha256:765e295a47adbdafd21a85b5817eb3f1b9c8b6128a24f0ec377739a9ddfee6f3"
+    },
+    {
+      "path": "docs/evidence/PR_42_CORRECTION.md",
+      "state": "present",
+      "git_blob": "3ee24cb48fdcf2c12e8fe5bcc1e1bbfd36da88da",
+      "sha256": "sha256:8215d1fe62c0e10127e1b119d6585b4165d4567a4859f1fff01bae531b48e5a8"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PYTHONPATH=. /tmp/quirk-os-task4-venv/bin/pytest -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "test -z \"$(git diff --name-only df6eaeb97304a84ab07b3ef7385d37e886e2e3e8..b219cc4d1fffccf04d27a3d151e5476a256bf1a1)\"",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "test -z \"$(git diff --name-only df6eaeb97304a84ab07b3ef7385d37e886e2e3e8..b0a7d42d982c91effe2e6c1882d846d189326764)\"",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python /workspace/scratch/6f6fa2996563/worktrees/org-github-remote-final2/scripts/validate_evidence_receipts.py --repository Quirk-Systems/quirk-os --root . --receipts .quirk/evidence",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check b0a7d42d982c91effe2e6c1882d846d189326764..d33ddad4dc814ada5b644a3fac662841fc92fea5",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -c \"from pathlib import Path; p=Path('.github/workflows/evidence-binding.yml').read_text(); assert p.count('uses: Quirk-Systems/.github/.github/workflows/reusable-evidence-binding.yml@6136fa5fa77116abfbc103c822d9d244a0e870b3') == 1 and 'pull_request:' in p and 'contents: read' in p and 'with:' not in p and 'secrets:' not in p\"",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-08-21T04:34:22Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:8db635e26a3984b13ee312af8a8554f7c69353229f3db75b7f1462c4f7bc5b9b"
+}
