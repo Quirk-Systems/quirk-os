@@ -1,0 +1,77 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.merge-ready-notifier.2026-10-04",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "5637a99d3a1ef4288614440008bef9e6a84449de",
+    "commit": "daa735895510341f7133fa6180f10e7960f30084",
+    "changed_paths": [
+      ".github/workflows/merge-ready-notifier.yml",
+      "README.md",
+      "scripts/notify_merge_ready.py",
+      "tests/test_merge_ready_notifier.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.merge-ready-notifier.2026-10-04",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Adds a conservative advisory PR-comment notifier executed only from the trusted default branch, with readiness, review, Actions, pagination, race and deduplication tests. Local unit tests passed; no hosted notifier execution, merge, admission, activation or deployment is asserted.",
+      "evidence_paths": [
+        ".github/workflows/merge-ready-notifier.yml",
+        "README.md",
+        "scripts/notify_merge_ready.py",
+        "tests/test_merge_ready_notifier.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/merge-ready-notifier.yml",
+      "state": "present",
+      "git_blob": "105e8dda2e4ea2ac51509660f69127ebe3fa442c",
+      "sha256": "sha256:7ecdaa4ed7c02c2deae9fe57ff9c0e8b678f54ef6ff53043dc8a7c488f2762bf"
+    },
+    {
+      "path": "README.md",
+      "state": "present",
+      "git_blob": "5d4aa3dbc9836b678a2877771f5fb3fdfc354c2f",
+      "sha256": "sha256:882393a1f802cdc422446325d4228574974f04afe932f88bef5ba511f5956f16"
+    },
+    {
+      "path": "scripts/notify_merge_ready.py",
+      "state": "present",
+      "git_blob": "b6cfb25c64d76543c3af4d809f48af6c3ec393e0",
+      "sha256": "sha256:6b876cc5750d32946c73dbcedf351b470d80582c3eebf85ef9834960e8e131f1"
+    },
+    {
+      "path": "tests/test_merge_ready_notifier.py",
+      "state": "present",
+      "git_blob": "a173837804d9cffd8e4484aaa09465e3ed5f8deb",
+      "sha256": "sha256:9ce5b6448fcffac206cb97f1fa3d837d244a20199c351187ccb390c892c5f801"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python3 -m unittest tests.test_merge_ready_notifier -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check 5637a99d3a1ef4288614440008bef9e6a84449de daa735895510341f7133fa6180f10e7960f30084",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T04:08:43Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:2590eb5b8e54417b552618f2259d0a587abd854b8a46891d608ca4fc797475ee"
+}
