@@ -92,6 +92,15 @@ Issue #26 evaluation artifacts:
 - [`LIVE-TRIAL.md`](LIVE-TRIAL.md) — same-Goal two-Preset human trial answers
 - [`OBJECT-PACK-REVIEW.md`](OBJECT-PACK-REVIEW.md) — non-agent scaffold review
 
-Revised evaluation conformance content hash:
+Revised evaluation conformance content hash, regenerated with
+`python scripts/validate_deck_grammar.py --repo . --output evals/deck-grammar/conformance-results.json --require-pass`:
 
-`efc7b28456076c06caac8fcc31d82662a521e5fc2d874274e9c6e17e067fa20a`
+`f36aa708fdd414924981c20778ee8ea98b158b436553c9a455fb2441737c917f`
+
+It supersedes `ffdfd6d9b0ebc828621966394a2bd733141fef158b8474b9e7a754a7031fbfa7`, whose `content-hash-binds` entry recorded only a
+verdict and not the digest it verified, so it would have read identically
+whichever proof had been bound. That in turn superseded
+`efc7b28456076c06caac8fcc31d82662a521e5fc2d874274e9c6e17e067fa20a`, which covered the suite before the
+`content-hash-binds` check existed. Omitting `--output` prints the evidence
+and leaves the tracked artifact where it was, which is how that hash came to
+be quoted here while the suite it described had moved on.

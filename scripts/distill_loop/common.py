@@ -6,8 +6,12 @@ admits a skill, grants runtime authority, or promotes Canon.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
+import os
+import secrets
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -77,6 +81,32 @@ def schema_errors(schema: dict[str, Any], instance: Any) -> list[str]:
     ]
 
 
+def registry_digest(registry: dict[str, Any]) -> str:
+    return sha256_json({key: value for key, value in registry.items() if key != "registry_sha256"})
+
+
+def source_registration_errors(registry: dict[str, Any], manifest: dict[str, Any]) -> list[str]:
+    """A source skill may only be distilled if the manifested registry carries this exact digest."""
+    if registry.get("registry_sha256") != registry_digest(registry):
+        return ["registry digest mismatch; refusing to trust its entries"]
+    digest = manifest.get("integrity", {}).get("manifest_sha256")
+    for entry in registry.get("skills", []):
+        if (
+            entry.get("id") == manifest.get("id")
+            and entry.get("version") == manifest.get("version")
+            and entry.get("manifest_sha256") == digest
+        ):
+            return []
+    return ["source skill is not in the manifested registry at this exact digest"]
+
+
+def parse_utc(value: str) -> datetime:
+    parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        raise ValueError("timestamp must include timezone")
+    return parsed.astimezone(timezone.utc)
+
+
 def unique_in_order(items: list[str]) -> list[str]:
     seen: set[str] = set()
     ordered: list[str] = []
@@ -87,11 +117,31 @@ def unique_in_order(items: list[str]) -> list[str]:
     return ordered
 
 
+_TEMP_FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+
+
 def write_files(root: Path, files: dict[str, str]) -> list[Path]:
+    """Write each file through an exclusive temp sibling and an atomic replace, ledger last.
+
+    The temp name carries random bytes so it cannot be planted ahead of time, it is
+    opened O_EXCL and O_NOFOLLOW so an existing entry or link at that name fails the
+    write instead of being followed, and a failed write removes its temp before
+    re-raising. The ledger is written last so any failure leaves it untouched.
+    """
     written: list[Path] = []
-    for relative, text in sorted(files.items()):
+    ordered = sorted(files.items(), key=lambda item: (item[0] == LEDGER_PATH, item[0]))
+    for relative, text in ordered:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text, encoding="utf-8")
+        temp = path.with_name(f".{path.name}.{secrets.token_hex(8)}.tmp")
+        fd = os.open(temp, _TEMP_FLAGS, 0o644)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                handle.write(text)
+            os.replace(temp, path)
+        except BaseException:
+            with contextlib.suppress(OSError):
+                os.unlink(temp)
+            raise
         written.append(path)
     return written
