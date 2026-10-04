@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import copy
 import json
+import shutil
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+
+import yaml
 
 from jsonschema import Draft202012Validator, FormatChecker
 
@@ -17,6 +22,9 @@ from sync_control_plane.mappers import (  # noqa: E402
     receipt_runtime_to_canonical,
 )
 from sync_control_plane.policy import evaluate_fixture, validate_manifest_admission  # noqa: E402
+
+sys.path.insert(0, str(ROOT / "scripts"))
+from validate_sync_control_plane import database_guard_job_checks  # noqa: E402
 
 
 def load(path: str):
@@ -176,6 +184,128 @@ class SyncControlPlaneTests(unittest.TestCase):
         self.assertEqual([], self.validate(self.receipt_schema, canonical))
         rebound = receipt_canonical_to_runtime(canonical)
         self.assertEqual(runtime["receipt_key"], rebound["receipt_key"])
+
+
+class DatabaseGuardJobTests(unittest.TestCase):
+    """The checks that assert CI still executes the database guard.
+
+    The admission evidence now cites a CI job as the behavioural proof for the
+    PostgreSQL layer. If that job can be deleted without anything failing, the
+    document goes back to overstating enforcement — the same defect the
+    candidate's own guards were written to close. These tests confirm the
+    checks fail when the job is gone, which is the only property that makes
+    them worth recording.
+    """
+
+    WORKFLOW = "ci.yml"
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.live = yaml.safe_load(
+            (ROOT / ".github/workflows/sync-control-plane-conformance.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+
+    def run_checks(self, workflow) -> dict[str, bool]:
+        path = self.tmp / self.WORKFLOW
+        path.write_text(yaml.safe_dump(workflow, sort_keys=False), encoding="utf-8")
+        return database_guard_job_checks(path)
+
+    def test_the_live_workflow_satisfies_every_check(self):
+        self.assertEqual(
+            {
+                "ci_declares_database_guard_job": True,
+                "ci_runs_guard_cases": True,
+                "ci_reads_installed_guard_back": True,
+            },
+            self.run_checks(self.live),
+        )
+
+    def test_removing_the_job_fails_every_check(self):
+        gutted = copy.deepcopy(self.live)
+        del gutted["jobs"]["database-guard"]
+        self.assertEqual({False}, set(self.run_checks(gutted).values()))
+
+    def test_dropping_the_postgres_service_fails_the_job_check(self):
+        gutted = copy.deepcopy(self.live)
+        del gutted["jobs"]["database-guard"]["services"]
+        self.assertFalse(self.run_checks(gutted)["ci_declares_database_guard_job"])
+
+    def test_running_the_cases_file_without_its_driver_is_not_enough(self):
+        # `psql --single-transaction` on the cases file commits when nothing
+        # raises, leaving the one admitted manifest in the database. Only the
+        # driver discards it, so naming the cases file alone must not pass.
+        gutted = copy.deepcopy(self.live)
+        for step in gutted["jobs"]["database-guard"]["steps"]:
+            if "run" in step:
+                step["run"] = step["run"].replace(
+                    "manifest_activation_guard.run.sql",
+                    "manifest_activation_guard.cases.sql",
+                )
+        checks = self.run_checks(gutted)
+        self.assertFalse(checks["ci_runs_guard_cases"])
+        self.assertTrue(checks["ci_declares_database_guard_job"])
+
+    def test_dropping_the_installed_guard_read_back_fails_that_check(self):
+        gutted = copy.deepcopy(self.live)
+        for step in gutted["jobs"]["database-guard"]["steps"]:
+            if "run" in step:
+                step["run"] = step["run"].replace("pg_get_functiondef", "current_database")
+        self.assertFalse(self.run_checks(gutted)["ci_reads_installed_guard_back"])
+
+    def test_an_unreadable_workflow_fails_closed(self):
+        self.assertEqual(
+            {False}, set(database_guard_job_checks(self.tmp / "absent.yml").values())
+        )
+
+
+class ManifestActivationCasesFileTests(unittest.TestCase):
+    """The split that lets CI run the activation cases on a clean database.
+
+    The cases live in their own file because the rest of the hardening suite
+    depends on seed rows no migration creates. Two properties keep both callers
+    working, and neither is obvious from reading either file alone.
+    """
+
+    CASES = ROOT / "supabase/tests/manifest_activation_guard.cases.sql"
+    DRIVER = ROOT / "supabase/tests/manifest_activation_guard.run.sql"
+    SUITE = ROOT / "supabase/tests/sync_control_plane_hardening.sql"
+
+    def test_the_cases_file_declares_no_transaction_of_its_own(self):
+        # It is included inside the hardening suite's transaction. A `begin;`
+        # here would nest, and a `commit;` would end the suite's rollback early
+        # and persist every test row.
+        body = self.CASES.read_text(encoding="utf-8").lower()
+        for statement in ("\nbegin;", "\ncommit;", "\nrollback;"):
+            self.assertNotIn(statement, body)
+
+    def test_both_callers_include_the_one_cases_file(self):
+        self.assertIn("\\ir manifest_activation_guard.cases.sql", self.DRIVER.read_text(encoding="utf-8"))
+        self.assertIn("\\ir manifest_activation_guard.cases.sql", self.SUITE.read_text(encoding="utf-8"))
+
+    def test_the_driver_supplies_the_boundary_the_cases_file_omits(self):
+        driver = self.DRIVER.read_text(encoding="utf-8").lower()
+        self.assertIn("begin;", driver)
+        self.assertIn("rollback;", driver)
+        self.assertNotIn("commit;", driver)
+
+    def test_every_refusal_case_asserts_its_own_message(self):
+        # A case that asserted rejection without naming the reason would stay
+        # green when a different rule fired, which is how a tightened guard
+        # hides a rule that stopped working.
+        body = self.CASES.read_text(encoding="utf-8")
+        expected = {
+            "may not approve",
+            "independent human principal",
+            "data productization requires",
+            "fail-closed trigger contract",
+            "well-formed principal",
+            "trigger contract",
+        }
+        for phrase in expected:
+            self.assertIn(f"position('{phrase}' in sqlerrm)", body)
 
 
 if __name__ == "__main__":

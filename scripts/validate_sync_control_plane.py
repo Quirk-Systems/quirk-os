@@ -63,10 +63,11 @@ def static_migration_checks(sql: str) -> dict[str, bool]:
 
     These prove a token appears in the migrations — and, where the name says
     `rule_`, inside the definition that has to enforce it. None of them proves
-    what a database currently has installed. A static read cannot;
-    `supabase/tests/sync_control_plane_hardening.sql` exercises the installed
-    behaviour, and nothing in this repository runs it in CI, so these checks are
-    a spelling test and not conformance.
+    what a database currently has installed. A static read cannot, so these
+    checks are a spelling test; the behavioural evidence comes from the
+    `database-guard` job in `.github/workflows/sync-control-plane-conformance.yml`,
+    which applies the migrations to PostgreSQL, reads the installed guard back,
+    and runs `supabase/tests/manifest_activation_guard.run.sql`.
     """
     lower = sql.lower()
     rules = _function_body(sql, "manifest_activation_violation")
@@ -96,6 +97,39 @@ def static_migration_checks(sql: str) -> dict[str, bool]:
         "browser_roles_revoked": "revoke all on schema quirk_sync from authenticated",
     }
     return {**{name: token in lower for name, token in tokens.items()}, **scoped}
+
+
+def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
+    """Assert the workflow still contains the job that executes the DB guard.
+
+    The migration static checks above are a spelling test, and the admission
+    evidence now says the behavioural proof comes from a CI job. Deleting that
+    job would make the document false again with nothing failing, which is the
+    defect class this whole candidate is about. These read the workflow and
+    check that the job is there and still runs the cases through the driver
+    that discards its rows. They prove the workflow is spelled that way; only a
+    run of the job proves PostgreSQL refused anything.
+    """
+    try:
+        workflow = yaml.safe_load(workflow_path.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return {
+            "ci_declares_database_guard_job": False,
+            "ci_runs_guard_cases": False,
+            "ci_reads_installed_guard_back": False,
+        }
+    job = (workflow or {}).get("jobs", {}).get("database-guard") or {}
+    runs = "\n".join(
+        str(step.get("run", "")) for step in job.get("steps", []) if isinstance(step, dict)
+    )
+    return {
+        "ci_declares_database_guard_job": bool(job) and "postgres" in job.get("services", {}),
+        # The driver, not the cases file: `--single-transaction` on the cases
+        # file commits the one admitted manifest instead of discarding it.
+        "ci_runs_guard_cases": "manifest_activation_guard.run.sql" in runs,
+        "ci_reads_installed_guard_back": "pg_get_functiondef" in runs
+        and "manifest_activation_violation(new)" in runs,
+    }
 
 
 def mapping_roundtrip(binding_schema: dict[str, Any], receipt_schema: dict[str, Any]) -> dict[str, Any]:
@@ -217,6 +251,9 @@ def main() -> int:
     migration_paths = sorted((repo / "supabase/migrations").glob("*_sync_control_plane_*.sql"))
     migration_sql = "\n".join(path.read_text(encoding="utf-8") for path in migration_paths)
     static = static_migration_checks(migration_sql)
+    static.update(
+        database_guard_job_checks(repo / ".github/workflows/sync-control-plane-conformance.yml")
+    )
     mappings = mapping_roundtrip(schemas["binding"], schemas["receipt"])
 
     checks = {

@@ -246,7 +246,10 @@
     "rule_null_safe_trigger_contract": true,
     "guard_delegates_to_rules": true,
     "audit_uses_rule_function": true,
-    "audit_holds_write_lock": true
+    "audit_holds_write_lock": true,
+    "ci_declares_database_guard_job": true,
+    "ci_runs_guard_cases": true,
+    "ci_reads_installed_guard_back": true
   },
   "mapping_proof": {
     "binding_schema_errors": [],
@@ -254,5 +257,5 @@
     "binding_roundtrip_stable": true,
     "receipt_roundtrip_stable": true
   },
-  "content_hash_sha256": "0ac9f28d508c1e7f3d38b867b27189fc4b0865dcf243a6bb6d71677f08a3d4c8"
+  "content_hash_sha256": "f73921967de997c157837b66a6ea9228cfd0fbe047c99ec47007bf94b4fce31e"
 }
