@@ -224,7 +224,7 @@ class DatabaseGuardJobTests(unittest.TestCase):
                 "ci_evidence_depends_on_database_guard": True,
                 "ci_decision_fails_when_guard_fails": True,
                 "ci_discards_tracked_decision": True,
-                "ci_triggers_on_the_verify_recipe": True,
+                "ci_path_filter_covers_job_inputs": True,
             },
             self.run_checks(self.live),
         )
@@ -250,7 +250,7 @@ class DatabaseGuardJobTests(unittest.TestCase):
         about_something_else = {
             "ci_decision_fails_when_guard_fails",
             "ci_discards_tracked_decision",
-            "ci_triggers_on_the_verify_recipe",
+            "ci_path_filter_covers_job_inputs",
         }
         self.assertEqual(
             about_the_job,
@@ -331,12 +331,48 @@ class DatabaseGuardJobTests(unittest.TestCase):
         self.assertFalse(checks["ci_decision_fails_when_guard_fails"])
         self.assertTrue(checks["ci_evidence_depends_on_database_guard"])
 
-    def test_the_workflow_triggers_on_the_recipe_it_tests(self):
-        # A path-filtered workflow runs only when a changed path matches the
-        # filter, so without this entry a pull request touching only the recipe
-        # would not run the test written to catch a broken recipe.
+    def test_the_path_filter_covers_what_the_jobs_read(self):
+        # A path-filtered workflow runs only when a changed path matches, so a
+        # file a job or test consumes but the filter omits is a guard that the
+        # change it guards against cannot reach. Each of these was missing at
+        # some point in this branch's history.
         paths = self.live.get(True, self.live.get("on", {}))["pull_request"]["paths"]
-        self.assertIn(".claude/skills/verify/SKILL.md", paths)
+        for required, why in (
+            (".claude/skills/verify/SKILL.md", "the drift test reads the recipe"),
+            ("supabase/migrations/**", "the guard job applies every migration, not only the matching ones"),
+            ("docs/sync-control-plane/**", "the digest test reads the admission evidence"),
+        ):
+            with self.subTest(required=required):
+                self.assertIn(required, paths, why)
+
+    def test_dropping_any_covered_path_fails_the_check(self):
+        for required in (
+            ".claude/skills/verify/SKILL.md",
+            "supabase/migrations/**",
+            "docs/sync-control-plane/**",
+        ):
+            with self.subTest(required=required):
+                gutted = copy.deepcopy(self.live)
+                key = True if True in gutted else "on"
+                gutted[key]["pull_request"]["paths"] = [
+                    p for p in gutted[key]["pull_request"]["paths"] if p != required
+                ]
+                self.assertFalse(
+                    self.run_checks(gutted)["ci_path_filter_covers_job_inputs"]
+                )
+
+    def test_the_migration_filter_is_not_narrower_than_the_loop(self):
+        # `20260811113009_ship_without_bryan_projection.sql` does not contain
+        # `sync_control_plane`, and the guard job applies it. A filter of
+        # `supabase/migrations/*sync_control_plane*` would skip the only job
+        # that proves the sequence still applies to a clean database.
+        globbed = sorted(p.name for p in (ROOT / "supabase/migrations").glob("*.sql"))
+        self.assertTrue(
+            any("sync_control_plane" not in name for name in globbed),
+            "this test is pointless if every migration matches the old filter",
+        )
+        paths = self.live.get(True, self.live.get("on", {}))["pull_request"]["paths"]
+        self.assertNotIn("supabase/migrations/*sync_control_plane*", paths)
 
     def test_keeping_the_tracked_decision_fails_that_check(self):
         # Checkout restores a committed decision recording a pass. With the

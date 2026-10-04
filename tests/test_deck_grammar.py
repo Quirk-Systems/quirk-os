@@ -214,6 +214,32 @@ class ContentHashBindingTests(unittest.TestCase):
         report = load_json('examples/deck-grammar/artifact.live-proof-report.json')
         self.assertEqual(report['content_hash'], content_hash(load_json(report['content_ref'])))
 
+    def test_the_evidence_deletion_precedes_every_failable_step(self):
+        """The upload runs on `always()`, so the deletion must be unskippable.
+
+        Checkout restores the committed `conformance-results.json`, which
+        records a pass. Any post-checkout failure skips the later steps by the
+        default success condition while the upload still fires, publishing that
+        committed file as the failed run's evidence. `if-no-files-found: error`
+        cannot catch it, because the upload also names `live-proof.json` and
+        that path still exists.
+
+        When this deletion was added it sat after `setup-python` and the
+        dependency install, leaving exactly that window open for the two steps
+        most likely to fail for reasons unrelated to the change.
+        """
+        workflow = load_yaml('.github/workflows/deck-grammar-conformance.yml')
+        steps = [
+            step.get('name')
+            for step in workflow['jobs']['candidate-deck-conformance']['steps']
+        ]
+        deletion = next(i for i, name in enumerate(steps) if 'Discard' in (name or ''))
+        self.assertEqual(
+            ['Checkout'],
+            steps[:deletion],
+            'a step that can fail precedes the deletion of the tracked evidence',
+        )
+
     def test_the_admission_docs_quote_the_tracked_conformance_digest(self):
         # The stale digest that prompted the `content-hash-binds` check was not
         # the only dangling one: two documents quoted the Deck Grammar

@@ -52,6 +52,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+      - name: Discard the tracked evidence so the upload can only carry this run's
+        # Immediately after checkout, before any step that can fail. Checkout
+        # restores the committed `conformance-results.json`, which records a
+        # pass, and the upload runs on `always()` — so every post-checkout
+        # failure, including one in `setup-python` or the dependency install,
+        # would otherwise publish that committed file as this run's evidence.
+        # `if-no-files-found: error` cannot catch it, because the upload also
+        # names `live-proof.json` and that path still exists.
+        #
+        # This step was placed after the install steps when it was added, which
+        # left exactly that window open. `live-proof.json` is deliberately not
+        # removed: it is a tracked input the suite reproduces, not an output.
+        run: rm -f evals/deck-grammar/conformance-results.json
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -61,16 +75,6 @@ jobs:
 
       - name: Install evaluation dependencies
         run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
-
-      - name: Discard the tracked evidence so the upload can only carry this run's
-        # Same hole as the sync control plane's, fixed in `731d499`: checkout
-        # restores the committed `conformance-results.json`, which records a
-        # pass. With the upload on `always()`, a failure in the test step below
-        # would ship that committed file as this run's evidence. Removing it
-        # first means the upload carries what this run produced or fails on
-        # `if-no-files-found: error`. `live-proof.json` is left alone — it is a
-        # tracked input the suite reproduces, not an output of the run.
-        run: rm -f evals/deck-grammar/conformance-results.json
 
       - name: Run Deck Grammar tests
         run: python -m unittest discover -s tests -p 'test_deck_grammar.py' -v

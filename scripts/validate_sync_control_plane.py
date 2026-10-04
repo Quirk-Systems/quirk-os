@@ -140,7 +140,7 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
             "ci_evidence_depends_on_database_guard": False,
             "ci_decision_fails_when_guard_fails": False,
             "ci_discards_tracked_decision": False,
-            "ci_triggers_on_the_verify_recipe": False,
+            "ci_path_filter_covers_job_inputs": False,
         }
     jobs = (workflow or {}).get("jobs", {})
     trigger = (workflow or {}).get(True) or (workflow or {}).get("on") or {}
@@ -192,9 +192,24 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
         "ci_discards_tracked_decision": "rm -f evals/sync-control-plane/conformance-results.json"
         in decision_runs,
         # A path-filtered workflow runs only when a changed path matches, so a
-        # test that treats the verification recipe as an executable dependency
-        # is dead weight unless the recipe is one of those paths.
-        "ci_triggers_on_the_verify_recipe": ".claude/skills/verify/SKILL.md" in trigger_paths,
+        # test or step that consumes a file is dead weight unless that file is
+        # one of those paths. Three such dependencies are not obviously related
+        # to this workflow's name and were each missing at some point: the
+        # verification recipe the drift test reads, every migration the guard
+        # job applies (not just the `*sync_control_plane*` ones — the loop
+        # globs them all), and the admission evidence the digest test reads.
+        #
+        # This is an enumerated list, not a derived one. It cannot know about a
+        # dependency nobody added to it, which is the limit of the check rather
+        # than a property of the workflow.
+        "ci_path_filter_covers_job_inputs": all(
+            required in trigger_paths
+            for required in (
+                ".claude/skills/verify/SKILL.md",
+                "supabase/migrations/**",
+                "docs/sync-control-plane/**",
+            )
+        ),
         "ci_runs_guard_cases_as_service_role": any(
             "manifest_activation_guard.service_role.sql" in str(step.get("run", ""))
             and "manifest_activation_guard.run.sql" not in str(step.get("run", ""))
