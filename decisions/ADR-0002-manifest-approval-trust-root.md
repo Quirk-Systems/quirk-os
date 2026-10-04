@@ -46,7 +46,9 @@ A later choice to add a required manifest field, serialize the profile in the ma
 
 Audit legacy active rows during a coordinated cutover. Missing authentic approval must block completion and be reported for human disposition; do not invent historical consent or silently revoke/re-admit rows. Keep receipt and transition history append-only; corrections are new records. Expiry/revocation and ongoing runtime consumers require explicit enforcement before claiming currently usable authority.
 
-## Later acceptance evidence — not executed by this draft
+## Acceptance evidence and admission limits
+
+Candidate Python refusals and PostgreSQL projection cases have been executed. See `evals/sync-control-plane/manifest-verifier-ci-d30ab0c54d7e.json` for the exact tested source, 252 Python tests, and PostgreSQL 16.15 results. This evidence uses synthetic review subjects; an authentic positive review, protected host installation, and continuing consumer enforcement remain unproved. Passing candidate tests does not resolve the deliberate trust-gap findings.
 
 Refuse fabricated human names, invented references, bot/unauthorized/self approval, wrong head/digest/environment/action/scope, withdrawn/expired consent, unavailable resolver, and missing legal transition. Demonstrate that untrusted callers cannot bypass verification through direct SQL or RPC, even using their real runtime privileges. Demonstrate exact-payload write binding, active-row mutation refusal, concurrent prior-state changes, and fresh refusal receipts. Test a valid authentic approval separately from synthetic fixture conformance.
 
@@ -55,5 +57,4 @@ These tests prove the selected projection contract. They must not be reported as
 ## Approval record
 
 **Design approval:** Bryan explicitly approved the recommended pair in this conversation on 2026-10-04: “Approved and Continue Additional Improvements Implemented via Iteratively Integrated and Enhanced Loop Engineering”. The approval also authorizes continued candidate implementation. The transcript supplies no GitHub review ID; this record is not a runtime activation attestation. No merge, deployment, credential provisioning, or live admission is recorded.
-
 
