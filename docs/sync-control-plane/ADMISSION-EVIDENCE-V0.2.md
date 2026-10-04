@@ -6,8 +6,8 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `7f5407dd9c0d9619f72178afbdab33ad192c39b0fd9881787ebea38a457e8d64`  
-**Evidence revision (the tree that reproduces that hash):** `000cc14652cbe73335dc69825539bfd6075cf531`
+**Content hash (SHA-256):** `13b694d7dac5165c2a37d9bb84918e21e373a42e545f6da863f8fc9e0b624ba0`  
+**Evidence revision (the tree that reproduces that hash):** `9cb8b4a150b9128b4eb7e057d35a5c9c9250e3f5`
 
 > **Why two revisions.** The candidate commit names the subject that was
 > evaluated. The evidence revision names the tree whose validator and inputs
@@ -21,13 +21,13 @@
 > Reproduce with:
 >
 > ```sh
-> git checkout 000cc14652cbe73335dc69825539bfd6075cf531
+> git checkout 9cb8b4a150b9128b4eb7e057d35a5c9c9250e3f5
 > python scripts/validate_sync_control_plane.py --repo . \
 >   --output evals/sync-control-plane/conformance-results.json --require-admit
 > ```
 >
 > Observed at that revision in a detached worktree:
-> `7f5407dd9c0d9619f72178afbdab33ad192c39b0fd9881787ebea38a457e8d64`, matching
+> `13b694d7dac5165c2a37d9bb84918e21e373a42e545f6da863f8fc9e0b624ba0`, matching
 > both the tracked artifact and the line above.
 
 > **Digest history**, recorded because a hash replaced without a note is
@@ -74,7 +74,13 @@
 >   `ci_path_filter_covers_job_inputs`, after the Codex review of
 >   `e348176` found the filter also failed to cover every migration the
 >   guard job applies and the document you are reading.
-> - `7f5407dd…` — current, produced at `000cc14` as above.
+> - `7f5407dd…` — covered the merged path-coverage check. Produced at
+>   `000cc14`. Superseded when the Codex review of `4d8e9dc` found that
+>   nothing compared the committed artifact to what the tree produces, so a
+>   change altering the payload while leaving this document and the
+>   artifact untouched passed every check — including the test that
+>   compares them to each other.
+> - `13b694d7…` — current, produced at `9cb8b4a` as above.
 
 > **What produces this decision.** `candidate-conformance` declares
 > `needs: database-guard` and runs with `if: always()`, failing explicitly when
@@ -89,6 +95,14 @@
 > The uploaded artifact is also no longer able to be a stale pass: the tracked
 > `conformance-results.json` is removed before any check runs, so the upload
 > carries a decision this run computed or fails.
+>
+> **And the committed artifact cannot be stale either.** The job diffs the
+> regenerated result against the committed blob and fails when they differ, so
+> the digest above is bound in both directions: a test asserts this document
+> quotes the committed artifact, and that diff asserts the committed artifact is
+> what the tree produces. Until `9cb8b4a` only the first link existed, which
+> meant a change altering the payload while leaving both untouched compared
+> stale to stale and passed.
 
 This document consolidates the technical evidence for each admission criterion. It does not constitute admission. Bryan's explicit approve, revise, reject, or supersede decision is required before any activation, Canon promotion, merge, authority expansion, or production deployment.
 
