@@ -4,6 +4,23 @@ from typing import Any
 import json
 from .common import DeckGrammarError, _slug, authority_not_above, content_hash, is_active_entitlement, parse_datetime, wildcard_match
 
+# Bump whenever eligibility changes for input that was already schema-valid.
+# A Deck records `compiler_version` beside `source_hashes` so a reader can tell
+# which semantics produced it; leaving it at 0.1.0 after changing which cards
+# are eligible would let two different compilers emit different Decks that
+# claim identical provenance.
+#
+# 0.2.0 excludes deprecated and retired cards, and stops reading an empty
+# compatibility list as a wildcard.
+COMPILER_VERSION = '0.2.0'
+
+# A card definition's lifecycle, per schemas/card-definition.schema.json, runs
+# candidate -> evaluated -> admitted -> deprecated -> retired. The two terminal
+# states are the ones that make a card ineligible; the compiler must not
+# require 'admitted', because a candidate pool is the normal case and every
+# card in examples/deck-grammar/card-pool.json is still a candidate.
+RETIRED_CARD_STATUSES = frozenset({'deprecated', 'retired'})
+
 
 def build_access_pool(collection: dict[str, Any], entitlements: list[dict[str, Any]], *, as_of: datetime) -> list[dict[str, Any]]:
     instances = [json.loads(json.dumps(item)) for item in collection['card_instances']]
@@ -24,7 +41,7 @@ def build_access_pool(collection: dict[str, Any], entitlements: list[dict[str, A
             instance_ids.add(instance_id)
     return instances
 
-def compile_deck(*, card_definitions: list[dict[str, Any]], collection: dict[str, Any], entitlements: list[dict[str, Any]], area: dict[str, Any], goal: dict[str, Any], intention: dict[str, Any], purpose_partition: str, platform: str, task_class: str, authority_ceiling: str, explicit_exclusions: list[str] | None=None, as_of: datetime, compiler_version: str='0.1.0') -> tuple[dict[str, Any], dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+def compile_deck(*, card_definitions: list[dict[str, Any]], collection: dict[str, Any], entitlements: list[dict[str, Any]], area: dict[str, Any], goal: dict[str, Any], intention: dict[str, Any], purpose_partition: str, platform: str, task_class: str, authority_ceiling: str, explicit_exclusions: list[str] | None=None, as_of: datetime, compiler_version: str=COMPILER_VERSION) -> tuple[dict[str, Any], dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
     cards_by_id = {card['card_id']: card for card in card_definitions}
     access_instances = build_access_pool(collection, entitlements, as_of=as_of)
     instances_by_id = {instance['instance_id']: instance for instance in access_instances}
@@ -37,6 +54,9 @@ def compile_deck(*, card_definitions: list[dict[str, Any]], collection: dict[str
         card = cards_by_id.get(instance['card_id'])
         if card is None:
             reason = 'unknown_card'
+        elif card.get('status') in RETIRED_CARD_STATUSES:
+            reason = 'card_status_ineligible'
+            detail = card['status']
         elif instance['state'] in {'expired', 'revoked', 'transferred'}:
             reason = 'expired_access' if instance['state'] == 'expired' else 'revoked_access'
         elif (expires := parse_datetime(instance.get('expires_at'))) and as_of >= expires:
@@ -45,7 +65,7 @@ def compile_deck(*, card_definitions: list[dict[str, Any]], collection: dict[str
             reason = 'explicitly_excluded'
         elif not wildcard_match(card['compatibility']['purpose_partitions'], purpose_partition):
             reason = 'purpose_mismatch'
-        elif not wildcard_match(card['compatibility'].get('area_refs', []), area['area_id']):
+        elif not wildcard_match(card['compatibility'].get('area_refs'), area['area_id']):
             reason = 'area_mismatch'
         elif not wildcard_match(card['compatibility']['platforms'], platform):
             reason = 'platform_mismatch'

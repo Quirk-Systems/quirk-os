@@ -52,6 +52,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+      - name: Discard the tracked evidence so the upload can only carry this run's
+        # Immediately after checkout, before any step that can fail. Checkout
+        # restores the committed `conformance-results.json`, which records a
+        # pass, and the upload runs on `always()` — so every post-checkout
+        # failure, including one in `setup-python` or the dependency install,
+        # would otherwise publish that committed file as this run's evidence.
+        # `if-no-files-found: error` cannot catch it, because the upload also
+        # names `live-proof.json` and that path still exists.
+        #
+        # This step was placed after the install steps when it was added, which
+        # left exactly that window open. `live-proof.json` is deliberately not
+        # removed: it is a tracked input the suite reproduces, not an output.
+        run: rm -f evals/deck-grammar/conformance-results.json
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -75,6 +89,18 @@ jobs:
             --metrics-output evals/deck-grammar/conformance-metrics.json \
             --write-step-summary \
             --require-pass
+
+      - name: Reject committed evidence that this run did not reproduce
+        # Same gap as the sync control plane's: the doc-digest test compares the
+        # committed documents to the committed artifact, so a change altering
+        # the payload while leaving both untouched passes. The regeneration
+        # above rewrote the file; a difference from the committed blob means the
+        # repository's evidence of record is not what this tree produces.
+        run: |
+          if ! git diff --exit-code -- evals/deck-grammar/conformance-results.json; then
+            echo "::error::The committed Deck Grammar conformance result is not what this tree produces. Regenerate it with --output and commit the result."
+            exit 1
+          fi
 
       - name: Upload Deck Grammar evidence
         if: always()
