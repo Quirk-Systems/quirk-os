@@ -41,7 +41,10 @@ begin
 end $$;
 
 -- RLS bypass does not bypass object privileges. JSON cannot assume the role.
-set role service_role;
+-- SET ROLE from a postgres session is insufficient for a membership test:
+-- role assumption is checked against session_user, which would still be the
+-- administrator. Use each real runtime session identity for these attacks.
+set session authorization service_role;
 select pg_temp.expect_refusal(
   'select quirk_sync.apply_verified_manifest_projection(p) from projection_probe', 'permission denied');
 select pg_temp.expect_refusal(
@@ -51,13 +54,15 @@ select pg_temp.expect_refusal('delete from quirk_sync.manifest_registry', 'permi
 select pg_temp.expect_refusal(
   'insert into quirk_sync.manifest_projection_receipts(authority_grant_ref) values (''grant.forged'')', 'permission denied');
 select pg_temp.expect_refusal('set role quirk_manifest_verifier', 'permission denied');
-reset role;
-set role anon;
+reset session authorization;
+set session authorization anon;
 select pg_temp.expect_refusal('select quirk_sync.apply_verified_manifest_projection(p) from projection_probe', 'permission denied');
-reset role;
-set role authenticated;
+select pg_temp.expect_refusal('set role quirk_manifest_verifier', 'permission denied');
+reset session authorization;
+set session authorization authenticated;
 select pg_temp.expect_refusal('select quirk_sync.apply_verified_manifest_projection(p) from projection_probe', 'permission denied');
-reset role;
+select pg_temp.expect_refusal('set role quirk_manifest_verifier', 'permission denied');
+reset session authorization;
 
 -- Legitimate projection at the supported edge, then exact retry with no effects.
 set role quirk_manifest_verifier;
