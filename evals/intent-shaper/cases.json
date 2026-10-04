@@ -320,7 +320,57 @@
         "primary": {"ref": "persona.sensitive-guess", "role": "identity_claim", "weight": 1.0, "selection_basis": "inferred_nonsensitive", "sensitive_inference": true, "impersonates_user": false},
         "supporting": []
       },
+      "expected": {"status": "rejected", "rejection_reasons": ["identity_claim_rejected", "sensitive_inference_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+    },
+    {
+      "id": "QIS-R07",
+      "name": "identity_claim_is_rejected_even_when_flags_claim_safe",
+      "operation": "persona_hand",
+      "input": {
+        "primary": {"ref": "persona.identity-claim", "role": "identity_claim", "weight": 1.0, "selection_basis": "declared_function", "sensitive_inference": false, "impersonates_user": false},
+        "supporting": []
+      },
+      "expected": {"status": "rejected", "rejection_reasons": ["identity_claim_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+    },
+    {
+      "id": "QIS-R08",
+      "name": "impersonation_claim_is_rejected_even_when_flags_claim_safe",
+      "operation": "persona_hand",
+      "input": {
+        "primary": {"ref": "persona.user-impersonation", "role": "user_impersonation", "weight": 1.0, "selection_basis": "explicit_current", "sensitive_inference": false, "impersonates_user": false},
+        "supporting": []
+      },
+      "expected": {"status": "rejected", "rejection_reasons": ["impersonation_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+    },
+    {
+      "id": "QIS-R09",
+      "name": "unsupported_persona_source_is_rejected",
+      "operation": "persona_hand",
+      "input": {
+        "primary": {"ref": "persona.example", "role": "system_architecture", "weight": 1.0, "selection_basis": "model_guess", "sensitive_inference": false, "impersonates_user": false},
+        "supporting": []
+      },
+      "expected": {"status": "rejected", "rejection_reasons": ["unsupported_selection_basis"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+    },
+    {
+      "id": "QIS-R10",
+      "name": "sensitive_claim_is_rejected_even_when_flags_claim_safe",
+      "operation": "persona_hand",
+      "input": {
+        "primary": {"ref": "persona.health-inference", "role": "health_inference", "weight": 1.0, "selection_basis": "inferred_nonsensitive", "sensitive_inference": false, "impersonates_user": false},
+        "supporting": []
+      },
       "expected": {"status": "rejected", "rejection_reasons": ["sensitive_inference_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+    },
+    {
+      "id": "QIS-R11",
+      "name": "authority_claim_is_rejected",
+      "operation": "persona_hand",
+      "input": {
+        "primary": {"ref": "persona.authority-claim", "role": "system_authority", "weight": 1.0, "selection_basis": "declared_function", "sensitive_inference": false, "impersonates_user": false},
+        "supporting": []
+      },
+      "expected": {"status": "rejected", "rejection_reasons": ["authority_claim_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
     },
     {
       "id": "QIS-R05",

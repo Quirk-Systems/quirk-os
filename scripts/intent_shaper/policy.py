@@ -87,6 +87,23 @@ PERSONA_BASES = {
     "declared_function",
     "inferred_nonsensitive",
 }
+PERSONA_CLAIM_MARKERS = {
+    "sensitive_inference_rejected": {
+        "biometric",
+        "disability",
+        "ethnicity",
+        "health",
+        "medical",
+        "political",
+        "race",
+        "religion",
+        "sensitive",
+        "sexual",
+    },
+    "identity_claim_rejected": {"identity", "permanent"},
+    "authority_claim_rejected": {"authority"},
+    "impersonation_rejected": {"impersonat"},
+}
 ADAPTATION_ACTIONS = {
     "propose_preference",
     "persist_preference",
@@ -288,6 +305,19 @@ def _persona_rejection_reasons(selection: Mapping[str, Any]) -> list[str]:
         reasons.append("sensitive_inference_rejected")
     if selection.get("impersonates_user") is not False:
         reasons.append("impersonation_rejected")
+    claim_tokens = set(
+        re.findall(
+            r"[a-z0-9]+",
+            " ".join(str(selection.get(field, "")) for field in ("ref", "role")).casefold(),
+        )
+    )
+    for reason, markers in PERSONA_CLAIM_MARKERS.items():
+        if any(
+            token == marker or (marker == "impersonat" and token.startswith(marker))
+            for token in claim_tokens
+            for marker in markers
+        ):
+            reasons.append(reason)
     return reasons
 
 

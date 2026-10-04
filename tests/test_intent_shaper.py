@@ -46,7 +46,7 @@ class IntentShaperContractTests(unittest.TestCase):
         results = evaluate_cases(self.suite["cases"])
         failures = [result for result in results if not result["passed"]]
         self.assertEqual([], failures)
-        self.assertEqual(20, len(results))
+        self.assertEqual(25, len(results))
 
     def test_malformed_date_time_is_rejected(self) -> None:
         plan = copy.deepcopy(self.sample)
@@ -169,6 +169,29 @@ class IntentShaperContractTests(unittest.TestCase):
         results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}
         self.assertEqual("rejected", results["QIS-R04"]["actual"]["status"])
         self.assertEqual("rejected", results["QIS-R05"]["actual"]["status"])
+
+    def test_persona_identity_and_impersonation_claims_fail_closed(self) -> None:
+        results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}
+        self.assertEqual(
+            ["identity_claim_rejected"],
+            results["QIS-R07"]["actual"]["rejection_reasons"],
+        )
+        self.assertEqual(
+            ["impersonation_rejected"],
+            results["QIS-R08"]["actual"]["rejection_reasons"],
+        )
+        self.assertEqual(
+            ["unsupported_selection_basis"],
+            results["QIS-R09"]["actual"]["rejection_reasons"],
+        )
+        self.assertEqual(
+            ["sensitive_inference_rejected"],
+            results["QIS-R10"]["actual"]["rejection_reasons"],
+        )
+        self.assertEqual(
+            ["authority_claim_rejected"],
+            results["QIS-R11"]["actual"]["rejection_reasons"],
+        )
 
     def test_adaptation_never_self_promotes(self) -> None:
         results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}
