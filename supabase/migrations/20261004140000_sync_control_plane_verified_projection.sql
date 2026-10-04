@@ -75,13 +75,6 @@ begin
           is distinct from (quirk_sync.manifest_projection_snapshot(old) - 'status' - 'requested_status') then
       raise exception 'stopping may not alter manifest content or approval';
     end if;
-    insert into quirk_sync.manifest_transition_ledger
-      (transition_key,manifest_id,manifest_key,manifest_version,from_status,to_status,
-       requested_by,approved_by,decision_ref,authority_grant_ref,evaluated_content_hash,evidence_refs)
-      values ('transition.projection.stop.'||gen_random_uuid(),new.id,new.manifest_key,new.version,
-              old.status,new.status,'service.quirk-manifest-verifier',null,
-              'projection-stop-observation',old.authority_grant_ref,old.content_hash,
-              jsonb_build_array('session:'||session_user));
     return new;
   end if;
   if new.status='active' or (tg_op='UPDATE' and old.status='active') then
@@ -107,6 +100,43 @@ end $$;
 create trigger manifest_verified_projection_guard before insert or update
   on quirk_sync.manifest_registry for each row
   execute function quirk_sync.guard_verified_manifest_projection();
+
+-- Preserve the existing history triggers, with one record for each crossing.
+-- An activation consumes the protected projection receipt. Non-active states
+-- are observations, never new human approval. Historical rows are untouched.
+create or replace function quirk_sync.record_manifest_transition() returns trigger
+language plpgsql set search_path=pg_catalog,quirk_sync,pg_temp as $$
+declare r quirk_sync.manifest_projection_receipts%rowtype;
+begin
+  if new.status='active' then
+    select * into strict r from quirk_sync.manifest_projection_receipts
+      where authority_grant_ref=new.authority_grant_ref;
+    insert into quirk_sync.manifest_transition_ledger
+      (transition_key,manifest_id,manifest_key,manifest_version,from_status,to_status,
+       requested_by,approved_by,decision_ref,authority_grant_ref,evaluated_content_hash,evidence_refs,occurred_at)
+      values (new.transition_evidence_ref,new.id,new.manifest_key,new.version,
+              case when tg_op='UPDATE' then old.status else r.expected_from_status end,'active',
+              new.requested_by,new.approved_by,new.admission_decision_ref,new.authority_grant_ref,
+              new.evaluated_content_hash,r.verified_projection->'manifest'->'admission'->'evidence_refs',
+              new.admitted_at);
+  else
+    insert into quirk_sync.manifest_transition_ledger
+      (transition_key,manifest_id,manifest_key,manifest_version,from_status,to_status,
+       requested_by,approved_by,decision_ref,authority_grant_ref,evaluated_content_hash,evidence_refs)
+      values ('transition.projection.observation.'||gen_random_uuid()::text,new.id,new.manifest_key,new.version,
+              case when tg_op='UPDATE' then old.status end,new.status,
+              'service.quirk-manifest-verifier',null,'projection-state-observation',new.authority_grant_ref,
+              new.content_hash,jsonb_build_array('session:'||session_user));
+  end if;
+  return new;
+end $$;
+drop trigger manifest_transition_update on quirk_sync.manifest_registry;
+create trigger manifest_transition_update after update on quirk_sync.manifest_registry
+  for each row when (old.status is distinct from new.status
+                    or old.authority_grant_ref is distinct from new.authority_grant_ref)
+  execute function quirk_sync.record_manifest_transition();
+revoke all on function quirk_sync.record_manifest_transition() from public,anon,authenticated,service_role;
+grant execute on function quirk_sync.record_manifest_transition() to quirk_manifest_verifier;
 
 -- The authenticated host must re-resolve GitHub immediately before invoking
 -- this function. Only its separately provisioned login may SET ROLE to this
@@ -201,12 +231,6 @@ begin
          candidate.admitted_at,candidate.domains,candidate.skill_refs,candidate.rights_review,
          candidate.trigger_contract,candidate.updated_at) where id=existing.id;
   end if;
-  insert into quirk_sync.manifest_transition_ledger
-    (transition_key,manifest_id,manifest_key,manifest_version,from_status,to_status,
-     requested_by,approved_by,decision_ref,authority_grant_ref,evaluated_content_hash,evidence_refs)
-    values (candidate.transition_evidence_ref,candidate.id,candidate.manifest_key,candidate.version,
-            p->>'expected_from_status','active',candidate.requested_by,candidate.approved_by,
-            candidate.admission_decision_ref,grant_ref,candidate.content_hash,m->'admission'->'evidence_refs');
   return candidate.id;
 end $$;
 
