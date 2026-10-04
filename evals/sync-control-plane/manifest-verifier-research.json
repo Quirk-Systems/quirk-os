@@ -1,0 +1,181 @@
+{
+  "run": {
+    "id": "research.manifest-verifier-boundaries.2026-10-04",
+    "status": "release_ready",
+    "mode": "standard",
+    "current_date": "2026-10-04",
+    "owner": "Bryan",
+    "budget": {
+      "primary_sources": 4,
+      "search_calls": 8,
+      "iteration_limit": 1,
+      "release_authority": "human only"
+    }
+  },
+  "brief": {
+    "question": "Which platform facts constrain the approved review-root and database-projection decisions?",
+    "desired_outcome": "A bounded source and claim ledger supporting the implementation handoff.",
+    "success_criteria": [
+      "Primary evidence for ownership precedence, required reviews, RLS bypass and function privilege context.",
+      "No open critical contradiction; no live admission claim."
+    ],
+    "boundaries": [
+      "Official documentation only for platform behavior; inspected repository for implementation constraints.",
+      "No protection changes, credentials, migration deployment or live activation.",
+      "Candidate proof is separate from authentic human consent."
+    ],
+    "audience": "Bryan and successor reviewers",
+    "deadline": "this candidate handoff"
+  },
+  "sources": [
+    {
+      "id": "github-owners",
+      "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners",
+      "title": "About code owners",
+      "publisher": "GitHub",
+      "retrieved_at": "2026-10-04T15:05:36.592722+00:00",
+      "source_type": "official documentation",
+      "independence_group": "github",
+      "is_primary": true,
+      "status": "admitted"
+    },
+    {
+      "id": "postgres-rls",
+      "url": "https://www.postgresql.org/docs/16/ddl-rowsecurity.html",
+      "title": "PostgreSQL 16 row security policies",
+      "publisher": "PostgreSQL Global Development Group",
+      "retrieved_at": "2026-10-04T15:05:36.592722+00:00",
+      "source_type": "official documentation",
+      "independence_group": "postgresql",
+      "is_primary": true,
+      "status": "admitted"
+    },
+    {
+      "id": "postgres-functions",
+      "url": "https://www.postgresql.org/docs/16/sql-createfunction.html",
+      "title": "PostgreSQL 16 CREATE FUNCTION",
+      "publisher": "PostgreSQL Global Development Group",
+      "retrieved_at": "2026-10-04T15:05:36.592722+00:00",
+      "source_type": "official documentation",
+      "independence_group": "postgresql",
+      "is_primary": true,
+      "status": "admitted"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "evidence.github-owners",
+      "source_id": "github-owners",
+      "locator": "CODEOWNERS and forks; About code owners; CODEOWNERS and branch protection",
+      "summary": "GitHub uses the pull request base branch ownership file. Requiring code-owner approval is a separate branch protection choice."
+    },
+    {
+      "id": "evidence.postgres-rls",
+      "source_id": "postgres-rls",
+      "locator": "5.8, paragraph describing superusers and BYPASSRLS",
+      "summary": "Superusers and roles with BYPASSRLS bypass row-security policies. A row policy alone is insufficient for the broad Supabase service role threat model."
+    },
+    {
+      "id": "evidence.postgres-functions",
+      "source_id": "postgres-functions",
+      "locator": "Parameters: SECURITY INVOKER / SECURITY DEFINER",
+      "summary": "INVOKER uses caller privileges; DEFINER uses function-owner privileges. This distinction determines whether an application function can elevate a caller."
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim.github-owners.1",
+      "text": "CODEOWNERS eligibility must come from the approved base branch, not the candidate branch.",
+      "importance": "material",
+      "evidence_ids": [
+        "evidence.github-owners"
+      ],
+      "evidence_policy": "single_primary",
+      "confidence": 0.98,
+      "confidence_rationale": "Directly stated by the authoritative service documentation; scoped to this behavior.",
+      "status": "supported"
+    },
+    {
+      "id": "claim.github-owners.2",
+      "text": "Adding CODEOWNERS alone does not establish required-review protection.",
+      "importance": "material",
+      "evidence_ids": [
+        "evidence.github-owners"
+      ],
+      "evidence_policy": "single_primary",
+      "confidence": 0.98,
+      "confidence_rationale": "Directly stated by the authoritative service documentation; scoped to this behavior.",
+      "status": "supported"
+    },
+    {
+      "id": "claim.postgres-rls.1",
+      "text": "Row-security policies alone cannot restrict a role with BYPASSRLS.",
+      "importance": "material",
+      "evidence_ids": [
+        "evidence.postgres-rls"
+      ],
+      "evidence_policy": "single_primary",
+      "confidence": 0.98,
+      "confidence_rationale": "Directly stated by the authoritative service documentation; scoped to this behavior.",
+      "status": "supported"
+    },
+    {
+      "id": "claim.postgres-functions.1",
+      "text": "A SECURITY INVOKER application function runs with its caller privileges.",
+      "importance": "material",
+      "evidence_ids": [
+        "evidence.postgres-functions"
+      ],
+      "evidence_policy": "single_primary",
+      "confidence": 0.98,
+      "confidence_rationale": "Directly stated by the authoritative service documentation; scoped to this behavior.",
+      "status": "supported"
+    }
+  ],
+  "contradictions": [
+    {
+      "id": "contradiction.codeowners-alone",
+      "claim_ids": [
+        "claim.github-owners.1",
+        "claim.github-owners.2"
+      ],
+      "severity": "critical",
+      "status": "resolved",
+      "rejected_inference": "The new candidate CODEOWNERS file proves an enforced human-review trust root.",
+      "resolution": "Base ownership and required-review protection are separate. Candidate policy remains disabled pending protected bootstrap."
+    }
+  ],
+  "gaps": [
+    {
+      "id": "gap.live-bootstrap",
+      "question": "Is the actual protected host, ownership policy and verifier login installed and isolated?",
+      "status": "open",
+      "next_query": "Named deployment owner supplies protected configuration and privilege audit; do not infer it from candidate tests."
+    },
+    {
+      "id": "gap.positive-live",
+      "question": "Can a real independent human activation review be resolved and applied through the protected host?",
+      "status": "open",
+      "next_query": "Run after separately authorized trusted bootstrap; synthetic fixtures confer no consent."
+    },
+    {
+      "id": "gap.consumer",
+      "question": "Which consumer enforces continuing expiry and revocation before protected use?",
+      "status": "open",
+      "next_query": "Specify the downstream consumer contract before claiming currently usable authority."
+    }
+  ],
+  "approvals": [],
+  "search_trail": [
+    {
+      "query": "GitHub CODEOWNERS and PostgreSQL privilege semantics",
+      "result": "An initial malformed site query returned irrelevant general-language results; none supported a claim."
+    },
+    {
+      "query": "Direct official documentation URLs and targeted find",
+      "result": "Three primary sources admitted; one contradiction pass separated ownership from enforcement."
+    }
+  ],
+  "authority_effect": "none",
+  "synthesis": "The approved design remains coherent if the host installs trusted base ownership and credentials, resolves scoped exact-head consent, and revokes broad projection writes. PostgreSQL remains a projection; the implementation must not claim independent consent/hash verification. Passing candidate proof does not supply missing live-bootstrap or consumer evidence."
+}
