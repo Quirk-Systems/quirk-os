@@ -23,7 +23,7 @@ from sync_control_plane.mappers import (  # noqa: E402
     receipt_canonical_to_runtime,
     receipt_runtime_to_canonical,
 )
-from sync_control_plane.policy import evaluate_fixture, validate_manifest_admission  # noqa: E402
+from sync_control_plane.policy import evaluate_fixture, validate_manifest_admission, validate_manifest_structure  # noqa: E402
 
 sys.path.insert(0, str(ROOT / "scripts"))
 from validate_sync_control_plane import _privilege_lanes_hold, database_guard_job_checks  # noqa: E402
@@ -54,7 +54,8 @@ class SyncControlPlaneTests(unittest.TestCase):
     def test_valid_active_manifest(self):
         manifest = load("evals/sync-control-plane/valid-active-manifest.json")
         self.assertEqual([], self.validate(self.manifest_schema, manifest))
-        self.assertEqual([], validate_manifest_admission(manifest))
+        self.assertEqual([], validate_manifest_structure(manifest))
+        self.assertTrue(validate_manifest_admission(manifest))
 
     def test_self_promotion_rejected(self):
         manifest = load("evals/sync-control-plane/cases/SCP-011.json")["manifest"]
@@ -136,7 +137,8 @@ class SyncControlPlaneTests(unittest.TestCase):
         self.assertEqual(manifest["admission"]["requested_by"], manifest["manifest_key"])
         manifest["metadata"] = {"self_requested": True}
         self.assertEqual([], self.validate(self.manifest_schema, manifest))
-        self.assertEqual([], validate_manifest_admission(manifest))
+        self.assertEqual([], validate_manifest_structure(manifest))
+        self.assertTrue(validate_manifest_admission(manifest))
 
     def test_cloudflare_deferred_binding_is_valid(self):
         binding = {
