@@ -1,7 +1,7 @@
 # Quirk Distinctions Workflow v0.1
 
 Date: 2026-10-03
-Status: Repository review candidate; manual procedure authorized by Bryan on 2026-10-03; effectiveness unmeasured.
+Status: Repository review candidate; manual procedure disposition pending; effectiveness unmeasured.
 Source: Bryan's distinctions drill and instruction, “Apply Workflow Changes as Recommended.”
 Implementation scope: reusable manual checklist and receipt. No runtime enforcement or systemwide installation is claimed.
 
