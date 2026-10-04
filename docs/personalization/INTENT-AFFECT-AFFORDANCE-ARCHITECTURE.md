@@ -201,7 +201,7 @@ The receipt must classify the cause before updating confidence.
 
 ## Generated UI admission
 
-Generated UI is permitted only when:
+Generated UI is not an admitted affordance in Intent Shaper v0.2. The candidate schema rejects it. A future version may add it only when:
 
 1. the task benefits from interaction;
 2. the component grammar is admitted;

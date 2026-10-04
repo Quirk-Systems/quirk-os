@@ -1,0 +1,69 @@
+from __future__ import annotations
+from datetime import datetime, timezone
+from hashlib import sha256
+from pathlib import Path
+from typing import Any, Iterable
+import json
+import re
+import yaml
+
+AUTHORITY_ORDER = {'observe': 0, 'infer': 1, 'propose': 2, 'execute_reversible': 3, 'enforce_invariant': 4, 'execute_protected': 5}
+
+
+class DeckGrammarError(ValueError):
+    pass
+
+def canonical_json(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False)
+
+def content_hash(value: Any) -> str:
+    return sha256(canonical_json(value).encode('utf-8')).hexdigest()
+
+def parse_datetime(value: str | None) -> datetime | None:
+    if value is None:
+        return None
+    normalized = value.replace('Z', '+00:00')
+    parsed = datetime.fromisoformat(normalized)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+def is_active_entitlement(entitlement: dict[str, Any], as_of: datetime) -> bool:
+    if entitlement.get('state') != 'active':
+        return False
+    starts = parse_datetime(entitlement.get('starts_at'))
+    ends = parse_datetime(entitlement.get('ends_at'))
+    if starts and as_of < starts:
+        return False
+    if ends and as_of >= ends:
+        return False
+    return entitlement.get('authority_effect') == 'none'
+
+def wildcard_match(values: Iterable[str] | None, candidate: str) -> bool:
+    """True when `candidate` is permitted by `values`, used as an allow-list.
+
+    `None` means the dimension is unconstrained, which is how an absent
+    optional key reads. An explicitly empty collection means the opposite: the
+    card or preset declares no compatible value, so nothing matches. Treating
+    empty as a wildcard made an under-specified card universally eligible,
+    which is a check that cannot fail. `'*'` remains the explicit wildcard.
+    """
+    if values is None:
+        return True
+    materialized = set(values)
+    return '*' in materialized or candidate in materialized
+
+def authority_not_above(card_ceiling: str, external_ceiling: str) -> bool:
+    return AUTHORITY_ORDER[card_ceiling] <= AUTHORITY_ORDER[external_ceiling]
+
+def _slug(value: str) -> str:
+    return re.sub('[^a-z0-9._-]+', '-', value.lower()).strip('-')
+
+def load_yaml(path: Path) -> dict[str, Any]:
+    loaded = yaml.safe_load(path.read_text(encoding='utf-8'))
+    if not isinstance(loaded, dict):
+        raise DeckGrammarError(f'{path}: expected YAML object')
+    return loaded
+
+def load_json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding='utf-8'))

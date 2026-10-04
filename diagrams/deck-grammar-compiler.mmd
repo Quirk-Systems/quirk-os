@@ -1,0 +1,23 @@
+flowchart TD
+  A["Area"] --> K["Context Kernel"]
+  G["Goal"] --> K
+  I["Intention"] --> K
+  C["Owned Collection"] --> X["Access Pool"]
+  E["Entitlement Grants"] --> X
+  X --> D["Eligible Deck Filter"]
+  K --> D
+  S["Settings + explicit instruction"] --> D
+  U["External authority grant"] --> D
+  D --> P["Hand Preset"]
+  P --> H["Proposed Hand"]
+  H --> T{"Human adjustment / confirmation"}
+  T -->|"revise"| P
+  T -->|"confirm"| F["Task Affordances"]
+  F --> M["Moves"]
+  M --> O["Artifacts"]
+  O --> Q["Feedback Receipt"]
+  Q --> R["Adaptation Proposal"]
+
+  U -. "cards cannot expand" .-> H
+  G -. "truth snapshot preserved" .-> H
+  C -. "ownership snapshot preserved" .-> H

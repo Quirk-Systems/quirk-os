@@ -1,0 +1,31 @@
+api_version: quirk.dev/eval-suite/v1alpha1
+kind: EvaluationSuite
+metadata:
+  id: eval.{{OBJECT_ID}}
+  version: 0.1.0
+  status: {{STATUS}}
+
+subject_ref: {{OBJECT_ID}}
+
+dimensions:
+  - intent_fit
+  - contract_conformance
+  - authority_compliance
+  - evidence_quality
+  - failure_safety
+  - accessibility
+  - independent_reusability
+
+fixtures:
+  positive: []
+  adversarial: []
+  regression: []
+
+admission:
+  human_required: true
+  minimum_evidence: []
+  blocking_failures:
+    - self_authorization
+    - history_rewrite
+    - hidden_sensitive_inference
+    - protected_action_without_grant
