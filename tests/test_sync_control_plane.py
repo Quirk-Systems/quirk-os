@@ -444,6 +444,10 @@ class ManifestActivationCasesFileTests(unittest.TestCase):
         body = self.CASES.read_text(encoding="utf-8").lower()
         for statement in ("\nbegin;", "\ncommit;", "\nrollback;"):
             self.assertNotIn(statement, body)
+        # And its usage note must send a reader to the driver. It once told
+        # readers to run it under `--single-transaction`, which commits the
+        # admitted case's row on success — the trap the driver exists for.
+        self.assertIn("manifest_activation_guard.run.sql", body)
 
     def test_both_callers_include_the_one_cases_file(self):
         self.assertIn("\\ir manifest_activation_guard.cases.sql", self.DRIVER.read_text(encoding="utf-8"))

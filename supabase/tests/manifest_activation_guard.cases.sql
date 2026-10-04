@@ -6,11 +6,21 @@
 -- rule that stops firing fails the case rather than passing on a different
 -- rule's message.
 --
--- The file carries NO transaction control on purpose. It is included by
--- `sync_control_plane_hardening.sql` inside that suite's begin/rollback, and
--- run on its own by CI under `psql --single-transaction -v ON_ERROR_STOP=1`,
--- which wraps it and rolls back on the implicit abort. Adding `begin;` here
--- would break both callers. Nothing below commits.
+-- The file carries NO transaction control on purpose, because both of its
+-- callers supply one: `sync_control_plane_hardening.sql` includes it inside that
+-- suite's begin/rollback, and `manifest_activation_guard.run.sql` — the driver
+-- CI runs — includes it between its own `begin;` and `rollback;`. Adding
+-- `begin;` here would break both. Nothing below commits.
+--
+-- To run these cases on their own, run the driver:
+--
+--   psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_activation_guard.run.sql
+--
+-- Do NOT run this file directly under `psql --single-transaction`. It looks
+-- equivalent and is not: `--single-transaction` rolls back on an error but
+-- COMMITS when nothing raises, and the first case below is supposed to raise
+-- nothing, so it leaves an admitted active manifest in the database. That is
+-- the reason the driver exists.
 -- Valid activation must pass with independent approval.
 do $$
 declare
