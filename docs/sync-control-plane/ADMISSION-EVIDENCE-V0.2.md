@@ -6,8 +6,8 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `c5feeaeaf7340d3435818c56261f838747aa62568f8fa0bf2cb1a95ec06f2068`  
-**Evidence revision (the tree that reproduces that hash):** `731d4996feda357a1db87e9b31b458c98b9aa090`
+**Content hash (SHA-256):** `9fb64e360024fbbd9706822f61aec5b3e449450e8883fd9eab3e97656dc89852`  
+**Evidence revision (the tree that reproduces that hash):** `cedcc1d82a0ca43ad6ae1ef68ab6efa58366afdc`
 
 > **Why two revisions.** The candidate commit names the subject that was
 > evaluated. The evidence revision names the tree whose validator and inputs
@@ -21,13 +21,13 @@
 > Reproduce with:
 >
 > ```sh
-> git checkout 731d4996feda357a1db87e9b31b458c98b9aa090
+> git checkout cedcc1d82a0ca43ad6ae1ef68ab6efa58366afdc
 > python scripts/validate_sync_control_plane.py --repo . \
 >   --output evals/sync-control-plane/conformance-results.json --require-admit
 > ```
 >
 > Observed at that revision in a detached worktree:
-> `c5feeaeaf7340d3435818c56261f838747aa62568f8fa0bf2cb1a95ec06f2068`, matching
+> `9fb64e360024fbbd9706822f61aec5b3e449450e8883fd9eab3e97656dc89852`, matching
 > both the tracked artifact and the line above.
 
 > **Digest history**, recorded because a hash replaced without a note is
@@ -65,7 +65,11 @@
 >   failed reports as *skipped*, and GitHub counts a skipped required check
 >   as a successful one, so that form could have turned a red guard into a
 >   green required check.
-> - `c5feeaea…` — current, produced at `731d499` as above.
+> - `c5feeaea…` — covered the second form of the eligibility gate and the
+>   content-hash linkage check. Produced at `731d499`. Superseded when the
+>   Codex review of `f75b422` found that this workflow did not trigger on
+>   the verification recipe its own test treats as a dependency.
+> - `9fb64e36…` — current, produced at `cedcc1d` as above.
 
 > **What produces this decision.** `candidate-conformance` declares
 > `needs: database-guard` and runs with `if: always()`, failing explicitly when

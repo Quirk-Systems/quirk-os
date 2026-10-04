@@ -456,6 +456,22 @@ class ManifestActivationCasesFileTests(unittest.TestCase):
 
     SKILL = ROOT / ".claude/skills/verify/SKILL.md"
 
+    def test_the_admission_evidence_quotes_the_tracked_digest(self):
+        # Two Deck Grammar documents quoted a conformance hash that nothing
+        # compared to the artifact, and a stale one survived two commits. This
+        # document is the same shape, so it gets the same check. Superseded
+        # hashes still appear in its digest history by design, so this asserts
+        # the current one is present rather than that no other is.
+        tracked = json.loads(
+            (ROOT / "evals/sync-control-plane/conformance-results.json").read_text(
+                encoding="utf-8"
+            )
+        )["content_hash_sha256"]
+        doc = (ROOT / "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(tracked, doc)
+
     def test_the_verify_recipe_does_not_drift_from_the_workflow(self):
         """A recipe that cannot go red is the same defect as a guard that cannot refuse.
 
