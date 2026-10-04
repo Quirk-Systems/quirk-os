@@ -395,6 +395,335 @@
         "settings_updated": false,
         "canon_updated": false
       }
+    },
+    {
+      "id": "QIS-R12",
+      "name": "platform_render_cannot_change_semantic_decision",
+      "operation": "platform_affect",
+      "input": {
+        "platform": "github",
+        "semantic_decision_hash": "decision-a",
+        "rendered_decision_hash": "decision-b"
+      },
+      "expected": {
+        "status": "rejected",
+        "platform": "github",
+        "reason_code": "semantic_decision_changed",
+        "semantic_decision_hash_preserved": false
+      }
+    },
+    {
+      "id": "QIS-R13",
+      "name": "platform_render_requires_decision_hashes",
+      "operation": "platform_affect",
+      "input": {
+        "platform": "github"
+      },
+      "expected": {
+        "status": "rejected",
+        "platform": "github",
+        "reason_code": "decision_hash_missing",
+        "semantic_decision_hash_preserved": false
+      }
+    },
+    {
+      "id": "QIS-R14",
+      "name": "enabled_boundary_rejects_current_conflict",
+      "operation": "personalization_boundary",
+      "input": {
+        "scope": "general",
+        "adapter_mode": "recording",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "settings": {
+          "personalization_enabled": true,
+          "adaptation_mode": "propose_only",
+          "implicit_signal_use": "limited"
+        },
+        "current_request_preferences": [
+          {
+            "ref": "pref.current.plain",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "general"
+          },
+          {
+            "ref": "pref.current.rich",
+            "dimension": "format",
+            "value": "rich",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "general"
+          }
+        ],
+        "stored_evidence": {
+          "preferences": [],
+          "history": []
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_code": "preference_conflict",
+        "conflicts": [
+          "format"
+        ],
+        "personalization_enabled": true
+      }
+    },
+    {
+      "id": "QIS-R15",
+      "name": "off_boundary_rejects_current_conflict_without_reads",
+      "operation": "personalization_boundary",
+      "input": {
+        "scope": "general",
+        "adapter_mode": "fail_on_read",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "settings": {
+          "personalization_enabled": false,
+          "adaptation_mode": "off",
+          "implicit_signal_use": "off"
+        },
+        "current_request_preferences": [
+          {
+            "ref": "pref.current.plain",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "general"
+          },
+          {
+            "ref": "pref.current.rich",
+            "dimension": "format",
+            "value": "rich",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "general"
+          }
+        ],
+        "stored_evidence": {
+          "preferences": [
+            {
+              "ref": "pref.saved.lure",
+              "dimension": "format",
+              "value": "hidden",
+              "source": "explicit_saved",
+              "confidence": 1.0,
+              "scope": "general"
+            }
+          ],
+          "profile": {
+            "ref": "profile.lure"
+          },
+          "persona": {
+            "ref": "persona.lure"
+          },
+          "history": [
+            {
+              "ref": "history.lure"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_code": "preference_conflict",
+        "conflicts": [
+          "format"
+        ],
+        "read_trace": []
+      }
+    },
+    {
+      "id": "QIS-R16",
+      "name": "off_boundary_rejects_generated_ui",
+      "operation": "personalization_boundary",
+      "input": {
+        "scope": "general",
+        "adapter_mode": "fail_on_read",
+        "settings": {
+          "personalization_enabled": false,
+          "adaptation_mode": "off",
+          "implicit_signal_use": "off",
+          "generated_ui": "preferred"
+        },
+        "current_request_preferences": [],
+        "stored_evidence": {
+          "preferences": [
+            {
+              "ref": "pref.saved.lure",
+              "dimension": "format",
+              "value": "hidden",
+              "source": "explicit_saved",
+              "confidence": 1.0,
+              "scope": "general"
+            }
+          ],
+          "profile": {
+            "ref": "profile.lure"
+          },
+          "persona": {
+            "ref": "persona.lure"
+          },
+          "history": [
+            {
+              "ref": "history.lure"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_code": "off_mode_settings_conflict",
+        "read_trace": []
+      }
+    },
+    {
+      "id": "QIS-R17",
+      "name": "implicit_signal_off_ignores_observed_and_history",
+      "operation": "personalization_boundary",
+      "input": {
+        "scope": "general",
+        "adapter_mode": "recording",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "settings": {
+          "personalization_enabled": true,
+          "adaptation_mode": "propose_only",
+          "implicit_signal_use": "off"
+        },
+        "current_request_preferences": [],
+        "stored_evidence": {
+          "preferences": [
+            {
+              "ref": "pref.observed.rich",
+              "dimension": "format",
+              "value": "rich",
+              "source": "observed",
+              "confidence": 1.0,
+              "scope": "general"
+            },
+            {
+              "ref": "pref.inferred.dense",
+              "dimension": "density",
+              "value": "dense",
+              "source": "inferred",
+              "confidence": 1.0,
+              "scope": "general"
+            }
+          ],
+          "history": [
+            {
+              "ref": "history.lure"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": "accepted",
+        "personalization_enabled": true,
+        "read_trace": [
+          "preferences",
+          "profile",
+          "persona"
+        ],
+        "selected_refs": [],
+        "history_items": 0
+      }
+    },
+    {
+      "id": "QIS-R18",
+      "name": "current_instruction_respects_purpose_partition",
+      "operation": "purpose_partition",
+      "input": {
+        "scope": "security.incident",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {
+            "ref": "pref.security.evidence_first",
+            "dimension": "structure",
+            "value": "evidence_first",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "security.incident"
+          },
+          {
+            "ref": "pref.current.music",
+            "dimension": "structure",
+            "value": "breath_risk",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "music.performance"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [
+          "pref.security.evidence_first"
+        ],
+        "excluded_scopes": [
+          "music.performance"
+        ]
+      }
+    },
+    {
+      "id": "QIS-R19",
+      "name": "superseded_preference_is_not_selected",
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "writing.dossier",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {
+            "ref": "pref.saved.old",
+            "dimension": "verbosity",
+            "value": "short",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "writing.dossier",
+            "decision": "superseded"
+          },
+          {
+            "ref": "pref.observed.detail",
+            "dimension": "verbosity",
+            "value": "detailed",
+            "source": "observed",
+            "confidence": 1.0,
+            "scope": "writing.dossier"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [
+          "pref.observed.detail"
+        ],
+        "ignored_refs": [
+          "pref.saved.old"
+        ],
+        "conflicts": []
+      }
+    },
+    {
+      "id": "QIS-R20",
+      "name": "policy_human_gate_actions_require_admission",
+      "operation": "adaptation_guard",
+      "input": {
+        "requested_action": "confirm_persona",
+        "adaptation_proposal_ref": "proposal.persona.confirm",
+        "feedback_receipt": {
+          "receipt_ref": "receipt.feedback.persona",
+          "receipt_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "immutable": true,
+          "proposal_ref": "proposal.persona.confirm"
+        }
+      },
+      "expected": {
+        "status": "blocked",
+        "reason_code": "human_admission_required",
+        "requested_action": "confirm_persona",
+        "auto_apply": false,
+        "human_admission_required": true
+      }
     }
   ]
 }

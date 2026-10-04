@@ -13,7 +13,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 
 from intent_shaper.policy import evaluate_case, evaluate_cases  # noqa: E402
-from validate_intent_shaper import validate_policy  # noqa: E402
+from validate_intent_shaper import validate_plan_semantics, validate_policy  # noqa: E402
 
 
 class IntentShaperContractTests(unittest.TestCase):
@@ -46,7 +46,7 @@ class IntentShaperContractTests(unittest.TestCase):
         results = evaluate_cases(self.suite["cases"])
         failures = [result for result in results if not result["passed"]]
         self.assertEqual([], failures)
-        self.assertEqual(25, len(results))
+        self.assertEqual(34, len(results))
 
     def test_malformed_date_time_is_rejected(self) -> None:
         plan = copy.deepcopy(self.sample)
@@ -202,6 +202,55 @@ class IntentShaperContractTests(unittest.TestCase):
         self.assertFalse(actual["settings_updated"])
         self.assertFalse(actual["canon_updated"])
         self.assertTrue(actual["human_admission_required"])
+
+    def test_enabled_plan_requires_primary_persona(self) -> None:
+        plan = copy.deepcopy(self.sample)
+        plan["persona_hand"]["primary"] = None
+        errors = list(self.validator.iter_errors(plan))
+        self.assertTrue(any(list(error.path) == ["persona_hand", "primary"] for error in errors))
+
+    def test_disabled_plan_requires_off_mode_settings(self) -> None:
+        plan = copy.deepcopy(self.sample)
+        plan["settings"] = {"personalization_enabled": False, "adaptation_mode": "off"}
+        plan["persona_hand"]["primary"] = None
+        plan["persona_hand"]["supporting"] = []
+        plan["voice"]["profile_ref"] = None
+        plan["aesthetic"]["profile_ref"] = None
+        plan["learning"]["allowed_updates"] = []
+        messages = [error.message for error in self.validator.iter_errors(plan)]
+        self.assertTrue(any("implicit_signal_use" in message for message in messages))
+        self.assertTrue(any("generated_ui" in message for message in messages))
+
+    def test_plan_must_declare_policy_human_gates_and_prohibitions(self) -> None:
+        plan = copy.deepcopy(self.sample)
+        plan["authority"]["human_required"] = []
+        plan["authority"]["prohibited"] = []
+        paths = [list(error.path) for error in self.validator.iter_errors(plan)]
+        self.assertIn(["authority", "human_required"], paths)
+        self.assertIn(["authority", "prohibited"], paths)
+
+    def test_plan_semantics_reject_weight_drift_and_trait_contradiction(self) -> None:
+        self.assertEqual([], validate_plan_semantics(self.sample))
+        plan = copy.deepcopy(self.sample)
+        plan["persona_hand"]["primary"]["weight"] = 1.0
+        plan["voice"]["no_fill"].append(plan["voice"]["required_traits"][0])
+        errors = validate_plan_semantics(plan)
+        self.assertIn("plan:persona_hand:weight_total_must_equal_1", errors)
+        self.assertTrue(any(error.startswith("plan:voice:required_traits_prohibited_by_no_fill") for error in errors))
+
+    def test_review_regressions_fail_closed(self) -> None:
+        results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}
+        self.assertEqual("semantic_decision_changed", results["QIS-R12"]["actual"]["reason_code"])
+        self.assertEqual("decision_hash_missing", results["QIS-R13"]["actual"]["reason_code"])
+        self.assertEqual("preference_conflict", results["QIS-R14"]["actual"]["reason_code"])
+        self.assertEqual("preference_conflict", results["QIS-R15"]["actual"]["reason_code"])
+        self.assertEqual([], results["QIS-R15"]["actual"]["read_trace"])
+        self.assertEqual("off_mode_settings_conflict", results["QIS-R16"]["actual"]["reason_code"])
+        self.assertNotIn("history", results["QIS-R17"]["actual"]["read_trace"])
+        self.assertEqual([], results["QIS-R17"]["actual"]["selected_refs"])
+        self.assertEqual(["pref.security.evidence_first"], results["QIS-R18"]["actual"]["selected_refs"])
+        self.assertEqual(["pref.observed.detail"], results["QIS-R19"]["actual"]["selected_refs"])
+        self.assertEqual("human_admission_required", results["QIS-R20"]["actual"]["reason_code"])
 
     def test_adaptation_without_receipt_is_blocked(self) -> None:
         results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}

@@ -98,8 +98,23 @@
   "authority": {
     "ceiling": "propose",
     "admission_ref": null,
-    "human_required": ["update_memory", "change_settings", "activate_skill"],
-    "prohibited": ["self_promote", "impersonate_user", "write_canon"]
+    "human_required": [
+      "update_memory",
+      "change_settings",
+      "confirm_persona",
+      "activate_skill",
+      "deploy_generated_ui"
+    ],
+    "prohibited": [
+      "self_promote",
+      "impersonate_user",
+      "write_canon",
+      "sensitive_inference_without_consent",
+      "permanent_persona_assignment",
+      "cross_purpose_preference_leakage",
+      "model_confidence_as_authority",
+      "protected_action_from_preference"
+    ]
   },
   "uncertainty": {
     "confidence": 0.82,

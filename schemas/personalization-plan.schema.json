@@ -392,14 +392,73 @@
           "items": {
             "type": "string"
           },
-          "uniqueItems": true
+          "uniqueItems": true,
+          "allOf": [
+            {
+              "contains": {
+                "const": "update_memory"
+              }
+            },
+            {
+              "contains": {
+                "const": "change_settings"
+              }
+            },
+            {
+              "contains": {
+                "const": "confirm_persona"
+              }
+            },
+            {
+              "contains": {
+                "const": "activate_skill"
+              }
+            },
+            {
+              "contains": {
+                "const": "deploy_generated_ui"
+              }
+            }
+          ]
         },
         "prohibited": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "uniqueItems": true
+          "uniqueItems": true,
+          "allOf": [
+            {
+              "contains": {
+                "const": "sensitive_inference_without_consent"
+              }
+            },
+            {
+              "contains": {
+                "const": "permanent_persona_assignment"
+              }
+            },
+            {
+              "contains": {
+                "const": "impersonate_user"
+              }
+            },
+            {
+              "contains": {
+                "const": "cross_purpose_preference_leakage"
+              }
+            },
+            {
+              "contains": {
+                "const": "model_confidence_as_authority"
+              }
+            },
+            {
+              "contains": {
+                "const": "protected_action_from_preference"
+              }
+            }
+          ]
         }
       }
     },
@@ -877,7 +936,12 @@
               "generated_ui": {
                 "const": "off"
               }
-            }
+            },
+            "required": [
+              "adaptation_mode",
+              "implicit_signal_use",
+              "generated_ui"
+            ]
           },
           "learning": {
             "properties": {
@@ -886,6 +950,36 @@
               },
               "feedback_evidence": {
                 "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "settings": {
+            "properties": {
+              "personalization_enabled": {
+                "const": true
+              }
+            },
+            "required": [
+              "personalization_enabled"
+            ]
+          }
+        },
+        "required": [
+          "settings"
+        ]
+      },
+      "then": {
+        "properties": {
+          "persona_hand": {
+            "properties": {
+              "primary": {
+                "$ref": "#/$defs/personaSelection"
               }
             }
           }

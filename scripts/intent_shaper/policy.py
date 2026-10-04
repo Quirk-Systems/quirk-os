@@ -109,8 +109,13 @@ ADAPTATION_ACTIONS = {
     "persist_preference",
     "update_memory",
     "change_settings",
+    "confirm_persona",
+    "activate_skill",
+    "deploy_generated_ui",
     "write_canon",
 }
+IMPLICIT_SOURCES = {"observed", "inferred"}
+INACTIVE_DECISIONS = {"ignore", "expired", "superseded"}
 SHA256_PATTERN = re.compile(r"^[a-f0-9]{64}$")
 
 
@@ -208,25 +213,23 @@ def _select_preference(
     scope: str,
     as_of: datetime,
     personalization_enabled: bool = True,
+    implicit_signal_use: str | None = None,
 ) -> dict[str, Any]:
     all_preferences = [dict(item) for item in preferences]
-    if not personalization_enabled:
-        usable = [item for item in all_preferences if item.get("source") == "explicit_current"]
-        return {
-            "selected_refs": [item["ref"] for item in usable],
-            "ignored_refs": [item["ref"] for item in all_preferences if item not in usable],
-            "stored_retrieval": False,
-            "conflicts": [],
-        }
-
     usable: list[dict[str, Any]] = []
     ignored: list[dict[str, Any]] = []
     for item in all_preferences:
-        if not _is_active(item, as_of=as_of):
+        if not personalization_enabled and item.get("source") != "explicit_current":
             ignored.append(item)
             continue
-        item_scope = str(item.get("scope", ""))
-        if item.get("source") != "explicit_current" and item_scope not in {scope, "global"}:
+        if implicit_signal_use == "off" and item.get("source") in IMPLICIT_SOURCES:
+            ignored.append(item)
+            continue
+        if item.get("decision") in INACTIVE_DECISIONS or not _is_active(item, as_of=as_of):
+            ignored.append(item)
+            continue
+        item_scope = str(item.get("scope", "global"))
+        if item_scope not in {scope, "global"}:
             ignored.append(item)
             continue
         usable.append(item)
@@ -259,7 +262,7 @@ def _select_preference(
     return {
         "selected_refs": [item["ref"] for item in selected],
         "ignored_refs": [item["ref"] for item in ignored],
-        "stored_retrieval": True,
+        "stored_retrieval": personalization_enabled,
         "conflicts": sorted(conflicts),
     }
 
@@ -365,7 +368,11 @@ def evaluate_personalization_boundary(
     current = [dict(item) for item in payload.get("current_request_preferences", [])]
     enabled = enabled_setting
     if not enabled:
-        if settings.get("adaptation_mode") != "off" or settings.get("implicit_signal_use") != "off":
+        if (
+            settings.get("adaptation_mode") != "off"
+            or settings.get("implicit_signal_use") != "off"
+            or settings.get("generated_ui", "off") != "off"
+        ):
             return {
                 "status": "rejected",
                 "reason_code": "off_mode_settings_conflict",
@@ -377,6 +384,20 @@ def evaluate_personalization_boundary(
                 "reason_code": "off_mode_noncurrent_evidence",
                 "read_trace": list(evidence_port.trace),
             }
+        current_selection = _select_preference(
+            current,
+            scope=scope,
+            as_of=_parse_time(payload.get("as_of")) or datetime.now(timezone.utc),
+            personalization_enabled=False,
+        )
+        if current_selection["conflicts"]:
+            return {
+                "status": "rejected",
+                "reason_code": "preference_conflict",
+                "conflicts": current_selection["conflicts"],
+                "read_trace": list(evidence_port.trace),
+            }
+        selected_current = set(current_selection["selected_refs"])
         projection = {
             "preferences": [
                 {
@@ -385,6 +406,7 @@ def evaluate_personalization_boundary(
                     "source": item.get("source"),
                 }
                 for item in current
+                if item.get("ref") in selected_current
             ],
             "voice_profile_ref": None,
             "aesthetic_profile_ref": None,
@@ -398,16 +420,26 @@ def evaluate_personalization_boundary(
             "protected_projection": projection,
         }
 
+    implicit_signal_use = settings.get("implicit_signal_use")
     saved = evidence_port.read_preferences(scope)
     profile = evidence_port.read_profile(scope)
     persona = evidence_port.read_persona(scope)
-    history = evidence_port.read_history(scope)
+    history = [] if implicit_signal_use == "off" else evidence_port.read_history(scope)
     selection = _select_preference(
         [*current, *saved],
         scope=scope,
         as_of=_parse_time(payload.get("as_of")) or datetime.now(timezone.utc),
         personalization_enabled=True,
+        implicit_signal_use=implicit_signal_use,
     )
+    if selection["conflicts"]:
+        return {
+            "status": "rejected",
+            "reason_code": "preference_conflict",
+            "conflicts": selection["conflicts"],
+            "personalization_enabled": True,
+            "read_trace": list(evidence_port.trace),
+        }
     return {
         "status": "accepted",
         "personalization_enabled": True,
@@ -501,14 +533,30 @@ def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:
                 "reason_code": "unsupported_platform",
             }
         else:
-            result = {
-                "status": "accepted",
-                "platform": platform,
-                "effects": affect["effects"],
-                "affordance_bias": affect["affordance_bias"],
-                "semantic_decision_hash_preserved": payload.get("semantic_decision_hash")
-                == payload.get("rendered_decision_hash"),
-            }
+            semantic_hash = payload.get("semantic_decision_hash")
+            rendered_hash = payload.get("rendered_decision_hash")
+            if not isinstance(semantic_hash, str) or not semantic_hash or not isinstance(rendered_hash, str) or not rendered_hash:
+                result = {
+                    "status": "rejected",
+                    "platform": platform,
+                    "reason_code": "decision_hash_missing",
+                    "semantic_decision_hash_preserved": False,
+                }
+            elif semantic_hash != rendered_hash:
+                result = {
+                    "status": "rejected",
+                    "platform": platform,
+                    "reason_code": "semantic_decision_changed",
+                    "semantic_decision_hash_preserved": False,
+                }
+            else:
+                result = {
+                    "status": "accepted",
+                    "platform": platform,
+                    "effects": affect["effects"],
+                    "affordance_bias": affect["affordance_bias"],
+                    "semantic_decision_hash_preserved": True,
+                }
 
     elif operation == "truth_over_style":
         stakes = str(payload.get("stakes", "low"))

@@ -40,6 +40,33 @@ def canonical_hash(value: object) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def validate_plan_semantics(plan: object) -> list[str]:
+    """Enforce cross-field plan rules that JSON Schema cannot express."""
+
+    if not isinstance(plan, dict):
+        return ["plan:root:not_an_object"]
+    errors: list[str] = []
+    persona_hand = plan.get("persona_hand")
+    if isinstance(persona_hand, dict) and isinstance(persona_hand.get("primary"), dict):
+        selections = [persona_hand["primary"], *persona_hand.get("supporting", [])]
+        weights = [
+            selection.get("weight")
+            for selection in selections
+            if isinstance(selection, dict) and type(selection.get("weight")) in {int, float}
+        ]
+        if len(weights) != len(selections) or round(sum(weights), 6) != 1.0:
+            errors.append("plan:persona_hand:weight_total_must_equal_1")
+    voice = plan.get("voice")
+    if isinstance(voice, dict):
+        required = voice.get("required_traits")
+        forbidden = voice.get("no_fill")
+        if isinstance(required, list) and isinstance(forbidden, list):
+            overlap = sorted(set(map(str, required)) & set(map(str, forbidden)))
+            if overlap:
+                errors.append("plan:voice:required_traits_prohibited_by_no_fill:" + ",".join(overlap))
+    return errors
+
+
 def validate_policy(policy: object) -> list[str]:
     """Validate executable policy shape and detect drift from the evaluator."""
 
@@ -107,15 +134,24 @@ def main() -> int:
     sample_path = repo / "examples/personalization-plan.valid.json"
     cases_path = repo / "evals/intent-shaper/cases.json"
     policy_path = repo / "policies/personalization-adaptation-policy.yaml"
+    move_schema_path = repo / "schemas/proposed-move.schema.json"
+    move_path = repo / "proposed-moves/personalization/qpm_intent_shaper_candidate.json"
 
     schema = json.loads(schema_path.read_text())
     sample = json.loads(sample_path.read_text())
     suite = json.loads(cases_path.read_text())
     policy = yaml.safe_load(policy_path.read_text())
+    move_schema = json.loads(move_schema_path.read_text())
+    move = json.loads(move_path.read_text())
 
     Draft202012Validator.check_schema(schema)
     sample_errors = sorted(
         Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(sample),
+        key=lambda error: list(error.path),
+    )
+    sample_semantic_errors = validate_plan_semantics(sample)
+    move_errors = sorted(
+        Draft202012Validator(move_schema, format_checker=FormatChecker()).iter_errors(move),
         key=lambda error: list(error.path),
     )
     policy_errors = validate_policy(policy)
@@ -123,6 +159,8 @@ def main() -> int:
 
     errors: list[str] = []
     errors.extend(f"sample:{'/'.join(map(str, error.path))}:{error.message}" for error in sample_errors)
+    errors.extend(sample_semantic_errors)
+    errors.extend(f"proposed_move:{'/'.join(map(str, error.path))}:{error.message}" for error in move_errors)
     errors.extend(policy_errors)
     errors.extend(f"fixture:{result['id']}" for result in results if not result["passed"])
 
@@ -130,7 +168,8 @@ def main() -> int:
         "suite_id": suite["suite_id"],
         "status": "passed" if not errors else "failed",
         "schema_valid": True,
-        "sample_valid": not sample_errors,
+        "sample_valid": not sample_errors and not sample_semantic_errors,
+        "proposed_move_valid": not move_errors,
         "policy_valid": not policy_errors,
         "fixtures_passed": sum(1 for result in results if result["passed"]),
         "fixtures_total": len(results),
@@ -150,6 +189,7 @@ def main() -> int:
                 for key in (
                     "status",
                     "sample_valid",
+                    "proposed_move_valid",
                     "policy_valid",
                     "fixtures_passed",
                     "fixtures_total",
