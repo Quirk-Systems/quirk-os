@@ -68,6 +68,13 @@ GitHub and SQL do not share an atomic transaction; revocation in that final
 interval is a disclosed limitation. Consumers must revalidate continuing
 protected use; this slice does not implement that consumer contract.
 
+SQL payload binding uses column and JSONB value equality. It does not preserve
+the CPython canonical byte stream: PostgreSQL can normalize numeric notation
+and consider differently spelled numeric values equal. The reviewed Git source
+and its hash profile remain the content authority. A reconstructed database
+row is not an independently verified portable manifest or digest. See the
+[PostgreSQL JSON types contract](https://www.postgresql.org/docs/16/datatype-json.html#JSON-INPUT-OUTPUT).
+
 The candidate migration creates a NOLOGIN role with no memberships, audits
 legacy active rows under a lock and refuses cutover until a human disposes of
 them. It grants no production credential. Apply the migration only through a
