@@ -34,7 +34,7 @@ class QISHarnessTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.schema = load("schemas/qis-evidence-envelope.schema.json")
         cls.fixture_dir = ROOT / "evals/qis-agent-harness"
-        cls.valid = load("evals/qis-agent-harness/receipt.valid-provenance.json")
+        cls.valid = load("evals/qis-agent-harness/receipt.valid-pr132-provenance.json")
 
     def errors_for(self, relative_path: str) -> list[str]:
         return validate_receipt(load(relative_path), self.schema, repo=ROOT)
@@ -43,7 +43,7 @@ class QISHarnessTests(unittest.TestCase):
         Draft202012Validator.check_schema(self.schema)
 
     def test_valid_receipt_fixture_passes_and_hash_is_stable(self) -> None:
-        self.assertEqual([], self.errors_for("evals/qis-agent-harness/receipt.valid-provenance.json"))
+        self.assertEqual([], self.errors_for("evals/qis-agent-harness/receipt.valid-pr132-provenance.json"))
         expected_hash = hashlib.sha256(canonical_receipt_payload(self.valid)).hexdigest()
         self.assertEqual(expected_hash, receipt_hash(self.valid))
         self.assertEqual(expected_hash, self.valid["receipt_hash"])
