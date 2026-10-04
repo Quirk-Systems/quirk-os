@@ -1,0 +1,68 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr126.intent-shaper-full-history.53030963c936",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "31a3fc56c71f55351f0c2be2bc18ad80a3007d08",
+    "commit": "53030963c936ae4e4cce1cf9e27b60cf0450a4b2",
+    "changed_paths": [
+      ".github/workflows/intent-shaper-conformance.yml"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr126.intent-shaper-full-history.implementation",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "The only functional diff from current main is fetch-depth: 0 on the Intent Shaper checkout step, making full Git ancestry available to the unchanged validator.",
+      "evidence_paths": [
+        ".github/workflows/intent-shaper-conformance.yml"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/intent-shaper-conformance.yml",
+      "state": "present",
+      "git_blob": "18ab9cadecff3fb986a712205fbd2d85569287ec",
+      "sha256": "sha256:68945e83fab2cc56826802a334f859823c20cccfb9c448472ad7ee98dea27871"
+    }
+  ],
+  "verification": {
+    "verified_at": "2026-10-04T17:17:55Z",
+    "commands": [
+      {
+        "command": "git diff --check 31a3fc56c71f55351f0c2be2bc18ad80a3007d08 53030963c936ae4e4cce1cf9e27b60cf0450a4b2",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor 31a3fc56c71f55351f0c2be2bc18ad80a3007d08 53030963c936ae4e4cce1cf9e27b60cf0450a4b2",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest tests.test_intent_shaper",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /tmp/pr126-intent-shaper.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /tmp/pr126-golden-metrics.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ]
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:ae3131e7d9cd2f75407c679ac629b351e148c21458481c4a90828bf5a0de67eb"
+}
