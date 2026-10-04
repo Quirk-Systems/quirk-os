@@ -1,6 +1,6 @@
 {
   "bundle_id": "boundary-bundle.manifest-review-proposal",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "status": "candidate",
   "proof_profile": "demonstration",
   "coverage_profile": "focused",
@@ -161,7 +161,7 @@
         "outcome": "ALLOW",
         "receipt_id": "receipt.exact-review",
         "evidence_refs": [
-          "evals/sync-control-plane/manifest-boundary-crossings.json@sha256:d01735d1a2144e02b7f402935118febe21c095fbf419c8e6fb4fcba9c34d704e"
+          "evals/sync-control-plane/manifest-boundary-crossings.json@sha256:cfc8bfd722b6e3bdd54f4dc2c02ffb87a13595bc6ed96f6ddc958525eef7fe10"
         ],
         "side_effects": [
           "in_memory_projection_returned"
@@ -222,7 +222,7 @@
         "outcome": "DENY",
         "receipt_id": "receipt.old-review",
         "evidence_refs": [
-          "evals/sync-control-plane/manifest-boundary-crossings.json@sha256:d01735d1a2144e02b7f402935118febe21c095fbf419c8e6fb4fcba9c34d704e"
+          "evals/sync-control-plane/manifest-boundary-crossings.json@sha256:cfc8bfd722b6e3bdd54f4dc2c02ffb87a13595bc6ed96f6ddc958525eef7fe10"
         ],
         "side_effects": []
       }
@@ -230,10 +230,10 @@
   ],
   "proof": {
     "verdict": "demonstrated",
-    "implementation_ref": "sha256:a82bf21c6c12754f78258c4161bb24b46a028d82a1776cc70c9ea859bb548616",
-    "executed_at": "2026-10-04T15:20:33.419832+00:00",
+    "implementation_ref": "sha256:2538b445bdc2328f97e37263a4e8be7e2c7146784e6189ee7175ee84ea3dcced",
+    "executed_at": "2026-10-04T15:48:31.076964+00:00",
     "evidence": [
-      "evals/sync-control-plane/manifest-boundary-crossings.json@sha256:d01735d1a2144e02b7f402935118febe21c095fbf419c8e6fb4fcba9c34d704e"
+      "evals/sync-control-plane/manifest-boundary-crossings.json@sha256:cfc8bfd722b6e3bdd54f4dc2c02ffb87a13595bc6ed96f6ddc958525eef7fe10"
     ],
     "replay_method": "CPython 3.13: python scripts/prove_manifest_boundaries.py; validate with demonstrate-quirk-boundaries validator",
     "limitations": [
