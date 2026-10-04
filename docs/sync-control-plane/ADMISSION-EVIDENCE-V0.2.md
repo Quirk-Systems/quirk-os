@@ -6,8 +6,8 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `13b694d7dac5165c2a37d9bb84918e21e373a42e545f6da863f8fc9e0b624ba0`  
-**Evidence revision (the tree that reproduces that hash):** `9cb8b4a150b9128b4eb7e057d35a5c9c9250e3f5`
+**Content hash (SHA-256):** `00c4fe397482663723ab7f416ded910262d3c87f43dd048778fb3e743ca63965`  
+**Evidence revision (the tree that reproduces that hash):** `bb9b2325ba4bba29ce8e712921de1da607fdc06b`
 
 > **Why two revisions.** The candidate commit names the subject that was
 > evaluated. The evidence revision names the tree whose validator and inputs
@@ -21,13 +21,13 @@
 > Reproduce with:
 >
 > ```sh
-> git checkout 9cb8b4a150b9128b4eb7e057d35a5c9c9250e3f5
+> git checkout bb9b2325ba4bba29ce8e712921de1da607fdc06b
 > python scripts/validate_sync_control_plane.py --repo . \
 >   --output evals/sync-control-plane/conformance-results.json --require-admit
 > ```
 >
 > Observed at that revision in a detached worktree:
-> `13b694d7dac5165c2a37d9bb84918e21e373a42e545f6da863f8fc9e0b624ba0`, matching
+> `00c4fe397482663723ab7f416ded910262d3c87f43dd048778fb3e743ca63965`, matching
 > both the tracked artifact and the line above.
 
 > **Digest history**, recorded because a hash replaced without a note is
@@ -80,7 +80,11 @@
 >   change altering the payload while leaving this document and the
 >   artifact untouched passed every check — including the test that
 >   compares them to each other.
-> - `13b694d7…` — current, produced at `9cb8b4a` as above.
+> - `13b694d7…` — covered the staleness gate. Produced at `9cb8b4a`.
+>   Superseded when the guard became SECURITY DEFINER and
+>   `rule_privilege_lanes` was added to assert it, because the service_role
+>   grant on the rule function masks the guard losing that property.
+> - `00c4fe39…` — current, produced at `bb9b232` as above.
 
 > **What produces this decision.** `candidate-conformance` declares
 > `needs: database-guard` and runs with `if: always()`, failing explicitly when
@@ -134,7 +138,7 @@ JSON Schema among them; that was never true and the artifact says so.
 | --- | --- | --- |
 | JSON Schema (`schemas/runtime-manifest.schema.json`) | **No** | `self_promotion_schema_errors: []` in the conformance artifact. The `admission` object carries no constraint relating `requested_by` to `approved_by` — JSON Schema is not expressing this rule, which is why `validate_manifest_admission` exists at all: its docstring reads "Return policy violations that JSON Schema cannot express alone." `test_self_promotion_rejected` now asserts the fixture is schema-valid, precisely so the rejection has to come from policy. |
 | Python policy (`scripts/sync_control_plane/policy.py`) | Yes | `self_promotion_policy_errors` records two: `requester may not approve its own manifest transition` and `activation requires approval by an independent human principal`. Executed on every CI run of the conformance validator. |
-| PostgreSQL trigger (`quirk_sync.manifest_activation_violation`, raised by `guard_manifest_activation`) | Yes | Executed by the `database-guard` job in `.github/workflows/sync-control-plane-conformance.yml`: the job applies every migration to a PostgreSQL 16 service, reads `pg_get_functiondef` back to assert the installed guard delegates to the rule function, then runs `supabase/tests/manifest_activation_guard.run.sql` — nine cases where a sibling-agent approval, a bare `human.` principal, a malformed requester, an omitted rights-review key and an omitted `collision_behavior` are each refused by their own message, and one well-formed activation is admitted. A separate step then runs `manifest_activation_guard.service_role.sql` in its own psql session as `service_role`, which is what writes in production; it has to be a separate session because EXECUTE on the rule function is checked when PL/pgSQL builds the trigger's cached plan, so a superuser write ahead of it would prime the plan and hide a missing grant. The static checks `rule_*`, `guard_delegates_to_rules` and `audit_uses_rule_function` remain, but they are now a spelling test in front of a behavioural one rather than the whole of it. |
+| PostgreSQL trigger (`quirk_sync.manifest_activation_violation`, raised by `guard_manifest_activation`) | Yes | Executed by the `database-guard` job in `.github/workflows/sync-control-plane-conformance.yml`: the job applies every migration to a PostgreSQL 16 service, reads `pg_get_functiondef` back to assert the installed guard delegates to the rule function, then runs `supabase/tests/manifest_activation_guard.run.sql` — nine cases where a sibling-agent approval, a bare `human.` principal, a malformed requester, an omitted rights-review key and an omitted `collision_behavior` are each refused by their own message, and one well-formed activation is admitted. A separate step then runs `manifest_activation_guard.service_role.sql` in its own psql session as `service_role`, which is what writes in production. That file revokes `service_role`'s EXECUTE on the rule function before its first write, so enforcement there is carried by the guard being SECURITY DEFINER and nothing else; it has to be its own session, and the revoke has to come first, because PL/pgSQL caches the guard's inner-call plan and a write ahead of the revoke would let it pass on a guard that had lost that property. The job's read-back asserts on the installed functions that the guard is SECURITY DEFINER with `pg_temp` last in its search_path and the rule function is not — separately from the cases, because the service_role grant would otherwise mask a guard that silently reverted to invoker. The static checks `rule_*`, `guard_delegates_to_rules` and `audit_uses_rule_function` remain, but they are now a spelling test in front of a behavioural one rather than the whole of it. |
 
 Fixture SCP-011 passes with `reject_capability_to_authority_escalation`, and
 `test_self_promotion_rejected` passes.
