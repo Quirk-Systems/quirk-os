@@ -138,11 +138,20 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
             "ci_reads_installed_guard_back": False,
             "ci_runs_guard_cases_as_service_role": False,
             "ci_evidence_depends_on_database_guard": False,
+            "ci_decision_fails_when_guard_fails": False,
+            "ci_discards_tracked_decision": False,
         }
     jobs = (workflow or {}).get("jobs", {})
     job = jobs.get("database-guard") or {}
-    needs = (jobs.get("candidate-conformance") or {}).get("needs")
+    decision = jobs.get("candidate-conformance") or {}
+    needs = decision.get("needs")
     needs = [needs] if isinstance(needs, str) else list(needs or [])
+    decision_runs = "\n".join(
+        str(step.get("run", "")) for step in decision.get("steps", []) if isinstance(step, dict)
+    )
+    decision_envs = "\n".join(
+        str(step.get("env", "")) for step in decision.get("steps", []) if isinstance(step, dict)
+    )
     runs = "\n".join(
         str(step.get("run", "")) for step in job.get("steps", []) if isinstance(step, dict)
     )
@@ -167,6 +176,18 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
         # exists is not a dependency on anything. Without that conjunct,
         # deleting the job left this check green.
         "ci_evidence_depends_on_database_guard": bool(job) and "database-guard" in needs,
+        # A bare `needs:` is not enough. A job whose dependency failed reports
+        # as *skipped*, and GitHub counts a skipped required status check as a
+        # successful one, so `needs:` alone would turn a red guard into a green
+        # required check. The job must always run and fail explicitly instead.
+        "ci_decision_fails_when_guard_fails": str(decision.get("if", "")).strip() == "always()"
+        and "needs.database-guard.result" in decision_envs
+        and "exit 1" in decision_runs,
+        # Checkout restores the committed decision, which records a pass. With
+        # the upload on `always()`, any failure before the validator runs would
+        # ship that committed file as this run's evidence.
+        "ci_discards_tracked_decision": "rm -f evals/sync-control-plane/conformance-results.json"
+        in decision_runs,
         "ci_runs_guard_cases_as_service_role": any(
             "manifest_activation_guard.service_role.sql" in str(step.get("run", ""))
             and "manifest_activation_guard.run.sql" not in str(step.get("run", ""))

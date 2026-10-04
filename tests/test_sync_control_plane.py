@@ -221,14 +221,34 @@ class DatabaseGuardJobTests(unittest.TestCase):
                 "ci_reads_installed_guard_back": True,
                 "ci_runs_guard_cases_as_service_role": True,
                 "ci_evidence_depends_on_database_guard": True,
+                "ci_decision_fails_when_guard_fails": True,
+                "ci_discards_tracked_decision": True,
             },
             self.run_checks(self.live),
         )
 
-    def test_removing_the_job_fails_every_check(self):
+    def test_removing_the_job_fails_every_check_about_the_job(self):
+        # Not every check here is about the guard job any more:
+        # `ci_decision_fails_when_guard_fails` and
+        # `ci_discards_tracked_decision` are properties of the decision job and
+        # survive the guard's deletion by design. What must not survive is any
+        # claim that the guard exists, runs, or is read back.
         gutted = copy.deepcopy(self.live)
         del gutted["jobs"]["database-guard"]
-        self.assertEqual({False}, set(self.run_checks(gutted).values()))
+        checks = self.run_checks(gutted)
+        about_the_job = {
+            "ci_declares_database_guard_job",
+            "ci_runs_guard_cases",
+            "ci_reads_installed_guard_back",
+            "ci_runs_guard_cases_as_service_role",
+            "ci_evidence_depends_on_database_guard",
+        }
+        self.assertEqual(
+            about_the_job,
+            set(checks) - {"ci_decision_fails_when_guard_fails", "ci_discards_tracked_decision"},
+            "a new check was added without deciding which job it is about",
+        )
+        self.assertEqual({False}, {checks[name] for name in about_the_job})
 
     def test_dropping_the_postgres_service_fails_the_job_check(self):
         gutted = copy.deepcopy(self.live)
@@ -283,6 +303,35 @@ class DatabaseGuardJobTests(unittest.TestCase):
         checks = self.run_checks(detached)
         self.assertFalse(checks["ci_evidence_depends_on_database_guard"])
         self.assertTrue(checks["ci_declares_database_guard_job"])
+
+    def test_a_bare_needs_is_not_enough_to_gate_the_decision(self):
+        # A job whose dependency failed reports as *skipped*, and GitHub counts
+        # a skipped required status check as a successful one. Dropping the
+        # `if: always()` and the explicit assertion would turn a red guard into
+        # a green required check — weakening merge protection in the name of
+        # strengthening it.
+        bare = copy.deepcopy(self.live)
+        job = bare["jobs"]["candidate-conformance"]
+        del job["if"]
+        job["steps"] = [
+            s
+            for s in job["steps"]
+            if "needs.database-guard.result" not in str(s.get("env", ""))
+        ]
+        checks = self.run_checks(bare)
+        self.assertFalse(checks["ci_decision_fails_when_guard_fails"])
+        self.assertTrue(checks["ci_evidence_depends_on_database_guard"])
+
+    def test_keeping_the_tracked_decision_fails_that_check(self):
+        # Checkout restores a committed decision recording a pass. With the
+        # upload on `always()`, a failure before the validator runs would ship
+        # that file as this run's evidence.
+        kept = copy.deepcopy(self.live)
+        job = kept["jobs"]["candidate-conformance"]
+        job["steps"] = [
+            s for s in job["steps"] if "rm -f evals" not in str(s.get("run", ""))
+        ]
+        self.assertFalse(self.run_checks(kept)["ci_discards_tracked_decision"])
 
     def test_dropping_the_service_role_step_fails_that_check(self):
         gutted = copy.deepcopy(self.live)

@@ -177,5 +177,31 @@ class DeckGrammarTests(unittest.TestCase):
                 self.assertEqual(manifest['authority']['ceiling'], 'propose')
     def test_persisted_live_proof_is_reproducible(self):
         self.assertEqual(self.compile_proof(), load_json('examples/deck-grammar/live-proof.json'))
+
+
+class ContentHashBindingTests(unittest.TestCase):
+    """An artifact manifest's `content_hash` must match the bytes it names.
+
+    Nothing checked this, so bumping `compiler_version` in the live proof
+    silently invalidated the accepted evaluation report: the report kept
+    recording the pre-bump `828dc88d...` while the proof hashed to
+    `9f633bea...`. A reference whose digest no longer matches the bytes reads
+    as a verification that happened, which is worse than no reference.
+    """
+
+    def test_the_live_proof_report_binds_to_the_proof_it_names(self):
+        report = load_json('examples/deck-grammar/artifact.live-proof-report.json')
+        self.assertEqual(report['content_hash'], content_hash(load_json(report['content_ref'])))
+
+    def test_the_binding_notices_a_changed_proof(self):
+        # The check is only worth recording if a change to the referenced file
+        # moves the hash.
+        referenced = load_json(
+            load_json('examples/deck-grammar/artifact.live-proof-report.json')['content_ref']
+        )
+        mutated = {**referenced, 'verdict': 'NOT_THE_REAL_VERDICT'}
+        self.assertNotEqual(content_hash(referenced), content_hash(mutated))
+
+
 if __name__ == '__main__':
     unittest.main()

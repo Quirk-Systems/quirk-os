@@ -42,12 +42,39 @@ jobs:
     # decision's `migration_hardening_complete` only checks that the job exists
     # textually, so nothing in the artifact could contradict a database that
     # refused to enforce anything. Eligibility is now downstream of the proof:
-    # if `database-guard` fails, this job does not run and no decision is
-    # produced at all.
+    # if `database-guard` fails, this job fails and no decision is produced.
     needs: database-guard
+    # `always()` plus an explicit assertion, not a bare `needs:`. A job whose
+    # dependency failed is reported as *skipped*, and GitHub counts a skipped
+    # required status check as a successful one — so a bare `needs:` would have
+    # turned a red database guard into a green required check, weakening merge
+    # protection in the name of strengthening it. Branch protection is not
+    # readable from here (403), so which check is required cannot be confirmed;
+    # this arrangement is correct either way, because the job always reports a
+    # conclusion and that conclusion is failure when the guard did not pass.
+    if: always()
     steps:
+      - name: Fail if the database guard did not pass
+        env:
+          GUARD_RESULT: ${{ needs.database-guard.result }}
+        run: |
+          echo "database-guard result: ${GUARD_RESULT}"
+          if [ "${GUARD_RESULT}" != "success" ]; then
+            echo "::error::No eligibility decision is produced when the database guard does not pass."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Discard the tracked decision so the upload can only carry this run's
+        # Checkout restores the committed `conformance-results.json`, which
+        # records a passing decision. With the upload on `always()`, a failure
+        # in any step before the validator runs would ship that committed file
+        # as this run's evidence — an `ELIGIBLE_FOR_HUMAN_ADMISSION` artifact
+        # for a red run. Removing it first means the upload either carries a
+        # decision this run computed or fails on `if-no-files-found: error`.
+        run: rm -f evals/sync-control-plane/conformance-results.json
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -70,10 +97,9 @@ jobs:
             --require-admit
 
       - name: Upload conformance evidence
-        # `always()` so a REVISE decision is still captured when the checks
-        # above fail. It cannot upload an ELIGIBLE artifact behind a failing
-        # database guard, because `needs: database-guard` means this job never
-        # starts in that case.
+        # `always()` so a REVISE decision is still captured when the validator
+        # itself reports one. It cannot ship a stale decision: the tracked file
+        # was removed above, so this uploads what this run produced or fails.
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

@@ -61,6 +61,29 @@ def main() -> int:
     examples = {'affordance.contract-diff.json': 'affordance.schema.json', 'artifact.live-proof-report.json': 'artifact.schema.json', 'asset.evidence-pack.json': 'asset.schema.json', 'art.two-hands.json': 'art.schema.json', 'aesthetic.premium-chaos.json': 'aesthetic-contract.schema.json'}
     for filename, schema_name in examples.items():
         passed &= record_validation(checks, name=filename, instance=load_json(repo / 'examples/deck-grammar' / filename), schema_name=schema_name, schemas=schemas, registry=registry)
+    # Every example artifact manifest that names a `content_ref` must record
+    # that file's actual canonical hash. Nothing checked this, so bumping
+    # `compiler_version` in the live proof silently invalidated the accepted
+    # evaluation report's binding: the report still recorded the pre-bump
+    # `828dc88d…` while the proof hashed to `9f633bea…`. A reference whose
+    # digest no longer matches the bytes is worse than no reference, because it
+    # reads as a verification that happened.
+    for filename, schema_name in examples.items():
+        manifest = load_json(repo / 'examples/deck-grammar' / filename)
+        content_ref = manifest.get('content_ref')
+        recorded = manifest.get('content_hash')
+        if not content_ref or not recorded:
+            continue
+        referenced = repo / content_ref
+        if not referenced.is_file():
+            checks.append({'name': f'content-ref-exists:{filename}', 'passed': False, 'errors': [f'{content_ref} does not exist']})
+            passed = False
+            continue
+        actual = content_hash(load_json(referenced))
+        bound = actual == recorded
+        checks.append({'name': f'content-hash-binds:{filename}', 'passed': bound, 'errors': [] if bound else [f'{content_ref} hashes to {actual}, manifest records {recorded}']})
+        passed &= bound
+
     fixture_manifest = load_json(repo / 'evals/deck-grammar/fixtures.json')
     as_of_text = fixture_manifest['as_of']
     as_of = datetime.fromisoformat(as_of_text.replace('Z', '+00:00'))

@@ -253,6 +253,8 @@
     "ci_runs_guard_cases": true,
     "ci_reads_installed_guard_back": true,
     "ci_evidence_depends_on_database_guard": true,
+    "ci_decision_fails_when_guard_fails": true,
+    "ci_discards_tracked_decision": true,
     "ci_runs_guard_cases_as_service_role": true
   },
   "mapping_proof": {
@@ -261,5 +263,5 @@
     "binding_roundtrip_stable": true,
     "receipt_roundtrip_stable": true
   },
-  "content_hash_sha256": "a18c5aa2b7f2961e9819f6293175e59e7c37115ca98571b86c78de3939c7d8cb"
+  "content_hash_sha256": "c5feeaeaf7340d3435818c56261f838747aa62568f8fa0bf2cb1a95ec06f2068"
 }
