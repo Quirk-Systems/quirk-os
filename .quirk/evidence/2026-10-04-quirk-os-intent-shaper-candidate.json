@@ -1,0 +1,239 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os-intent-shaper-candidate.2026-10-04",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "8af1f4f5bc4754e1af982d52729aa235e9578ccd",
+    "commit": "a9c82c23b1d67613ba41b3dd55cd6fbcdd1ac6ba",
+    "changed_paths": [
+      ".github/workflows/intent-shaper-conformance.yml",
+      ".quirk/evidence/2026-08-21-quirk-os-evidence-adoption.json",
+      "diagrams/competitor-separation-map.mmd",
+      "diagrams/intent-personalization-control-loop.mmd",
+      "diagrams/platform-affect-task-affordance-router.mmd",
+      "docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md",
+      "evals/intent-shaper/cases.json",
+      "examples/personalization-plan.valid.json",
+      "policies/personalization-adaptation-policy.yaml",
+      "proposed-moves/personalization/qpm_intent_shaper_candidate.json",
+      "requirements-evals.txt",
+      "research/competitors/quirk-enterprises-swipe-fight-2026-08-11.md",
+      "schemas/personalization-plan.schema.json",
+      "scripts/intent_shaper/__init__.py",
+      "scripts/intent_shaper/policy.py",
+      "scripts/validate_intent_shaper.py",
+      "scripts/validate_skills.py",
+      "skills/README.md",
+      "skills/quirk-intent-shaper/SKILL.md",
+      "skills/quirk-intent-shaper/skill-scratchpad.md",
+      "tests/test_intent_shaper.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.intent-shaper-candidate-implementation.2026-10-04",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "The Intent Shaper v0.2 candidate evaluator, Personalization Plan schema, adaptation policy, conformance validator, and conformance workflow are byte-bound to the subject commit. The evaluator is candidate-only: it proposes plans and grants no memory, settings, Canon, persona, generated-UI, activation, admission, merge, or release authority.",
+      "evidence_paths": [
+        ".github/workflows/intent-shaper-conformance.yml",
+        "policies/personalization-adaptation-policy.yaml",
+        "requirements-evals.txt",
+        "schemas/personalization-plan.schema.json",
+        "scripts/intent_shaper/__init__.py",
+        "scripts/intent_shaper/policy.py",
+        "scripts/validate_intent_shaper.py",
+        "scripts/validate_skills.py"
+      ]
+    },
+    {
+      "claim_id": "qclaim.intent-shaper-candidate-tests.2026-10-04",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "At the subject commit the full repository unittest discovery passed (163 tests) and Intent Shaper conformance passed 34/34 executable fixtures with a schema- and semantics-valid representative plan, a schema-valid proposed move, and no policy drift. These are local deterministic results, not human trial, accessibility, or admission evidence.",
+      "evidence_paths": [
+        "evals/intent-shaper/cases.json",
+        "examples/personalization-plan.valid.json",
+        "tests/test_intent_shaper.py"
+      ]
+    },
+    {
+      "claim_id": "qclaim.intent-shaper-candidate-documentation.2026-10-04",
+      "claim_type": "documentation",
+      "authority_effect": "none",
+      "statement": "Candidate architecture, research, skill, diagram, proposed-move, and historical adoption-receipt bytes in the subject diff are recorded as documentation and provenance only; they do not resolve the Intent Shaper admission decision.",
+      "evidence_paths": [
+        ".quirk/evidence/2026-08-21-quirk-os-evidence-adoption.json",
+        "diagrams/competitor-separation-map.mmd",
+        "diagrams/intent-personalization-control-loop.mmd",
+        "diagrams/platform-affect-task-affordance-router.mmd",
+        "docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md",
+        "proposed-moves/personalization/qpm_intent_shaper_candidate.json",
+        "research/competitors/quirk-enterprises-swipe-fight-2026-08-11.md",
+        "skills/README.md",
+        "skills/quirk-intent-shaper/SKILL.md",
+        "skills/quirk-intent-shaper/skill-scratchpad.md"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/intent-shaper-conformance.yml",
+      "state": "present",
+      "git_blob": "b19b29a4000c91a9b19b247e478a32cab49ffd44",
+      "sha256": "sha256:0469c27bc154206b41a1ad7cad86b47847738bbb7dab4b3e95686f3e4d73a58c"
+    },
+    {
+      "path": ".quirk/evidence/2026-08-21-quirk-os-evidence-adoption.json",
+      "state": "present",
+      "git_blob": "e9bd072641be6e74a78cfefaa6c9f15cfb3deb71",
+      "sha256": "sha256:59755d26c5bb9a66210155078801e2fe0d6d550e610f0ef9dbe065863df3bc16"
+    },
+    {
+      "path": "diagrams/competitor-separation-map.mmd",
+      "state": "present",
+      "git_blob": "1b2dd5711318764a38c7dac9cda17742f9d12761",
+      "sha256": "sha256:550bfa9cd92777d87513e3a5bbf5d2f3adc93c0a0c0acd0f77e12849c7d2c5e7"
+    },
+    {
+      "path": "diagrams/intent-personalization-control-loop.mmd",
+      "state": "present",
+      "git_blob": "13c995105c2d6953213429c9bf5ad94c2a02066a",
+      "sha256": "sha256:9d15eb0936e2ff41fe88918d12b76ba34875abaaf2449d311c8891496aee4b59"
+    },
+    {
+      "path": "diagrams/platform-affect-task-affordance-router.mmd",
+      "state": "present",
+      "git_blob": "7f6a8464b27e8a1a47d0393dabe7939c7c89c2fb",
+      "sha256": "sha256:8ea4588699d648061b433dce9ebb94073193d18fa896d2fbae04a2eea1250ee2"
+    },
+    {
+      "path": "docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md",
+      "state": "present",
+      "git_blob": "b4c7c109f94606d609a81a94a5c3ffb7d693da54",
+      "sha256": "sha256:ffca275e086ad0a041c050744e2a21176d87323c9959a98122412679a9cd6658"
+    },
+    {
+      "path": "evals/intent-shaper/cases.json",
+      "state": "present",
+      "git_blob": "079e069914707350cfb612744b6c47b3a183e14c",
+      "sha256": "sha256:40a9d6a418053565c553b8bbf1562b8fb2697cc899e0a974be086e3b3092d5f2"
+    },
+    {
+      "path": "examples/personalization-plan.valid.json",
+      "state": "present",
+      "git_blob": "29d88188c8466370c30d59c42f802e1d889272a0",
+      "sha256": "sha256:2ea759815e7547844cd77f4a0e5575dd0e4a404f079893c01a1131e6558546b0"
+    },
+    {
+      "path": "policies/personalization-adaptation-policy.yaml",
+      "state": "present",
+      "git_blob": "aca1427648b4ab5abfe42c9378c614750222f001",
+      "sha256": "sha256:d2c63bec5e30122d4354853e6c3291ae3862e9613966f9e793cadc2f43b35a15"
+    },
+    {
+      "path": "proposed-moves/personalization/qpm_intent_shaper_candidate.json",
+      "state": "present",
+      "git_blob": "78e59e92542b22f1b43d03e0eef7815c1174aaf1",
+      "sha256": "sha256:153ace8fc49ffe1d8f4313c3331eff497b24b26e321d500782aaa57c4f7698e9"
+    },
+    {
+      "path": "requirements-evals.txt",
+      "state": "present",
+      "git_blob": "a7d2dbed53b6ddb5fe956cbfa630c19b4da26190",
+      "sha256": "sha256:d4a5fd778f0c88ad65dab7df261e25a05bb84f9cfb7620dd2d0d232ad8d55216"
+    },
+    {
+      "path": "research/competitors/quirk-enterprises-swipe-fight-2026-08-11.md",
+      "state": "present",
+      "git_blob": "22b17fb9bc374c0fef0e60b73095d194558cdcba",
+      "sha256": "sha256:3f189dfdb1e8fec92b935a8886de0c672a6d9d61b39c1e5638d8cb8ddf6e940d"
+    },
+    {
+      "path": "schemas/personalization-plan.schema.json",
+      "state": "present",
+      "git_blob": "901a75f70c5d2729e3da59ec3281badf603898e7",
+      "sha256": "sha256:8f9ad64c20ac6b8a048fd1444ecf0d59be4544245e5b6d691da95b23a396b97b"
+    },
+    {
+      "path": "scripts/intent_shaper/__init__.py",
+      "state": "present",
+      "git_blob": "54ca3378efdeb2279bacf149ca3acf8aa2111dc2",
+      "sha256": "sha256:1c3a9bc1d397e5b1e52b944713b8a411700a6ff0a245e2199d0f3a3a8cd9e84c"
+    },
+    {
+      "path": "scripts/intent_shaper/policy.py",
+      "state": "present",
+      "git_blob": "39b7d41abd6b6545680875af31a13f6fe172a6e7",
+      "sha256": "sha256:4750fb6613b5e3464000be3e6901fe26d6fe8af4248dc054775dd2eb081d425f"
+    },
+    {
+      "path": "scripts/validate_intent_shaper.py",
+      "state": "present",
+      "git_blob": "93efde1a13855072b9c073d540a20535f17ca7d5",
+      "sha256": "sha256:d99e79220ce9533fef1d72d0caaccd5938e7ff05e2d745d04e878fa27707de3b"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "3a61ef2bb63925dc99918617215b1edeb2051dd3",
+      "sha256": "sha256:ccd2fe09fdc1960de04fd7fb88bf7b92f4d744f50b5e71332c20ec372fe145d8"
+    },
+    {
+      "path": "skills/README.md",
+      "state": "present",
+      "git_blob": "8362a251f3a3fb69816526681c9e0b6a8deec3ad",
+      "sha256": "sha256:c6c0aeba6b9c6aa28e47a26c09b41f9df97d38b206b2d9562095ea883ebc3741"
+    },
+    {
+      "path": "skills/quirk-intent-shaper/SKILL.md",
+      "state": "present",
+      "git_blob": "b4d8e65acc119fba537a84f4d4fddbc8853bc41d",
+      "sha256": "sha256:5b958777a5deda0b71088baf6bc24fa85c8cd35c5205d291d87e2c153a036685"
+    },
+    {
+      "path": "skills/quirk-intent-shaper/skill-scratchpad.md",
+      "state": "present",
+      "git_blob": "24efec9cfd2d90c81ff5dab3abdb3f0142c4835d",
+      "sha256": "sha256:35a9de228b1f411ff4f364a83c85c906ce930573a4ffb767cc5a09e894310a95"
+    },
+    {
+      "path": "tests/test_intent_shaper.py",
+      "state": "present",
+      "git_blob": "247de1fe2bc7e4e3b94113251f87af2218b96eeb",
+      "sha256": "sha256:0f316960b8581e59b86e81beb639cde4934f0c7bce94056692d149bb292ff470"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /tmp/out/is.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check 8af1f4f5bc4754e1af982d52729aa235e9578ccd..a9c82c23b1d67613ba41b3dd55cd6fbcdd1ac6ba -- . ':(exclude)*.md'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor 8af1f4f5bc4754e1af982d52729aa235e9578ccd a9c82c23b1d67613ba41b3dd55cd6fbcdd1ac6ba",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T04:08:00Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:23879ece4576cba3322008b8d84aaf8edf591838d5da6ed7dda95ad2869c928b"
+}
