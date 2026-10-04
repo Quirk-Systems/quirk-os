@@ -3,6 +3,9 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
+import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -177,6 +180,82 @@ class QISHarnessTests(unittest.TestCase):
         text = (ROOT / ".github/skills/intent-shaper-admission/SKILL.md").read_text(encoding="utf-8")
         for heading in ("## Canonical objects", "## Runtime objects", "## Projections", "## Evidence"):
             self.assertIn(heading, text)
+
+    def test_workflows_running_repository_tests_fetch_ancestry(self) -> None:
+        tested_jobs = 0
+        for path in (ROOT / ".github/workflows").glob("*.yml"):
+            workflow = yaml.load(path.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+            for name, job in workflow.get("jobs", {}).items():
+                steps = job.get("steps", [])
+                if not any(
+                    "unittest discover" in step.get("run", "")
+                    and "'test_*.py'" in step.get("run", "")
+                    for step in steps
+                ):
+                    continue
+                with self.subTest(workflow=path.name, job=name):
+                    checkout = next(
+                        step for step in steps
+                        if step.get("uses", "").startswith("actions/checkout@")
+                    )
+                    self.assertEqual("0", checkout.get("with", {}).get("fetch-depth"))
+                    tested_jobs += 1
+        self.assertGreaterEqual(tested_jobs, 3)
+
+    def test_workflow_receipt_records_exact_test_counts(self) -> None:
+        workflow = yaml.load(
+            (ROOT / ".github/workflows/qis-agent-harness.yml").read_text(encoding="utf-8"),
+            Loader=yaml.BaseLoader,
+        )
+        build = next(
+            step for step in workflow["jobs"]["harness"]["steps"]
+            if step["name"] == "Build harness receipt"
+        )
+        git_dir = subprocess.check_output(
+            ["git", "-C", str(ROOT), "rev-parse", "--absolute-git-dir"], text=True,
+        ).strip()
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory)
+            for path in set(re.findall(r'"path": "([^"]+)"', build["run"])):
+                target = repo / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / path, target)
+            (repo / "evals/intent-shaper/conformance-results.json").write_text(
+                json.dumps({"status": "passed", "fixtures_total": 25, "fixtures_passed": 25}),
+                encoding="utf-8",
+            )
+            log = repo / "tests.log"
+            receipt_path = repo / "receipt.json"
+            env = dict(
+                os.environ,
+                GIT_DIR=git_dir,
+                CANDIDATE_BRANCH=self.valid["repository"]["candidate_branch"],
+                CANDIDATE_SHA=self.valid["repository"]["candidate_sha"],
+                BASE_SHA=self.valid["repository"]["base_sha"],
+                HEAD_SHA=self.valid["repository"]["head_sha"],
+                TEST_LOG=str(log),
+                RECEIPT_PATH=str(receipt_path),
+                RUNNER_OS="Linux",
+            )
+            for summary, failed in (("OK", 0), ("FAILED (failures=2, errors=1)", 3)):
+                with self.subTest(summary=summary):
+                    log.write_text(f"Ran 45 tests in 0.2s\n\n{summary}\n", encoding="utf-8")
+                    subprocess.run(
+                        ["bash", "-e"], input=build["run"], text=True,
+                        cwd=repo, env=env, check=True, capture_output=True,
+                    )
+                    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+                    self.assertEqual(
+                        {"passed": 45 - failed, "failed": failed, "total": 45},
+                        receipt["commands"][0]["counts"],
+                    )
+                    self.assertEqual("PASS" if failed == 0 else "REVISE", receipt["verdict"])
+                    self.assertEqual(receipt_hash(receipt), receipt["receipt_hash"])
+                    subprocess.run(
+                        ["python", str(ROOT / "scripts/validate_qis_harness.py"),
+                         "--repo", str(repo), "--receipt", str(receipt_path)],
+                        env=env, check=True, capture_output=True,
+                    )
 
     def test_workflow_is_pull_request_only_and_uploads_expected_artifact(self) -> None:
         workflow_path = ROOT / ".github/workflows/qis-agent-harness.yml"

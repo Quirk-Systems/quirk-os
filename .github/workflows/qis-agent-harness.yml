@@ -105,10 +105,10 @@ jobs:
               }
 
           test_log = maybe_read(test_log_path)
-          test_total_match = re.search(r"Ran (\\d+) tests? in", test_log)
+          test_total_match = re.search(r"Ran (\d+) tests? in", test_log)
           tests_total = int(test_total_match.group(1)) if test_total_match else 1
-          failure_match = re.search(r"failures=(\\d+)", test_log)
-          error_match = re.search(r"errors=(\\d+)", test_log)
+          failure_match = re.search(r"failures=(\d+)", test_log)
+          error_match = re.search(r"errors=(\d+)", test_log)
           failed_tests = int(failure_match.group(1)) if failure_match else 0
           failed_tests += int(error_match.group(1)) if error_match else 0
           tests_passed = max(tests_total - failed_tests, 0)
