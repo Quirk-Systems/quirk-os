@@ -1,8 +1,8 @@
 # Read-only review card and complete portable export
 
-Written specification v0.1 · October 3, 2026, America/Chicago
+Written specification v0.2 · October 3, 2026, America/Chicago; approval recorded October 4, 2026, UTC
 
-**Status:** candidate specification, awaiting Bryan's written-spec review. The conversational architecture was approved by the request to build the expanded recommendation. Product implementation, runtime activation, and release have not occurred.
+**Status:** written specification approved by Bryan's message “Spec Approvals.” Approval permits the implementation-plan stage. The conversational architecture was approved by the request to build the expanded recommendation; documentation publication was separately authorized by “Publishing Authorized by Bryan.” Product implementation, runtime activation, and release have not occurred.
 
 **Owner:** Bryan Sayler; proposed capability home: Quirk OS. **Lead skill:** Build Quirk Systems; process: Superpowers architectural path. **Inspected base:** `8af1f4f5bc4754e1af982d52729aa235e9578ccd`.
 
@@ -207,7 +207,7 @@ Initial mechanical portability target: Linux/Python 3.12+ and a modern browser v
 
 Recorded design decisions: extend Quirk OS rather than a new service; use deterministic offline records rather than model interpretation; maintain separate evidence/freshness/authority axes; require declared payload closure and external digest support; create new exports rather than overwrite; use a static local interface before hosted runtime access. These decisions can be revised when evidence identifies a concrete gap.
 
-Authorized now: read current sources and write/commit this specification following conversational design approval. Next required gate: Bryan reviews this written specification. After approval, invoke Superpowers writing-plans; implementation follows review of that plan and selection of its execution method. Do not treat this design-stage approval as permission to skip later explicit process stages.
+Authorized now: record written-spec approval and write/commit/publish the implementation plan on the existing documentation branch. Next required gate: Bryan reviews that plan and selects its execution method. Implementation follows that gate; runtime admission, merging, hosted delivery, and deployment remain separate decisions. Do not treat this design-stage approval as permission to skip later explicit process stages.
 
 CodeRabbit 0.8.2 was installed in the preceding turn. Authentication returned `not_authenticated`, and agent login returned `environment_unsupported`; no CodeRabbit review has run. An actual implementation diff requires authenticated review with explicit source scope. Manual review cannot be labeled CodeRabbit. Resolve credentials through a user-controlled terminal or supported credential provisioning, not plaintext secrets in chat.
 
