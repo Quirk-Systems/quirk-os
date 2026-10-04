@@ -81,12 +81,10 @@
           "const": "quirk-os"
         },
         "candidate_branch": {
-          "type": "string",
-          "minLength": 1
+          "const": "agent/quirk-intent-shaper"
         },
         "candidate_sha": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{40}$"
+          "const": "f5effa3d6da3e5879e10007492aeff39a1c643be"
         },
         "base_sha": {
           "type": "string",

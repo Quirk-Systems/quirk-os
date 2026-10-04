@@ -7,10 +7,15 @@ import argparse
 import copy
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
+
+
+CANDIDATE_BRANCH = "agent/quirk-intent-shaper"
+CANDIDATE_SHA = "f5effa3d6da3e5879e10007492aeff39a1c643be"
 
 
 def load_json(path: Path) -> Any:
@@ -27,6 +32,18 @@ def receipt_hash(receipt: dict[str, Any]) -> str:
     return hashlib.sha256(canonical_receipt_payload(receipt)).hexdigest()
 
 
+def repository_file(repo: Path, path: str) -> Path:
+    root = repo.resolve()
+    if Path(path).is_absolute():
+        raise ValueError("path must be relative to the repository")
+    resolved = (root / path).resolve()
+    if not resolved.is_relative_to(root):
+        raise ValueError("path must resolve within the repository")
+    if not resolved.is_file():
+        raise ValueError(f"missing file {path}")
+    return resolved
+
+
 def schema_errors(schema: dict[str, Any], receipt: dict[str, Any]) -> list[str]:
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     return [
@@ -41,10 +58,27 @@ def semantic_errors(receipt: dict[str, Any], repo: Path | None = None) -> list[s
     repository = receipt.get("repository", {})
     candidate_sha = repository.get("candidate_sha")
     merge_base_sha = repository.get("merge_base_sha")
+    if repository.get("candidate_branch") != CANDIDATE_BRANCH or candidate_sha != CANDIDATE_SHA:
+        errors.append("repository candidate identity must match the evaluated branch and SHA")
     if candidate_sha and merge_base_sha and candidate_sha != merge_base_sha:
         errors.append("repository.merge_base_sha must exactly match repository.candidate_sha")
     if repository.get("is_traceable_descendant") is not True:
         errors.append("repository.is_traceable_descendant must be true")
+    if repo is None:
+        errors.append("repository checkout is required for ancestry and file verification")
+    else:
+        try:
+            actual_merge_base = subprocess.check_output(
+                ["git", "-C", str(repo), "merge-base", CANDIDATE_SHA, repository["head_sha"]],
+                text=True,
+                stderr=subprocess.PIPE,
+            ).strip()
+            if actual_merge_base != CANDIDATE_SHA:
+                errors.append("repository.head_sha is not a traceable descendant of the evaluated candidate")
+            if merge_base_sha != actual_merge_base:
+                errors.append("repository.merge_base_sha does not match Git history")
+        except (OSError, subprocess.CalledProcessError) as exc:
+            errors.append(f"repository ancestry could not be verified against Git history: {exc}")
 
     materials = receipt.get("materials", [])
     material_paths: set[str] = set()
@@ -54,8 +88,14 @@ def semantic_errors(receipt: dict[str, Any], repo: Path | None = None) -> list[s
             errors.append(f"materials[{index}]: duplicate material path {path!r}")
         else:
             material_paths.add(path)
-        if repo is not None and isinstance(path, str) and not (repo / path).is_file():
-            errors.append(f"materials[{index}]: missing file {path}")
+        if repo is not None:
+            try:
+                material_file = repository_file(repo, path)
+                digest = hashlib.sha256(material_file.read_bytes()).hexdigest()
+                if digest != material["sha256"]:
+                    errors.append(f"materials[{index}]: sha256 mismatch for {path}")
+            except (OSError, ValueError, RuntimeError) as exc:
+                errors.append(f"materials[{index}]: {exc}")
 
     evidence_refs = receipt.get("evidence_refs", [])
     evidence_paths: set[str] = set()
@@ -64,8 +104,11 @@ def semantic_errors(receipt: dict[str, Any], repo: Path | None = None) -> list[s
             errors.append(f"evidence_refs[{index}]: duplicate evidence ref {path!r}")
         else:
             evidence_paths.add(path)
-        if repo is not None and isinstance(path, str) and not (repo / path).is_file():
-            errors.append(f"evidence_refs[{index}]: missing file {path}")
+        if repo is not None:
+            try:
+                repository_file(repo, path)
+            except (OSError, ValueError, RuntimeError) as exc:
+                errors.append(f"evidence_refs[{index}]: {exc}")
 
     verdict = receipt.get("verdict")
     critical_failures = receipt.get("critical_failures", [])
@@ -100,7 +143,8 @@ def semantic_errors(receipt: dict[str, Any], repo: Path | None = None) -> list[s
 
 
 def validate_receipt(receipt: dict[str, Any], schema: dict[str, Any], repo: Path | None = None) -> list[str]:
-    return schema_errors(schema, receipt) + semantic_errors(receipt, repo=repo)
+    errors = schema_errors(schema, receipt)
+    return errors if errors else semantic_errors(receipt, repo=repo)
 
 
 def main() -> int:

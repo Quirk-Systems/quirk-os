@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -28,7 +31,7 @@ class QISHarnessTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.schema = load("schemas/qis-evidence-envelope.schema.json")
         cls.fixture_dir = ROOT / "evals/qis-agent-harness"
-        cls.valid = load("evals/qis-agent-harness/receipt.valid.json")
+        cls.valid = load("evals/qis-agent-harness/receipt.valid-provenance.json")
 
     def errors_for(self, relative_path: str) -> list[str]:
         return validate_receipt(load(relative_path), self.schema, repo=ROOT)
@@ -37,7 +40,7 @@ class QISHarnessTests(unittest.TestCase):
         Draft202012Validator.check_schema(self.schema)
 
     def test_valid_receipt_fixture_passes_and_hash_is_stable(self) -> None:
-        self.assertEqual([], self.errors_for("evals/qis-agent-harness/receipt.valid.json"))
+        self.assertEqual([], self.errors_for("evals/qis-agent-harness/receipt.valid-provenance.json"))
         expected_hash = hashlib.sha256(canonical_receipt_payload(self.valid)).hexdigest()
         self.assertEqual(expected_hash, receipt_hash(self.valid))
         self.assertEqual(expected_hash, self.valid["receipt_hash"])
@@ -64,7 +67,90 @@ class QISHarnessTests(unittest.TestCase):
 
     def test_ancestry_mismatch_fails_closed(self) -> None:
         errors = self.errors_for("evals/qis-agent-harness/receipt.ancestry-mismatch.json")
-        self.assertTrue(any("traceable descendant" in error or "merge_base_sha" in error for error in errors))
+        self.assertTrue(any("is_traceable_descendant" in error or "merge_base_sha" in error for error in errors))
+
+    def validate_resealed(self, receipt: dict, repo: Path = ROOT) -> list[str]:
+        receipt["receipt_hash"] = receipt_hash(receipt)
+        return validate_receipt(receipt, self.schema, repo=repo)
+
+    def test_candidate_identity_is_pinned(self) -> None:
+        for field, value in (("candidate_branch", "agent/other"), ("candidate_sha", "a" * 40)):
+            with self.subTest(field=field):
+                receipt = copy.deepcopy(self.valid)
+                receipt["repository"][field] = value
+                self.assertTrue(any(field in error for error in self.validate_resealed(receipt)))
+
+    def test_self_reported_ancestry_cannot_hide_unrelated_head(self) -> None:
+        receipt = copy.deepcopy(self.valid)
+        receipt["repository"]["head_sha"] = subprocess.check_output(
+            ["git", "-C", str(ROOT), "rev-parse", f"{receipt['repository']['candidate_sha']}^"],
+            text=True,
+        ).strip()
+        self.assertTrue(any("traceable descendant" in error for error in self.validate_resealed(receipt)))
+
+    def test_unknown_head_fails_closed(self) -> None:
+        receipt = copy.deepcopy(self.valid)
+        receipt["repository"]["head_sha"] = "0" * 40
+        self.assertTrue(any("ancestry could not be verified" in error for error in self.validate_resealed(receipt)))
+
+    def test_checkout_history_is_required(self) -> None:
+        self.assertTrue(validate_receipt(self.valid, self.schema))
+        with tempfile.TemporaryDirectory() as directory:
+            errors = validate_receipt(self.valid, self.schema, repo=Path(directory))
+            self.assertTrue(any("ancestry could not be verified" in error for error in errors))
+
+    def test_material_digest_mismatch_fixture_fails(self) -> None:
+        errors = self.errors_for("evals/qis-agent-harness/receipt.material-mismatch.json")
+        self.assertTrue(any("sha256 mismatch" in error for error in errors))
+        self.assertFalse(any("receipt_hash mismatch" in error for error in errors))
+
+    def test_material_mutation_invalidates_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory)
+            material = self.valid["materials"][0]
+            target = repo / material["path"]
+            target.parent.mkdir(parents=True)
+            target.write_text("changed material", encoding="utf-8")
+            errors = validate_receipt(self.valid, self.schema, repo=repo)
+            self.assertTrue(any("materials[0]: sha256 mismatch" in error for error in errors))
+
+    def test_absolute_traversal_and_symlink_paths_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            repo = parent / "repo"
+            repo.mkdir()
+            outside = parent / "outside.json"
+            outside.write_text("{}", encoding="utf-8")
+            (repo / "escape.json").symlink_to(outside)
+            for path in (str(outside), "../outside.json", "escape.json"):
+                for field in ("materials", "evidence_refs"):
+                    with self.subTest(path=path, field=field):
+                        receipt = copy.deepcopy(self.valid)
+                        if field == "materials":
+                            receipt[field][0]["path"] = path
+                            receipt[field][0]["sha256"] = hashlib.sha256(outside.read_bytes()).hexdigest()
+                        else:
+                            receipt[field][0] = path
+                        errors = self.validate_resealed(receipt, repo=repo)
+                        self.assertTrue(any(
+                            f"{field}[0]: path must" in error for error in errors
+                        ))
+
+    def test_repository_relative_paths_pass(self) -> None:
+        receipt = copy.deepcopy(self.valid)
+        for material in receipt["materials"]:
+            material["path"] = "./" + material["path"]
+        receipt["evidence_refs"] = ["./" + path for path in receipt["evidence_refs"]]
+        self.assertEqual([], self.validate_resealed(receipt))
+
+    def test_malformed_paths_are_schema_errors(self) -> None:
+        for field in ("materials", "evidence_refs"):
+            receipt = copy.deepcopy(self.valid)
+            if field == "materials":
+                receipt[field][0]["path"] = []
+            else:
+                receipt[field][0] = []
+            self.assertTrue(self.validate_resealed(receipt))
 
     def test_instruction_files_stay_short_and_match_repo_commands(self) -> None:
         repo_text = (ROOT / ".github/copilot-instructions.md").read_text(encoding="utf-8")
@@ -101,7 +187,16 @@ class QISHarnessTests(unittest.TestCase):
         self.assertEqual("read", workflow["permissions"]["contents"])
         self.assertIn("schemas/qis-evidence-envelope.schema.json", workflow_text)
         self.assertIn("tests/test_qis_harness.py", workflow_text)
-        self.assertIn("name: qis-agent-harness-${{ github.sha }}", workflow_text)
+        head_ref = "${{ github.event.pull_request.head.sha }}"
+        steps = workflow["jobs"]["harness"]["steps"]
+        checkout = next(step for step in steps if step["name"] == "Checkout")
+        build = next(step for step in steps if step["name"] == "Build harness receipt")
+        self.assertEqual(head_ref, checkout["with"]["ref"])
+        self.assertEqual("0", checkout["with"]["fetch-depth"])
+        self.assertEqual(head_ref, build["env"]["HEAD_SHA"])
+        self.assertIn(f"name: qis-agent-harness-{head_ref}", workflow_text)
+        self.assertIn(f"RECEIPT_PATH: evals/qis-agent-harness/qis-agent-harness-{head_ref}.json", workflow_text)
+        self.assertNotIn("github.sha", workflow_text)
         self.assertIn("if-no-files-found: error", workflow_text)
         self.assertIn("retention-days: 30", workflow_text)
         self.assertIn("if: always()", workflow_text)
