@@ -47,6 +47,11 @@ re-fetched, enumerated for conflicts/revocation, and re-read before the result
 is yielded. API failure, wrong scope, later contrary review, duplicate approval,
 expiry, changed head/base or missing evidence refuses.
 
+Authority starts at the later of the requested valid_from and GitHub's actual
+review submission, and ends at expires_at. The body may be composed earlier;
+it cannot backdate consent. The runtime decided_at always comes from GitHub's
+submission timestamp, rather than a timestamp supplied in the subject.
+
 The candidate source at the reviewed SHA has admission null/absent. Its hash
 must agree with the submitted object. Evaluation and raw materials are read
 at that SHA, with recorded material digests verified. The evaluation record's
