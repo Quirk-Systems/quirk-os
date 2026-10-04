@@ -58,6 +58,21 @@ def _function_body(sql: str, name: str) -> str:
     return lower[start : end + len("end $$;")] if end > start else lower[start:]
 
 
+
+def _privilege_lanes_hold(sql: str) -> bool:
+    """The guard is SECURITY DEFINER with pg_temp last; the rule function is not."""
+    guard = _function_body(sql, "guard_manifest_activation")
+    rule = _function_body(sql, "manifest_activation_violation")
+    header = guard.split("as $$", 1)[0]
+    path = next(
+        (line for line in header.splitlines() if "search_path" in line), ""
+    )
+    return (
+        "security definer" in header
+        and path.rstrip().rstrip(",").split(",")[-1].strip().startswith("pg_temp")
+        and "security definer" not in rule.split("as $$", 1)[0]
+    )
+
 def static_migration_checks(sql: str) -> dict[str, bool]:
     """Presence checks over the concatenated migration text.
 
@@ -80,6 +95,15 @@ def static_migration_checks(sql: str) -> dict[str, bool]:
         # The guard must delegate to the rule function rather than restate it.
         "guard_delegates_to_rules": "manifest_activation_violation(new)"
         in _function_body(sql, "guard_manifest_activation"),
+        # Privilege lanes, in the LAST definition of each function. The guard
+        # runs as its owner so that whether it can judge a row does not depend
+        # on which role writes, with pg_temp pinned last against definer
+        # hijacking. The rule function stays invoker: it reads only its
+        # argument and has no use for owner reach. Checked here and again on
+        # the installed functions in CI, because the service_role grant on the
+        # rule function masks the guard losing SECURITY DEFINER, and a
+        # `CREATE OR REPLACE` that omits it resets it silently.
+        "rule_privilege_lanes": _privilege_lanes_hold(sql),
         # The audit must be driven by the same function, not its own copy.
         "audit_uses_rule_function": "where quirk_sync.manifest_activation_violation(m) is not null" in lower,
         "audit_holds_write_lock": "lock table quirk_sync.manifest_registry in exclusive mode" in lower,

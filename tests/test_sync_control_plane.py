@@ -25,7 +25,7 @@ from sync_control_plane.mappers import (  # noqa: E402
 from sync_control_plane.policy import evaluate_fixture, validate_manifest_admission  # noqa: E402
 
 sys.path.insert(0, str(ROOT / "scripts"))
-from validate_sync_control_plane import database_guard_job_checks  # noqa: E402
+from validate_sync_control_plane import _privilege_lanes_hold, database_guard_job_checks  # noqa: E402
 
 
 def load(path: str):
@@ -474,13 +474,23 @@ class ManifestActivationCasesFileTests(unittest.TestCase):
         self.assertIn("rollback;", body)
         self.assertNotIn("commit;", body)
         self.assertNotIn("\\ir", body)
+        # The grant must be revoked BEFORE the first write in the session.
+        # Otherwise the first write builds the guard's cached plan while the
+        # grant is still present, and the cases after the revoke would pass on
+        # a guard that had lost SECURITY DEFINER — the plan-cache trap that
+        # made the first version of these cases pass with no grant at all.
+        self.assertLess(
+            body.index("revoke execute on function"),
+            body.index("insert into quirk_sync.manifest_registry"),
+        )
 
     def test_the_service_role_file_distinguishes_privilege_from_rule_failures(self):
         # A case that caught `others` would report a permission error as a
         # guard refusal, which is the same class of mistake as a guard that
         # cannot return false.
         body = self.SERVICE_ROLE.read_text(encoding="utf-8")
-        self.assertEqual(2, body.count("insufficient_privilege"))
+        # Two write cases and the pre-flight direct call.
+        self.assertEqual(3, body.count("insufficient_privilege"))
 
     def test_the_migration_opens_no_transaction_of_its_own(self):
         # `supabase db push` applies each file inside a transaction, so an
@@ -502,6 +512,32 @@ class ManifestActivationCasesFileTests(unittest.TestCase):
             "lock table quirk_sync.manifest_registry in exclusive mode",
             self.MIGRATION.read_text(encoding="utf-8").lower(),
         )
+
+    def test_the_privilege_lanes_check_can_fail(self):
+        # The guard is SECURITY DEFINER so it can judge a row whatever role is
+        # writing; pg_temp must be LAST in its search_path, since present-but-
+        # first is no protection against definer hijacking; and the rule
+        # function stays invoker. Each breakage must flip the check on its own.
+        sql = "\n".join(
+            p.read_text(encoding="utf-8")
+            for p in sorted((ROOT / "supabase/migrations").glob("*_sync_control_plane_*.sql"))
+        )
+        self.assertTrue(_privilege_lanes_hold(sql))
+        guard_header = "language plpgsql\nsecurity definer\nset search_path = pg_catalog, quirk_sync, pg_temp"
+        path = "set search_path = pg_catalog, quirk_sync, pg_temp as $$"
+        self.assertIn(guard_header, sql)
+        for label, broken in (
+            ("guard reverted to invoker", sql.replace(guard_header, guard_header.replace("security definer\n", ""))),
+            ("pg_temp dropped", sql.replace(path, "set search_path = pg_catalog, quirk_sync as $$")),
+            ("pg_temp moved first", sql.replace(path, "set search_path = pg_temp, pg_catalog, quirk_sync as $$")),
+            (
+                "rule function made definer",
+                sql.replace("returns text\nlanguage plpgsql\nimmutable\n", "returns text\nlanguage plpgsql\nimmutable\nsecurity definer\n"),
+            ),
+        ):
+            with self.subTest(label=label):
+                self.assertNotEqual(sql, broken, "the mutation did not apply")
+                self.assertFalse(_privilege_lanes_hold(broken))
 
     def test_the_migration_grants_the_rule_function_to_service_role(self):
         body = self.MIGRATION.read_text(encoding="utf-8").lower()

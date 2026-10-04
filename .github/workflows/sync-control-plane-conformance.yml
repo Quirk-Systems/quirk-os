@@ -209,14 +209,36 @@ jobs:
             psql -v ON_ERROR_STOP=1 --single-transaction -f "${migration}"
           done
 
-      - name: Assert the installed guard delegates to the rule function
-        # A guard that restated the rules would pass every case below while
-        # drifting from the audit. This reads back what is installed.
+      - name: Assert the installed guard delegates and holds its privilege lanes
+        # Reads back what is installed, which no static check can see.
+        #
+        # Delegation: a guard that restated the rules would pass every case
+        # below while drifting from the audit.
+        #
+        # Privilege lanes: the guard must be SECURITY DEFINER with pg_temp
+        # pinned last in its search_path, and the rule function must stay
+        # SECURITY INVOKER. This is asserted here, on its own, because the
+        # service_role grant on the rule function masks the guard losing
+        # SECURITY DEFINER — writes keep working through the invoker path — and
+        # a `CREATE OR REPLACE` that omits it resets it silently. Each failure
+        # names the lane that broke.
         run: |
           psql -v ON_ERROR_STOP=1 -t -A -c \
-            "select case when pg_get_functiondef('quirk_sync.guard_manifest_activation()'::regprocedure)
-               like '%manifest_activation_violation(new)%'
-             then 'ok' else 'installed guard does not delegate to the rule function' end" \
+            "select case
+               when pg_get_functiondef('quirk_sync.guard_manifest_activation()'::regprocedure)
+                    not like '%manifest_activation_violation(new)%'
+                 then 'installed guard does not delegate to the rule function'
+               when not g.prosecdef
+                 then 'installed guard is not SECURITY DEFINER'
+               when not exists (select 1 from unnest(g.proconfig) c
+                                where c like 'search_path=%' and c like '%pg_temp')
+                 then 'installed guard does not pin pg_temp last in its search_path'
+               when r.prosecdef
+                 then 'installed rule function is SECURITY DEFINER and should be INVOKER'
+               else 'ok' end
+             from pg_proc g, pg_proc r
+             where g.oid = 'quirk_sync.guard_manifest_activation()'::regprocedure
+               and r.oid = 'quirk_sync.manifest_activation_violation(quirk_sync.manifest_registry)'::regprocedure" \
             | tee /tmp/delegation.txt
           grep -qx ok /tmp/delegation.txt
 

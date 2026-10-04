@@ -1,32 +1,44 @@
 -- Manifest activation guard cases for the role that actually writes.
 --
--- These must run in a psql session of their own, and must be the first thing
--- in it that fires the trigger on `quirk_sync.manifest_registry`. That is not
--- tidiness, it is the only arrangement in which they can fail.
+-- What these prove: the guard judges `service_role` writes correctly WITHOUT
+-- `service_role` holding EXECUTE on the rule function. The guard is SECURITY
+-- DEFINER, so its inner call is checked against the guard's owner, and the
+-- grant is revoked below before the first write precisely so that enforcement
+-- has to be carried by that property and nothing else. If a later
+-- `CREATE OR REPLACE` drops `security definer`, the first case here fails with
+-- a privilege error rather than passing on the grant.
 --
--- `guard_manifest_activation` calls `quirk_sync.manifest_activation_violation`,
--- and PL/pgSQL caches the plan for that call per session while the function's
--- EXECUTE privilege is checked when the plan is built. So the check is
--- session-order dependent. Observed on PostgreSQL 16.13 with the grant
--- revoked:
+-- These must run in a psql session of their own, and the first trigger fire in
+-- that session must come AFTER the revoke. That is not tidiness: PL/pgSQL
+-- caches the plan for the guard's inner call per session, and EXECUTE on a
+-- function is checked when that plan is built, so under an invoker guard the
+-- check is session-order dependent. Observed on PostgreSQL 16.13:
 --
 --   fresh session, service_role writes first   -> ERROR: permission denied for
 --                                                 function manifest_activation_violation
 --   fresh session, postgres writes first, then
 --   `set role service_role` and write again    -> INSERT 0 1, INSERT 0 1
 --
--- Folding these cases into `manifest_activation_guard.cases.sql` puts nine
--- superuser writes in front of them, which primes the cached plan and makes
--- them pass with no grant at all. That is how they were written first, and it
--- is why they are here instead.
+-- Any write ahead of the revoke would prime that plan and let these pass on a
+-- guard that had lost SECURITY DEFINER. Folding them into
+-- `manifest_activation_guard.cases.sql`, behind nine superuser writes, is the
+-- same mistake; it is how they were first written.
 --
--- Production connects as `service_role`, so production is the first arrangement.
+-- The last case re-grants EXECUTE and calls the rule function directly as
+-- `service_role`: the pre-flight lane, where a writer reads the refusal reason
+-- before attempting a write.
 --
 -- `service_role` needs BYPASSRLS, which Supabase gives it; without that these
 -- inserts fail on row-level security before reaching the trigger and pass for
--- the wrong reason.
+-- the wrong reason. The revoke and re-grant need a superuser, which is what CI
+-- runs this file as; everything rolls back.
 
 begin;
+
+-- Before any write in this session. See the header for why the position matters.
+revoke execute on function
+  quirk_sync.manifest_activation_violation(quirk_sync.manifest_registry)
+  from service_role;
 
 set role service_role;
 
@@ -50,7 +62,7 @@ begin
   );
 exception when insufficient_privilege then
   raise exception
-    'service_role cannot write a valid manifest: %. The guard calls manifest_activation_violation and the invoking role needs EXECUTE on it.',
+    'service_role cannot write a valid manifest: %. EXECUTE on the rule function was revoked above, so this means the guard is no longer SECURITY DEFINER and its inner call is being checked against the writer.',
     sqlerrm;
 end $$;
 
@@ -82,6 +94,36 @@ begin
   end;
   if not v_rejected then
     raise exception 'service_role self-approved an activation';
+  end if;
+end $$;
+
+reset role;
+
+-- The pre-flight lane: restore the grant and call the rule directly as
+-- service_role. An invalid active row must come back with a reason, and the
+-- call itself must not be refused on privileges.
+grant execute on function
+  quirk_sync.manifest_activation_violation(quirk_sync.manifest_registry)
+  to service_role;
+
+set role service_role;
+
+do $$
+declare
+  v_reason text;
+begin
+  begin
+    v_reason := quirk_sync.manifest_activation_violation(
+      jsonb_populate_record(
+        null::quirk_sync.manifest_registry,
+        '{"status":"active","requested_status":"active","requested_by":"agent.preflight","approved_by":"agent.preflight"}'::jsonb
+      )
+    );
+  exception when insufficient_privilege then
+    raise exception 'service_role cannot call the rule function for pre-flight: %', sqlerrm;
+  end;
+  if v_reason is null then
+    raise exception 'pre-flight returned no reason for an active row with no admission evidence';
   end if;
 end $$;
 

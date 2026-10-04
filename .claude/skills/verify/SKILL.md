@@ -122,11 +122,13 @@ psql -t -A -c "select proname, coalesce(proacl::text,'DEFAULT (public can execut
 ```
 
 **Run the `service_role` file in its own psql session, before anything else in
-that session fires the trigger.** `guard_manifest_activation` calls
-`quirk_sync.manifest_activation_violation`, PL/pgSQL caches that call's plan per
-session, and EXECUTE on a function is checked when the plan is *built* — so the
-privilege check is session-order dependent. Observed on PostgreSQL 16.13 with
-the grant revoked:
+that session fires the trigger.** PL/pgSQL caches the plan for a function's
+inner calls per session, and EXECUTE on a function is checked when that plan is
+*built* — so for an invoker function the privilege check is
+session-order dependent. The guard is now `SECURITY DEFINER`, which takes its own inner call
+out of this, but the file exists to catch the guard *losing* that property, and
+it can only do so if no earlier write in the session has already built the plan.
+Observed on PostgreSQL 16.13 with an invoker guard and the grant revoked:
 
 ```
 fresh session, service_role writes first                       -> ERROR: permission denied
@@ -163,13 +165,40 @@ psql -c "create or replace function quirk_sync.guard_manifest_activation()
   returns trigger language plpgsql as \$\$ begin return new; end \$\$;"
 psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_activation_guard.run.sql
 
-# Does the production role actually have what it needs?  Expect exit 3 with
-# `service_role cannot write a valid manifest: permission denied ...`.
-psql -c "revoke execute on function
-  quirk_sync.manifest_activation_violation(quirk_sync.manifest_registry)
-  from service_role;"
+# Does the guard still judge rows whatever role is writing?  Revoke SECURITY
+# DEFINER from it. Expect exit 3 with `service_role cannot write a valid
+# manifest: permission denied ... the guard is no longer SECURITY DEFINER`.
+# The file revokes the service_role grant itself before its first write, so
+# this is the guard's own property being tested, not the grant.
+psql -c "alter function quirk_sync.guard_manifest_activation() security invoker;"
 psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_activation_guard.service_role.sql
 ```
+
+**Revoking the `service_role` grant on its own no longer breaks anything,
+and that is the point.** The guard is `SECURITY DEFINER`, so its call to the
+rule function is checked against the guard's owner, not the writer. An older
+version of this file told you to revoke the grant and expect a failure; that
+probe now passes, correctly, and would tell you nothing.
+
+The inverse is the trap to know about. With `SECURITY DEFINER` gone *and* the
+grant still present, ordinary `service_role` writes keep succeeding through the
+invoker path — the grant masks the loss. Observed on PostgreSQL 16.13: guard
+reverted to invoker, grant present, `INSERT 0 1`. That is why the installed
+read-back in the `database-guard` job asserts `prosecdef` on its own, why the
+service_role file revokes the grant before writing, and why a `CREATE OR
+REPLACE` that forgets `security definer` (it resets it silently; the guard is
+already defined twice in these migrations) is caught rather than absorbed.
+
+To read the lanes directly:
+
+```sh
+psql -t -A -c "select proname, prosecdef, proconfig, coalesce(proacl::text,'DEFAULT')
+  from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+  where n.nspname='quirk_sync' and proname like '%manifest_activation%'"
+```
+
+The guard should read `prosecdef = t` with `pg_temp` last in its
+`search_path`; the rule function `prosecdef = f`.
 
 Also: delete a workflow job from a copy of the tree and re-run the validator,
 and drop the migration under test and watch which static checks go false. A

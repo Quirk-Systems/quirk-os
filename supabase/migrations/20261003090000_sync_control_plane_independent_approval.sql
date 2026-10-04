@@ -154,8 +154,46 @@ begin
   end if;
 end $$;
 
+-- The guard runs with its OWNER's privileges (SECURITY DEFINER), so whether it
+-- can judge a row does not depend on which role is writing. Under SECURITY
+-- INVOKER the inner call to the rule function is checked against the writer,
+-- and every writing role then needs EXECUTE on that function or its writes are
+-- refused before anything is judged. That makes the guard's availability a
+-- property of each writer's grants, which is the wrong way round for a guard
+-- whose stated purpose is "capability and tool access cannot self-authorize
+-- activation": the writer's capability configuration should not decide
+-- whether the guard can evaluate.
+--
+-- To be exact about what this buys: the INVOKER failure is fail-closed — a
+-- missing grant blocks legitimate writes, it never admits a bad one — so this
+-- removes an availability dependency, not a bypass.
+--
+-- SECURITY DEFINER reads as "privilege escalation" to every reviewer and to
+-- Supabase's linter, permanently, so the mitigations sit here where that
+-- reader looks. Each was verified on PostgreSQL 16.13:
+--   * search_path is pinned with pg_temp LAST. Without it pg_temp is searched
+--     first for relations, which is the classic definer-hijack route. The body
+--     also schema-qualifies its one call.
+--   * It cannot be called directly to borrow the owner's rights. Even with
+--     EXECUTE granted, `select quirk_sync.guard_manifest_activation()` raises
+--     `trigger functions can only be called as triggers`.
+--   * The body is three statements: call the rule, raise its message, return.
+--   * quirk_sync is not exposed to anon or authenticated.
+--
+-- The rule function stays SECURITY INVOKER. It reads only the row passed to it,
+-- so it has no use for its owner's reach; that setting matters on the direct-
+-- call lane below, where a caller gets its own rights and no more.
+--
+-- `CREATE OR REPLACE` that omits `security definer` silently resets it to
+-- invoker — verified — and this guard is already defined twice across these
+-- migrations. With the service_role grant below in place, that reversion
+-- would break nothing visible, so the grant would mask the loss of this
+-- property. `rule_privilege_lanes` (static) and the installed read-back in the
+-- `database-guard` job each assert it independently for that reason.
 create or replace function quirk_sync.guard_manifest_activation() returns trigger
-language plpgsql set search_path=pg_catalog,quirk_sync as $$
+language plpgsql
+security definer
+set search_path = pg_catalog, quirk_sync, pg_temp as $$
 declare
   v_violation text := quirk_sync.manifest_activation_violation(new);
 begin
@@ -163,25 +201,23 @@ begin
   return new;
 end $$;
 
--- Every other function in this schema is revoked from the browser roles and
--- granted to `service_role` explicitly; this one was created after that
--- lockdown and so inherited PostgreSQL's default of EXECUTE to PUBLIC. It
--- therefore worked in production by omission, and the next time the delivery
--- migration's `revoke execute on all functions in schema quirk_sync from
--- public,anon,authenticated` is re-run, every write to manifest_registry
--- starts failing with `permission denied for function
--- manifest_activation_violation` — raised inside the trigger, so a valid
--- candidate cannot be written either.
+-- The rule function's own grants. Browser roles get nothing. service_role gets
+-- EXECUTE explicitly, for two reasons, neither of which is enforcement — the
+-- guard above no longer needs it:
 --
--- Verified both halves on PostgreSQL 16.13: with the default ACL a
--- `service_role` insert of a well-formed active manifest succeeds, and with
--- EXECUTE revoked from PUBLIC and no grant it fails with that exact message at
--- `guard_manifest_activation() line 3`. The grant is to `service_role` alone;
--- the trigger function itself needs none, because EXECUTE on a trigger
--- function is checked when the trigger is created, not when it fires.
+--   * Pre-flight. A writer can call the rule directly and read the refusal
+--     reason before attempting a write, instead of learning it from an
+--     exception. Nothing in this repository calls it that way yet; this is
+--     the surface for a caller that wants to, stated rather than implied.
+--   * Fallback. If a later `CREATE OR REPLACE` drops `security definer` from
+--     the guard, writes keep working through the invoker path instead of
+--     failing closed for every writer at once.
 --
--- SECURITY DEFINER would also work and is not used: the predicate reads only
--- the row passed to it, so a definer context would add reach it has no use for.
+-- History: this function was created after the delivery migration's blanket
+-- `revoke execute on all functions in schema quirk_sync from
+-- public,anon,authenticated`, so it inherited PostgreSQL's default of EXECUTE
+-- to PUBLIC and was the one function in the schema not locked down. Under the
+-- invoker guard that is what kept production writes working, by omission.
 revoke execute on function
   quirk_sync.manifest_activation_violation(quirk_sync.manifest_registry)
   from public, anon, authenticated;
