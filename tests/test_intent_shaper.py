@@ -210,6 +210,10 @@ class IntentShaperContractTests(unittest.TestCase):
         self.assertEqual("feedback_receipt_missing", actual["reason_code"])
         self.assertFalse(actual["feedback_receipt_verified"])
 
+    @unittest.skip("Preference Graph runtime integration is pending runtime admission.")
+    def test_personalization_plan_with_preference_graph_runtime(self) -> None:
+        self.fail("Replace this placeholder with a runtime-backed plan integration test.")
+
 
 if __name__ == "__main__":
     unittest.main()

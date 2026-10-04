@@ -1,0 +1,654 @@
+{
+  "suite_id": "eval.intent-shaper.v0.2",
+  "status": "passed",
+  "schema_valid": true,
+  "sample_valid": true,
+  "policy_valid": true,
+  "fixtures_passed": 25,
+  "fixtures_total": 25,
+  "results": [
+    {
+      "id": "QIS-001",
+      "operation": "resolve_preference",
+      "passed": true,
+      "expected": {
+        "selected_refs": [
+          "pref.current.detailed"
+        ],
+        "ignored_refs": [
+          "pref.saved.concise"
+        ],
+        "conflicts": []
+      },
+      "actual": {
+        "selected_refs": [
+          "pref.current.detailed"
+        ],
+        "ignored_refs": [
+          "pref.saved.concise"
+        ],
+        "stored_retrieval": true,
+        "conflicts": []
+      }
+    },
+    {
+      "id": "QIS-002",
+      "operation": "purpose_partition",
+      "passed": true,
+      "expected": {
+        "selected_refs": [
+          "pref.security.evidence_first"
+        ],
+        "excluded_scopes": [
+          "music.performance"
+        ]
+      },
+      "actual": {
+        "selected_refs": [
+          "pref.security.evidence_first"
+        ],
+        "excluded_scopes": [
+          "music.performance"
+        ]
+      }
+    },
+    {
+      "id": "QIS-003",
+      "operation": "persona_hand",
+      "passed": true,
+      "expected": {
+        "status": "accepted",
+        "primary_ref": "persona.brayn",
+        "supporting_refs": [
+          "persona.bryan"
+        ],
+        "weight_total": 1.0,
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      },
+      "actual": {
+        "status": "accepted",
+        "primary_ref": "persona.brayn",
+        "supporting_refs": [
+          "persona.bryan"
+        ],
+        "weight_total": 1.0,
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-004",
+      "operation": "platform_affect",
+      "passed": true,
+      "expected": {
+        "status": "accepted",
+        "platform": "github",
+        "effects": [
+          "versioned",
+          "collaborative_review",
+          "diff_first",
+          "executable_evidence"
+        ],
+        "affordance_bias": [
+          "diff",
+          "code_patch",
+          "check_run",
+          "issue",
+          "review_comment"
+        ],
+        "semantic_decision_hash_preserved": true
+      },
+      "actual": {
+        "status": "accepted",
+        "platform": "github",
+        "effects": [
+          "versioned",
+          "collaborative_review",
+          "diff_first",
+          "executable_evidence"
+        ],
+        "affordance_bias": [
+          "diff",
+          "code_patch",
+          "check_run",
+          "issue",
+          "review_comment"
+        ],
+        "semantic_decision_hash_preserved": true
+      }
+    },
+    {
+      "id": "QIS-005",
+      "operation": "truth_over_style",
+      "passed": true,
+      "expected": {
+        "evidence_mode": "strict",
+        "max_dramatic_intensity": 0.2,
+        "uncertainty_required": true,
+        "style_can_override_truth": false
+      },
+      "actual": {
+        "evidence_mode": "strict",
+        "max_dramatic_intensity": 0.2,
+        "uncertainty_required": true,
+        "style_can_override_truth": false
+      }
+    },
+    {
+      "id": "QIS-006",
+      "operation": "preference_conflict",
+      "passed": true,
+      "expected": {
+        "conflicts": [
+          "option_count"
+        ],
+        "ignored_refs": [
+          "pref.current.one_answer",
+          "pref.current.alternatives"
+        ],
+        "silent_average": false,
+        "requires_default_plus_bounded_alternatives": true
+      },
+      "actual": {
+        "conflicts": [
+          "option_count"
+        ],
+        "ignored_refs": [
+          "pref.current.one_answer",
+          "pref.current.alternatives"
+        ],
+        "silent_average": false,
+        "requires_default_plus_bounded_alternatives": true
+      }
+    },
+    {
+      "id": "QIS-007",
+      "operation": "stale_preference",
+      "passed": true,
+      "expected": {
+        "expired_refs": [
+          "pref.old.format"
+        ],
+        "adaptation_proposal": true,
+        "history_rewritten": false
+      },
+      "actual": {
+        "expired_refs": [
+          "pref.old.format"
+        ],
+        "adaptation_proposal": true,
+        "history_rewritten": false
+      }
+    },
+    {
+      "id": "QIS-008",
+      "operation": "negative_constraints",
+      "passed": true,
+      "expected": {
+        "accepted_traits": [
+          "energy",
+          "specificity"
+        ],
+        "blocked_traits": [
+          "startup_sludge",
+          "fake_rebellion"
+        ],
+        "negative_constraints_applied_first": true
+      },
+      "actual": {
+        "accepted_traits": [
+          "energy",
+          "specificity"
+        ],
+        "blocked_traits": [
+          "startup_sludge",
+          "fake_rebellion"
+        ],
+        "negative_constraints_applied_first": true
+      }
+    },
+    {
+      "id": "QIS-009",
+      "operation": "select_affordance",
+      "passed": true,
+      "expected": {
+        "selected": "decision_card",
+        "generated_ui": false,
+        "smallest_useful_form": true
+      },
+      "actual": {
+        "selected": "decision_card",
+        "generated_ui": false,
+        "smallest_useful_form": true
+      }
+    },
+    {
+      "id": "QIS-010",
+      "operation": "personalization_off",
+      "passed": true,
+      "expected": {
+        "selected_refs": [
+          "pref.current.format"
+        ],
+        "ignored_refs": [
+          "pref.saved.voice"
+        ],
+        "stored_retrieval": false,
+        "persona_hand": [],
+        "saved_profile_loaded": false
+      },
+      "actual": {
+        "selected_refs": [
+          "pref.current.format"
+        ],
+        "ignored_refs": [
+          "pref.saved.voice"
+        ],
+        "stored_retrieval": false,
+        "conflicts": [],
+        "persona_hand": [],
+        "saved_profile_loaded": false
+      }
+    },
+    {
+      "id": "QIS-011",
+      "operation": "adaptation_guard",
+      "passed": true,
+      "expected": {
+        "status": "blocked",
+        "reason_code": "human_admission_required",
+        "requested_action": "persist_preference",
+        "feedback_receipt_required": true,
+        "feedback_receipt_verified": true,
+        "adaptation_proposal_ref": "proposal.preference.concise",
+        "auto_apply": false,
+        "human_admission_required": true,
+        "memory_updated": false,
+        "settings_updated": false,
+        "canon_updated": false
+      },
+      "actual": {
+        "status": "blocked",
+        "reason_code": "human_admission_required",
+        "requested_action": "persist_preference",
+        "repeated_successes": 11,
+        "feedback_receipt_required": true,
+        "feedback_receipt_verified": true,
+        "adaptation_proposal_ref": "proposal.preference.concise",
+        "admission_present": false,
+        "auto_apply": false,
+        "human_admission_required": true,
+        "memory_updated": false,
+        "settings_updated": false,
+        "canon_updated": false
+      }
+    },
+    {
+      "id": "QIS-012",
+      "operation": "personalization_boundary",
+      "passed": true,
+      "expected": {
+        "status": "accepted",
+        "personalization_enabled": false,
+        "read_trace": [],
+        "protected_projection": {
+          "preferences": [
+            {
+              "dimension": "format",
+              "value": "plain",
+              "source": "explicit_current"
+            }
+          ],
+          "voice_profile_ref": null,
+          "aesthetic_profile_ref": null,
+          "persona_ref": null,
+          "history_used": false
+        }
+      },
+      "actual": {
+        "status": "accepted",
+        "personalization_enabled": false,
+        "read_trace": [],
+        "protected_projection": {
+          "preferences": [
+            {
+              "dimension": "format",
+              "value": "plain",
+              "source": "explicit_current"
+            }
+          ],
+          "voice_profile_ref": null,
+          "aesthetic_profile_ref": null,
+          "persona_ref": null,
+          "history_used": false
+        }
+      }
+    },
+    {
+      "id": "QIS-012A",
+      "operation": "personalization_boundary",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "reason_code": "off_mode_settings_conflict",
+        "read_trace": []
+      },
+      "actual": {
+        "status": "rejected",
+        "reason_code": "off_mode_settings_conflict",
+        "read_trace": []
+      }
+    },
+    {
+      "id": "QIS-012B",
+      "operation": "personalization_boundary",
+      "passed": true,
+      "expected": {
+        "status": "accepted",
+        "personalization_enabled": true,
+        "read_trace": [
+          "preferences",
+          "profile",
+          "persona",
+          "history"
+        ],
+        "selected_refs": [
+          "pref.saved.enabled"
+        ],
+        "profile_loaded": true,
+        "persona_loaded": true,
+        "history_items": 1
+      },
+      "actual": {
+        "status": "accepted",
+        "personalization_enabled": true,
+        "read_trace": [
+          "preferences",
+          "profile",
+          "persona",
+          "history"
+        ],
+        "selected_refs": [
+          "pref.saved.enabled"
+        ],
+        "profile_loaded": true,
+        "persona_loaded": true,
+        "history_items": 1
+      }
+    },
+    {
+      "id": "QIS-R01",
+      "operation": "resolve_preference",
+      "passed": true,
+      "expected": {
+        "selected_refs": [
+          "setting.purpose.detailed"
+        ],
+        "ignored_refs": [
+          "pref.saved.short"
+        ],
+        "conflicts": []
+      },
+      "actual": {
+        "selected_refs": [
+          "setting.purpose.detailed"
+        ],
+        "ignored_refs": [
+          "pref.saved.short"
+        ],
+        "stored_retrieval": true,
+        "conflicts": []
+      }
+    },
+    {
+      "id": "QIS-R02",
+      "operation": "resolve_preference",
+      "passed": true,
+      "expected": {
+        "selected_refs": [],
+        "ignored_refs": [
+          "pref.future.format"
+        ],
+        "conflicts": []
+      },
+      "actual": {
+        "selected_refs": [],
+        "ignored_refs": [
+          "pref.future.format"
+        ],
+        "stored_retrieval": true,
+        "conflicts": []
+      }
+    },
+    {
+      "id": "QIS-R03",
+      "operation": "preference_conflict",
+      "passed": true,
+      "expected": {
+        "conflicts": [
+          "option_count"
+        ],
+        "ignored_refs": [
+          "pref.current.one",
+          "pref.current.three",
+          "pref.saved.two"
+        ],
+        "silent_average": false,
+        "requires_default_plus_bounded_alternatives": true
+      },
+      "actual": {
+        "conflicts": [
+          "option_count"
+        ],
+        "ignored_refs": [
+          "pref.current.one",
+          "pref.current.three",
+          "pref.saved.two"
+        ],
+        "silent_average": false,
+        "requires_default_plus_bounded_alternatives": true
+      }
+    },
+    {
+      "id": "QIS-R04",
+      "operation": "persona_hand",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "identity_claim_rejected",
+          "sensitive_inference_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      },
+      "actual": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "identity_claim_rejected",
+          "sensitive_inference_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-R07",
+      "operation": "persona_hand",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "identity_claim_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      },
+      "actual": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "identity_claim_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-R08",
+      "operation": "persona_hand",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "impersonation_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      },
+      "actual": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "impersonation_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-R09",
+      "operation": "persona_hand",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "unsupported_selection_basis"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      },
+      "actual": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "unsupported_selection_basis"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-R10",
+      "operation": "persona_hand",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "sensitive_inference_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      },
+      "actual": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "sensitive_inference_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-R11",
+      "operation": "persona_hand",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "authority_claim_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      },
+      "actual": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "authority_claim_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-R05",
+      "operation": "platform_affect",
+      "passed": true,
+      "expected": {
+        "status": "rejected",
+        "platform": "githubb",
+        "reason_code": "unsupported_platform"
+      },
+      "actual": {
+        "status": "rejected",
+        "platform": "githubb",
+        "reason_code": "unsupported_platform"
+      }
+    },
+    {
+      "id": "QIS-R06",
+      "operation": "adaptation_guard",
+      "passed": true,
+      "expected": {
+        "status": "blocked",
+        "reason_code": "feedback_receipt_missing",
+        "requested_action": "persist_preference",
+        "feedback_receipt_required": true,
+        "feedback_receipt_verified": false,
+        "auto_apply": false,
+        "memory_updated": false,
+        "settings_updated": false,
+        "canon_updated": false
+      },
+      "actual": {
+        "status": "blocked",
+        "reason_code": "feedback_receipt_missing",
+        "requested_action": "persist_preference",
+        "repeated_successes": 99,
+        "feedback_receipt_required": true,
+        "feedback_receipt_verified": false,
+        "adaptation_proposal_ref": "proposal.preference.missing-receipt",
+        "admission_present": false,
+        "auto_apply": false,
+        "human_admission_required": true,
+        "memory_updated": false,
+        "settings_updated": false,
+        "canon_updated": false
+      }
+    }
+  ],
+  "errors": [],
+  "content_hash": "e8edef4e96290f1018cb8de9e69e8358f611ba83e8879939481da1d06c1ada24"
+}

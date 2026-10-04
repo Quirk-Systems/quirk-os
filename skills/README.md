@@ -39,6 +39,8 @@ Separate draft candidates live alongside the manifested registry:
 
 `quirk-intent-shaper` includes an exploratory `skill-scratchpad.md`. Scratchpad content remains candidate ideation until admitted through schemas, evaluations, evidence, and human authority.
 
+For the Intent Shaper's system boundaries and control loop, see the [Intent × Affect × Affordance architecture](../docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md) and its [candidate exploration scratchpad](quirk-intent-shaper/skill-scratchpad.md).
+
 ## Applause Gate compatibility boundary
 
 Applause Gate's package family is `challenge`, because that is the repository's existing schema vocabulary for evidence-challenging procedures. Its four shared cases live in `evals/skills/applause-gate-conformance.json`; the immutable 44-case v0.2 core suite remains unchanged. The conformance adapter under `scripts/applause_gate/skill_conformance.py` is evaluation-only and is intentionally not added to `scripts/sync_control_plane/skill_evaluator.py`.
