@@ -63,18 +63,27 @@
 -- to cover the replacement. Two copies of one rule set is the defect this whole
 -- change is about; there is now one copy and two callers.
 
-begin;
-
+-- This file deliberately carries NO `begin;`/`commit;`. It needs a transaction
+-- and it does not open one, because the runner already owns it: `supabase db
+-- push` applies each migration inside a transaction, and an in-file `commit`
+-- closes the runner's transaction rather than one of our own — which is how a
+-- push reports success while leaving the migration unrecorded in the history
+-- table. An earlier draft did carry the boundary, and applying it under a
+-- wrapper showed exactly that: `WARNING: there is already a transaction in
+-- progress`, then `WARNING: there is no transaction in progress` at the end.
+--
+-- The requirement is not left to documentation. `LOCK TABLE` is rejected
+-- outside a transaction block — `ERROR: LOCK TABLE can only be used in
+-- transaction blocks`, verified on PostgreSQL 16.13 — so a runner that
+-- autocommits each statement fails on the next line instead of quietly
+-- splitting the audit from the cutover. The engine enforces the contract this
+-- file depends on.
+--
 -- The audit and the cutover must be atomic, and `EXCLUSIVE` blocks
 -- INSERT/UPDATE/DELETE while still allowing plain SELECT. Without it a write
 -- landing after the audit's SELECT but before the new function is visible would
 -- be admitted by the old guard and then stay `active`, because a trigger never
--- revalidates a row it did not fire on. The explicit transaction matters
--- independently: psql autocommits each statement unless the runner wraps the
--- file, so a lock taken in its own statement would be released immediately and
--- a failure partway through would leave the migration half applied. Verified on
--- PostgreSQL 16.13 in an earlier draft, where the function replacement
--- committed and only then did the audit raise.
+-- revalidates a row it did not fire on.
 --
 -- The cost is that writes to manifest_registry block for the duration of one
 -- count and two function definitions. That is the intended trade for a cutover
@@ -154,4 +163,28 @@ begin
   return new;
 end $$;
 
-commit;
+-- Every other function in this schema is revoked from the browser roles and
+-- granted to `service_role` explicitly; this one was created after that
+-- lockdown and so inherited PostgreSQL's default of EXECUTE to PUBLIC. It
+-- therefore worked in production by omission, and the next time the delivery
+-- migration's `revoke execute on all functions in schema quirk_sync from
+-- public,anon,authenticated` is re-run, every write to manifest_registry
+-- starts failing with `permission denied for function
+-- manifest_activation_violation` — raised inside the trigger, so a valid
+-- candidate cannot be written either.
+--
+-- Verified both halves on PostgreSQL 16.13: with the default ACL a
+-- `service_role` insert of a well-formed active manifest succeeds, and with
+-- EXECUTE revoked from PUBLIC and no grant it fails with that exact message at
+-- `guard_manifest_activation() line 3`. The grant is to `service_role` alone;
+-- the trigger function itself needs none, because EXECUTE on a trigger
+-- function is checked when the trigger is created, not when it fires.
+--
+-- SECURITY DEFINER would also work and is not used: the predicate reads only
+-- the row passed to it, so a definer context would add reach it has no use for.
+revoke execute on function
+  quirk_sync.manifest_activation_violation(quirk_sync.manifest_registry)
+  from public, anon, authenticated;
+grant execute on function
+  quirk_sync.manifest_activation_violation(quirk_sync.manifest_registry)
+  to service_role;

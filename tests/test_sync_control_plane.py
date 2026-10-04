@@ -219,6 +219,7 @@ class DatabaseGuardJobTests(unittest.TestCase):
                 "ci_declares_database_guard_job": True,
                 "ci_runs_guard_cases": True,
                 "ci_reads_installed_guard_back": True,
+                "ci_runs_guard_cases_as_service_role": True,
             },
             self.run_checks(self.live),
         )
@@ -247,6 +248,39 @@ class DatabaseGuardJobTests(unittest.TestCase):
         checks = self.run_checks(gutted)
         self.assertFalse(checks["ci_runs_guard_cases"])
         self.assertTrue(checks["ci_declares_database_guard_job"])
+
+    def test_the_service_role_step_must_be_its_own_psql_invocation(self):
+        # EXECUTE on the rule function is checked when PL/pgSQL builds the
+        # trigger's cached plan, so the privilege check is session-order
+        # dependent. Merging the two steps puts nine superuser writes in front
+        # of the service_role cases, priming the plan and making them pass with
+        # no grant at all — observed on PostgreSQL 16.13.
+        merged = copy.deepcopy(self.live)
+        steps = merged["jobs"]["database-guard"]["steps"]
+        service = next(
+            s for s in steps if "service_role.sql" in str(s.get("run", ""))
+        )
+        plain = next(
+            s
+            for s in steps
+            if "guard.run.sql" in str(s.get("run", ""))
+            and "service_role.sql" not in str(s.get("run", ""))
+        )
+        plain["run"] = plain["run"] + "\n" + service["run"]
+        steps.remove(service)
+        checks = self.run_checks(merged)
+        self.assertFalse(checks["ci_runs_guard_cases_as_service_role"])
+        self.assertTrue(checks["ci_runs_guard_cases"])
+
+    def test_dropping_the_service_role_step_fails_that_check(self):
+        gutted = copy.deepcopy(self.live)
+        steps = gutted["jobs"]["database-guard"]["steps"]
+        gutted["jobs"]["database-guard"]["steps"] = [
+            s for s in steps if "service_role.sql" not in str(s.get("run", ""))
+        ]
+        self.assertFalse(
+            self.run_checks(gutted)["ci_runs_guard_cases_as_service_role"]
+        )
 
     def test_dropping_the_installed_guard_read_back_fails_that_check(self):
         gutted = copy.deepcopy(self.live)
@@ -290,6 +324,59 @@ class ManifestActivationCasesFileTests(unittest.TestCase):
         self.assertIn("begin;", driver)
         self.assertIn("rollback;", driver)
         self.assertNotIn("commit;", driver)
+
+    SERVICE_ROLE = ROOT / "supabase/tests/manifest_activation_guard.service_role.sql"
+    MIGRATION = ROOT / (
+        "supabase/migrations/20261003090000_sync_control_plane_independent_approval.sql"
+    )
+
+    def test_the_service_role_cases_are_not_in_the_shared_cases_file(self):
+        # They have to be the first trigger fire in their session to be able to
+        # fail. A `set role` in the shared file would run after nine superuser
+        # writes have already cached the trigger's plan.
+        self.assertNotIn("set role", self.CASES.read_text(encoding="utf-8").lower())
+
+    def test_the_service_role_file_owns_its_whole_session(self):
+        body = self.SERVICE_ROLE.read_text(encoding="utf-8").lower()
+        self.assertIn("begin;", body)
+        self.assertIn("set role service_role;", body)
+        self.assertIn("reset role;", body)
+        self.assertIn("rollback;", body)
+        self.assertNotIn("commit;", body)
+        self.assertNotIn("\\ir", body)
+
+    def test_the_service_role_file_distinguishes_privilege_from_rule_failures(self):
+        # A case that caught `others` would report a permission error as a
+        # guard refusal, which is the same class of mistake as a guard that
+        # cannot return false.
+        body = self.SERVICE_ROLE.read_text(encoding="utf-8")
+        self.assertEqual(2, body.count("insufficient_privilege"))
+
+    def test_the_migration_opens_no_transaction_of_its_own(self):
+        # `supabase db push` applies each file inside a transaction, so an
+        # in-file `commit` closes the runner's and the push can report success
+        # while leaving the migration unrecorded.
+        lines = {
+            line.strip().lower()
+            for line in self.MIGRATION.read_text(encoding="utf-8").splitlines()
+        }
+        self.assertNotIn("begin;", lines)
+        self.assertNotIn("commit;", lines)
+
+    def test_the_migration_still_takes_the_write_lock(self):
+        # This is what keeps the requirement above from being documentation
+        # only: PostgreSQL rejects `LOCK TABLE` outside a transaction block, so
+        # a runner that does not wrap the file fails there instead of splitting
+        # the audit from the cutover.
+        self.assertIn(
+            "lock table quirk_sync.manifest_registry in exclusive mode",
+            self.MIGRATION.read_text(encoding="utf-8").lower(),
+        )
+
+    def test_the_migration_grants_the_rule_function_to_service_role(self):
+        body = self.MIGRATION.read_text(encoding="utf-8").lower()
+        self.assertIn("revoke execute on function", body)
+        self.assertIn("to service_role;", body)
 
     def test_every_refusal_case_asserts_its_own_message(self):
         # A case that asserted rejection without naming the reason would stay

@@ -247,9 +247,12 @@
     "guard_delegates_to_rules": true,
     "audit_uses_rule_function": true,
     "audit_holds_write_lock": true,
+    "no_migration_opens_a_transaction": true,
+    "rule_function_granted_to_service_role": true,
     "ci_declares_database_guard_job": true,
     "ci_runs_guard_cases": true,
-    "ci_reads_installed_guard_back": true
+    "ci_reads_installed_guard_back": true,
+    "ci_runs_guard_cases_as_service_role": true
   },
   "mapping_proof": {
     "binding_schema_errors": [],
@@ -257,5 +260,5 @@
     "binding_roundtrip_stable": true,
     "receipt_roundtrip_stable": true
   },
-  "content_hash_sha256": "f73921967de997c157837b66a6ea9228cfd0fbe047c99ec47007bf94b4fce31e"
+  "content_hash_sha256": "744412cd5490b16155e6b738c2480da7c003cba184d382f3a9e2c994125c8753"
 }

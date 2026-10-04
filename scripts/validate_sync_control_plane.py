@@ -83,6 +83,25 @@ def static_migration_checks(sql: str) -> dict[str, bool]:
         # The audit must be driven by the same function, not its own copy.
         "audit_uses_rule_function": "where quirk_sync.manifest_activation_violation(m) is not null" in lower,
         "audit_holds_write_lock": "lock table quirk_sync.manifest_registry in exclusive mode" in lower,
+        # No migration may open its own transaction. `supabase db push` applies
+        # each file inside one, so an in-file `commit` closes the runner's
+        # transaction and the push can report success while leaving the
+        # migration unrecorded. The write lock above is what keeps the
+        # requirement honest: PostgreSQL rejects `LOCK TABLE` outside a
+        # transaction block, so a runner that does not wrap the file fails
+        # there rather than splitting the audit from the cutover.
+        "no_migration_opens_a_transaction": not any(
+            line.strip() in {"begin;", "commit;", "begin transaction;", "end transaction;"}
+            for line in lower.splitlines()
+        ),
+        # The guard's inner call is checked against the invoking role, and
+        # every other function in this schema is revoked from the browser roles
+        # and granted to `service_role` explicitly. Without the grant, a
+        # `service_role` write raises `permission denied for function
+        # manifest_activation_violation` from inside the trigger and no row can
+        # be written, valid or not.
+        "rule_function_granted_to_service_role": "grant execute on function\n  quirk_sync.manifest_activation_violation(quirk_sync.manifest_registry)\n  to service_role;"
+        in lower,
     }
     tokens = {
         "manifest_guard": "guard_manifest_activation",
@@ -117,6 +136,7 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
             "ci_declares_database_guard_job": False,
             "ci_runs_guard_cases": False,
             "ci_reads_installed_guard_back": False,
+            "ci_runs_guard_cases_as_service_role": False,
         }
     job = (workflow or {}).get("jobs", {}).get("database-guard") or {}
     runs = "\n".join(
@@ -129,6 +149,16 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
         "ci_runs_guard_cases": "manifest_activation_guard.run.sql" in runs,
         "ci_reads_installed_guard_back": "pg_get_functiondef" in runs
         and "manifest_activation_violation(new)" in runs,
+        # In its own step, so its own psql session. EXECUTE on the rule
+        # function is checked when PL/pgSQL builds the trigger's cached plan,
+        # which makes the privilege check session-order dependent: run after
+        # the superuser cases and these pass with no grant at all.
+        "ci_runs_guard_cases_as_service_role": any(
+            "manifest_activation_guard.service_role.sql" in str(step.get("run", ""))
+            and "manifest_activation_guard.run.sql" not in str(step.get("run", ""))
+            for step in job.get("steps", [])
+            if isinstance(step, dict)
+        ),
     }
 
 

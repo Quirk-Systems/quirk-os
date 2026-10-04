@@ -18,6 +18,7 @@ on:
       - 'supabase/migrations/*sync_control_plane*'
       - 'supabase/tests/manifest_activation_guard.cases.sql'
       - 'supabase/tests/manifest_activation_guard.run.sql'
+      - 'supabase/tests/manifest_activation_guard.service_role.sql'
       - 'supabase/tests/sync_control_plane_hardening.sql'
       - 'tests/test_sync_control_plane.py'
       - 'workflows/quirk-sync-control-plane.workflow.yaml'
@@ -112,21 +113,26 @@ jobs:
         # The migrations `revoke ... from anon` and `from authenticated`, which
         # a managed Supabase project supplies and a bare postgres image does
         # not. Creating them unprivileged keeps the revokes meaningful.
+        #
+        # `service_role` gets BYPASSRLS because Supabase creates it that way,
+        # and the guard cases below write as that role. Without it the inserts
+        # fail on row-level security before the trigger is ever reached, which
+        # would make those cases pass for the wrong reason.
         run: |
           psql -v ON_ERROR_STOP=1 -c "create role anon nologin;" \
                                    -c "create role authenticated nologin;" \
-                                   -c "create role service_role nologin;"
+                                   -c "create role service_role nologin bypassrls;"
 
       - name: Apply migrations in filename order
-        # No --single-transaction: 20261003090000 opens and commits its own
-        # transaction so that its pre-install audit and the guard cutover are
-        # atomic under a runner that autocommits each statement, which is how
-        # these files are applied for real. Wrapping the file as well makes its
-        # `begin` warn and its `commit` close the wrapper early.
+        # --single-transaction per file, which is what `supabase db push` does.
+        # No migration opens its own transaction: an in-file `commit` would
+        # close the runner's, and 20261003090000's `lock table` is rejected
+        # outside a transaction block, so a runner that fails to wrap the file
+        # fails on that line rather than splitting the audit from the cutover.
         run: |
           for migration in $(ls supabase/migrations/*.sql | sort); do
             echo "--- applying ${migration}"
-            psql -v ON_ERROR_STOP=1 -f "${migration}"
+            psql -v ON_ERROR_STOP=1 --single-transaction -f "${migration}"
           done
 
       - name: Assert the installed guard delegates to the rule function
@@ -148,6 +154,18 @@ jobs:
         run: |
           psql -v ON_ERROR_STOP=1 \
             -f supabase/tests/manifest_activation_guard.run.sql
+
+      - name: Run the guard cases as the role that writes in production
+        # A separate psql invocation on purpose. `guard_manifest_activation`
+        # calls the rule function, PL/pgSQL caches that call's plan per session,
+        # and EXECUTE on a function is checked when the plan is built — so the
+        # privilege check is session-order dependent. Running these after the
+        # step above would put nine superuser writes in front of them, priming
+        # the plan and making them pass with no grant at all. This session's
+        # first trigger fire is `service_role`, which is what production does.
+        run: |
+          psql -v ON_ERROR_STOP=1 \
+            -f supabase/tests/manifest_activation_guard.service_role.sql
 
       - name: Assert the cases left no active manifest behind
         run: |
