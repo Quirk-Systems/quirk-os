@@ -144,7 +144,7 @@ begin
   end if;
   -- Serializes admissions for this identity including the first insertion,
   -- where SELECT FOR UPDATE alone has no row to lock.
-  perform pg_advisory_xact_lock(hashtextextended(m->>'manifest_key'||'@'||m->>'version',0));
+  perform pg_advisory_xact_lock(hashtextextended((m->>'manifest_key')||'@'||(m->>'version'),0));
   select * into existing from quirk_sync.manifest_registry
     where manifest_key=m->>'manifest_key' and version=m->>'version' for update;
 
@@ -186,7 +186,7 @@ begin
     values (grant_ref,quirk_sync.manifest_projection_snapshot(candidate),p,p->>'expected_from_status',
             (a->'subject'->>'expires_at')::timestamptz,(a->>'verified_at')::timestamptz);
   if existing.id is null then
-    insert into quirk_sync.manifest_registry select candidate.*;
+    insert into quirk_sync.manifest_registry select (candidate).*;
   else
     update quirk_sync.manifest_registry set
       (manifest_kind,status,requested_status,canonical_uri,content_hash,authority_ceiling,
