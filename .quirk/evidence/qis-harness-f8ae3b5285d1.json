@@ -1,0 +1,200 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.qis-harness.f8ae3b5285d1",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "2347cb050bd4fda1c0cb70b10fb907be20e20974",
+    "commit": "f8ae3b5285d126ea5893b3cef574f5b38fb58b6c",
+    "changed_paths": [
+      ".github/copilot-instructions.md",
+      ".github/instructions/intent-shaper.instructions.md",
+      ".github/skills/intent-shaper-admission/SKILL.md",
+      ".github/workflows/furniture-brief-conformance.yml",
+      ".github/workflows/qis-agent-harness.yml",
+      ".github/workflows/sync-control-plane-conformance.yml",
+      ".github/workflows/validate-skills.yml",
+      "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+      "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+      "evals/qis-agent-harness/receipt.hash-mismatch.json",
+      "evals/qis-agent-harness/receipt.material-mismatch.json",
+      "evals/qis-agent-harness/receipt.missing-evidence.json",
+      "evals/qis-agent-harness/receipt.unexpected-field.json",
+      "evals/qis-agent-harness/receipt.unknown-verdict.json",
+      "evals/qis-agent-harness/receipt.valid-provenance.json",
+      "evals/qis-agent-harness/receipt.valid.json",
+      "schemas/qis-evidence-envelope.schema.json",
+      "scripts/validate_qis_harness.py",
+      "tests/test_qis_harness.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.qis-harness.f8ae3b5285d1",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Candidate-only harness implementation and review corrections: independently verified ancestry, confined evidence paths, material SHA-256 verification, PR-head checkout, full-suite checkout history, and exact receipt command counts. Local verification: 46 focused tests passed, 225 repository tests passed, 25 Intent Shaper fixtures passed, 11 Sync Control Plane fixtures passed, and skill conformance validated 12 skills and 48 cases; zero test failures. Limitations: local Python 3.12 verification only; hosted CI after this subject and live PostgreSQL were not re-run here. No merge, admission, activation, deployment, persistence, Canon promotion, or gate satisfaction is claimed. Git blob and SHA-256 bindings cover the complete PR diff against the observed main base.",
+      "evidence_paths": [
+        "scripts/validate_qis_harness.py",
+        "tests/test_qis_harness.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/copilot-instructions.md",
+      "state": "present",
+      "git_blob": "99ce225aad706e404b11ff0464906e25ac27450f",
+      "sha256": "sha256:d2ee9e70d00c3010ec85a9573e1834e81cdd4f5f8aff5accf247366a873c2d77"
+    },
+    {
+      "path": ".github/instructions/intent-shaper.instructions.md",
+      "state": "present",
+      "git_blob": "a3fd85755c84324302fe8344703b525ac2df5780",
+      "sha256": "sha256:34b3a0dbc6de40ae260be6f9fcf41b308aef95de56c5812850b3a101270b1bde"
+    },
+    {
+      "path": ".github/skills/intent-shaper-admission/SKILL.md",
+      "state": "present",
+      "git_blob": "ac42116cfe80a4569731ddcd3d96151c886d9172",
+      "sha256": "sha256:ee7d285cc440d3e02927d668a454f338447bd4e5928e585b745ec153b8adf37b"
+    },
+    {
+      "path": ".github/workflows/furniture-brief-conformance.yml",
+      "state": "present",
+      "git_blob": "e36a17bdf678e5db84d26d678f41e193293ddc78",
+      "sha256": "sha256:4b5a0a58acc16ab5f683d01fcc86383b27daea045cefbe7717b1b6641d148082"
+    },
+    {
+      "path": ".github/workflows/qis-agent-harness.yml",
+      "state": "present",
+      "git_blob": "8956a454e046221e272c1613e872c257775b10fa",
+      "sha256": "sha256:8af44ca66a7c7851afe2df0e48c878b79acda739ea6449936f62ddba50535c64"
+    },
+    {
+      "path": ".github/workflows/sync-control-plane-conformance.yml",
+      "state": "present",
+      "git_blob": "b363bf998ac4db30f24b8244cc196b78a79731dc",
+      "sha256": "sha256:a626f4c11a93585073cdc0690b5bfd2eb280923e8cc88b8bde8c6e311dbcd401"
+    },
+    {
+      "path": ".github/workflows/validate-skills.yml",
+      "state": "present",
+      "git_blob": "362bdbcb23a1350678df403668e81f53f8ec2687",
+      "sha256": "sha256:bfa93e02343493d850a5f352fcacd74f665cdaa2ded4b95243662b39f15af905"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+      "state": "present",
+      "git_blob": "a7d684be615893df8d88570cd82dfca6f3353b24",
+      "sha256": "sha256:0158c136a435eff4a25acf16b259f2723aa59445a43123cfedb84407b1a671c1"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+      "state": "present",
+      "git_blob": "74b7cf95a627cdcec7ccfa59f63739b8ff5f34df",
+      "sha256": "sha256:487bac38ef1a4a8d688205a064f556641e6f7e1e16c8ed13f26b69908f597860"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.hash-mismatch.json",
+      "state": "present",
+      "git_blob": "90cf58c5491446b4db558c6e06eee3649b834324",
+      "sha256": "sha256:40599606200554796620202198c432fd140af5d5d715134a94101680f4654dba"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.material-mismatch.json",
+      "state": "present",
+      "git_blob": "621a2087932dc8fa6c6ee8d23dc5994feb95ac51",
+      "sha256": "sha256:fc0ae9318fcf49b9fb2e4f5ddfc96fadc8fd61ea2d988ebc5645f70a31b6f563"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.missing-evidence.json",
+      "state": "present",
+      "git_blob": "260987346eb9a35641ab3c52c7c04d2b025c7091",
+      "sha256": "sha256:912a57cf3db7d2fee303c1eebfd6cd5c82688782eb0c5241938e830db769289c"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.unexpected-field.json",
+      "state": "present",
+      "git_blob": "31c3f42c577b2491ee59a450612bd018c1af0029",
+      "sha256": "sha256:64a00ee8d6811e23b0dd44a9380b58284fc5c13ffb61539e82f0790b53f1ce28"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.unknown-verdict.json",
+      "state": "present",
+      "git_blob": "d92da5c77354032facb6c3a36472608361a7274e",
+      "sha256": "sha256:24391a04d066fdff551beb06801564223c7b3ace71ade95253d088e3796b2583"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.valid-provenance.json",
+      "state": "present",
+      "git_blob": "370debc906ebe55cbbfacb0a9f35cb0f23a6fa64",
+      "sha256": "sha256:e3048ff211f13b026720103aac98597201cc41e9d1c90674a78bb97c13de4288"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.valid.json",
+      "state": "present",
+      "git_blob": "b50bd836129e1c12866469e59d904878d5711c0a",
+      "sha256": "sha256:dae7fe36739b0267a4cf43cfcabe237493944b83ea9237473f527f04fa552a1d"
+    },
+    {
+      "path": "schemas/qis-evidence-envelope.schema.json",
+      "state": "present",
+      "git_blob": "86a61f0b5f2393c2fa1ba4029962f1791aea1f0d",
+      "sha256": "sha256:40f23f32b3d1fb63a077cd224da1ce6c4090c3ba30f0a982c22dc48a92ce3f77"
+    },
+    {
+      "path": "scripts/validate_qis_harness.py",
+      "state": "present",
+      "git_blob": "6beb9e9286ae49721b7ad127ed1c6051c04bfa12",
+      "sha256": "sha256:56724f0066becc371a2512d222412dd75d3add5580c9197c0329fca2a7d16098"
+    },
+    {
+      "path": "tests/test_qis_harness.py",
+      "state": "present",
+      "git_blob": "aca1f4ceeff7dbc95ee7c6457d6fcdcf50f9bfe4",
+      "sha256": "sha256:cd4971c8e8e778a04ce376c36c27a04c98137316b99b89c6263167ef2326e25b"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --repo . --output /tmp/qis-followup-sync-conformance.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/qis-followup-skills-conformance.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T12:58:05Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:b8afa72cf41989a41b16f64d96e6e8a07a3fdb5ff5be347d59e950c24941afad"
+}
