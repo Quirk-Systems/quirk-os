@@ -63,7 +63,7 @@ administrator can forge the projection; this is the explicit design tradeoff.
 | --- | --- | --- | --- |
 | Does scoped consent discriminate? | Valid exact review vs one-axis stale review; forged identities/scope/refs | Exact case succeeds in memory; every altered case refuses | Executed synthetic Python tests; no authentic live activation tested |
 | Is content bound? | Golden vectors, metadata drift, lifecycle-only changes, strict ingestion | Covered content changes digest; statuses need separate consent | Executed on CPython 3.13 |
-| Is the projection protected? | Real PostgreSQL roles, RPC/direct write attacks, replay and stop/resume | Refusal rolls back all effects; authorized lane succeeds | CI cases written; result recorded in successor evidence |
+| Is the projection protected? | Real PostgreSQL roles, RPC/direct write attacks, replay and stop/resume | Refusal rolls back all effects; authorized lane succeeds | PostgreSQL 16.15 CI passed; 22 named refusals, retry, stop, resume and renewal; exact source recorded in successor evidence |
 | Does it earn upkeep? | Host trust/protection audit, API availability, consumer revalidation | Proposed: quarterly audit and after every trust/profile/role change | Burden not measured; stop live bootstrap if ownership cannot be maintained |
 
 ## Decisions and authority
@@ -99,7 +99,7 @@ receipt or historical approval is rewritten.
 
 ## One next action
 
-Complete exact-version review and database CI evidence for the successor.
+Review the successor's exact version against the committed CI evidence.
 Keep runtime policy disabled. Stop before host installation, cutover deployment
 or admission. On failure, retain the refusal, repair the candidate and rerun
 only checks affected by the repair.
