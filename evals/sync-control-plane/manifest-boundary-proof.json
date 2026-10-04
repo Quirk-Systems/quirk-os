@@ -1,0 +1,250 @@
+{
+  "bundle_id": "boundary-bundle.manifest-review-proposal",
+  "version": "0.1.0",
+  "status": "candidate",
+  "proof_profile": "demonstration",
+  "coverage_profile": "focused",
+  "authority_basis": "declared",
+  "authority_ceiling": {
+    "may": [
+      "inspect",
+      "test",
+      "propose"
+    ],
+    "may_not": [
+      "self_admit",
+      "activate",
+      "merge",
+      "deploy",
+      "grant_authority",
+      "canonize",
+      "infer_consent"
+    ]
+  },
+  "authority_sources": [
+    {
+      "source_id": "authority.approved-design",
+      "kind": "human_rule",
+      "owner": "Bryan",
+      "version": "approved-design-2026-10-04",
+      "locator": "decisions/ADR-0002-manifest-approval-trust-root.md approval record",
+      "scope": [
+        "candidate implementation and synthetic testing"
+      ],
+      "status": "declared",
+      "precedence": 100
+    }
+  ],
+  "boundaries": [
+    {
+      "boundary_id": "boundary.manifest-review-proposal",
+      "name": "Exact reviewed content to proposed runtime envelope",
+      "protected_interest": "human activation authority and truthful evidence",
+      "costly_default": "human-shaped strings accepted as consent",
+      "authority_source_ids": [
+        "authority.approved-design"
+      ],
+      "dimensions": [
+        "delegation_approval",
+        "claim_evidence"
+      ],
+      "source_domain": "candidate",
+      "target_domain": "in-memory proposal",
+      "direction": "candidate_to_proposal",
+      "predicate": {
+        "expression": "Resolve exact-head scoped independent human review, compute content and bind evidence; prepare only",
+        "enforcement": "fail_closed"
+      },
+      "behaviors": {
+        "inside": "return an in-memory envelope with authority_effect none",
+        "outside": "refuse with no mutation",
+        "ambiguous": "refuse and route a bounded decision to the host owner",
+        "degraded": "return only computed content identity"
+      },
+      "override": {
+        "authority": "Bryan for design; admitted independent human for activation",
+        "binding_axes": [
+          "object_ref",
+          "purpose",
+          "environment",
+          "time",
+          "representation"
+        ],
+        "resume_behavior": "re-evaluate after a new exact scoped approval; no bypass"
+      },
+      "revocation": {
+        "invalidates_receipts": true,
+        "derivative_behavior": "deny"
+      },
+      "receipt_fields": [
+        "boundary_id",
+        "contract_version",
+        "decision",
+        "reason_codes",
+        "subject",
+        "object_hash",
+        "purpose",
+        "authority_source_ids",
+        "decided_at",
+        "enforcement_point",
+        "side_effects"
+      ],
+      "enforcement_surfaces": [
+        "prepare_projection",
+        "GitHubApprovalVerifier"
+      ],
+      "non_goals": [
+        "live GitHub authenticity demonstration",
+        "database independence",
+        "admission",
+        "consumer expiry enforcement"
+      ],
+      "invalidators": [
+        "implementation/profile/ownership/subject/environment/approval/evidence changes"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "exact-review",
+      "boundary_id": "boundary.manifest-review-proposal",
+      "test_role": "just_inside",
+      "pair_id": "pair.exact-head",
+      "title": "exact-review",
+      "axes": {
+        "subject": "agent.synthetic",
+        "object_ref": "agent.synthetic@sha256:02869a17965b473c138b5ba06d8fef55753456640a5e1350e6468cabc52b348c",
+        "source_state": "candidate",
+        "target_state_or_surface": "in-memory proposed active projection",
+        "direction": "candidate_to_proposal",
+        "purpose": "test the approved candidate predicate",
+        "capability": "prepare_projection",
+        "authority": "synthetic scoped review at current head",
+        "evidence": "synthetic evaluation and raw material",
+        "environment": "unit-test MemoryReader; no network or database",
+        "time": "frozen 2026-10-04T14:30:00Z",
+        "representation": "Python API result with authority_effect none"
+      },
+      "varied_axes": [
+        "authority"
+      ],
+      "expected": {
+        "outcome": "ALLOW",
+        "reason_codes": [
+          "BOUNDARY_ALLOW_EXACT"
+        ],
+        "permitted_side_effects": [
+          "in_memory_projection_returned"
+        ],
+        "forbidden_side_effects": [
+          "database_write",
+          "live_admission",
+          "candidate_mutation"
+        ],
+        "required_receipt_fields": [
+          "boundary_id",
+          "contract_version",
+          "decision",
+          "reason_codes",
+          "subject",
+          "object_hash",
+          "purpose",
+          "authority_source_ids",
+          "decided_at",
+          "enforcement_point",
+          "side_effects"
+        ],
+        "fallback": "hash-only inspection remains available"
+      },
+      "generic_control_false_positive": "APPROVED plus a human role would accept the stale commit binding",
+      "observed": {
+        "outcome": "ALLOW",
+        "receipt_id": "receipt.exact-review",
+        "evidence_refs": [
+          "evals/sync-control-plane/manifest-boundary-crossings.json@sha256:cd77a9f191947ed79838e48b001f9db678bb90177ec1970351425c378ac18279"
+        ],
+        "side_effects": [
+          "in_memory_projection_returned"
+        ]
+      }
+    },
+    {
+      "case_id": "old-review",
+      "boundary_id": "boundary.manifest-review-proposal",
+      "test_role": "just_outside",
+      "pair_id": "pair.exact-head",
+      "title": "old-review",
+      "axes": {
+        "subject": "agent.synthetic",
+        "object_ref": "agent.synthetic@sha256:02869a17965b473c138b5ba06d8fef55753456640a5e1350e6468cabc52b348c",
+        "source_state": "candidate",
+        "target_state_or_surface": "in-memory proposed active projection",
+        "direction": "candidate_to_proposal",
+        "purpose": "test the approved candidate predicate",
+        "capability": "prepare_projection",
+        "authority": "synthetic scoped review at old head",
+        "evidence": "synthetic evaluation and raw material",
+        "environment": "unit-test MemoryReader; no network or database",
+        "time": "frozen 2026-10-04T14:30:00Z",
+        "representation": "Python API result with authority_effect none"
+      },
+      "varied_axes": [
+        "authority"
+      ],
+      "expected": {
+        "outcome": "DENY",
+        "reason_codes": [
+          "APPROVAL_HASH_MISMATCH"
+        ],
+        "permitted_side_effects": [],
+        "forbidden_side_effects": [
+          "database_write",
+          "live_admission",
+          "candidate_mutation"
+        ],
+        "required_receipt_fields": [
+          "boundary_id",
+          "contract_version",
+          "decision",
+          "reason_codes",
+          "subject",
+          "object_hash",
+          "purpose",
+          "authority_source_ids",
+          "decided_at",
+          "enforcement_point",
+          "side_effects"
+        ],
+        "fallback": "hash-only inspection remains available"
+      },
+      "generic_control_false_positive": "APPROVED plus a human role would accept the stale commit binding",
+      "observed": {
+        "outcome": "DENY",
+        "receipt_id": "receipt.old-review",
+        "evidence_refs": [
+          "evals/sync-control-plane/manifest-boundary-crossings.json@sha256:cd77a9f191947ed79838e48b001f9db678bb90177ec1970351425c378ac18279"
+        ],
+        "side_effects": []
+      }
+    }
+  ],
+  "proof": {
+    "verdict": "demonstrated",
+    "implementation_ref": "sha256:d5c1f6cff6e5207550fd37e8514d027640a8c6338d1ae3bd1d0da34c670a40f6",
+    "executed_at": "2026-10-04T15:03:49.575705+00:00",
+    "evidence": [
+      "evals/sync-control-plane/manifest-boundary-crossings.json@sha256:cd77a9f191947ed79838e48b001f9db678bb90177ec1970351425c378ac18279"
+    ],
+    "replay_method": "CPython 3.13: python scripts/prove_manifest_boundaries.py; validate with demonstrate-quirk-boundaries validator",
+    "limitations": [
+      "focused synthetic predicate proof only",
+      "no actual human consent or protected host installed",
+      "PostgreSQL proof is separately run in CI; this proof has no DB connection",
+      "full eight-role and representation conservation proof is not claimed"
+    ],
+    "invalidators": [
+      "any listed implementation digest changes",
+      "policy/subject/approval/environment/evidence drift"
+    ]
+  }
+}
