@@ -2,6 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -266,12 +267,19 @@ class ContentHashBindingTests(unittest.TestCase):
         # deliberately — so this asserts the current one is present, not that
         # no other is.
         tracked = committed_json('evals/deck-grammar/conformance-results.json')['content_hash']
-        for doc in (
-            'docs/deck-grammar/ADMISSION-EVALUATION.md',
-            'docs/deck-grammar/README.md',
-        ):
+        # Compare the NAMED current-hash field in each document, not "appears
+        # somewhere": both also quote the superseded hash on purpose, so a
+        # containment check would pass with the current and superseded values
+        # swapped, or with the current one only in a prose aside.
+        named = {
+            'docs/deck-grammar/ADMISSION-EVALUATION.md': r'^\| Revised evaluation conformance hash \| `([0-9a-f]{64})` \|',
+            'docs/deck-grammar/README.md': r'Revised evaluation conformance content hash.*?`([0-9a-f]{64})`',
+        }
+        for doc, pattern in named.items():
             with self.subTest(doc=doc):
-                self.assertIn(tracked, (ROOT / doc).read_text(encoding='utf-8'))
+                found = re.search(pattern, (ROOT / doc).read_text(encoding='utf-8'), re.M | re.S)
+                self.assertIsNotNone(found, f'{doc} has no current-hash field')
+                self.assertEqual(tracked, found.group(1))
 
     def test_the_binding_notices_a_changed_proof(self):
         # The check is only worth recording if a change to the referenced file

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -574,7 +575,14 @@ class ManifestActivationCasesFileTests(unittest.TestCase):
         doc = (ROOT / "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn(tracked, doc)
+        # Compare the NAMED authoritative field, not "appears somewhere". The
+        # current digest also appears in the reproduction paragraph, so a
+        # containment check passed with the top-level field left stale — verified
+        # by setting that field to the superseded 13b694d7… and watching this
+        # test pass. The field is what a reader takes as the hash.
+        fields = re.findall(r"^\*\*Content hash \(SHA-256\):\*\* `([0-9a-f]{64})`", doc, re.M)
+        self.assertEqual(1, len(fields), "expected exactly one authoritative hash field")
+        self.assertEqual(tracked, fields[0])
 
     def test_the_verify_recipe_does_not_drift_from_the_workflow(self):
         """A recipe that cannot go red is the same defect as a guard that cannot refuse.

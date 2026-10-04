@@ -175,6 +175,8 @@
     {
       "name": "content-hash-binds:artifact.live-proof-report.json",
       "passed": true,
+      "content_ref": "examples/deck-grammar/live-proof.json",
+      "content_hash": "9f633beaf672efa9044895f0e13467dea04e4dd6724c8709b3285510b33e1c38",
       "errors": []
     },
     {
@@ -358,5 +360,5 @@
     "production_deployments": 0,
     "persistent_hands_without_consent": 0
   },
-  "content_hash": "ffdfd6d9b0ebc828621966394a2bd733141fef158b8474b9e7a754a7031fbfa7"
+  "content_hash": "f36aa708fdd414924981c20778ee8ea98b158b436553c9a455fb2441737c917f"
 }

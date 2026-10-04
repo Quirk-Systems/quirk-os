@@ -81,7 +81,17 @@ def main() -> int:
             continue
         actual = content_hash(load_json(referenced))
         bound = actual == recorded
-        checks.append({'name': f'content-hash-binds:{filename}', 'passed': bound, 'errors': [] if bound else [f'{content_ref} hashes to {actual}, manifest records {recorded}']})
+        # The verified digest is part of the emitted result, not just the
+        # verdict. Without it this check appended an identical passing object
+        # whichever proof it had verified, so a legitimate proof change with a
+        # correctly rebound report left this artifact byte-for-byte unchanged:
+        # reproduced by recompiling with compiler 0.2.1 — the proof hash moved
+        # 9f633bea -> ae7f50e9 and this file's digest stayed ffdfd6d9. The
+        # staleness gate and the admission-doc digest test then accepted
+        # evidence that did not identify the proof evaluated. Carrying the
+        # digest means changing the bound proof necessarily changes the
+        # evidence of record.
+        checks.append({'name': f'content-hash-binds:{filename}', 'passed': bound, 'content_ref': content_ref, 'content_hash': actual, 'errors': [] if bound else [f'{content_ref} hashes to {actual}, manifest records {recorded}']})
         passed &= bound
 
     fixture_manifest = load_json(repo / 'evals/deck-grammar/fixtures.json')
