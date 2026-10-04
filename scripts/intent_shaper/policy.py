@@ -7,17 +7,12 @@ affordance discipline, and human authority.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from copy import deepcopy
 from datetime import datetime, timezone
-<<<<<<< HEAD
-import hashlib
-import json
-from typing import Any, Iterable, Mapping
-=======
 from typing import Any, Iterable, Mapping, Protocol
->>>>>>> origin/main
 
 SOURCE_RANK: dict[str, int] = {
     "explicit_current": 50,
@@ -87,7 +82,6 @@ PLATFORM_AFFECTS: dict[str, dict[str, list[str]]] = {
     },
 }
 
-<<<<<<< HEAD
 HASH_FIELDS = {
     "content_hash",
     "registry_hash",
@@ -123,7 +117,8 @@ def canonical_hash(value: Any, *, omit_hash_fields: bool = False) -> str:
     payload = _prune_hash_fields(value) if omit_hash_fields else value
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
-=======
+
+
 PERSONA_BASES = {
     "explicit_current",
     "explicit_saved",
@@ -212,7 +207,6 @@ class FailOnReadEvidencePort(RecordingEvidencePort):
         del default
         self.trace.append(kind)
         raise RuntimeError(f"protected personalization read attempted: {kind}")
->>>>>>> origin/main
 
 
 def _parse_time(value: str | None) -> datetime | None:
@@ -308,25 +302,22 @@ def _select_preference(
     }
 
 
-def _matches_expected(actual: Any, expected: Any) -> bool:
+def _contains_subset(actual: Any, expected: Any) -> bool:
     if isinstance(expected, Mapping):
         return isinstance(actual, Mapping) and all(
-            key in actual and _matches_expected(actual[key], value) for key, value in expected.items()
+            key in actual and _contains_subset(actual[key], value) for key, value in expected.items()
         )
     if isinstance(expected, list):
-        return (
-            isinstance(actual, list)
-            and len(actual) == len(expected)
-            and all(_matches_expected(actual_item, expected_item) for actual_item, expected_item in zip(actual, expected))
-        )
+        return isinstance(actual, list) and all(item in actual for item in expected)
     return actual == expected
 
 
-<<<<<<< HEAD
 def _schema_error_code(error: Any) -> str:
     if getattr(error, "validator", None) == "additionalProperties":
         return "UNEXPECTED_FIELD"
     if getattr(error, "validator", None) == "enum":
+        if list(getattr(error, "absolute_path", [])) == ["authority", "ceiling"]:
+            return "AUTHORITY_DRIFT"
         return "UNKNOWN_ENUM_VALUE"
     if getattr(error, "validator", None) == "required":
         missing = str(error.message)
@@ -644,7 +635,22 @@ def evaluate_reconstruction_adversarial_cases(
             }
         )
     return results
-=======
+
+
+def _matches_expected(actual: Any, expected: Any) -> bool:
+    if isinstance(expected, Mapping):
+        return isinstance(actual, Mapping) and all(
+            key in actual and _matches_expected(actual[key], value) for key, value in expected.items()
+        )
+    if isinstance(expected, list):
+        return (
+            isinstance(actual, list)
+            and len(actual) == len(expected)
+            and all(_matches_expected(actual_item, expected_item) for actual_item, expected_item in zip(actual, expected))
+        )
+    return actual == expected
+
+
 def _persona_rejection_reasons(selection: Mapping[str, Any]) -> list[str]:
     allowed_fields = {
         "ref",
@@ -784,7 +790,6 @@ def evaluate_personalization_boundary(
         "persona_loaded": persona is not None,
         "history_items": len(history),
     }
->>>>>>> origin/main
 
 
 def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:

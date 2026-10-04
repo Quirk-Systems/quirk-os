@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import copy
 import json
-from pathlib import Path
 import subprocess
+from pathlib import Path
 import sys
 import unittest
 
@@ -13,17 +13,14 @@ import yaml
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 
-<<<<<<< HEAD
 from intent_shaper.policy import (  # noqa: E402
+    evaluate_case,
     evaluate_cases,
     evaluate_reconstruction_adversarial_cases,
     evaluate_reconstruction_mutations,
     evaluate_reconstruction_plan,
 )
-=======
-from intent_shaper.policy import evaluate_case, evaluate_cases  # noqa: E402
 from validate_intent_shaper import validate_policy  # noqa: E402
->>>>>>> origin/main
 
 
 class IntentShaperContractTests(unittest.TestCase):
@@ -40,9 +37,6 @@ class IntentShaperContractTests(unittest.TestCase):
 
     def test_representative_plan_is_valid(self) -> None:
         self.assertEqual([], list(self.validator.iter_errors(self.sample)))
-
-    def test_generated_ui_plan_is_valid(self) -> None:
-        self.assertEqual([], list(self.validator.iter_errors(self.generated_ui_sample)))
 
     def test_approved_plan_requires_approval_ref(self) -> None:
         plan = copy.deepcopy(self.sample)
@@ -88,11 +82,12 @@ class IntentShaperContractTests(unittest.TestCase):
         errors = list(self.validator.iter_errors(plan))
         self.assertTrue(any(list(error.path) == ["settings", "generated_ui"] for error in errors))
 
-    def test_generated_ui_affordance_is_out_of_candidate_scope(self) -> None:
-        plan = copy.deepcopy(self.sample)
-        plan["task_affordances"][0]["type"] = "generated_ui"
-        errors = list(self.validator.iter_errors(plan))
-        self.assertTrue(any("generated_ui" in error.message for error in errors))
+    def test_generated_ui_reconstruction_stays_candidate_only(self) -> None:
+        errors = list(self.validator.iter_errors(self.generated_ui_sample))
+        self.assertEqual([], errors)
+        self.assertEqual("candidate", self.generated_ui_sample["status"])
+        self.assertEqual("off", self.generated_ui_sample["settings"]["generated_ui"])
+        self.assertEqual("propose", self.generated_ui_sample["authority"]["ceiling"])
 
     def test_personalization_off_has_schema_representable_empty_persona(self) -> None:
         plan = copy.deepcopy(self.sample)
@@ -217,7 +212,17 @@ class IntentShaperContractTests(unittest.TestCase):
         self.assertFalse(actual["canon_updated"])
         self.assertTrue(actual["human_admission_required"])
 
-<<<<<<< HEAD
+    def test_adaptation_without_receipt_is_blocked(self) -> None:
+        results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}
+        actual = results["QIS-R06"]["actual"]
+        self.assertEqual("blocked", actual["status"])
+        self.assertEqual("feedback_receipt_missing", actual["reason_code"])
+        self.assertFalse(actual["feedback_receipt_verified"])
+
+
+    def test_generated_ui_plan_is_valid(self) -> None:
+        self.assertEqual([], list(self.validator.iter_errors(self.generated_ui_sample)))
+
     def test_qis_015_cold_reconstruction_is_deterministic(self) -> None:
         expected = self.suite["reconstruction_suite"]["expected"]
         command = [
@@ -262,14 +267,6 @@ class IntentShaperContractTests(unittest.TestCase):
         self.assertEqual("passed", result["status"])
         self.assertEqual(expected["semantic_hash"], result["semantic_hash"])
         self.assertEqual(expected["subhashes"], result["subhashes"])
-=======
-    def test_adaptation_without_receipt_is_blocked(self) -> None:
-        results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}
-        actual = results["QIS-R06"]["actual"]
-        self.assertEqual("blocked", actual["status"])
-        self.assertEqual("feedback_receipt_missing", actual["reason_code"])
-        self.assertFalse(actual["feedback_receipt_verified"])
->>>>>>> origin/main
 
 
 if __name__ == "__main__":

@@ -2,19 +2,6 @@
 
 Status: **candidate / non-operative**.
 
-<<<<<<< HEAD
-These skill packages are portable procedural-intelligence candidates. Each package contains:
-
-- `SKILL.md` — human/agent procedure;
-- `manifest.json` — strict machine contract, source blob SHA, and canonical manifest digest;
-- required evaluation suites and candidate evidence;
-- explicit trigger, tool, resource, authority, learning, compatibility, and stop contracts.
-
-The central `registry.json` is a rebuildable inventory. It is not Canon and cannot activate anything. Runtime registration lives in the private Supabase `quirk_sync.manifest_registry`, and Airtable is a rebuildable inspection projection.
-
-| Skill | Family | Ceiling | Primary output |
-| --- | --- | --- | --- |
-=======
 The manifest registry now contains 12 candidate Skill packages. Eleven retain the Skills v0.2 shared conformance suite; `quirk-applause-gate` joins through a bounded v0.3 registry extension with its own four-case shared conformance slice. Every package remains evidence-only until separately admitted.
 
 Each manifested package contains:
@@ -29,25 +16,17 @@ The central `registry.json` is a rebuildable candidate inventory. It is not Cano
 | Skill | Family | Ceiling | Primary output |
 | --- | --- | --- | --- |
 | `quirk-applause-gate` | challenge | infer | bounded applause review |
->>>>>>> origin/main
 | `quirk-source-authority-resolver` | research | infer | authority census |
 | `quirk-object-contract-engineer` | structure | propose | contract pack |
 | `quirk-data-refinery` | structure | propose | refinery plan |
 | `quirk-semantic-label-foundry` | perceive | propose | label review pack |
-<<<<<<< HEAD
-| `quirk-research-cartographer` | research | infer | research route and evidence map |
-=======
 | `quirk-research-cartographer` | research | infer | research map |
->>>>>>> origin/main
 | `quirk-distillation-synthesizer` | distill | infer | synthesis pack |
 | `quirk-evidence-instrumenter` | preserve | propose | evidence contract |
 | `quirk-control-loop-designer` | evolve | propose | control policy |
 | `quirk-probabilistic-forecaster` | decide | infer | forecast pack |
 | `quirk-roadmap-board-orchestrator` | connect | propose | roadmap projection |
 | `quirk-value-foundry` | productize | propose | reusable value candidate |
-<<<<<<< HEAD
-| `quirk-intent-shaper` | personalize | propose | reversible Intent × Persona × Affect × Affordance plan |
-=======
 
 Separate draft candidates live alongside the manifested registry:
 
@@ -55,19 +34,11 @@ Separate draft candidates live alongside the manifested registry:
 | --- | --- | --- |
 | `quirk-deck-compiler` | propose | purpose-filtered Deck, proposed Hand, and invariant proof |
 | `quirk-intent-shaper` | propose | reversible Intent × Persona × Affect × Affordance plan |
->>>>>>> origin/main
 
 `quirk-deck-compiler` remains a separate draft candidate under the Deck Grammar pack and is not part of the manifested registry.
 
 `quirk-intent-shaper` includes an exploratory `skill-scratchpad.md`. Scratchpad content remains candidate ideation until admitted through schemas, evaluations, evidence, and human authority.
 
-<<<<<<< HEAD
-## Runtime rule
-
-The loader rejects candidate or unadmitted versions, over-ceiling grants, self-approved grants, expired grants, undeclared actions, manifest tampering, and source tampering. Passing evals remain evidence—not admission.
-
-No skill may self-activate, increase its own authority, promote Canon, rewrite history, update user settings, persist an inferred preference, or perform an irreversible write merely because the capability or credentials exist.
-=======
 ## Applause Gate compatibility boundary
 
 Applause Gate's package family is `challenge`, because that is the repository's existing schema vocabulary for evidence-challenging procedures. Its four shared cases live in `evals/skills/applause-gate-conformance.json`; the immutable 44-case v0.2 core suite remains unchanged. The conformance adapter under `scripts/applause_gate/skill_conformance.py` is evaluation-only and is intentionally not added to `scripts/sync_control_plane/skill_evaluator.py`.
@@ -81,4 +52,3 @@ The post-run distill loop (`scripts/distill_loop/`, [`docs/distill-loop/README.m
 The runtime loader rejects candidate or unadmitted versions, over-ceiling grants, self-approved grants, expired grants, undeclared actions, manifest tampering, and source tampering. Passing evals remain evidence—not admission.
 
 No Skill may self-activate, increase its own authority, promote Canon, rewrite history, persist an inferred preference or Hand, misrepresent access as ownership, or perform an irreversible write merely because capability, evidence, or credentials exist.
->>>>>>> origin/main

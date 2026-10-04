@@ -15,20 +15,14 @@ import sys
 from jsonschema import Draft202012Validator, FormatChecker
 import yaml
 
-<<<<<<< HEAD
 from intent_shaper.policy import (
+    SOURCE_RANK,
     canonical_hash,
     evaluate_cases,
     evaluate_reconstruction_adversarial_cases,
     evaluate_reconstruction_mutations,
     evaluate_reconstruction_plan,
 )
-def file_hash(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-=======
-from intent_shaper.policy import SOURCE_RANK, evaluate_cases
-
-
 REQUIRED_INVARIANTS = {
     "current_explicit_instruction_outranks_memory",
     "purpose_partition_prevents_preference_leakage",
@@ -47,35 +41,6 @@ REQUIRED_PROHIBITIONS = {
     "model_confidence_as_authority",
     "protected_action_from_preference",
 }
->>>>>>> origin/main
-
-
-def git_sha(repo: Path, rev: str) -> str | None:
-    completed = subprocess.run(
-        ["git", "-C", str(repo), "rev-parse", rev],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if completed.returncode != 0:
-        return None
-    return completed.stdout.strip()
-
-
-def run_cold_reconstruction(repo: Path) -> dict[str, object]:
-    completed = subprocess.run(
-        [
-            sys.executable,
-            str(Path(__file__).resolve()),
-            "--repo",
-            str(repo),
-            "--emit-reconstruction-run",
-        ],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    return json.loads(completed.stdout)
 
 
 def validate_policy(policy: object) -> list[str]:
@@ -134,6 +99,38 @@ def validate_policy(policy: object) -> list[str]:
     return errors
 
 
+def file_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def git_sha(repo: Path, rev: str) -> str | None:
+    completed = subprocess.run(
+        ["git", "-C", str(repo), "rev-parse", rev],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        return None
+    return completed.stdout.strip()
+
+
+def run_cold_reconstruction(repo: Path) -> dict[str, object]:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(Path(__file__).resolve()),
+            "--repo",
+            str(repo),
+            "--emit-reconstruction-run",
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return json.loads(completed.stdout)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path.cwd())
@@ -161,17 +158,10 @@ def main() -> int:
     policy = yaml.safe_load(policy_path.read_text())
 
     Draft202012Validator.check_schema(schema)
-<<<<<<< HEAD
-    validator = Draft202012Validator(schema)
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
     sample_errors = sorted(validator.iter_errors(sample), key=lambda error: list(error.path))
     generated_ui_sample_errors = sorted(validator.iter_errors(generated_ui_sample), key=lambda error: list(error.path))
-=======
-    sample_errors = sorted(
-        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(sample),
-        key=lambda error: list(error.path),
-    )
     policy_errors = validate_policy(policy)
->>>>>>> origin/main
     results = evaluate_cases(suite["cases"])
     reconstruction_suite = suite["reconstruction_suite"]
     reconstruction_result = evaluate_reconstruction_plan(generated_ui_sample, validator)
@@ -194,14 +184,11 @@ def main() -> int:
 
     errors: list[str] = []
     errors.extend(f"sample:{'/'.join(map(str, error.path))}:{error.message}" for error in sample_errors)
-<<<<<<< HEAD
     errors.extend(
         f"generated_ui_sample:{'/'.join(map(str, error.path))}:{error.message}"
         for error in generated_ui_sample_errors
     )
-=======
     errors.extend(policy_errors)
->>>>>>> origin/main
     errors.extend(f"fixture:{result['id']}" for result in results if not result["passed"])
     if reconstruction_result["status"] != "passed":
         critical = reconstruction_result["critical_failure"]
@@ -220,12 +207,9 @@ def main() -> int:
         "status": "passed" if not errors else "failed",
         "verdict": "candidate_evidence_only",
         "schema_valid": True,
-        "sample_valid": not sample_errors,
-<<<<<<< HEAD
-        "generated_ui_sample_valid": not generated_ui_sample_errors,
-=======
         "policy_valid": not policy_errors,
->>>>>>> origin/main
+        "sample_valid": not sample_errors,
+        "generated_ui_sample_valid": not generated_ui_sample_errors,
         "fixtures_passed": sum(1 for result in results if result["passed"]),
         "fixtures_total": len(results),
         "results": results,
@@ -244,6 +228,7 @@ def main() -> int:
         },
         "relevant_files": {
             "schemas/personalization-plan.schema.json": file_hash(schema_path),
+            "policies/personalization-adaptation-policy.yaml": file_hash(policy_path),
             "scripts/intent_shaper/policy.py": file_hash(repo / "scripts/intent_shaper/policy.py"),
             "scripts/validate_intent_shaper.py": file_hash(repo / "scripts/validate_intent_shaper.py"),
             "evals/intent-shaper/cases.json": file_hash(cases_path),
@@ -288,18 +273,7 @@ def main() -> int:
         json.dumps(
             {
                 key: report[key]
-<<<<<<< HEAD
-                for key in ("status", "sample_valid", "generated_ui_sample_valid", "fixtures_passed", "fixtures_total", "content_hash")
-=======
-                for key in (
-                    "status",
-                    "sample_valid",
-                    "policy_valid",
-                    "fixtures_passed",
-                    "fixtures_total",
-                    "content_hash",
-                )
->>>>>>> origin/main
+                for key in ("status", "sample_valid", "generated_ui_sample_valid", "policy_valid", "fixtures_passed", "fixtures_total", "content_hash")
             },
             indent=2,
         )

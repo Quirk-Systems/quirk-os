@@ -694,6 +694,7 @@
             "batch_review",
             "draft",
             "diagram",
+            "generated_ui",
             "other"
           ]
         },
