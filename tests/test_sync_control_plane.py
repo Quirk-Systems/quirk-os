@@ -224,6 +224,7 @@ class DatabaseGuardJobTests(unittest.TestCase):
                 "ci_evidence_depends_on_database_guard": True,
                 "ci_decision_fails_when_guard_fails": True,
                 "ci_discards_tracked_decision": True,
+                "ci_rejects_stale_committed_decision": True,
                 "ci_path_filter_covers_job_inputs": True,
             },
             self.run_checks(self.live),
@@ -250,6 +251,7 @@ class DatabaseGuardJobTests(unittest.TestCase):
         about_something_else = {
             "ci_decision_fails_when_guard_fails",
             "ci_discards_tracked_decision",
+            "ci_rejects_stale_committed_decision",
             "ci_path_filter_covers_job_inputs",
         }
         self.assertEqual(
@@ -373,6 +375,21 @@ class DatabaseGuardJobTests(unittest.TestCase):
         )
         paths = self.live.get(True, self.live.get("on", {}))["pull_request"]["paths"]
         self.assertNotIn("supabase/migrations/*sync_control_plane*", paths)
+
+    def test_dropping_the_staleness_gate_fails_that_check(self):
+        # Without it, a change that alters the payload while leaving the
+        # committed artifact and the document untouched passes everything: the
+        # doc-digest test compares stale to stale, and the validator rewrites
+        # the file without comparing it to what is committed. Confirmed by
+        # altering the payload and touching neither — that test still passed.
+        gutted = copy.deepcopy(self.live)
+        job = gutted["jobs"]["candidate-conformance"]
+        job["steps"] = [
+            s for s in job["steps"] if "git diff --exit-code" not in str(s.get("run", ""))
+        ]
+        self.assertFalse(
+            self.run_checks(gutted)["ci_rejects_stale_committed_decision"]
+        )
 
     def test_keeping_the_tracked_decision_fails_that_check(self):
         # Checkout restores a committed decision recording a pass. With the

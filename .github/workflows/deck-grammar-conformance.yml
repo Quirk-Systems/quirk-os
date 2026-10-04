@@ -88,6 +88,18 @@ jobs:
             --output evals/deck-grammar/conformance-results.json \
             --require-pass
 
+      - name: Reject committed evidence that this run did not reproduce
+        # Same gap as the sync control plane's: the doc-digest test compares the
+        # committed documents to the committed artifact, so a change altering
+        # the payload while leaving both untouched passes. The regeneration
+        # above rewrote the file; a difference from the committed blob means the
+        # repository's evidence of record is not what this tree produces.
+        run: |
+          if ! git diff --exit-code -- evals/deck-grammar/conformance-results.json; then
+            echo "::error::The committed Deck Grammar conformance result is not what this tree produces. Regenerate it with --output and commit the result."
+            exit 1
+          fi
+
       - name: Upload Deck Grammar evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

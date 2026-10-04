@@ -255,6 +255,7 @@
     "ci_evidence_depends_on_database_guard": true,
     "ci_decision_fails_when_guard_fails": true,
     "ci_discards_tracked_decision": true,
+    "ci_rejects_stale_committed_decision": true,
     "ci_path_filter_covers_job_inputs": true,
     "ci_runs_guard_cases_as_service_role": true
   },
@@ -264,5 +265,5 @@
     "binding_roundtrip_stable": true,
     "receipt_roundtrip_stable": true
   },
-  "content_hash_sha256": "7f5407dd9c0d9619f72178afbdab33ad192c39b0fd9881787ebea38a457e8d64"
+  "content_hash_sha256": "13b694d7dac5165c2a37d9bb84918e21e373a42e545f6da863f8fc9e0b624ba0"
 }

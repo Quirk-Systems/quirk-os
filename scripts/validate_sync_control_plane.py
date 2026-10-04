@@ -140,6 +140,7 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
             "ci_evidence_depends_on_database_guard": False,
             "ci_decision_fails_when_guard_fails": False,
             "ci_discards_tracked_decision": False,
+            "ci_rejects_stale_committed_decision": False,
             "ci_path_filter_covers_job_inputs": False,
         }
     jobs = (workflow or {}).get("jobs", {})
@@ -190,6 +191,14 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
         # the upload on `always()`, any failure before the validator runs would
         # ship that committed file as this run's evidence.
         "ci_discards_tracked_decision": "rm -f evals/sync-control-plane/conformance-results.json"
+        in decision_runs,
+        # The doc-digest test compares the committed document to the committed
+        # artifact, so a change altering the payload while leaving both
+        # untouched compares stale to stale and passes. This job must therefore
+        # diff the regenerated artifact against the committed blob: without it,
+        # green CI can merge an evidence of record that the tree no longer
+        # produces.
+        "ci_rejects_stale_committed_decision": "git diff --exit-code -- evals/sync-control-plane/conformance-results.json"
         in decision_runs,
         # A path-filtered workflow runs only when a changed path matches, so a
         # test or step that consumes a file is dead weight unless that file is

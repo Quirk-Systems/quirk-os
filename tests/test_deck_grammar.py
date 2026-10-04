@@ -240,6 +240,23 @@ class ContentHashBindingTests(unittest.TestCase):
             'a step that can fail precedes the deletion of the tracked evidence',
         )
 
+    def test_the_workflow_rejects_committed_evidence_it_cannot_reproduce(self):
+        # `test_the_admission_docs_quote_the_tracked_conformance_digest` below
+        # compares the committed documents to the committed artifact. A change
+        # that alters the payload while leaving both untouched therefore
+        # compares stale to stale and passes, and the validator rewrites the
+        # artifact without comparing it to what is committed. The workflow has
+        # to diff the regenerated file against the committed blob, or green CI
+        # can merge an evidence of record the tree no longer produces.
+        workflow = load_yaml('.github/workflows/deck-grammar-conformance.yml')
+        runs = '\n'.join(
+            str(step.get('run', ''))
+            for step in workflow['jobs']['candidate-deck-conformance']['steps']
+        )
+        self.assertIn(
+            'git diff --exit-code -- evals/deck-grammar/conformance-results.json', runs
+        )
+
     def test_the_admission_docs_quote_the_tracked_conformance_digest(self):
         # The stale digest that prompted the `content-hash-binds` check was not
         # the only dangling one: two documents quoted the Deck Grammar
