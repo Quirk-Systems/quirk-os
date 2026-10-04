@@ -12,11 +12,28 @@
   "source_refs": [
     "https://quirkenterprise.com/",
     "https://quirkenterprise.com/insights",
-    "github://Quirk-Systems/quirk-os/pull/5",
+    "https://github.com/Quirk-Systems/quirk-os/pull/5",
+    "research/competitors/quirk-enterprises-swipe-fight-2026-08-11.md",
+    "evals/intent-shaper/admission-supplies.json",
     "skills/quirk-intent-shaper/skill-scratchpad.md"
   ],
-  "evidence_refs": [],
-  "contradiction_refs": [],
+  "evidence_refs": [
+    "https://github.com/Quirk-Systems/quirk-os/pull/15",
+    "https://github.com/Quirk-Systems/quirk-os/blob/c4bc0f0bdff10ccc217c8115035bd918129fe4b0/skills/quirk-intent-shaper/SKILL.md",
+    "https://github.com/Quirk-Systems/quirk-os/blob/c4bc0f0bdff10ccc217c8115035bd918129fe4b0/evals/intent-shaper/cases.json",
+    "https://github.com/Quirk-Systems/quirk-os/blob/c4bc0f0bdff10ccc217c8115035bd918129fe4b0/schemas/personalization-plan.schema.json",
+    "https://github.com/Quirk-Systems/quirk-os/blob/c4bc0f0bdff10ccc217c8115035bd918129fe4b0/policies/personalization-adaptation-policy.yaml",
+    "https://github.com/Quirk-Systems/quirk-os/blob/c4bc0f0bdff10ccc217c8115035bd918129fe4b0/scripts/intent_shaper/policy.py",
+    "https://github.com/Quirk-Systems/quirk-os/blob/c4bc0f0bdff10ccc217c8115035bd918129fe4b0/scripts/validate_intent_shaper.py",
+    "https://github.com/Quirk-Systems/quirk-os/blob/c4bc0f0bdff10ccc217c8115035bd918129fe4b0/tests/test_intent_shaper.py",
+    "https://github.com/Quirk-Systems/quirk-os/blob/c4bc0f0bdff10ccc217c8115035bd918129fe4b0/.github/workflows/intent-shaper-conformance.yml",
+    ".quirk/evidence/2026-10-04-intent-shaper-governance-repair.json",
+    "docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md#implementation-provenance-and-remaining-admission-gates"
+  ],
+  "contradiction_refs": [
+    "https://github.com/Quirk-Systems/quirk-os/issues/16#issuecomment-5264312477",
+    "docs/evidence/PR_42_CORRECTION.md"
+  ],
   "affected_objects": [
     "skill.quirk-intent-shaper",
     "quirk.preference_graph",
@@ -62,6 +79,8 @@
     "skills/quirk-intent-shaper/skill-scratchpad.md",
     "schemas/personalization-plan.schema.json",
     "evals/intent-shaper/cases.json",
+    "evals/intent-shaper/admission-supplies.json",
+    "schemas/intent-shaper-admission-supplies.schema.json",
     "docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md",
     "diagrams/intent-personalization-control-loop.mmd",
     "diagrams/platform-affect-task-affordance-router.mmd",
@@ -76,7 +95,10 @@
     "Generated UI remains outside the candidate schema until separate accessibility, reconstruction, fallback, and human gates are admitted.",
     "Feedback creates an immutable receipt before any adaptation proposal.",
     "Inferred preferences cannot self-promote into settings or Canon.",
-    "All twenty QIS and review-regression fixtures execute and pass.",
-    "One human admission decision defines permitted runtime scope."
+    "Every case in evals/intent-shaper/cases.json executes and passes; derive the count from the current cases array and report IDs/count in byte-bound evidence rather than carrying forward historical twenty-case checks.",
+    "The admission-supplies source is explicitly synthetic exercise/context only, not implementation proof, human observations, or verified admission receipts.",
+    "The .quirk/evidence/2026-10-04-intent-shaper-governance-repair.json evidence reference is pending, not existing proof: parent must generate it after the implementation commit, commit it in a descendant, and finalize whole-diff validation with the pinned ecosystem validator.",
+    "Synthetic QIS-012 through QIS-018 exercises remain explicitly synthetic and cannot satisfy actual human trial, manual accessibility, or preference inspection/correction observations.",
+    "Current user approvals authorize bounded repairs and marked synthetic exercises; runtime remains blocked until required evidence and exact scope are supplied, or an authorized human records an explicit narrowly scoped waiver and a new admission decision."
   ]
 }

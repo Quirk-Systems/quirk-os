@@ -196,7 +196,9 @@ class IntentShaperContractTests(unittest.TestCase):
     def test_adaptation_never_self_promotes(self) -> None:
         results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}
         actual = results["QIS-011"]["actual"]
-        self.assertTrue(actual["feedback_receipt_verified"])
+        self.assertTrue(actual["feedback_binding_valid"])
+        self.assertEqual("shape_and_proposal_binding_only", actual["feedback_validation_scope"])
+        self.assertNotIn("feedback_receipt_verified", actual)
         self.assertFalse(actual["auto_apply"])
         self.assertFalse(actual["memory_updated"])
         self.assertFalse(actual["settings_updated"])
@@ -208,7 +210,32 @@ class IntentShaperContractTests(unittest.TestCase):
         actual = results["QIS-R06"]["actual"]
         self.assertEqual("blocked", actual["status"])
         self.assertEqual("feedback_receipt_missing", actual["reason_code"])
-        self.assertFalse(actual["feedback_receipt_verified"])
+        self.assertFalse(actual["feedback_binding_valid"])
+
+    def test_digest_shaped_string_is_binding_only_and_cannot_authorize_persistence(self) -> None:
+        case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-011"))
+        case["input"]["feedback_receipt"]["receipt_digest"] = "b" * 64
+        actual = evaluate_case(case)["actual"]
+        self.assertTrue(actual["feedback_binding_valid"])
+        self.assertNotIn("feedback_receipt_verified", actual)
+        self.assertEqual("shape_and_proposal_binding_only", actual["feedback_validation_scope"])
+        self.assertEqual("blocked", actual["status"])
+        self.assertEqual("human_admission_required", actual["reason_code"])
+        self.assertFalse(actual["auto_apply"])
+        self.assertFalse(actual["memory_updated"])
+
+    def test_feedback_binding_rejects_mismatched_proposal_and_malformed_digest(self) -> None:
+        for field, value, reason in [
+            ("proposal_ref", "synthetic.other-proposal", "feedback_receipt_proposal_mismatch"),
+            ("receipt_digest", "not-a-digest", "feedback_receipt_digest_invalid"),
+        ]:
+            with self.subTest(field=field):
+                case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-011"))
+                case["input"]["feedback_receipt"][field] = value
+                actual = evaluate_case(case)["actual"]
+                self.assertFalse(actual["feedback_binding_valid"])
+                self.assertEqual("blocked", actual["status"])
+                self.assertEqual(reason, actual["reason_code"])
 
 
 if __name__ == "__main__":

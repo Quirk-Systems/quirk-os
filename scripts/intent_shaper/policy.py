@@ -8,9 +8,11 @@ affordance discipline, and human authority.
 from __future__ import annotations
 
 import json
+import math
 import re
 from copy import deepcopy
 from datetime import datetime, timezone
+from decimal import Decimal
 from typing import Any, Iterable, Mapping, Protocol
 
 SOURCE_RANK: dict[str, int] = {
@@ -112,6 +114,23 @@ ADAPTATION_ACTIONS = {
     "write_canon",
 }
 SHA256_PATTERN = re.compile(r"^[a-f0-9]{64}$")
+PERSONA_WEIGHT_TOLERANCE = Decimal("0.000001")
+
+
+def persona_weight_total_valid(selections: Iterable[Mapping[str, Any]]) -> bool:
+    """Sum JSON decimal spellings; accept absolute error <= 1e-6, never round first.
+
+    This accommodates explicitly rounded thirds without accepting empty hands,
+    booleans, nonfinite values, or out-of-range individual weights.
+    """
+    weights = [selection.get("weight") for selection in selections]
+    if not weights or any(
+        type(weight) not in {int, float} or not 0 <= weight <= 1 or not math.isfinite(weight)
+        for weight in weights
+    ):
+        return False
+    total = sum((Decimal(str(weight)) for weight in weights), Decimal(0))
+    return abs(total - Decimal(1)) <= PERSONA_WEIGHT_TOLERANCE
 
 
 class PersonalizationEvidencePort(Protocol):
@@ -322,6 +341,11 @@ def _persona_rejection_reasons(selection: Mapping[str, Any]) -> list[str]:
 
 
 def _feedback_binding(payload: Mapping[str, Any]) -> tuple[bool, str | None]:
+    """Check shape and proposal binding only, not receipt bytes or authenticity.
+
+    Digest syntax and an asserted immutable flag do not verify storage,
+    cryptographic integrity, provenance, or human admission.
+    """
     receipt = payload.get("feedback_receipt")
     proposal_ref = payload.get("adaptation_proposal_ref")
     if not isinstance(receipt, Mapping):
@@ -470,7 +494,7 @@ def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:
             for selection in selections
             if type(selection.get("weight")) in {int, float}
         ]
-        if len(weights) != len(selections) or round(sum(weights), 6) != 1.0:
+        if not persona_weight_total_valid(selections):
             rejection_reasons.append("invalid_weight_total")
         if rejection_reasons:
             result = {
@@ -625,7 +649,8 @@ def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:
             "requested_action": requested_action,
             "repeated_successes": int(payload.get("repeated_successes", 0)),
             "feedback_receipt_required": True,
-            "feedback_receipt_verified": binding_valid,
+            "feedback_binding_valid": binding_valid,
+            "feedback_validation_scope": "shape_and_proposal_binding_only",
             "adaptation_proposal_ref": payload.get("adaptation_proposal_ref"),
             "admission_present": bool(payload.get("admission_ref")),
             "auto_apply": False,

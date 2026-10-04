@@ -1,0 +1,346 @@
+{
+  "schema_version": "intent-shaper-admission-supplies.v1",
+  "id": "qis.admission-supplies.2026-10-04",
+  "owner": "Quirk-Systems/quirk-os",
+  "recorded_at": "2026-10-04T04:38:45.220Z",
+  "status": "candidate",
+  "source_revision": "c4bc0f0bdff10ccc217c8115035bd918129fe4b0",
+  "governing_decision_ref": "https://github.com/Quirk-Systems/quirk-os/issues/16#issuecomment-5264312477",
+  "approvals": [
+    {
+      "actor": "Bryan (as identified by current user)",
+      "source_ref": "conversation:current-user:2026-10-04T04:28:25.038+00:00",
+      "source_date": "2026-10-04T04:28:25.038+00:00",
+      "source_kind": "user_supplied_authorization",
+      "quote": "Authorized by Bryan with Synthetically Generated and Marked Supplies",
+      "authorization_status": "recorded",
+      "interpretation": "Real current user authorization for bounded repairs and synthetically generated, explicitly marked supplies; not an actual trial, observation, receipt verification, or exact runtime scope.",
+      "observation_credit": false,
+      "runtime_grant": false
+    },
+    {
+      "actor": "Bryan (as identified by current user)",
+      "source_ref": "conversation:current-user:2026-10-04T04:37:35.835+00:00",
+      "source_date": "2026-10-04T04:37:35.835+00:00",
+      "source_kind": "user_supplied_authorization",
+      "quote": "authorize merging updated main into the current branch so I can implement the repairs",
+      "authorization_status": "recorded",
+      "interpretation": "Recorded main-to-current-branch authorization. The HEAD reflog records a fast-forward to current main. No push, PR, or runtime admission follows from it.",
+      "observation_credit": false,
+      "runtime_grant": false
+    },
+    {
+      "actor": "Bryan (as identified by current user)",
+      "source_ref": "conversation:current-user:2026-10-04T04:37:35.835+00:00",
+      "source_date": "2026-10-04T04:37:35.835+00:00",
+      "source_kind": "user_supplied_authorization",
+      "quote": "Authorize all human approvals required",
+      "authorization_status": "recorded",
+      "interpretation": "Real current user approval for the bounded repair and synthetic-exercise work. It supplies neither observations nor exact purpose/source/sink/action/expiry controls; it is not interpreted as a waiver of every admission requirement.",
+      "observation_credit": false,
+      "runtime_grant": false
+    }
+  ],
+  "synthetic_exercises": [
+    {
+      "gate_id": "QIS-012",
+      "evidence_kind": "synthetic",
+      "generated_by": "assistant",
+      "execution_status": "not_run",
+      "human_observation": false,
+      "admission_credit": false,
+      "scenario": {
+        "description": "Synthetic personalization-off boundary exercise, including contradictory settings and forged off flags.",
+        "conditions": [
+          "Personalization is disabled with adaptation and implicit signals off; stored preference/profile/persona/history adapters fail on any read.",
+          "A second input has personalization disabled but propose_only adaptation; a third enabled-path input carries a forged no_personalization flag."
+        ]
+      },
+      "expected_assertions": [
+        "The disabled path makes zero protected reads and uses only current-request preferences.",
+        "Contradictory settings fail closed before reads; a forged flag does not bypass enabled-path policy."
+      ],
+      "supporting_refs": ["evals/intent-shaper/cases.json#QIS-012", "evals/intent-shaper/cases.json#QIS-012A", "evals/intent-shaper/cases.json#QIS-012B"],
+      "limitations": ["These are synthetic exercise specifications, not newly executed results or canonical hash-pinned receipts."]
+    },
+    {
+      "gate_id": "QIS-013",
+      "evidence_kind": "synthetic",
+      "generated_by": "assistant",
+      "execution_status": "not_run",
+      "human_observation": false,
+      "admission_credit": false,
+      "scenario": {
+        "description": "Synthetic paired-trial design with the same task presented as personalized and no-personalization variants.",
+        "conditions": [
+          "Use an identical task and semantic decision in both variants; blind presentation order in a future authorized human trial.",
+          "Leave participant, environment, ratings, timing, and measured improvement absent."
+        ]
+      },
+      "expected_assertions": [
+        "A future trial must record actual authorized human/environment and limitations.",
+        "No synthetic preference choice or expected benefit is admitted as a measurement or human observation."
+      ],
+      "supporting_refs": ["https://github.com/Quirk-Systems/quirk-os/issues/16#issuecomment-5264312477"],
+      "limitations": ["No human paired trial occurred in this work; efficacy remains unmeasured."]
+    },
+    {
+      "gate_id": "QIS-014",
+      "evidence_kind": "synthetic",
+      "generated_by": "assistant",
+      "execution_status": "not_run",
+      "human_observation": false,
+      "admission_credit": false,
+      "scenario": {
+        "description": "Synthetic candidate-only generated-UI denial exercise.",
+        "conditions": ["A candidate plan requests generated_ui or task_gated generated-UI settings."]
+      },
+      "expected_assertions": [
+        "The v0.2 candidate rejects generated_ui rather than claiming accessible production UI.",
+        "Manual keyboard/screen-reader observation or explicit authorized rescoping remains missing."
+      ],
+      "supporting_refs": ["schemas/personalization-plan.schema.json", "skills/quirk-intent-shaper/SKILL.md"],
+      "limitations": ["A denial exercise does not establish accessibility or waive the governing manual gate."]
+    },
+    {
+      "gate_id": "QIS-015",
+      "evidence_kind": "synthetic",
+      "generated_by": "assistant",
+      "execution_status": "not_run",
+      "human_observation": false,
+      "admission_credit": false,
+      "scenario": {
+        "description": "Synthetic rejection of reconstruction claims for non-admitted generated UI.",
+        "conditions": ["No admitted component grammar, cold-process reconstruction artifact, or content-addressed UI output is supplied."]
+      },
+      "expected_assertions": [
+        "Do not label absent reconstruction artifacts verified.",
+        "Generated UI stays denied; any future reconstruction claim requires real inputs, outputs, hashes, and executable checks."
+      ],
+      "supporting_refs": ["docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md#generated-ui-admission"],
+      "limitations": ["No reconstruction run or semantic-hash comparison occurred; candidate UI denial is not a passing QIS-015 admission receipt."]
+    },
+    {
+      "gate_id": "QIS-016",
+      "evidence_kind": "synthetic",
+      "generated_by": "assistant",
+      "execution_status": "not_run",
+      "human_observation": false,
+      "admission_credit": false,
+      "scenario": {
+        "description": "Synthetic fallback-equivalence requirements exercise for a hypothetical future UI.",
+        "conditions": [
+          "A hypothetical UI and numbered-text fallback would need the same semantic decision, state effects, and authority gates.",
+          "No deployed UI or operability observation is supplied."
+        ]
+      },
+      "expected_assertions": [
+        "Fallback presence alone must not be treated as semantic or operability equivalence.",
+        "Generated UI remains denied; future equivalence needs executable comparison and applicable human observations."
+      ],
+      "supporting_refs": ["docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md#task-affordance-contract"],
+      "limitations": ["No fallback comparison was executed; hypothetical requirements have no admission credit."]
+    },
+    {
+      "gate_id": "QIS-017",
+      "evidence_kind": "synthetic",
+      "generated_by": "assistant",
+      "execution_status": "not_run",
+      "human_observation": false,
+      "admission_credit": false,
+      "scenario": {
+        "description": "Synthetic preference-summary inspection/correction design.",
+        "conditions": [
+          "A hypothetical summary exposes purpose, source, precedence, exclusions, uncertainty, and proposed supersession.",
+          "No actual human inspection, correction command, or immutable correction receipt is supplied."
+        ]
+      },
+      "expected_assertions": [
+        "Corrections must be classified and proposed without rewriting history or silently persisting preferences.",
+        "A generated summary or correction example cannot satisfy the actual human inspection/correction gate."
+      ],
+      "supporting_refs": ["https://github.com/Quirk-Systems/quirk-os/issues/16#issuecomment-5264312477", "policies/personalization-adaptation-policy.yaml"],
+      "limitations": ["No human correction observation occurred; this does not claim an implemented correction workflow."]
+    },
+    {
+      "gate_id": "QIS-018",
+      "evidence_kind": "synthetic",
+      "generated_by": "assistant",
+      "execution_status": "not_run",
+      "human_observation": false,
+      "admission_credit": false,
+      "scenario": {
+        "description": "Synthetic default-deny admission exercise with real bounded repair approvals but missing runtime scope and observations.",
+        "conditions": [
+          "The three current user approvals are authentic user-supplied authorization, stored separately from synthetic exercises.",
+          "Purpose, sources, sinks, actions, ceiling, expiry/revocation, stop/rollback/audit controls, and a new admission decision are missing."
+        ]
+      },
+      "expected_assertions": [
+        "Reject synthetic evidence masquerading as human admission, incomplete scopes claiming admission, and unverified receipt references claiming verified.",
+        "Runtime remains blocked; generated UI is denied; no blanket waiver is inferred."
+      ],
+      "supporting_refs": ["schemas/intent-shaper-admission-supplies.schema.json", "https://github.com/Quirk-Systems/quirk-os/issues/16#issuecomment-5264312477"],
+      "limitations": ["No narrow runtime grant or explicit narrowly scoped waiver has been supplied."]
+    }
+  ],
+  "human_observations": [],
+  "evidence_receipt_refs": [],
+  "runtime_admission": {
+    "status": "blocked",
+    "generated_ui": "denied",
+    "authority_ceiling": "propose",
+    "scope": {
+      "status": "missing",
+      "purpose": null,
+      "sources": null,
+      "sinks": null,
+      "actions": null,
+      "ceiling": null,
+      "expires_at": null,
+      "revocation": null,
+      "stop_controls": null,
+      "rollback": null,
+      "audit": null
+    },
+    "waiver": null,
+    "new_admission_decision_ref": null
+  },
+  "remaining_gates": {
+    "byte_bound_qis_receipts": "missing",
+    "human_paired_trial": "missing",
+    "manual_accessibility_or_explicit_rescoping": "missing",
+    "human_summary_correction": "missing",
+    "exact_runtime_scope": "missing",
+    "new_admission_decision": "missing"
+  },
+  "source_records": [
+    {
+      "source_ref": "conversation:current-user:2026-10-04T04:28:25.038+00:00",
+      "owner": "Current user identifying Bryan's authorization",
+      "revision": null,
+      "source_date": "2026-10-04T04:28:25.038+00:00",
+      "check_status": "local_read",
+      "relationship": "authorization",
+      "claim": "The original user turn supplied 'Authorized by Bryan with Synthetically Generated and Marked Supplies'; its source timestamp was confirmed in the current user's provenance correction.",
+      "limitations": ["No actual human trial, a11y, correction observation, exact runtime scope, or explicit narrowly scoped waiver was supplied."]
+    },
+    {
+      "source_ref": "conversation:current-user:2026-10-04T04:37:35.835+00:00",
+      "owner": "Current user identifying Bryan's authorization",
+      "revision": null,
+      "source_date": "2026-10-04T04:37:35.835+00:00",
+      "check_status": "local_read",
+      "relationship": "authorization",
+      "claim": "The user turn supplied 'authorize merging updated main into the current branch so I can implement the repairs' and 'Authorize all human approvals required'; its source timestamp was confirmed in the current user's provenance correction.",
+      "limitations": ["No actual human trial, a11y, correction observation, exact runtime scope, or explicit narrowly scoped waiver was supplied."]
+    },
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-os/issues/16#issuecomment-5264312477",
+      "owner": "Bryan / Quirk-Systems/quirk-os",
+      "revision": "f5effa3d6da3e5879e10007492aeff39a1c643be",
+      "source_date": "2026-08-12T08:31:31Z",
+      "check_status": "retrieved",
+      "relationship": "governing_decision",
+      "claim": "The decision is REVISE, with runtime and generated UI refused and QIS-012–018 receipts/observations/scope required.",
+      "limitations": ["Its historical no-merge posture conflicts with later merged PR metadata; runtime refusal is not superseded by that merge."]
+    },
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-os/pull/15",
+      "owner": "Quirk-Systems/quirk-os",
+      "revision": "b33954b6b3dd18e36a045d5acefd0c9423a6a867",
+      "source_date": "2026-10-04T04:08:03Z",
+      "check_status": "retrieved",
+      "relationship": "implementation",
+      "claim": "GitHub metadata reports PR 15 merged; the commit listing includes historical evaluated and repair heads.",
+      "limitations": ["The body still describes draft posture and older twenty-case passing checks; neither is a current-tree result or runtime grant.", "Parent reports deepening by 200 and passing historical active-set validation; PR-body checks remain historical, not current implementation results."]
+    },
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-os/blob/c4bc0f0bdff10ccc217c8115035bd918129fe4b0/skills/quirk-intent-shaper/SKILL.md",
+      "owner": "Quirk-Systems/quirk-os",
+      "revision": "c4bc0f0bdff10ccc217c8115035bd918129fe4b0",
+      "source_date": null,
+      "check_status": "retrieved",
+      "relationship": "implementation",
+      "claim": "The retrieved main Skill is version 0.2.0, candidate, ceiling propose; local HEAD/main refs identify the same revision.",
+      "limitations": ["Source retrieval is not execution, release, or byte-bound receipt verification."]
+    },
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-os/blob/c4bc0f0bdff10ccc217c8115035bd918129fe4b0/evals/intent-shaper/cases.json",
+      "owner": "Quirk-Systems/quirk-os",
+      "revision": "c4bc0f0bdff10ccc217c8115035bd918129fe4b0",
+      "source_date": null,
+      "check_status": "retrieved",
+      "relationship": "implementation",
+      "claim": "The retrieved main suite and locally read baseline have 25 cases; execution counts must be derived from the current cases array.",
+      "limitations": ["This baseline source inventory is not a current conformance result; the seven exercise specifications are separate from evaluator fixtures."]
+    },
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-os/blob/5637a99/.quirk/evidence/2026-08-21-quirk-os-evidence-adoption.json",
+      "owner": "Quirk-Systems/quirk-os",
+      "revision": "5637a99",
+      "source_date": "2026-10-04T03:34:22Z",
+      "check_status": "retrieved",
+      "relationship": "governance_only",
+      "claim": "Retrieved rebinding receipt records 3099e1c8a156c97828cec7e99d9e61dbc6e36f8f to 6b2394c3af34e60c9a19b8cc6cefa69337a72cda, explicitly not Intent Shaper implementation or admission coverage.",
+      "limitations": ["Parent verified both historical receipts after deepening by 200; that repairs the active-set historical blocker, not current implementation/admission gates.", "The August-named path now contains the published October rebinding receipt. Original bytes remain pinned in its adoption artifact and preserved in existing Git history; no extra historical edit or archive is needed."]
+    },
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-os/commit/d33ddad4dc814ada5b644a3fac662841fc92fea5",
+      "owner": "Quirk-Systems/quirk-os",
+      "revision": "d33ddad4dc814ada5b644a3fac662841fc92fea5",
+      "source_date": null,
+      "check_status": "not_checked",
+      "relationship": "historical_provenance",
+      "claim": "The existing rebinding receipt identifies this as the original adoption subject.",
+      "limitations": ["This historical commit reference is recorded from the rebinding receipt, not presented as current implementation provenance. The original receipt content was retrieved at squash 6b2394c with Git blob 518c46bb8ad2546c4703098df96696036c4f0662."]
+    },
+    {
+      "source_ref": "https://github.com/Quirk-Systems/quirk-os/blob/6b2394c3af34e60c9a19b8cc6cefa69337a72cda/.quirk/evidence/2026-08-21-quirk-os-evidence-adoption.json",
+      "owner": "Quirk-Systems/quirk-os",
+      "revision": "6b2394c3af34e60c9a19b8cc6cefa69337a72cda",
+      "source_date": "2026-08-21T04:34:22Z",
+      "check_status": "retrieved",
+      "relationship": "historical_provenance",
+      "claim": "GitHub returned the original adoption receipt with blob 518c46bb8ad2546c4703098df96696036c4f0662. Its bytes are pinned in the existing adoption artifact and preserved in Git history; no additional archive is retained.",
+      "limitations": ["Historical receipt status and commands are source content, not current QIS execution or runtime admission evidence."]
+    },
+    {
+      "source_ref": "conversation:current-user:2026-10-04T04:44:01.595Z",
+      "owner": "Current user relaying parent findings",
+      "revision": "5637a99",
+      "source_date": "2026-10-04T04:44:01.595Z",
+      "check_status": "local_read",
+      "relationship": "governance_only",
+      "claim": "Parent reports the active evidence set resolves reachable squash 6b2394c, the historical blocker is repaired, and new receipts will follow the final implementation commit using /tmp/quirk-evidence-policy/validate_evidence_receipts.py.",
+      "limitations": ["Historical governance validation does not cover the final repair diff; parent will check the whole-diff receipt after implementation commits."]
+    },
+    {
+      "source_ref": "conversation:current-user:2026-10-04T04:45:28.512Z",
+      "owner": "Current user relaying parent findings",
+      "revision": "c4bc0f0bdff10ccc217c8115035bd918129fe4b0",
+      "source_date": "2026-10-04T04:45:28.512Z",
+      "check_status": "local_read",
+      "relationship": "governance_only",
+      "claim": "Parent reports the pinned historical validator now passes 2 receipts after deepening by 200. No historical receipt edit is needed.",
+      "limitations": ["This is parent-reported historical governance validation, not QIS implementation/admission proof.", "The move's synthetic supplies reference is context only and is excluded from implementation evidence_refs."]
+    },
+    {
+      "source_ref": "conversation:current-user:2026-10-04T04:47:08.092+00:00",
+      "owner": "Current user correcting source provenance",
+      "revision": null,
+      "source_date": "2026-10-04T04:47:08.092+00:00",
+      "check_status": "local_read",
+      "relationship": "authorization",
+      "claim": "The current user confirmed the original approval source timestamps: synthetic authorization at 04:28:25.038+00:00; merge and all-human-approvals authorization at 04:37:35.835+00:00. Capture time 04:38:45.220Z is not an approval source date.",
+      "limitations": ["The correction preserves the real user approvals but does not supply missing human observations, exact runtime scope, or a narrowly scoped waiver."]
+    }
+  ],
+  "limitations": [
+    "This is a typed candidate-only supply artifact, not a passing admission evidence receipt.",
+    "Synthetic scenarios and expected assertions are generated specifications with no human observation or admission credit.",
+    "The parent verified both historical receipts after deepening by 200. Current implementation check results and whole-diff byte-bound receipts must be recorded separately from these synthetic specifications.",
+    "The parent/operator must generate actual byte-bound receipts after implementation using the validator from the pinned ecosystem policy repository.",
+    "Missing gates may be resolved by actual required evidence/scope or a separately recorded explicit narrowly scoped waiver from an authorized human and a new decision; broad repair approvals do not waive all requirements."
+  ]
+}

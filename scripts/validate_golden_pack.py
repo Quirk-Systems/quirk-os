@@ -15,6 +15,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from intent_shaper.contracts import validate_personalization_plan, validate_proposed_move
+
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_FILES = [
@@ -231,6 +233,70 @@ def validate_move(move: Any, source: str) -> int:
     return errors
 
 
+def validate_canonical_moves(status: str = "PROPOSED", unresolved: list[str] | None = None) -> int:
+    """Scan all canonical moves, including candidates outside the PR3 queue.
+
+    Two preexisting bootstrap documents use other dialects. Report their schema
+    exceptions explicitly; they are not canonical conformance or admission proof.
+    A document adopting proposed-move.v1 loses the legacy exception.
+    Non-PR3 blockers remain admission holds for candidates and fail admission
+    statuses. PR3's queue retains its separate ordering and verdict checks.
+    """
+    schema = load_json("schemas/proposed-move.schema.json")
+    errors = 0
+    for path in sorted((ROOT / "proposed-moves").rglob("*.json")):
+        relative = path.relative_to(ROOT).as_posix()
+        if relative == "proposed-moves/pr-3/queue.json":
+            continue  # Preserve the separate queue contract and tribunal logic.
+        try:
+            move = load_json(relative)
+        except ValueError as exc:
+            fail(str(exc))
+            errors += 1
+            continue
+        findings = validate_proposed_move(move, schema)
+        legacy = isinstance(move, dict) and (
+            (
+                relative == "proposed-moves/quirkverse-activation-engine/qpm_quirkverse_activation_bootstrap.json"
+                and move.get("schema_version") == "quirk.proposed-move/0.1"
+                and move.get("move_id") == "qpm.quirkverse-activation-engine.bootstrap"
+                and move.get("status") == "PROPOSED"
+                and move.get("authority_effect") == "none"
+            )
+            or (
+                relative == "proposed-moves/sync-control-plane/qpm_sync_control_plane_bootstrap.json"
+                and "schema_version" not in move
+                and move.get("id") == "qpm_sync_control_plane_bootstrap"
+                and move.get("admission_decision") == "human_required"
+                and move.get("authority_ceiling") == "propose"
+                and move.get("status") == "PROPOSED"
+            )
+        )
+        if legacy:
+            print(f"EXCEPTION: {relative}: legacy noncanonical dialect; not canonical conformance or admission proof")
+            for finding in findings:
+                print(f"EXCEPTION: {relative}:{finding}")
+            continue
+        for finding in findings:
+            fail(f"{relative}:{finding}")
+        errors += len(findings)
+        if (
+            isinstance(move, dict)
+            and not relative.startswith("proposed-moves/pr-3/")
+            and move.get("blocks_merge") is True
+            and move.get("disposition") not in RESOLVED_BLOCKER_DISPOSITIONS
+        ):
+            move_id = move.get("id")
+            if unresolved is not None:
+                unresolved.append(move_id)
+            if status in ADMISSION_STATUSES:
+                fail(f"admission blocked by unresolved Proposed Move: {move_id} ({relative})")
+                errors += 1
+            else:
+                hold(f"Golden admission blocked by unresolved Proposed Move: {move_id} ({relative})")
+    return errors
+
+
 def validate_tribunal_queue(relative: str, status: str) -> tuple[int, list[str]]:
     errors = 0
     try:
@@ -418,10 +484,19 @@ def main() -> int:
                 errors += 1
 
     unresolved: list[str] = []
+    errors += validate_canonical_moves(status, unresolved)
+    plan_errors = validate_personalization_plan(
+        load_json("examples/personalization-plan.valid.json"),
+        load_json("schemas/personalization-plan.schema.json"),
+    )
+    for finding in plan_errors:
+        fail(f"examples/personalization-plan.valid.json:{finding}")
+    errors += len(plan_errors)
     queue_relative = "proposed-moves/pr-3/queue.json"
     if (ROOT / queue_relative).is_file():
-        queue_errors, unresolved = validate_tribunal_queue(queue_relative, status)
+        queue_errors, queue_unresolved = validate_tribunal_queue(queue_relative, status)
         errors += queue_errors
+        unresolved.extend(queue_unresolved)
 
     for path in ROOT.rglob("*"):
         if not path.is_file() or ".git" in path.parts:

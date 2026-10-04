@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/intent-shaper-admission-supplies.schema.json",
+  "title": "Intent Shaper candidate-only synthetic admission supplies",
+  "description": "Truthful blocked supplies, not a runtime grant, human observation record, or byte-verified receipt. Future admission requires a separate reviewed decision contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "id", "owner", "recorded_at", "status",
+    "source_revision", "governing_decision_ref", "approvals",
+    "synthetic_exercises", "human_observations", "evidence_receipt_refs",
+    "runtime_admission", "remaining_gates", "source_records", "limitations"
+  ],
+  "properties": {
+    "schema_version": {"const": "intent-shaper-admission-supplies.v1"},
+    "id": {"const": "qis.admission-supplies.2026-10-04"},
+    "owner": {"const": "Quirk-Systems/quirk-os"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "status": {"const": "candidate"},
+    "source_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "governing_decision_ref": {"const": "https://github.com/Quirk-Systems/quirk-os/issues/16#issuecomment-5264312477"},
+    "approvals": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/approval"},
+      "allOf": [
+        {"contains": {"properties": {"quote": {"const": "Authorized by Bryan with Synthetically Generated and Marked Supplies"}}, "required": ["quote"]}},
+        {"contains": {"properties": {"quote": {"const": "authorize merging updated main into the current branch so I can implement the repairs"}}, "required": ["quote"]}},
+        {"contains": {"properties": {"quote": {"const": "Authorize all human approvals required"}}, "required": ["quote"]}}
+      ]
+    },
+    "synthetic_exercises": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/syntheticExercise"},
+      "allOf": [
+        {"contains": {"properties": {"gate_id": {"const": "QIS-012"}}, "required": ["gate_id"]}},
+        {"contains": {"properties": {"gate_id": {"const": "QIS-013"}}, "required": ["gate_id"]}},
+        {"contains": {"properties": {"gate_id": {"const": "QIS-014"}}, "required": ["gate_id"]}},
+        {"contains": {"properties": {"gate_id": {"const": "QIS-015"}}, "required": ["gate_id"]}},
+        {"contains": {"properties": {"gate_id": {"const": "QIS-016"}}, "required": ["gate_id"]}},
+        {"contains": {"properties": {"gate_id": {"const": "QIS-017"}}, "required": ["gate_id"]}},
+        {"contains": {"properties": {"gate_id": {"const": "QIS-018"}}, "required": ["gate_id"]}}
+      ]
+    },
+    "human_observations": {
+      "description": "No actual trial, manual a11y, or preference correction observations were supplied.",
+      "type": "array",
+      "maxItems": 0
+    },
+    "evidence_receipt_refs": {
+      "description": "References only. This schema cannot verify receipt identity, bytes, ancestry, commands, or coverage; verified labels are forbidden here.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_ref", "verification_status", "admission_effect"],
+        "properties": {
+          "source_ref": {"type": "string", "minLength": 1},
+          "verification_status": {"const": "unverified"},
+          "admission_effect": {"const": "none"}
+        }
+      }
+    },
+    "runtime_admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "generated_ui", "authority_ceiling", "scope", "waiver", "new_admission_decision_ref"],
+      "properties": {
+        "status": {"const": "blocked"},
+        "generated_ui": {"const": "denied"},
+        "authority_ceiling": {"const": "propose"},
+        "scope": {
+          "description": "All missing grant fields must remain explicit nulls, not wildcard or model-authored grants.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status", "purpose", "sources", "sinks", "actions", "ceiling",
+            "expires_at", "revocation", "stop_controls", "rollback", "audit"
+          ],
+          "properties": {
+            "status": {"const": "missing"},
+            "purpose": {"type": "null"},
+            "sources": {"type": "null"},
+            "sinks": {"type": "null"},
+            "actions": {"type": "null"},
+            "ceiling": {"type": "null"},
+            "expires_at": {"type": "null"},
+            "revocation": {"type": "null"},
+            "stop_controls": {"type": "null"},
+            "rollback": {"type": "null"},
+            "audit": {"type": "null"}
+          }
+        },
+        "waiver": {"type": "null"},
+        "new_admission_decision_ref": {"type": "null"}
+      }
+    },
+    "remaining_gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "byte_bound_qis_receipts", "human_paired_trial",
+        "manual_accessibility_or_explicit_rescoping", "human_summary_correction",
+        "exact_runtime_scope", "new_admission_decision"
+      ],
+      "properties": {
+        "byte_bound_qis_receipts": {"const": "missing"},
+        "human_paired_trial": {"const": "missing"},
+        "manual_accessibility_or_explicit_rescoping": {"const": "missing"},
+        "human_summary_correction": {"const": "missing"},
+        "exact_runtime_scope": {"const": "missing"},
+        "new_admission_decision": {"const": "missing"}
+      }
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/sourceRecord"}
+    },
+    "limitations": {"$ref": "#/$defs/nonemptyStrings"}
+  },
+  "$defs": {
+    "nonemptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor", "source_ref", "source_date", "source_kind", "quote", "authorization_status", "interpretation", "observation_credit", "runtime_grant"],
+      "properties": {
+        "actor": {"const": "Bryan (as identified by current user)"},
+        "source_ref": {"type": "string", "minLength": 1},
+        "source_date": {"type": "string", "format": "date-time"},
+        "source_kind": {"const": "user_supplied_authorization"},
+        "quote": {
+          "enum": [
+            "Authorized by Bryan with Synthetically Generated and Marked Supplies",
+            "authorize merging updated main into the current branch so I can implement the repairs",
+            "Authorize all human approvals required"
+          ]
+        },
+        "authorization_status": {"const": "recorded"},
+        "interpretation": {"type": "string", "minLength": 1},
+        "observation_credit": {"const": false},
+        "runtime_grant": {"const": false}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"quote": {"const": "Authorized by Bryan with Synthetically Generated and Marked Supplies"}},
+            "required": ["quote"]
+          },
+          "then": {
+            "properties": {
+              "source_ref": {"const": "conversation:current-user:2026-10-04T04:28:25.038+00:00"},
+              "source_date": {"const": "2026-10-04T04:28:25.038+00:00"}
+            }
+          },
+          "else": {
+            "properties": {
+              "source_ref": {"const": "conversation:current-user:2026-10-04T04:37:35.835+00:00"},
+              "source_date": {"const": "2026-10-04T04:37:35.835+00:00"}
+            }
+          }
+        }
+      ]
+    },
+    "syntheticExercise": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gate_id", "evidence_kind", "generated_by", "execution_status",
+        "human_observation", "admission_credit", "scenario",
+        "expected_assertions", "supporting_refs", "limitations"
+      ],
+      "properties": {
+        "gate_id": {"enum": ["QIS-012", "QIS-013", "QIS-014", "QIS-015", "QIS-016", "QIS-017", "QIS-018"]},
+        "evidence_kind": {"const": "synthetic"},
+        "generated_by": {"const": "assistant"},
+        "execution_status": {"const": "not_run"},
+        "human_observation": {"const": false},
+        "admission_credit": {"const": false},
+        "scenario": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["description", "conditions"],
+          "properties": {
+            "description": {"type": "string", "minLength": 1},
+            "conditions": {"$ref": "#/$defs/nonemptyStrings"}
+          }
+        },
+        "expected_assertions": {"$ref": "#/$defs/nonemptyStrings"},
+        "supporting_refs": {"$ref": "#/$defs/nonemptyStrings"},
+        "limitations": {"$ref": "#/$defs/nonemptyStrings"}
+      }
+    },
+    "sourceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_ref", "owner", "revision", "source_date", "check_status", "relationship", "claim", "limitations"],
+      "properties": {
+        "source_ref": {"type": "string", "minLength": 1},
+        "owner": {"type": "string", "minLength": 1},
+        "revision": {"type": ["string", "null"]},
+        "source_date": {"type": ["string", "null"], "format": "date-time"},
+        "check_status": {"enum": ["retrieved", "local_read", "not_checked"]},
+        "relationship": {"enum": ["authorization", "governing_decision", "implementation", "historical_provenance", "governance_only"]},
+        "claim": {"type": "string", "minLength": 1},
+        "limitations": {"$ref": "#/$defs/nonemptyStrings"}
+      }
+    }
+  }
+}

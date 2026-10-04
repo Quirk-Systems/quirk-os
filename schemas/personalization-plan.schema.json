@@ -159,6 +159,7 @@
       }
     },
     "persona_hand": {
+      "$comment": "Enabled hands require an aggregate weight of 1 within absolute decimal tolerance 0.000001, checked by scripts/intent_shaper/contracts.py using the evaluator's shared policy. Off mode retains an empty hand.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -303,7 +304,8 @@
       "additionalProperties": false,
       "required": [
         "adaptation_mode",
-        "personalization_enabled"
+        "personalization_enabled",
+        "generated_ui"
       ],
       "properties": {
         "personalization_enabled": {
@@ -746,6 +748,32 @@
     }
   },
   "allOf": [
+    {
+      "if": {
+        "properties": {
+          "settings": {
+            "properties": {
+              "personalization_enabled": {
+                "const": true
+              }
+            },
+            "required": ["personalization_enabled"]
+          }
+        },
+        "required": ["settings"]
+      },
+      "then": {
+        "properties": {
+          "persona_hand": {
+            "properties": {
+              "primary": {
+                "$ref": "#/$defs/personaSelection"
+              }
+            }
+          }
+        }
+      }
+    },
     {
       "if": {
         "properties": {

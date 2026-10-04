@@ -127,3 +127,7 @@ This candidate may infer and propose a plan. It may not:
 - choose a permanent persona;
 - deploy an adaptive interface to production without a separate grant.
 - represent `generated_ui` as an admitted task affordance in this candidate version.
+
+PR #15's merge supplies implementation provenance, not runtime activation. See [the architecture's provenance and remaining gates](../../docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md#implementation-provenance-and-remaining-admission-gates). Derive fixture counts from `evals/intent-shaper/cases.json`; do not reuse historical “twenty” or passing results.
+
+`evals/intent-shaper/admission-supplies.json` records real user approvals separately from explicitly synthetic QIS-012–018 exercises. Validate it against `schemas/intent-shaper-admission-supplies.schema.json`. Synthetic scenarios are not human trial, manual accessibility, correction observations, verified receipts, or runtime grants. Runtime remains blocked until required observations and exact scope are provided, or an authorized human explicitly records a narrowly scoped waiver and a new admission decision. Do not infer that broad repair approvals waived every gate.

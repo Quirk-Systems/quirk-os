@@ -4,16 +4,26 @@ on:
   pull_request:
     paths:
       - '.github/workflows/intent-shaper-conformance.yml'
+      - '.github/workflows/golden-gates.yml'
       - 'docs/personalization/**'
       - 'evals/intent-shaper/**'
       - 'examples/personalization-plan.valid.json'
       - 'policies/personalization-adaptation-policy.yaml'
+      - 'policies/manifest-admission-policy.yaml'
+      - 'policies/receipt-immutability-policy.yaml'
+      - 'proposed-moves/**'
+      - 'schemas/proposed-move*.schema.json'
+      - 'schemas/intent-shaper-admission-supplies.schema.json'
+      - 'docs/evidence/**'
+      - 'research/competitors/**'
+      - 'tribunals/**'
+      - 'scripts/validate_golden_pack.py'
       - 'requirements-evals.txt'
       - 'schemas/personalization-plan.schema.json'
       - 'scripts/intent_shaper/**'
       - 'scripts/validate_intent_shaper.py'
       - 'skills/quirk-intent-shaper/**'
-      - 'tests/test_intent_shaper.py'
+      - 'tests/*intent*'
   workflow_dispatch:
 
 permissions:
@@ -42,7 +52,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
 
       - name: Run Intent Shaper tests
-        run: python -m unittest tests.test_intent_shaper -v
+        run: python -m unittest discover -s tests -p '*intent*.py' -v
 
       - name: Run Intent Shaper conformance
         run: |

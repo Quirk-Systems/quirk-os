@@ -3,6 +3,7 @@
 **Status:** Competitive research candidate  
 **Observed:** 2026-08-11  
 **Authority:** Pattern extraction and strategy only. This file does not authorize copying proprietary expression, making unsupported claims, changing Canon, or contacting the competitor.
+**Qualification repair:** 2026-10-04. The observed date above belongs to the original candidate, not a new fetch. No competitor page or search was fetched in this repair; the original review has no attached snapshot, search log, or measurement. Its descriptions below remain review claims, not independently verified findings.
 
 ## Source census
 
@@ -10,6 +11,8 @@
 - Public insights page: https://quirkenterprise.com/insights
 - Thomasnet profile: https://www.thomasnet.com/company/quirk-enterprises-llc-31007863/profile
 - BBB profile: https://www.bbb.org/us/md/myersville/profile/general-services/quirk-enterprises-llc-0011-90379896
+
+Attributed source publishers (per the original review, not independently verified): Quirk Enterprises LLC for its homepage/insights; Thomasnet and BBB for their respective listings. These are the original source census, not checked-link results or a claim of rights over their content. URLs were not checked in this repair.
 
 ## Fair reading
 
@@ -41,20 +44,20 @@ The public pages found during this review emphasize operational modernization, c
 
 ## Fight: where Quirk should separate
 
-The public pages reviewed make broad promises but expose little visible implementation evidence. This is an opening, not proof of incapability.
+The original candidate reported broad promises and little visible implementation evidence at https://quirkenterprise.com/ and https://quirkenterprise.com/insights. Implementation detail was **not found in review** as recorded here; without a retained snapshot or search log this cannot establish absence elsewhere, current absence, or incapability. Every comparison below is bounded to that recorded review. Quirk responses are proposed capabilities, not verified outcomes.
 
-| Public gap observed | Quirk response |
+| Bounded comparison / review limitation | Quirk response |
 | --- | --- |
-| Generic operational-modernization language | Named object grammar, contracts, lifecycle, authority, and evidence |
-| One-size-fits-all buyer experience | Intent-, persona-, purpose-, platform-, and task-adaptive experiences |
-| No public preference or personalization model | Purpose-partitioned Preference Graph with inspection, correction, and forgetting |
-| “Connected systems” without visible source-authority rules | Canon / Runtime / Work / Projection separation |
-| No public run receipts, rollback, or supersession model found | Immutable receipts, compensations, migrations, and correction-by-supersession |
-| No public case-study or named deployment pages surfaced in search | Reproducible case packs with inputs, constraints, diffs, tests, and observed outcomes |
-| Broad industry coverage can read as generic | Narrow proof wedges first; domain overlays only after evidence |
-| Dashboard-centric promise | Task-specific affordances: diff, map, simulator, queue, review deck, generated UI, or no UI |
-| AI framed mainly as integration and automation | Stateful human–agent ecosystem with human authority and reversible adaptation |
-| Assessment described, deliverables not visible | Fixed assessment contract, evidence inventory, decision routes, and proof sprint |
+| “Generic” is this review's interpretation of operational-modernization language at https://quirkenterprise.com/, not an established quality defect | Named object grammar, contracts, lifecycle, authority, and evidence |
+| Buyer adaptation was **not found in review** of https://quirkenterprise.com/; the former “one-size-fits-all” claim was unsupported | Intent-, persona-, purpose-, platform-, and task-adaptive experiences |
+| A preference or personalization model was **not found in review** of https://quirkenterprise.com/ and https://quirkenterprise.com/insights | Purpose-partitioned Preference Graph with inspection, correction, and forgetting |
+| Source-authority rules for connected systems were **not found in review** of https://quirkenterprise.com/ | Canon / Runtime / Work / Projection separation |
+| Run receipts, rollback, or supersession models were **not found in review** of https://quirkenterprise.com/ and https://quirkenterprise.com/insights | Immutable receipts, compensations, migrations, and correction-by-supersession |
+| Case-study or named deployment pages were **not found in review** of https://quirkenterprise.com/ and https://quirkenterprise.com/insights; no search log supports the former broader search claim | Reproducible case packs with inputs, constraints, diffs, tests, and observed outcomes |
+| “Generic” breadth is a positioning interpretation of industry coverage attributed to https://quirkenterprise.com/, not evidence of deployment quality | Narrow proof wedges first; domain overlays only after evidence |
+| Dashboard emphasis is the review's reading of https://quirkenterprise.com/; alternative affordances were **not found in review**, not proved absent | Task-specific affordances: diff, map, simulator, queue, review deck, generated UI, or no UI; generated UI remains outside the Intent Shaper v0.2 candidate |
+| Integration/automation emphasis is the review's reading of https://quirkenterprise.com/ and https://quirkenterprise.com/insights; stateful human–agent governance was **not found in review** | Stateful human–agent ecosystem with human authority and reversible adaptation |
+| Assessment deliverable contracts were **not found in review** of https://quirkenterprise.com/; this does not establish that clients receive none | Fixed assessment contract, evidence inventory, decision routes, and proof sprint |
 
 ## The commercial wedge
 
@@ -95,6 +98,8 @@ Not a discovery call wearing a nicer jacket.
 **Quirk category claim**
 
 > A stateful human–agent control plane that understands intent, preserves authority, adapts the experience to the person and task, and proves what changed.
+
+Both category lines are positioning summaries, not quotations from a fetched source or measurements. The Quirk line is aspirational; implementation and runtime admission must be evidenced separately. See [the candidate architecture](../../docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md) and [the Proposed Move](../../proposed-moves/personalization/qpm_intent_shaper_candidate.json).
 
 ## Competitive rules
 

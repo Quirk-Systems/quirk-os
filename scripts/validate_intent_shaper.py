@@ -9,9 +9,10 @@ import json
 from pathlib import Path
 import sys
 
-from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema import Draft202012Validator
 import yaml
 
+from intent_shaper.contracts import schema_errors, validate_personalization_plan, validate_proposed_move
 from intent_shaper.policy import SOURCE_RANK, evaluate_cases
 
 
@@ -99,14 +100,16 @@ def validate_policy(policy: object) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path.cwd())
+    parser.add_argument("--plan", type=Path, help="Validate a generated full plan instead of the representative sample")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
 
     repo = args.repo.resolve()
     schema_path = repo / "schemas/personalization-plan.schema.json"
-    sample_path = repo / "examples/personalization-plan.valid.json"
+    sample_path = args.plan or (repo / "examples/personalization-plan.valid.json")
     cases_path = repo / "evals/intent-shaper/cases.json"
     policy_path = repo / "policies/personalization-adaptation-policy.yaml"
+    move_path = repo / "proposed-moves/personalization/qpm_intent_shaper_candidate.json"
 
     schema = json.loads(schema_path.read_text())
     sample = json.loads(sample_path.read_text())
@@ -114,15 +117,24 @@ def main() -> int:
     policy = yaml.safe_load(policy_path.read_text())
 
     Draft202012Validator.check_schema(schema)
-    sample_errors = sorted(
-        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(sample),
-        key=lambda error: list(error.path),
+    sample_errors = validate_personalization_plan(sample, schema)
+    move_errors = validate_proposed_move(
+        json.loads(move_path.read_text()),
+        json.loads((repo / "schemas/proposed-move.schema.json").read_text()),
+    )
+    # Validate the supplies contract, not runtime eligibility: an honest blocked
+    # candidate is structurally valid and never needs admission to run fixtures.
+    supplies_errors = schema_errors(
+        json.loads((repo / "evals/intent-shaper/admission-supplies.json").read_text()),
+        json.loads((repo / "schemas/intent-shaper-admission-supplies.schema.json").read_text()),
     )
     policy_errors = validate_policy(policy)
     results = evaluate_cases(suite["cases"])
 
     errors: list[str] = []
-    errors.extend(f"sample:{'/'.join(map(str, error.path))}:{error.message}" for error in sample_errors)
+    errors.extend(f"sample:{error}" for error in sample_errors)
+    errors.extend(f"proposed_move:{error}" for error in move_errors)
+    errors.extend(f"admission_supplies:{error}" for error in supplies_errors)
     errors.extend(policy_errors)
     errors.extend(f"fixture:{result['id']}" for result in results if not result["passed"])
 
@@ -131,6 +143,8 @@ def main() -> int:
         "status": "passed" if not errors else "failed",
         "schema_valid": True,
         "sample_valid": not sample_errors,
+        "proposed_move_valid": not move_errors,
+        "admission_supplies_valid": not supplies_errors,
         "policy_valid": not policy_errors,
         "fixtures_passed": sum(1 for result in results if result["passed"]),
         "fixtures_total": len(results),
@@ -150,6 +164,8 @@ def main() -> int:
                 for key in (
                     "status",
                     "sample_valid",
+                    "proposed_move_valid",
+                    "admission_supplies_valid",
                     "policy_valid",
                     "fixtures_passed",
                     "fixtures_total",
