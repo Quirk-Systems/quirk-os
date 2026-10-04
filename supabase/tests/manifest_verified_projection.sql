@@ -135,6 +135,21 @@ begin
     raise exception 'resume or refusal rollback produced wrong effects';
   end if;
 end $$;
+-- Active-to-active renewal also has one exact transition, despite no status
+-- label change. The legacy status-only history trigger would miss this.
+update projection_probe set p=jsonb_set(jsonb_set(jsonb_set(jsonb_set(jsonb_set(p,
+  '{manifest,admission,authority_grant_ref}','"grant.sql.renew"'),
+  '{approval,authority_grant_ref}','"grant.sql.renew"'),
+  '{manifest,admission,transition_ref}','"transition.sql.renew"'),
+  '{expected_from_status}','"active"'),'{approval,subject,from_status}','"active"');
+select quirk_sync.apply_verified_manifest_projection(p) from projection_probe;
+do $$
+begin
+  if (select count(*) from quirk_sync.manifest_projection_receipts)<>3
+     or (select count(*) from quirk_sync.manifest_transition_ledger)<>4 then
+    raise exception 'renewal duplicated or lost transition history';
+  end if;
+end $$;
 update quirk_sync.manifest_registry set status='revoked',requested_status='revoked';
 reset role;
 
