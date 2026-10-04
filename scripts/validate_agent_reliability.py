@@ -12,7 +12,7 @@ from agent_reliability.runner import run_pack
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--fixtures", type=Path, default=Path("evals/agent-reliability/v0.1.1/fixtures.json"))
+    parser.add_argument("--fixtures", type=Path, default=Path("evals/agent-reliability/v0.1.2/fixtures.json"))
     parser.add_argument("--observations", type=Path, help="Optional separately recorded traces; never treated as authenticated deployment evidence")
     args = parser.parse_args()
     try:

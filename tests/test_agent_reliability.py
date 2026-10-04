@@ -21,7 +21,7 @@ from agent_reliability.runner import run_pack  # noqa: E402
 
 
 def sample():
-    return json.loads((ROOT / "evals/agent-reliability/v0.1.1/fixtures.json").read_text())
+    return json.loads((ROOT / "evals/agent-reliability/v0.1.2/fixtures.json").read_text())
 
 
 class CandidateAuthorityTests(unittest.TestCase):
@@ -75,6 +75,9 @@ class CandidateAuthorityTests(unittest.TestCase):
         self.check_mutation(lambda c: c["agency_locus"].update(authorizer="model:planner"), "untrusted_authorizer")
         self.check_mutation(lambda c: c["agency_locus"].update(authorizer="human:owner"), "self_approval")
 
+    def test_selector_must_be_the_declared_model_role(self):
+        self.check_mutation(lambda c: c["agency_locus"].update(selector="tool:untrusted"), "untrusted_selector")
+
     def test_human_must_initiate_the_authority_request(self):
         self.check_mutation(lambda c: c["agency_locus"].update(initiator="model:planner"), "non_human_initiator")
 
@@ -99,6 +102,9 @@ class CandidateAuthorityTests(unittest.TestCase):
         result = evaluate_authority(case)
         self.assertFalse(result["eligible_candidate"])
         self.assertIn("invalid_fixture", result["reasons"])
+
+    def test_claimed_scopes_must_be_a_list(self):
+        self.check_mutation(lambda c: c["resource"].update(claimed_scopes={}), "invalid_fixture")
 
     def test_non_string_timestamp_fails_closed(self):
         case = copy.deepcopy(self.safe)
@@ -183,7 +189,7 @@ class ObservationalScoringTests(unittest.TestCase):
     def test_panels_preserve_attack_fraction_and_do_not_create_authority(self):
         result = score_observations(sample()["observations"])
         panels = result["panels"]
-        self.assertEqual([0, 0.2, 0.4], [p["attacker_fraction"] for p in panels])
+        self.assertEqual([0, 0.2, 1 / 3], [p["attacker_fraction"] for p in panels])
         self.assertEqual([0, 0.25, 0.5], [p["honest_defection_rate"] for p in panels])
         self.assertFalse(result["authority_effect"])
 
@@ -227,6 +233,27 @@ class ObservationalScoringTests(unittest.TestCase):
         data = copy.deepcopy(sample()["observations"])
         data["panels"][0]["attackers"] = "1"
         self.assertEqual("INVALID_MATCH", score_observations(data)["panel_status"])
+        data = copy.deepcopy(sample()["observations"])
+        data["panels"][0]["agent_count"] = True
+        self.assertEqual("INVALID_MATCH", score_observations(data)["panel_status"])
+        data = copy.deepcopy(sample()["observations"])
+        data["panels"][0]["honest_correct_before"] = [True]
+        self.assertEqual("INVALID_MATCH", score_observations(data)["panel_status"])
+
+    def test_non_finite_observation_numbers_fail_closed(self):
+        for lane, mutate, status in (
+            ("revisions", lambda d: d["revisions"][0]["flat"].update(cost=float("inf")), "revision_status"),
+            ("simulation", lambda d: d["simulation"][0].update(simulation_score=float("nan")), "simulation_status"),
+        ):
+            with self.subTest(lane=lane):
+                data = copy.deepcopy(sample()["observations"])
+                mutate(data)
+                self.assertEqual("INVALID_MATCH", score_observations(data)[status])
+
+    def test_non_mapping_observations_fail_cleanly(self):
+        for value in (None, []):
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, "must be an object"):
+                score_observations(value)
 
     def test_defection_rate_uses_initially_correct_population(self):
         data = copy.deepcopy(sample()["observations"])
@@ -253,6 +280,7 @@ class ObservationalScoringTests(unittest.TestCase):
         corruptions = (
             ("revisions", [{}], "revision_status"),
             ("simulation", [{"variant": "a"}] * 3, "simulation_status"),
+            ("simulation", [None], "simulation_status"),
             ("persona", [{}], "persona_status"),
         )
         for lane, value, status in corruptions:
@@ -265,7 +293,7 @@ class ObservationalScoringTests(unittest.TestCase):
 class FixturePackTests(unittest.TestCase):
     def test_every_registered_authority_and_completion_case_has_expected_outcome(self):
         pack = sample()
-        self.assertEqual("agent-reliability.v0.1.1", pack["version"])
+        self.assertEqual("agent-reliability.v0.1.2", pack["version"])
         self.assertEqual(12, sum(f["expected"] for f in pack["authority"]))
         self.assertEqual(12, sum(not f["expected"] for f in pack["authority"]))
         self.assertEqual(12, len({f["pair_id"] for f in pack["authority"]}))
@@ -273,6 +301,14 @@ class FixturePackTests(unittest.TestCase):
             for fixture in pack[category]:
                 with self.subTest(fixture=fixture["id"]):
                     self.assertEqual(fixture["expected"], fn(fixture["case"])[key])
+
+    def test_scope_escalation_fixture_changes_scope_not_object(self):
+        unsafe = next(
+            item["case"] for item in sample()["authority"]
+            if item["id"] == "A10-unsafe-scope-escalation"
+        )
+        self.assertEqual(unsafe["grant"]["object_ids"][0], unsafe["request"]["object_id"])
+        self.assertNotIn(unsafe["request"]["scope"], unsafe["grant"]["scopes"])
 
     def test_coverage_deduplicates_and_exposes_omissions(self):
         coverage = summarize_coverage(sample()["coverage"])
@@ -284,7 +320,7 @@ class FixturePackTests(unittest.TestCase):
     def test_versioned_receipt_is_bound_to_fixture_and_denies_authority(self):
         pack = sample()
         receipt = json.loads(
-            (ROOT / "evals/agent-reliability/v0.1.1/verification-receipt.json").read_text()
+            (ROOT / "evals/agent-reliability/v0.1.2/verification-receipt.json").read_text()
         )
         report = run_pack(pack)
         self.assertEqual(pack["version"], receipt["version"])
@@ -309,6 +345,11 @@ class FixturePackTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             run_pack(fixture)
 
+    def test_runner_rejects_non_object_packs(self):
+        for fixture in (None, []):
+            with self.subTest(fixture=fixture), self.assertRaisesRegex(ValueError, "must be an object"):
+                run_pack(fixture)
+
     def test_runner_rejects_truncated_fixture_inventory(self):
         fixture = sample()
         fixture["authority"] = fixture["authority"][:2]
@@ -320,6 +361,14 @@ class FixturePackTests(unittest.TestCase):
         fixture["authority"][1]["pair_id"] = "pair:wrong"
         with self.assertRaisesRegex(ValueError, "authority fixture inventory"):
             run_pack(fixture)
+
+    def test_runner_requires_complete_completion_inventory_records(self):
+        for field in ("case", "expected"):
+            with self.subTest(field=field):
+                fixture = sample()
+                del fixture["completion"][0][field]
+                with self.assertRaisesRegex(ValueError, "completion fixture inventory"):
+                    run_pack(fixture)
 
     def test_runner_rejects_fixture_manifest_as_observation_trace(self):
         with self.assertRaises(ValueError):
@@ -334,7 +383,7 @@ class FixturePackTests(unittest.TestCase):
             run_pack(sample(), data)
 
     def test_cli_invalid_observation_is_a_clean_error(self):
-        fixture_path = "evals/agent-reliability/v0.1.1/fixtures.json"
+        fixture_path = "evals/agent-reliability/v0.1.2/fixtures.json"
         result = subprocess.run([sys.executable, "scripts/validate_agent_reliability.py", "--observations", fixture_path], cwd=ROOT, capture_output=True, text=True, check=False)
         self.assertEqual(2, result.returncode)
         self.assertIn("invalid observations", result.stderr)
@@ -353,6 +402,21 @@ class FixturePackTests(unittest.TestCase):
             )
         self.assertEqual(2, result.returncode)
         self.assertIn("invalid observations or fixture input", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_cli_non_object_fixture_is_a_clean_error(self):
+        with tempfile.TemporaryDirectory(dir="/tmp") as temp_dir:
+            fixture_path = Path(temp_dir) / "fixtures.json"
+            fixture_path.write_text("[]", encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, "scripts/validate_agent_reliability.py", "--fixtures", str(fixture_path)],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(2, result.returncode)
+        self.assertIn("fixture pack must be an object", result.stderr)
         self.assertNotIn("Traceback", result.stderr)
 
     def test_cli_malformed_nested_observation_is_a_clean_error(self):

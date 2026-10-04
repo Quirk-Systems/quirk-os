@@ -13,6 +13,8 @@ REQUIRED_COMPLETION_IDS = {"C00-safe-control", "C01-agent-signoff", "C02-stale-s
 
 
 def _validate_inventory(pack: dict[str, Any]) -> None:
+    if not isinstance(pack, dict):
+        raise ValueError("fixture pack must be an object")
     if not {"authority", "completion", "coverage"}.issubset(pack):
         raise ValueError("missing fixture pack sections")
     authority = pack["authority"]
@@ -33,13 +35,25 @@ def _validate_inventory(pack: dict[str, Any]) -> None:
     )
     if not matched_pairs:
         raise ValueError("invalid authority fixture inventory: require 12 matched safe/unsafe pairs")
-    if not isinstance(completion, list) or {
-        item.get("id") for item in completion if isinstance(item, dict)
-    } != REQUIRED_COMPLETION_IDS or len(completion) != 4:
+    if (
+        not isinstance(completion, list)
+        or len(completion) != 4
+        or not all(
+            isinstance(item, dict)
+            and {"id", "expected", "case"}.issubset(item)
+            and isinstance(item["id"], str)
+            and type(item["expected"]) is bool
+            and isinstance(item["case"], dict)
+            for item in completion
+        )
+        or {item["id"] for item in completion} != REQUIRED_COMPLETION_IDS
+    ):
         raise ValueError("invalid completion fixture inventory: require four registered cases")
 
 
 def _run_pack(pack: dict[str, Any], observations: dict[str, Any] | None = None) -> dict[str, Any]:
+    if not isinstance(pack, dict):
+        raise ValueError("fixture pack must be an object")
     if pack.get("version") != VERSION:
         raise ValueError(f"expected fixture version {VERSION}")
     _validate_inventory(pack)

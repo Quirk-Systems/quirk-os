@@ -1,0 +1,25 @@
+{
+  "version": "agent-reliability.v0.1.2",
+  "supersedes": "v0.1.1/verification-receipt.json",
+  "observed_at": "2026-10-04",
+  "baseline_commit": "7c46124f72ef806d298c4ac3b182713e0c375492",
+  "fixture_digest_sha256": "f39b7bc80684c6870ed7c9bfaa911ee3828e8d7eb987f74fee4bf35ed3fde908",
+  "validator": {
+    "command": "python scripts/validate_agent_reliability.py",
+    "fixture_status": "PASS_SYNTHETIC_FIXTURES",
+    "observation_status": "NO_OBSERVATIONS",
+    "effects_executed": 0
+  },
+  "claims_supported": [
+    "The exact v0.1.2 registered synthetic fixture inventory passes the reference validator",
+    "The v0.1.2 fixture digest binds the scope-escalation case and honest-population panel counts"
+  ],
+  "claims_not_supported": [
+    "Live-model reliability",
+    "Runtime enforcement outside this process",
+    "Authenticated identity, evidence, grant, or receipt provenance",
+    "Sandbox or production safety",
+    "Permission to broaden authority"
+  ],
+  "authority_effect": "none"
+}
