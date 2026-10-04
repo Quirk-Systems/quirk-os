@@ -1,0 +1,78 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.qis-valid-provenance-pins.dd28fdb43b77",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "03dce842e350053801337a3cd0d26581028d43f5",
+    "commit": "dd28fdb43b7729925086eb792c2bb08db2796e70",
+    "changed_paths": [
+      "evals/qis-agent-harness/receipt.valid-provenance.json"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.qis-valid-provenance-pins.dd28fdb43b77",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Repairs the skill-candidate-conformance failure in run 37221040588 (job 111491261805). Main fffdfc7 merged PR #35's receipt.valid-provenance.json fixture, which pinned sha256 bytes of schemas/personalization-plan.schema.json and evals/intent-shaper/cases.json from PR #35's branch, after QIS-014 (#37) had changed both files on main, so test_valid_receipt_fixture_passes_and_hash_is_stable and test_repository_relative_paths_pass failed with sha256 mismatch. Subject dd28fdb43b77 updates only those two material pins to the merged main bytes and reseals receipt_hash; the validator, schema, tests, and other fixtures are unchanged. Recorded commands ran locally at the subject with Python 3.12.3: 49 focused tests passed, the fixture validated with error_count 0, the full suite ran 235 tests OK, and validate_skills exited 0 with outputs written under /tmp. Hosted CI results are not established. This grants no admission, merge, activation, deployment, persistence, or Canon promotion authority; Bryan remains the only admission authority.",
+      "evidence_paths": [
+        "evals/qis-agent-harness/receipt.valid-provenance.json"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "evals/qis-agent-harness/receipt.valid-provenance.json",
+      "state": "present",
+      "git_blob": "0562504b825f0f6fed8fbbcf1c043893894335cd",
+      "sha256": "sha256:c3b937d3954ebdb47682b8e9844a37191ef536ad7e475d65fce4b2f4f5da0306"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "git diff --check 03dce842e350053801337a3cd0d26581028d43f5..dd28fdb43b7729925086eb792c2bb08db2796e70",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor 03dce842e350053801337a3cd0d26581028d43f5 dd28fdb43b7729925086eb792c2bb08db2796e70",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor f5effa3d6da3e5879e10007492aeff39a1c643be dd28fdb43b7729925086eb792c2bb08db2796e70",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/cr.json --metrics-output /tmp/cm.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T17:41:24Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:01b0c50c961278bee0c4963dfe501e0e0375468149572bccbe76a52adc391044"
+}
