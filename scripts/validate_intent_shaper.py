@@ -12,8 +12,10 @@ from pathlib import Path
 import subprocess
 import sys
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
+import yaml
 
+<<<<<<< HEAD
 from intent_shaper.policy import (
     canonical_hash,
     evaluate_cases,
@@ -23,6 +25,29 @@ from intent_shaper.policy import (
 )
 def file_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+=======
+from intent_shaper.policy import SOURCE_RANK, evaluate_cases
+
+
+REQUIRED_INVARIANTS = {
+    "current_explicit_instruction_outranks_memory",
+    "purpose_partition_prevents_preference_leakage",
+    "persona_is_lens_not_identity_or_authority",
+    "platform_affect_changes_form_not_semantic_decision",
+    "negative_constraints_apply_before_style_optimization",
+    "personalization_off_disables_saved_retrieval",
+    "inference_never_self_promotes",
+    "feedback_requires_immutable_receipt",
+}
+REQUIRED_PROHIBITIONS = {
+    "sensitive_inference_without_consent",
+    "permanent_persona_assignment",
+    "impersonate_user",
+    "cross_purpose_preference_leakage",
+    "model_confidence_as_authority",
+    "protected_action_from_preference",
+}
+>>>>>>> origin/main
 
 
 def git_sha(repo: Path, rev: str) -> str | None:
@@ -53,6 +78,62 @@ def run_cold_reconstruction(repo: Path) -> dict[str, object]:
     return json.loads(completed.stdout)
 
 
+def validate_policy(policy: object) -> list[str]:
+    """Validate executable policy shape and detect drift from the evaluator."""
+
+    if not isinstance(policy, dict):
+        return ["policy:root:not_an_object"]
+    errors: list[str] = []
+    expected_keys = {
+        "api_version",
+        "kind",
+        "metadata",
+        "invariants",
+        "precedence",
+        "adaptation",
+        "prohibited",
+    }
+    if set(policy) != expected_keys:
+        errors.append("policy:root:unexpected_or_missing_fields")
+    if policy.get("api_version") != "quirk.dev/policy/v1alpha1" or policy.get("kind") != "Policy":
+        errors.append("policy:identity:invalid")
+
+    metadata = policy.get("metadata")
+    if not isinstance(metadata, dict):
+        errors.append("policy:metadata:invalid")
+    else:
+        if metadata.get("id") != "policy.personalization-adaptation":
+            errors.append("policy:metadata:id_mismatch")
+        if metadata.get("version") != "0.2.0":
+            errors.append("policy:metadata:version_mismatch")
+        if metadata.get("status") != "candidate":
+            errors.append("policy:metadata:status_must_be_candidate")
+
+    precedence = policy.get("precedence")
+    executable_precedence = [name for name, _ in sorted(SOURCE_RANK.items(), key=lambda item: item[1], reverse=True)]
+    if precedence != executable_precedence:
+        errors.append("policy:precedence:evaluator_drift")
+
+    invariants = policy.get("invariants")
+    if not isinstance(invariants, list) or set(invariants) != REQUIRED_INVARIANTS:
+        errors.append("policy:invariants:invalid")
+
+    adaptation = policy.get("adaptation")
+    if not isinstance(adaptation, dict):
+        errors.append("policy:adaptation:invalid")
+    else:
+        if adaptation.get("default_mode") != "propose_only" or adaptation.get("auto_apply") is not False:
+            errors.append("policy:adaptation:authority_expansion")
+        required_human = {"update_memory", "change_settings", "confirm_persona", "activate_skill", "deploy_generated_ui"}
+        if set(adaptation.get("human_required", [])) != required_human:
+            errors.append("policy:adaptation:human_gate_drift")
+
+    prohibited = policy.get("prohibited")
+    if not isinstance(prohibited, list) or set(prohibited) != REQUIRED_PROHIBITIONS:
+        errors.append("policy:prohibited:invalid")
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path.cwd())
@@ -71,16 +152,26 @@ def main() -> int:
     sample_path = repo / "examples/personalization-plan.valid.json"
     generated_ui_sample_path = repo / "examples/personalization-plan.generated-ui.valid.json"
     cases_path = repo / "evals/intent-shaper/cases.json"
+    policy_path = repo / "policies/personalization-adaptation-policy.yaml"
 
     schema = json.loads(schema_path.read_text())
     sample = json.loads(sample_path.read_text())
     generated_ui_sample = json.loads(generated_ui_sample_path.read_text())
     suite = json.loads(cases_path.read_text())
+    policy = yaml.safe_load(policy_path.read_text())
 
     Draft202012Validator.check_schema(schema)
+<<<<<<< HEAD
     validator = Draft202012Validator(schema)
     sample_errors = sorted(validator.iter_errors(sample), key=lambda error: list(error.path))
     generated_ui_sample_errors = sorted(validator.iter_errors(generated_ui_sample), key=lambda error: list(error.path))
+=======
+    sample_errors = sorted(
+        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(sample),
+        key=lambda error: list(error.path),
+    )
+    policy_errors = validate_policy(policy)
+>>>>>>> origin/main
     results = evaluate_cases(suite["cases"])
     reconstruction_suite = suite["reconstruction_suite"]
     reconstruction_result = evaluate_reconstruction_plan(generated_ui_sample, validator)
@@ -103,10 +194,14 @@ def main() -> int:
 
     errors: list[str] = []
     errors.extend(f"sample:{'/'.join(map(str, error.path))}:{error.message}" for error in sample_errors)
+<<<<<<< HEAD
     errors.extend(
         f"generated_ui_sample:{'/'.join(map(str, error.path))}:{error.message}"
         for error in generated_ui_sample_errors
     )
+=======
+    errors.extend(policy_errors)
+>>>>>>> origin/main
     errors.extend(f"fixture:{result['id']}" for result in results if not result["passed"])
     if reconstruction_result["status"] != "passed":
         critical = reconstruction_result["critical_failure"]
@@ -126,7 +221,11 @@ def main() -> int:
         "verdict": "candidate_evidence_only",
         "schema_valid": True,
         "sample_valid": not sample_errors,
+<<<<<<< HEAD
         "generated_ui_sample_valid": not generated_ui_sample_errors,
+=======
+        "policy_valid": not policy_errors,
+>>>>>>> origin/main
         "fixtures_passed": sum(1 for result in results if result["passed"]),
         "fixtures_total": len(results),
         "results": results,
@@ -189,7 +288,18 @@ def main() -> int:
         json.dumps(
             {
                 key: report[key]
+<<<<<<< HEAD
                 for key in ("status", "sample_valid", "generated_ui_sample_valid", "fixtures_passed", "fixtures_total", "content_hash")
+=======
+                for key in (
+                    "status",
+                    "sample_valid",
+                    "policy_valid",
+                    "fixtures_passed",
+                    "fixtures_total",
+                    "content_hash",
+                )
+>>>>>>> origin/main
             },
             indent=2,
         )

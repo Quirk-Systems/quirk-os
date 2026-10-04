@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/distill-promotion-receipt.schema.json",
+  "title": "Quirk Distill Promotion Receipt",
+  "description": "The only instrument that moves an auto-distilled skill out of the unreviewed tier. It binds one exact candidate digest, requires a requester and an approver who are not the same actor, and explicitly has no admission, Canon, or runtime effect.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_id",
+    "candidate_id",
+    "candidate_version",
+    "candidate_manifest_sha256",
+    "candidate_source_blob_sha",
+    "source_run_receipt_ref",
+    "eval_suite_ref",
+    "eval_suite_sha256",
+    "decision",
+    "promoted_to",
+    "admission_effect",
+    "canon_effect",
+    "runtime_effect",
+    "requested_by",
+    "approved_by",
+    "decided_at",
+    "rationale",
+    "attestation",
+    "immutable"
+  ],
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^receipt\\.distill-promotion\\.[a-z0-9._-]+$"
+    },
+    "candidate_id": {
+      "type": "string",
+      "pattern": "^quirk-distilled-[a-z0-9-]+$"
+    },
+    "candidate_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "candidate_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "candidate_source_blob_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "source_run_receipt_ref": {
+      "type": "string",
+      "pattern": "^receipt\\.[a-z0-9._-]+$"
+    },
+    "eval_suite_ref": {
+      "type": "string",
+      "pattern": "^evals/skills/distilled/.+\\.json$"
+    },
+    "eval_suite_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "decision": {
+      "enum": [
+        "promote",
+        "reject"
+      ]
+    },
+    "promoted_to": {
+      "const": "reviewed_candidate"
+    },
+    "admission_effect": {
+      "const": "none"
+    },
+    "canon_effect": {
+      "const": "none"
+    },
+    "runtime_effect": {
+      "const": "none"
+    },
+    "requested_by": {
+      "type": "string",
+      "minLength": 2
+    },
+    "approved_by": {
+      "type": "string",
+      "minLength": 2
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 12
+    },
+    "attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "digest"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256-canonical-json-v1"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "immutable": {
+      "const": true
+    }
+  }
+}

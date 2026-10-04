@@ -7,7 +7,7 @@ description: Compile explicit intent, purpose-scoped preference evidence, person
 
 ## Quirk contract
 
-- Version: `0.1.0`
+- Version: `0.2.0`
 - Status: `candidate`
 - Authority ceiling: `propose`
 - Primary output: `PersonalizationPlan`
@@ -52,7 +52,7 @@ Do not invoke merely because a user has a profile. Personalization must improve 
 5. **Select a Persona Hand.** Choose one primary lens plus bounded supporting lenses; do not flatten the user into one persona.
 6. **Compile expression.** Produce voice, tone, aesthetic, lexical, structural, and negative constraints.
 7. **Resolve platform affects.** Model how destination, modality, latency, privacy, collaboration, and versioning change the response.
-8. **Select task affordances.** Choose the smallest interface or output form that improves the task: diff, decision card, ranked pair, map, simulator, checklist, code patch, batch review, timeline, generated UI, or plain prose.
+8. **Select task affordances.** Choose the smallest admitted output form that improves the task: diff, decision card, ranked pair, map, simulator, checklist, code patch, batch review, timeline, or plain prose. Generated UI is outside this candidate's contract until its separate accessibility, reconstruction, fallback, and human gates are admitted.
 9. **Generate candidates.** Produce one default candidate and alternatives only when uncertainty or choice is useful.
 10. **Run the Alignment Tribunal.** Score intent fit, preference fit, platform fit, task fit, evidence, authority, accessibility, and strange-intact quality.
 11. **Emit a receipt.** Record used evidence, ignored evidence, conflicts, confidence, deviations, and proposed preference updates.
@@ -60,23 +60,33 @@ Do not invoke merely because a user has a profile. Personalization must improve 
 ## Output
 
 ```yaml
-personalization_plan:
-  intent:
-  purpose_partition:
-  persona_hand:
-  voice:
-  tone:
-  aesthetic:
-  preferences_used:
-  preferences_rejected:
-  platform_affects:
-  task_affordances:
-  settings:
-  authority:
-  uncertainty:
-  evaluation:
-  learning:
+plan_id: personalization.plan.<id>
+version: 0.2.0
+status: candidate
+intent: {}
+purpose_partition: {}
+persona_hand: {}
+voice:
+  tone_axes: {}
+  required_traits: []
+  no_fill: []
+aesthetic: {}
+preferences: []
+platform_affects: []
+task_affordances: []
+settings: {}
+authority: {}
+uncertainty: {}
+evaluation: {}
+learning:
+  feedback_receipt_required: true
+  auto_apply: false
+  allowed_updates: []
+  feedback_evidence: null
+created_at: "<RFC 3339 date-time>"
 ```
+
+Use `examples/personalization-plan.valid.json` as the executable shape. Do not add wrapper keys or split preference decisions into non-schema fields.
 
 ## Invariants
 
@@ -116,3 +126,4 @@ This candidate may infer and propose a plan. It may not:
 - execute a protected action;
 - choose a permanent persona;
 - deploy an adaptive interface to production without a separate grant.
+- represent `generated_ui` as an admitted task affordance in this candidate version.

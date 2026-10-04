@@ -2,7 +2,7 @@ api_version: quirk.dev/policy/v1alpha1
 kind: Policy
 metadata:
   id: policy.personalization-adaptation
-  version: 0.1.0
+  version: 0.2.0
   status: candidate
 invariants:
   - current_explicit_instruction_outranks_memory

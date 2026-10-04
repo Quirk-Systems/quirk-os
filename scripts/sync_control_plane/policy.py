@@ -1,11 +1,53 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime, timezone
 from typing import Any
 
 
 def _parse_dt(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+
+
+# Principals are drawn from `^(human|agent|service|system)\.` by
+# schemas/runtime-manifest.schema.json. Only a human principal counts as an
+# independent approver of an activation:
+#
+#   - `agent.` can never be independent. A capability approving an activation
+#     is capability granting authority, which the policy's own
+#     `capability_never_implies_authority` invariant forbids outright.
+#   - `service.` and `system.` are refused rather than assumed, because no
+#     allow-list of authorized service principals exists in this repository.
+#     Add one and this predicate is where it belongs.
+#
+# The whole principal is matched rather than just its prefix, so the gate does
+# not depend on JSON Schema having run first: callers use
+# `validate_manifest_admission` directly, and a bare `"human."` would satisfy a
+# prefix test while naming nobody.
+#
+# What this does NOT establish: `approved_by` is a string the judged manifest
+# supplies, so `human.fabricated` with invented decision and grant references
+# passes. This rule removes the structural bypass — the self-declared flag and
+# the `agent.` approver — but it does not prove a human approved anything, and
+# no approval registry or attestation exists in this path to check against.
+# Closing that needs a record the manifest cannot author; the design and the
+# decisions it waits on are in docs/briefs/2026-10-03-approval-attestation.md.
+_INDEPENDENT_APPROVER = re.compile(r"human\.[a-z0-9._-]+")
+
+# Any well-formed principal, mirroring schemas/runtime-manifest.schema.json. The
+# requester's shape is checked for the same reason the approver's whole value is:
+# this function is called directly, so it cannot assume JSON Schema ran. The
+# SQL trigger had no requester check at all, which let `'NOT-A-PRINCIPAL'`
+# activate a manifest; the two surfaces agree now.
+_PRINCIPAL = re.compile(r"(human|agent|service|system)\.[a-z0-9._-]+")
+
+
+def _is_principal(value: Any) -> bool:
+    return isinstance(value, str) and _PRINCIPAL.fullmatch(value) is not None
+
+
+def _is_independent_approver(approved_by: Any) -> bool:
+    return isinstance(approved_by, str) and _INDEPENDENT_APPROVER.fullmatch(approved_by) is not None
 
 
 def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:
@@ -28,12 +70,19 @@ def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:
         errors.append("active manifest requires authority grant reference")
     if not admission.get("transition_ref"):
         errors.append("active manifest requires legal transition evidence")
+    if not _is_principal(requested_by):
+        errors.append("manifest requester must be a well-formed principal")
     if requested_by == approved_by:
         errors.append("requester may not approve its own manifest transition")
     if admission.get("evaluated_content_hash") != manifest.get("content_hash"):
         errors.append("evaluated content hash must match manifest content hash")
-    if manifest.get("metadata", {}).get("self_requested") and requested_by == manifest.get("manifest_key"):
-        errors.append("self-requested activation requires independent human or authorized service approval")
+    # Deliberately not read from `metadata.self_requested`. That flag was set
+    # by the same document this gate judges, so omitting it disabled the check;
+    # and a manifest that set it honestly was rejected even when a human had
+    # approved. Who approved is the thing that matters, and it is now checked
+    # for every activation, self-requested or not.
+    if not _is_independent_approver(approved_by):
+        errors.append("activation requires approval by an independent human principal")
 
     domains = set(manifest.get("domains", []))
     if "data_productization" in domains:

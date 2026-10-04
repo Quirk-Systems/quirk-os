@@ -1,3 +1,11 @@
 __pycache__/
+<<<<<<< HEAD
 *.pyc
 evals/intent-shaper/conformance-results/
+=======
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+>>>>>>> origin/main
