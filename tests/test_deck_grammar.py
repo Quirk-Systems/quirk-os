@@ -14,6 +14,27 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 from deck_grammar.compiler import build_access_pool, compile_deck, compile_live_proof, content_hash, evaluate_adversarial_case, wildcard_match
 SCHEMA_FILES = ['active-hand.schema.json', 'aesthetic-contract.schema.json', 'affordance.schema.json', 'area.schema.json', 'art.schema.json', 'artifact.schema.json', 'asset.schema.json', 'card-definition.schema.json', 'card-instance.schema.json', 'collection.schema.json', 'eligible-deck.schema.json', 'entitlement-grant.schema.json', 'goal.schema.json', 'hand-preset.schema.json', 'intention.schema.json']
 
+def committed_json(relative: str):
+    """Parse a path as it exists in the current commit, not the working tree.
+
+    The conformance workflows delete the tracked evidence artifact before
+    running anything, so that an `always()` upload cannot ship a committed
+    passing result as a failed run's evidence. A test that read the working
+    tree would therefore fail in CI for a reason that has nothing to do with
+    what it asserts — which is exactly what happened on `33769ba`. Reading the
+    commit is also the more faithful reading: the claim is that the committed
+    documents quote the committed artifact's digest.
+    """
+    return json.loads(
+        subprocess.run(
+            ["git", "show", f"HEAD:{relative}"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    )
+
 def load_json(relative: str):
     return json.loads((ROOT / relative).read_text(encoding='utf-8'))
 
@@ -201,7 +222,7 @@ class ContentHashBindingTests(unittest.TestCase):
         # it. Superseded hashes may still appear — the documents record them
         # deliberately — so this asserts the current one is present, not that
         # no other is.
-        tracked = load_json('evals/deck-grammar/conformance-results.json')['content_hash']
+        tracked = committed_json('evals/deck-grammar/conformance-results.json')['content_hash']
         for doc in (
             'docs/deck-grammar/ADMISSION-EVALUATION.md',
             'docs/deck-grammar/README.md',

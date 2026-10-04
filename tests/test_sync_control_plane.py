@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import json
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -462,10 +463,20 @@ class ManifestActivationCasesFileTests(unittest.TestCase):
         # document is the same shape, so it gets the same check. Superseded
         # hashes still appear in its digest history by design, so this asserts
         # the current one is present rather than that no other is.
+        # Read the commit, not the working tree: the conformance workflow
+        # deletes this artifact before running anything so that an `always()`
+        # upload cannot ship a committed passing result as a failed run's
+        # evidence. Reading the working tree made this test fail in CI on
+        # `33769ba` for a reason unrelated to what it asserts. The commit is
+        # also the more faithful reading of the claim.
         tracked = json.loads(
-            (ROOT / "evals/sync-control-plane/conformance-results.json").read_text(
-                encoding="utf-8"
-            )
+            subprocess.run(
+                ["git", "show", "HEAD:evals/sync-control-plane/conformance-results.json"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout
         )["content_hash_sha256"]
         doc = (ROOT / "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md").read_text(
             encoding="utf-8"
