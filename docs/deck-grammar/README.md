@@ -66,6 +66,7 @@ python -m unittest discover -s tests -p 'test_deck_grammar.py' -v
 python scripts/validate_deck_grammar.py \
   --repo . \
   --output evals/deck-grammar/conformance-results.json \
+  --metrics-output evals/deck-grammar/conformance-metrics.json \
   --require-pass
 
 python scripts/deck_grammar/perf_benchmarks.py \
@@ -79,6 +80,7 @@ python scripts/deck_grammar/perf_benchmarks.py \
 
 `perf-build-access-pool.json` compares the legacy linear duplicate-search behavior with the set-backed implementation and reports a relative speedup ratio instead of an absolute timing gate.  
 `perf-compile-hand.json` records workload shape plus `cProfile` cumulative hot paths for `compile_hand` without introducing flaky pass/fail thresholds.
+`conformance-metrics.json` records validator wall-clock and workload dimensions for CI trend monitoring.
 
 ## Admission posture
 

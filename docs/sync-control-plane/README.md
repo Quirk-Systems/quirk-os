@@ -53,10 +53,16 @@ GitHub candidate/canon
 ```bash
 python -m pip install -r requirements-evals.txt
 python -m unittest discover -s tests -p 'test_*.py' -v
-python scripts/validate_sync_control_plane.py --repo . --require-admit
+python scripts/validate_sync_control_plane.py \
+  --repo . \
+  --output evals/sync-control-plane/conformance-results.json \
+  --metrics-output evals/sync-control-plane/conformance-metrics.json \
+  --require-admit
 ```
 
 A successful run means **eligible for a human admission decision**. It does not activate the candidate.
+
+`conformance-metrics.json` provides CI-trend telemetry (`elapsed_seconds`, fixture/schema counts, migration file count, and eligibility) without introducing brittle hard timing gates.
 
 ## Database proof
 

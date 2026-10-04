@@ -4,6 +4,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 import json
+import os
+import time
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
 from referencing import Registry, Resource
@@ -16,6 +18,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Validate the Quirk Deck Grammar candidate pack.')
     parser.add_argument('--repo', type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument('--output', type=Path)
+    parser.add_argument('--metrics-output', type=Path, help='Optional JSON output path for performance/workload metrics.')
+    parser.add_argument('--write-step-summary', action='store_true', help='Append metrics to GitHub step summary when available.')
     parser.add_argument('--require-pass', action='store_true')
     return parser.parse_args()
 
@@ -38,6 +42,7 @@ def record_validation(results: list[dict[str, Any]], *, name: str, instance: Any
 def main() -> int:
     args = parse_args()
     repo = args.repo.resolve()
+    started = time.perf_counter()
     schemas = {filename: load_json(repo / 'schemas' / filename) for filename in SCHEMA_FILES}
     registry = make_registry(schemas)
     checks: list[dict[str, Any]] = []
@@ -95,6 +100,33 @@ def main() -> int:
         target = args.output if args.output.is_absolute() else repo / args.output
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(serialized, encoding='utf-8')
+    metrics = {
+        'validator': 'validate_deck_grammar.py',
+        'elapsed_seconds': time.perf_counter() - started,
+        'schema_count': len(SCHEMA_FILES),
+        'schema_check_count': len(checks),
+        'adversarial_case_count': len(adversarial_results),
+        'passed': passed,
+    }
+    if args.metrics_output:
+        metrics_target = args.metrics_output if args.metrics_output.is_absolute() else repo / args.metrics_output
+        metrics_target.parent.mkdir(parents=True, exist_ok=True)
+        metrics_target.write_text(json.dumps(metrics, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+    if args.write_step_summary and os.environ.get('GITHUB_STEP_SUMMARY'):
+        summary_lines = [
+            '## validate_deck_grammar performance',
+            '',
+            '| metric | value |',
+            '| --- | ---: |',
+            f"| elapsed_seconds | {metrics['elapsed_seconds']:.6f} |",
+            f"| schema_count | {metrics['schema_count']} |",
+            f"| schema_check_count | {metrics['schema_check_count']} |",
+            f"| adversarial_case_count | {metrics['adversarial_case_count']} |",
+            f"| passed | {str(metrics['passed']).lower()} |",
+            '',
+        ]
+        with Path(os.environ['GITHUB_STEP_SUMMARY']).open('a', encoding='utf-8') as handle:
+            handle.write('\n'.join(summary_lines))
     print(serialized, end='')
     return 0 if passed else 1
 if __name__ == '__main__':

@@ -3,7 +3,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
+import time
 from collections import Counter
 from pathlib import Path
 
@@ -103,17 +105,48 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Validate the Applause Gate fixture-only candidate corpus.")
     parser.add_argument("--repo", default=".")
     parser.add_argument("--output")
+    parser.add_argument("--metrics-output")
+    parser.add_argument("--write-step-summary", action="store_true")
     parser.add_argument("--require-pass", action="store_true")
     args = parser.parse_args()
+    started = time.perf_counter()
 
-    report = validate(Path(args.repo).resolve())
+    repo = Path(args.repo).resolve()
+    report = validate(repo)
     rendered = json.dumps(report, indent=2, sort_keys=True) + "\n"
     if args.output:
         output = Path(args.output)
         if not output.is_absolute():
-            output = Path(args.repo).resolve() / output
+            output = repo / output
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(rendered, encoding="utf-8")
+    metrics = {
+        "validator": "validate_applause_gate_fixtures.py",
+        "elapsed_seconds": time.perf_counter() - started,
+        "total_cases": report["total_cases"],
+        "error_count": len(report["errors"]),
+        "verdict": report["verdict"],
+    }
+    if args.metrics_output:
+        metrics_output = Path(args.metrics_output)
+        if not metrics_output.is_absolute():
+            metrics_output = repo / metrics_output
+        metrics_output.parent.mkdir(parents=True, exist_ok=True)
+        metrics_output.write_text(json.dumps(metrics, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if args.write_step_summary and os.environ.get("GITHUB_STEP_SUMMARY"):
+        summary_lines = [
+            "## validate_applause_gate_fixtures performance",
+            "",
+            "| metric | value |",
+            "| --- | ---: |",
+            f"| elapsed_seconds | {metrics['elapsed_seconds']:.6f} |",
+            f"| total_cases | {metrics['total_cases']} |",
+            f"| error_count | {metrics['error_count']} |",
+            f"| verdict | {metrics['verdict']} |",
+            "",
+        ]
+        with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+            handle.write("\n".join(summary_lines))
     print(rendered, end="")
     if args.require_pass and report["verdict"] != "PASS":
         return 1

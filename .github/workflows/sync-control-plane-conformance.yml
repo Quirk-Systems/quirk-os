@@ -17,6 +17,7 @@ on:
       - 'scripts/validate_sync_control_plane.py'
       - 'supabase/migrations/*sync_control_plane*'
       - 'supabase/tests/sync_control_plane_hardening.sql'
+      - 'supabase/tests/sync_control_plane_outbox_claim_benchmark.sql'
       - 'tests/test_sync_control_plane.py'
       - 'workflows/quirk-sync-control-plane.workflow.yaml'
   workflow_dispatch:
@@ -55,6 +56,8 @@ jobs:
           python scripts/validate_sync_control_plane.py \
             --repo . \
             --output evals/sync-control-plane/conformance-results.json \
+            --metrics-output evals/sync-control-plane/conformance-metrics.json \
+            --write-step-summary \
             --require-admit
 
       - name: Upload conformance evidence
@@ -62,6 +65,8 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: sync-control-plane-conformance
-          path: evals/sync-control-plane/conformance-results.json
+          path: |
+            evals/sync-control-plane/conformance-results.json
+            evals/sync-control-plane/conformance-metrics.json
           if-no-files-found: error
           retention-days: 30

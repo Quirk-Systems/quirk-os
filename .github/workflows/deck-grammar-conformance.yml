@@ -72,6 +72,8 @@ jobs:
           python scripts/validate_deck_grammar.py \
             --repo . \
             --output evals/deck-grammar/conformance-results.json \
+            --metrics-output evals/deck-grammar/conformance-metrics.json \
+            --write-step-summary \
             --require-pass
 
       - name: Upload Deck Grammar evidence
@@ -81,6 +83,7 @@ jobs:
           name: deck-grammar-conformance
           path: |
             evals/deck-grammar/conformance-results.json
+            evals/deck-grammar/conformance-metrics.json
             examples/deck-grammar/live-proof.json
           if-no-files-found: error
           retention-days: 30

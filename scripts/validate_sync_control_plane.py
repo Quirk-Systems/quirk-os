@@ -9,7 +9,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -106,9 +108,12 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=ROOT_DEFAULT)
     parser.add_argument("--output", type=Path, default=Path("evals/sync-control-plane/conformance-results.json"))
+    parser.add_argument("--metrics-output", type=Path, help="Optional JSON output path for performance/workload metrics.")
+    parser.add_argument("--write-step-summary", action="store_true", help="Append metrics to GitHub step summary when available.")
     parser.add_argument("--require-admit", action="store_true", help="Exit nonzero unless candidate is eligible for a human admission decision.")
     args = parser.parse_args()
     repo = args.repo.resolve()
+    started = time.perf_counter()
 
     schemas = {
         "manifest": load_json(repo / "schemas/runtime-manifest.schema.json"),
@@ -205,6 +210,34 @@ def main() -> int:
     output = args.output if args.output.is_absolute() else repo / args.output
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    elapsed = time.perf_counter() - started
+    metrics = {
+        "validator": "validate_sync_control_plane.py",
+        "elapsed_seconds": elapsed,
+        "fixture_count": len(results),
+        "schema_count": len(schemas),
+        "migration_file_count": len(migration_paths),
+        "eligible": eligible,
+    }
+    if args.metrics_output:
+        metrics_output = args.metrics_output if args.metrics_output.is_absolute() else repo / args.metrics_output
+        metrics_output.parent.mkdir(parents=True, exist_ok=True)
+        metrics_output.write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
+    if args.write_step_summary and os.environ.get("GITHUB_STEP_SUMMARY"):
+        summary_lines = [
+            "## validate_sync_control_plane performance",
+            "",
+            "| metric | value |",
+            "| --- | ---: |",
+            f"| elapsed_seconds | {metrics['elapsed_seconds']:.6f} |",
+            f"| fixture_count | {metrics['fixture_count']} |",
+            f"| schema_count | {metrics['schema_count']} |",
+            f"| migration_file_count | {metrics['migration_file_count']} |",
+            f"| eligible | {str(metrics['eligible']).lower()} |",
+            "",
+        ]
+        with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+            handle.write("\n".join(summary_lines))
     print(json.dumps(payload, indent=2))
     return 1 if args.require_admit and not eligible else 0
 
