@@ -6,8 +6,27 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `00c4fe397482663723ab7f416ded910262d3c87f43dd048778fb3e743ca63965`  
-**Evidence revision (the tree that reproduces that hash):** `bb9b2325ba4bba29ce8e712921de1da607fdc06b`
+**Content hash (SHA-256):** `a77099dc3e79171b10f9a4c94b891d18759f74322e5f3f271e1b33603f9c1b57`  
+**Evidence revision (the tree that reproduces that hash):** `ac57ab65fc0e92766eeb76f0d1243ba0d7d3f6b0`
+
+Current successor reproduction (CPython 3.13):
+
+```sh
+git checkout ac57ab65fc0e92766eeb76f0d1243ba0d7d3f6b0
+python scripts/validate_sync_control_plane.py --repo . \
+  --output evals/sync-control-plane/conformance-results.json --require-admit
+```
+
+This hash records the synthetic-approval refusal, computed fixture digest and
+staged projection workflow checks. It grants no admission. The focused Python
+boundary proof is synthetic; actual database execution is recorded separately
+by the successor CI run. The historical candidate identity above is retained;
+the successor's evaluated implementation is bound by its new evidence receipt.
+The remaining admission criteria describe historical evidence and do not prove
+that a protected live verifier or consumer enforcement has been installed.
+
+The following reproduction note describes the **superseded** bb9b232/00c4fe39
+evidence only. Its hash and original source revision are preserved as history.
 
 > **Why two revisions.** The candidate commit names the subject that was
 > evaluated. The evidence revision names the tree whose validator and inputs
@@ -84,7 +103,11 @@
 >   Superseded when the guard became SECURITY DEFINER and
 >   `rule_privilege_lanes` was added to assert it, because the service_role
 >   grant on the rule function masks the guard losing that property.
-> - `00c4fe39…` — current, produced at `bb9b232` as above.
+> - `00c4fe39…` — produced at `bb9b232` as above; superseded by the approved
+>   verifier/hash candidate.
+> - `a77099dc3e79171b10f9a4c94b891d18759f74322e5f3f271e1b33603f9c1b57` — current, reproduced by the successor implementation
+>   at `ac57ab65fc0e92766eeb76f0d1243ba0d7d3f6b0`; synthetic consent remains
+>   explicitly insufficient for live authority.
 
 > **What produces this decision.** `candidate-conformance` declares
 > `needs: database-guard` and runs with `if: always()`, failing explicitly when
@@ -268,7 +291,7 @@ Fixture SCP-009 (`roadmap_capacity_overload`) returns `stop_pull_and_propose_reb
 | migration_hardening_complete | true |
 | mapping_roundtrip_passes | true |
 
-**All nine automated checks pass.**
+**All automated candidate checks pass; no live admission follows.**
 
 See `evals/sync-control-plane/conformance-results.json` for the full machine-readable evidence record.
 
