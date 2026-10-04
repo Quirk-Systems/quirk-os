@@ -6,8 +6,8 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `744412cd5490b16155e6b738c2480da7c003cba184d382f3a9e2c994125c8753`  
-**Evidence revision (the tree that reproduces that hash):** `d969a9f9c7dadddb6dc064815b1126103e6199a3`
+**Content hash (SHA-256):** `a18c5aa2b7f2961e9819f6293175e59e7c37115ca98571b86c78de3939c7d8cb`  
+**Evidence revision (the tree that reproduces that hash):** `893cd3028bce618f176bfcc54856f3fdc2cd01a0`
 
 > **Why two revisions.** The candidate commit names the subject that was
 > evaluated. The evidence revision names the tree whose validator and inputs
@@ -21,13 +21,13 @@
 > Reproduce with:
 >
 > ```sh
-> git checkout d969a9f9c7dadddb6dc064815b1126103e6199a3
+> git checkout 893cd3028bce618f176bfcc54856f3fdc2cd01a0
 > python scripts/validate_sync_control_plane.py --repo . \
 >   --output evals/sync-control-plane/conformance-results.json --require-admit
 > ```
 >
 > Observed at that revision in a detached worktree:
-> `744412cd5490b16155e6b738c2480da7c003cba184d382f3a9e2c994125c8753`, matching
+> `a18c5aa2b7f2961e9819f6293175e59e7c37115ca98571b86c78de3939c7d8cb`, matching
 > both the tracked artifact and the line above.
 
 > **Digest history**, recorded because a hash replaced without a note is
@@ -54,7 +54,20 @@
 >   when the Codex review of that commit found that the rule function was
 >   never granted to `service_role` and that the migration's own
 >   `begin`/`commit` closes `supabase db push`'s transaction.
-> - `744412cd…` — current, produced at `d969a9f` as above.
+> - `744412cd…` — covered the `service_role` grant and the removal of the
+>   migration's own transaction. Produced at `d969a9f`. Superseded when the
+>   Codex review of `3417a8d` found that this decision was computed in
+>   parallel with the proof it cites, so a failing database guard still
+>   left an `ELIGIBLE_FOR_HUMAN_ADMISSION` artifact to be uploaded.
+> - `a18c5aa2…` — current, produced at `893cd30` as above.
+
+> **What produces this decision.** `candidate-conformance` now declares
+> `needs: database-guard`, so the eligibility decision is computed only after
+> the behavioural database proof has passed. It was previously computed in
+> parallel with it, which meant a database guard that enforced nothing did not
+> prevent this document's decision from being produced and uploaded.
+> `migration_hardening_complete` cannot catch that on its own: it checks that
+> the job is spelled in the workflow, not that it passed.
 
 This document consolidates the technical evidence for each admission criterion. It does not constitute admission. Bryan's explicit approve, revise, reject, or supersede decision is required before any activation, Canon promotion, merge, authority expansion, or production deployment.
 
