@@ -26,7 +26,11 @@ Local and GitHub candidate evidence both reproduced:
 | Conformance suite | PASS |
 | Live-proof object reproducibility | PASS (unchanged live-proof JSON) |
 | Candidate conformance hash (PR #25) | `737e78f527871d0c7ae5c0f6d7b5584a820fc021f45670f1a7d1bf4a8b976446` |
-| Revised evaluation conformance hash | `efc7b28456076c06caac8fcc31d82662a521e5fc2d874274e9c6e17e067fa20a` |
+| Revised evaluation conformance hash | `ffdfd6d9b0ebc828621966394a2bd733141fef158b8474b9e7a754a7031fbfa7` |
+| Superseded conformance hash | `efc7b28456076c06caac8fcc31d82662a521e5fc2d874274e9c6e17e067fa20a` — covered the suite before the
+`content-hash-binds` check existed. That check was added because the accepted
+live-proof report recorded a digest the proof no longer hashed to, and it
+appears in the suite's `schema_checks` from this hash onward. |
 | GitHub `candidate-deck-conformance` on PR #25 | success |
 | Protected actions observed during evaluation | none |
 

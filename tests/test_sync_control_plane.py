@@ -223,6 +223,7 @@ class DatabaseGuardJobTests(unittest.TestCase):
                 "ci_evidence_depends_on_database_guard": True,
                 "ci_decision_fails_when_guard_fails": True,
                 "ci_discards_tracked_decision": True,
+                "ci_triggers_on_the_verify_recipe": True,
             },
             self.run_checks(self.live),
         )
@@ -243,9 +244,16 @@ class DatabaseGuardJobTests(unittest.TestCase):
             "ci_runs_guard_cases_as_service_role",
             "ci_evidence_depends_on_database_guard",
         }
+        # Properties of the decision job, or of the workflow's trigger, that
+        # hold whether or not the guard job exists.
+        about_something_else = {
+            "ci_decision_fails_when_guard_fails",
+            "ci_discards_tracked_decision",
+            "ci_triggers_on_the_verify_recipe",
+        }
         self.assertEqual(
             about_the_job,
-            set(checks) - {"ci_decision_fails_when_guard_fails", "ci_discards_tracked_decision"},
+            set(checks) - about_something_else,
             "a new check was added without deciding which job it is about",
         )
         self.assertEqual({False}, {checks[name] for name in about_the_job})
@@ -321,6 +329,13 @@ class DatabaseGuardJobTests(unittest.TestCase):
         checks = self.run_checks(bare)
         self.assertFalse(checks["ci_decision_fails_when_guard_fails"])
         self.assertTrue(checks["ci_evidence_depends_on_database_guard"])
+
+    def test_the_workflow_triggers_on_the_recipe_it_tests(self):
+        # A path-filtered workflow runs only when a changed path matches the
+        # filter, so without this entry a pull request touching only the recipe
+        # would not run the test written to catch a broken recipe.
+        paths = self.live.get(True, self.live.get("on", {}))["pull_request"]["paths"]
+        self.assertIn(".claude/skills/verify/SKILL.md", paths)
 
     def test_keeping_the_tracked_decision_fails_that_check(self):
         # Checkout restores a committed decision recording a pass. With the
@@ -461,6 +476,17 @@ class ManifestActivationCasesFileTests(unittest.TestCase):
         # The recipe must drive the file that can detect a missing grant.
         self.assertIn("manifest_activation_guard.service_role.sql", recipe)
         self.assertIn("session-order dependent", recipe)
+        # Neither validator writes anything without `--output`, and
+        # `validate_deck_grammar.py` only writes inside its `if args.output`
+        # branch. A recipe that omits it prints the new evidence and leaves the
+        # tracked artifact — the committed evidence of record, whose digest the
+        # admission docs quote — exactly as it was. That happened.
+        self.assertIn(
+            "--output evals/deck-grammar/conformance-results.json", recipe
+        )
+        self.assertIn(
+            "--output evals/sync-control-plane/conformance-results.json", recipe
+        )
 
     def test_every_refusal_case_asserts_its_own_message(self):
         # A case that asserted rejection without naming the reason would stay

@@ -193,6 +193,22 @@ class ContentHashBindingTests(unittest.TestCase):
         report = load_json('examples/deck-grammar/artifact.live-proof-report.json')
         self.assertEqual(report['content_hash'], content_hash(load_json(report['content_ref'])))
 
+    def test_the_admission_docs_quote_the_tracked_conformance_digest(self):
+        # The stale digest that prompted the `content-hash-binds` check was not
+        # the only dangling one: two documents quoted the Deck Grammar
+        # conformance hash and nothing compared them to the artifact, so the
+        # suite could gain a check while the docs described the suite without
+        # it. Superseded hashes may still appear — the documents record them
+        # deliberately — so this asserts the current one is present, not that
+        # no other is.
+        tracked = load_json('evals/deck-grammar/conformance-results.json')['content_hash']
+        for doc in (
+            'docs/deck-grammar/ADMISSION-EVALUATION.md',
+            'docs/deck-grammar/README.md',
+        ):
+            with self.subTest(doc=doc):
+                self.assertIn(tracked, (ROOT / doc).read_text(encoding='utf-8'))
+
     def test_the_binding_notices_a_changed_proof(self):
         # The check is only worth recording if a change to the referenced file
         # moves the hash.

@@ -140,8 +140,11 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
             "ci_evidence_depends_on_database_guard": False,
             "ci_decision_fails_when_guard_fails": False,
             "ci_discards_tracked_decision": False,
+            "ci_triggers_on_the_verify_recipe": False,
         }
     jobs = (workflow or {}).get("jobs", {})
+    trigger = (workflow or {}).get(True) or (workflow or {}).get("on") or {}
+    trigger_paths = ((trigger.get("pull_request") or {}).get("paths")) or []
     job = jobs.get("database-guard") or {}
     decision = jobs.get("candidate-conformance") or {}
     needs = decision.get("needs")
@@ -188,6 +191,10 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
         # ship that committed file as this run's evidence.
         "ci_discards_tracked_decision": "rm -f evals/sync-control-plane/conformance-results.json"
         in decision_runs,
+        # A path-filtered workflow runs only when a changed path matches, so a
+        # test that treats the verification recipe as an executable dependency
+        # is dead weight unless the recipe is one of those paths.
+        "ci_triggers_on_the_verify_recipe": ".claude/skills/verify/SKILL.md" in trigger_paths,
         "ci_runs_guard_cases_as_service_role": any(
             "manifest_activation_guard.service_role.sql" in str(step.get("run", ""))
             and "manifest_activation_guard.run.sql" not in str(step.get("run", ""))

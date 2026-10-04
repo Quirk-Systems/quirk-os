@@ -2,9 +2,15 @@ name: Sync Control Plane Conformance
 
 on:
   pull_request:
+    # `.claude/skills/verify/SKILL.md` is in this list because
+    # `test_the_verify_recipe_does_not_drift_from_the_workflow` treats it as an
+    # executable dependency. Without it a pull request touching only the recipe
+    # matches no path here, so the test written to catch a broken recipe would
+    # never run on the change that broke it.
     paths:
       - '.github/workflows/sync-control-plane-conformance.yml'
       - 'agents/quirk-sync-steward/**'
+      - '.claude/skills/verify/SKILL.md'
       - 'decisions/ADR-0001-cloudflare-boundary.md'
       - 'evals/sync-control-plane/**'
       - 'mappings/sync-control-plane.v1.yaml'

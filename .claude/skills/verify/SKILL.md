@@ -27,12 +27,24 @@ Then drive the CLIs:
 /tmp/qos-venv/bin/python scripts/validate_sync_control_plane.py --repo . \
   --output evals/sync-control-plane/conformance-results.json --require-admit
 PYTHONPATH=scripts /tmp/qos-venv/bin/python scripts/validate_deck_grammar.py \
-  --repo . --require-pass
+  --repo . --output evals/deck-grammar/conformance-results.json --require-pass
 ```
 
-`--require-admit` exits 1 when any check fails, so the exit code is the
-observation. Both CLIs rewrite their evidence artifact in place: regenerate it,
-never hand-edit it, because `content_hash_sha256` covers every other field.
+`--require-admit` and `--require-pass` exit 1 when any check fails, so the exit
+code is the observation.
+
+**Pass `--output` to both, every time.** Neither writes anything without it —
+`validate_deck_grammar.py` only writes inside its `if args.output` branch — so
+omitting it prints the new evidence and leaves the tracked artifact exactly as
+it was. That is not a cosmetic miss: the tracked artifact is the committed
+evidence of record, and the admission docs quote its digest. An earlier version
+of this file omitted `--output` on the second command, and the result was a
+tracked Deck Grammar result that did not contain a check the suite had been
+running for two commits, with two documents quoting its superseded hash.
+
+Regenerate these artifacts, never hand-edit them: `content_hash_sha256` (and
+`content_hash`) covers every other field, so an edited artifact is an artifact
+whose own digest refutes it.
 
 ## PostgreSQL surface
 
