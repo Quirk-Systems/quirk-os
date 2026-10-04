@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.dev/schemas/manifest-evaluation.schema.json",
   "title": "Content-bound manifest evaluation v1",
   "type": "object",
   "additionalProperties": false,
