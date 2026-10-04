@@ -1,0 +1,36 @@
+name: Attention Program Conformance
+
+on:
+  pull_request:
+    paths:
+      - 'tools/attention-program/**'
+      - 'programs/attention-program.example.json'
+      - 'schemas/attention-program.schema.json'
+      - 'docs/attention-program/**'
+      - '.github/workflows/attention-program-conformance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/attention-program/**'
+      - 'programs/attention-program.example.json'
+      - 'schemas/attention-program.schema.json'
+      - '.github/workflows/attention-program-conformance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  local-program-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1; existing repository pin
+      - name: Record runner Node version
+        run: node --version
+      - name: Run program acceptance fixtures
+        run: node --test tools/attention-program/engine.test.mjs
+      - name: Validate synthetic program and receipt chain
+        run: node tools/attention-program/cli.mjs validate programs/attention-program.example.json
+      - name: Render portable synthetic view
+        run: node tools/attention-program/cli.mjs build programs/attention-program.example.json --out /tmp/attention-demo.html
