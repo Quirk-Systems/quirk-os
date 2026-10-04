@@ -6,8 +6,8 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `0ac9f28d508c1e7f3d38b867b27189fc4b0865dcf243a6bb6d71677f08a3d4c8`  
-**Evidence revision (the tree that reproduces that hash):** `b2b95cd56878e27e42a050828b4262efd4e12bca`
+**Content hash (SHA-256):** `f73921967de997c157837b66a6ea9228cfd0fbe047c99ec47007bf94b4fce31e`  
+**Evidence revision (the tree that reproduces that hash):** `38d53cc31b8b88d9c93e2a50d9dfd7935abefb8c`
 
 > **Why two revisions.** The candidate commit names the subject that was
 > evaluated. The evidence revision names the tree whose validator and inputs
@@ -21,13 +21,13 @@
 > Reproduce with:
 >
 > ```sh
-> git checkout b2b95cd56878e27e42a050828b4262efd4e12bca
+> git checkout 38d53cc31b8b88d9c93e2a50d9dfd7935abefb8c
 > python scripts/validate_sync_control_plane.py --repo . \
 >   --output evals/sync-control-plane/conformance-results.json --require-admit
 > ```
 >
-> Observed on PostgreSQL-independent inputs at that revision:
-> `0ac9f28d508c1e7f3d38b867b27189fc4b0865dcf243a6bb6d71677f08a3d4c8`, matching
+> Observed at that revision in a detached worktree:
+> `f73921967de997c157837b66a6ea9228cfd0fbe047c99ec47007bf94b4fce31e`, matching
 > both the tracked artifact and the line above.
 
 > **Digest history**, recorded because a hash replaced without a note is
@@ -45,7 +45,11 @@
 >   Superseded when those checks were scoped to the rule function, because a
 >   whole-file search for a predicate stayed satisfied even when the enforcing
 >   definition had lost it.
-> - `0ac9f28d…` — current, produced at `b2b95cd` as above.
+> - `0ac9f28d…` — covered the seventeen static checks as they stood before CI
+>   executed any SQL. Produced at `b2b95cd`. Superseded by the three
+>   `ci_*` checks, which assert the `database-guard` job still exists and
+>   still runs the cases through the driver that discards its rows.
+> - `f7392196…` — current, produced at `38d53cc` as above.
 
 This document consolidates the technical evidence for each admission criterion. It does not constitute admission. Bryan's explicit approve, revise, reject, or supersede decision is required before any activation, Canon promotion, merge, authority expansion, or production deployment.
 
@@ -69,23 +73,23 @@ This document consolidates the technical evidence for each admission criterion. 
 
 **Evidence**
 
-Two enforcement layers reject SCP-011 (self_promotion_attack), and they are not
-equally proven. An earlier version of this section claimed three and counted
+Two enforcement layers reject SCP-011 (self_promotion_attack), and both are now
+executed in CI. An earlier version of this section claimed three and counted
 JSON Schema among them; that was never true and the artifact says so.
 
 | Layer | Rejects SCP-011? | On what evidence |
 | --- | --- | --- |
 | JSON Schema (`schemas/runtime-manifest.schema.json`) | **No** | `self_promotion_schema_errors: []` in the conformance artifact. The `admission` object carries no constraint relating `requested_by` to `approved_by` — JSON Schema is not expressing this rule, which is why `validate_manifest_admission` exists at all: its docstring reads "Return policy violations that JSON Schema cannot express alone." `test_self_promotion_rejected` now asserts the fixture is schema-valid, precisely so the rejection has to come from policy. |
 | Python policy (`scripts/sync_control_plane/policy.py`) | Yes | `self_promotion_policy_errors` records two: `requester may not approve its own manifest transition` and `activation requires approval by an independent human principal`. Executed on every CI run of the conformance validator. |
-| PostgreSQL trigger (`quirk_sync.manifest_activation_violation`, raised by `guard_manifest_activation`) | Yes | Verified by execution against PostgreSQL 16.13 on a throwaway cluster: a sibling-agent approval, a bare `human.` principal, and a malformed requester are each refused by name. In CI this layer is covered only by the static checks `rule_independent_human_approver`, `guard_delegates_to_rules` and `audit_uses_rule_function`, which prove the text is present in the enforcing definition and nothing more. `supabase/tests/sync_control_plane_hardening.sql` is the executable proof and no workflow runs it. |
+| PostgreSQL trigger (`quirk_sync.manifest_activation_violation`, raised by `guard_manifest_activation`) | Yes | Executed by the `database-guard` job in `.github/workflows/sync-control-plane-conformance.yml`: the job applies every migration to a PostgreSQL 16 service, reads `pg_get_functiondef` back to assert the installed guard delegates to the rule function, then runs `supabase/tests/manifest_activation_guard.run.sql` — nine cases where a sibling-agent approval, a bare `human.` principal, a malformed requester, an omitted rights-review key and an omitted `collision_behavior` are each refused by their own message, and one well-formed activation is admitted. The static checks `rule_*`, `guard_delegates_to_rules` and `audit_uses_rule_function` remain, but they are now a spelling test in front of a behavioural one rather than the whole of it. |
 
 Fixture SCP-011 passes with `reject_capability_to_authority_escalation`, and
 `test_self_promotion_rejected` passes.
 
-**Status:** satisfied by one layer proven in CI and one proven by hand. The
-database layer's CI coverage is a presence check, not a behavioural one, and
-neither layer establishes that a named human actually approved anything — see
-`docs/briefs/2026-10-03-approval-attestation.md`.
+**Status:** satisfied by two layers, both executed in CI. What neither layer
+establishes is that a named human actually approved anything: both check the
+*shape* of `approved_by`, and a string shaped like `human.bryan` is not an
+attestation — see `docs/briefs/2026-10-03-approval-attestation.md`.
 
 ---
 
