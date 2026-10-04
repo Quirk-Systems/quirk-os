@@ -13,7 +13,9 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -578,11 +580,14 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path("."))
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--metrics-output", type=Path, help="Optional JSON output path for performance/workload metrics.")
+    parser.add_argument("--write-step-summary", action="store_true", help="Append metrics to GitHub step summary when available.")
     parser.add_argument("--require-pass", action="store_true")
     parser.add_argument("--regenerate-example", action="store_true",
                         help="rewrite examples/distill-loop/expected* from the fixtures, then validate")
     args = parser.parse_args()
     repo = args.repo.resolve()
+    started = time.perf_counter()
 
     if args.regenerate_example:
         regenerate_example(repo)
@@ -592,6 +597,33 @@ def main() -> int:
         output = args.output if args.output.is_absolute() else repo / args.output
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    metrics = {
+        "validator": "validate_distill_loop.py",
+        "elapsed_seconds": time.perf_counter() - started,
+        "finding_count": len(report["findings"]),
+        "live_candidate_count": len(report.get("live_candidates", [])),
+        "control_count": len(report.get("controls", {})),
+        "verdict": report["verdict"],
+    }
+    if args.metrics_output:
+        metrics_output = args.metrics_output if args.metrics_output.is_absolute() else repo / args.metrics_output
+        metrics_output.parent.mkdir(parents=True, exist_ok=True)
+        metrics_output.write_text(json.dumps(metrics, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if args.write_step_summary and os.environ.get("GITHUB_STEP_SUMMARY"):
+        summary_lines = [
+            "## validate_distill_loop performance",
+            "",
+            "| metric | value |",
+            "| --- | ---: |",
+            f"| elapsed_seconds | {metrics['elapsed_seconds']:.6f} |",
+            f"| finding_count | {metrics['finding_count']} |",
+            f"| live_candidate_count | {metrics['live_candidate_count']} |",
+            f"| control_count | {metrics['control_count']} |",
+            f"| verdict | {metrics['verdict']} |",
+            "",
+        ]
+        with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+            handle.write("\n".join(summary_lines))
 
     print(json.dumps(report, sort_keys=True, separators=(",", ":"), ensure_ascii=False))
     if report["verdict"] != "PASS":
