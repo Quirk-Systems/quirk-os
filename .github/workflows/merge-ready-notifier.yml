@@ -1,0 +1,35 @@
+name: Merge Ready Notifier
+
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: read
+  checks: read
+  statuses: read
+
+concurrency:
+  group: merge-ready-notifier
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout trusted default branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Test readiness logic
+        run: python3 -m unittest tests.test_merge_ready_notifier -v
+      - name: Notify ready pull requests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/notify_merge_ready.py
