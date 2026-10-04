@@ -233,16 +233,23 @@ def validate_move(move: Any, source: str) -> int:
     return errors
 
 
-def validate_canonical_moves(status: str = "PROPOSED", unresolved: list[str] | None = None) -> int:
+def validate_canonical_moves(
+    status: str = "PROPOSED",
+    unresolved: list[str] | None = None,
+    *,
+    queue_processed_paths: set[str] | None = None,
+) -> int:
     """Scan all canonical moves, including candidates outside the PR3 queue.
 
     Two preexisting bootstrap documents use other dialects. Report their schema
     exceptions explicitly; they are not canonical conformance or admission proof.
     A document adopting proposed-move.v1 loses the legacy exception.
-    Non-PR3 blockers remain admission holds for candidates and fail admission
-    statuses. PR3's queue retains its separate ordering and verdict checks.
+    Blockers not already processed by the tribunal queue remain admission holds
+    for candidates and fail admission statuses, including unqueued PR3 files.
+    PR3's queue retains its separate ordering and verdict checks.
     """
     schema = load_json("schemas/proposed-move.schema.json")
+    handled_paths = queue_processed_paths or set()
     errors = 0
     for path in sorted((ROOT / "proposed-moves").rglob("*.json")):
         relative = path.relative_to(ROOT).as_posix()
@@ -282,7 +289,7 @@ def validate_canonical_moves(status: str = "PROPOSED", unresolved: list[str] | N
         errors += len(findings)
         if (
             isinstance(move, dict)
-            and not relative.startswith("proposed-moves/pr-3/")
+            and relative not in handled_paths
             and move.get("blocks_merge") is True
             and move.get("disposition") not in RESOLVED_BLOCKER_DISPOSITIONS
         ):
@@ -297,7 +304,9 @@ def validate_canonical_moves(status: str = "PROPOSED", unresolved: list[str] | N
     return errors
 
 
-def validate_tribunal_queue(relative: str, status: str) -> tuple[int, list[str]]:
+def validate_tribunal_queue(
+    relative: str, status: str, processed_paths: set[str] | None = None
+) -> tuple[int, list[str]]:
     errors = 0
     try:
         queue = load_json(relative)
@@ -364,6 +373,8 @@ def validate_tribunal_queue(relative: str, status: str) -> tuple[int, list[str]]
         moves.append(move)
         move_ids.append(move_id)
         move_paths.append(move_path)
+        if processed_paths is not None:
+            processed_paths.add(Path(move_path).as_posix())
 
     if len(set(move_ids)) != len(move_ids):
         fail(f"{relative}: duplicate Proposed Move ids")
@@ -484,7 +495,17 @@ def main() -> int:
                 errors += 1
 
     unresolved: list[str] = []
-    errors += validate_canonical_moves(status, unresolved)
+    queue_processed_paths: set[str] = set()
+    queue_relative = "proposed-moves/pr-3/queue.json"
+    if (ROOT / queue_relative).is_file():
+        queue_errors, queue_unresolved = validate_tribunal_queue(
+            queue_relative, status, queue_processed_paths
+        )
+        errors += queue_errors
+        unresolved.extend(queue_unresolved)
+    errors += validate_canonical_moves(
+        status, unresolved, queue_processed_paths=queue_processed_paths
+    )
     plan_errors = validate_personalization_plan(
         load_json("examples/personalization-plan.valid.json"),
         load_json("schemas/personalization-plan.schema.json"),
@@ -492,12 +513,6 @@ def main() -> int:
     for finding in plan_errors:
         fail(f"examples/personalization-plan.valid.json:{finding}")
     errors += len(plan_errors)
-    queue_relative = "proposed-moves/pr-3/queue.json"
-    if (ROOT / queue_relative).is_file():
-        queue_errors, queue_unresolved = validate_tribunal_queue(queue_relative, status)
-        errors += queue_errors
-        unresolved.extend(queue_unresolved)
-
     for path in ROOT.rglob("*"):
         if not path.is_file() or ".git" in path.parts:
             continue

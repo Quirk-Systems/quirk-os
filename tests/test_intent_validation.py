@@ -251,6 +251,59 @@ class IntentFullValidationTests(unittest.TestCase):
         self.assertEqual(candidate_unresolved, admission_unresolved)
         self.assertEqual(len(admission_unresolved), errors)
 
+    def test_unqueued_pr3_blocker_is_not_exempt_and_queued_holds_are_not_doubled(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in [
+                "schemas/proposed-move.schema.json",
+                "tribunals/ship-without-bryan/pr-3/EVIDENCE.json",
+                "tribunals/ship-without-bryan/pr-3/REPORT.md",
+            ]:
+                destination = root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(REPO / relative, destination)
+            shutil.copytree(REPO / "proposed-moves/pr-3", root / "proposed-moves/pr-3")
+            move = copy.deepcopy(self.move)
+            move.update(id="qpm_pr3_synthetic_unqueued", blocks_merge=True, disposition="new")
+            path = root / "proposed-moves/pr-3/qpm_pr3_synthetic_unqueued.json"
+            path.write_text(json.dumps(move))
+            with patch.object(validate_golden_pack, "ROOT", root):
+                for status in ["PROPOSED", "ADMITTED"]:
+                    with self.subTest(status=status):
+                        processed_paths = set()
+                        unresolved = []
+                        with (
+                            contextlib.redirect_stdout(io.StringIO()) as output,
+                            contextlib.redirect_stderr(io.StringIO()) as failures,
+                        ):
+                            queue_errors, queued_unresolved = validate_golden_pack.validate_tribunal_queue(
+                                "proposed-moves/pr-3/queue.json", status, processed_paths
+                            )
+                            unresolved.extend(queued_unresolved)
+                            scan_errors = validate_golden_pack.validate_canonical_moves(
+                                status, unresolved, queue_processed_paths=processed_paths
+                            )
+                        self.assertNotIn(path.relative_to(root).as_posix(), processed_paths)
+                        self.assertEqual([*queued_unresolved, move["id"]], unresolved)
+                        self.assertTrue(queued_unresolved)
+                        if status == "PROPOSED":
+                            self.assertEqual(0, queue_errors + scan_errors)
+                            messages = output.getvalue().splitlines()
+                            self.assertEqual(len(unresolved), len(messages))
+                            self.assertTrue(all(message.startswith("HOLD:") for message in messages))
+                        else:
+                            self.assertEqual(len(queued_unresolved), queue_errors)
+                            self.assertEqual(1, scan_errors)
+                            messages = failures.getvalue().splitlines()
+                            self.assertEqual(len(unresolved), len(messages))
+                            self.assertTrue(all("admission blocked" in message for message in messages))
+                        for move_id in unresolved:
+                            self.assertEqual(
+                                1,
+                                sum(f"Proposed Move: {move_id}" in message for message in messages),
+                                move_id,
+                            )
+
     def test_cli_uses_full_plan_and_actual_move_validation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
