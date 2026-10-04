@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -498,6 +499,10 @@ def _component_contract_errors(
     validator = Draft202012Validator(artifact_schema, format_checker=FormatChecker())
     if list(validator.iter_errors(artifact)):
         return ["COMPONENT_MANIFEST_INACCESSIBLE"]
+    for field in ("data_bindings", "state_bindings"):
+        binding_ids = [binding["binding_id"] for binding in artifact[field]]
+        if len(binding_ids) != len(set(binding_ids)):
+            return ["COMPONENT_MANIFEST_INACCESSIBLE"]
     pinned_fields = ("component_id", "version", "data_bindings", "state_bindings", "user_actions")
     if any(component.get(key) != artifact.get(key) for key in pinned_fields):
         return ["COMPONENT_HASH_UNVERIFIABLE"]
@@ -652,6 +657,13 @@ def _verified_manual_evidence(
         json.dumps(artifact, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     ).hexdigest()
     if actual_digest != expected_digest:
+        return False
+    trusted_digests = {
+        digest.strip()
+        for digest in os.environ.get("QUIRK_TRUSTED_MANUAL_EVIDENCE_SHA256", "").split(",")
+        if SHA256_RE.fullmatch(digest.strip())
+    }
+    if actual_digest not in trusted_digests:
         return False
     if artifact.get("requirement") != requirement or not isinstance(artifact.get("observation"), str):
         return False

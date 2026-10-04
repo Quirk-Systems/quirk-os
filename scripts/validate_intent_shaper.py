@@ -18,9 +18,6 @@ import yaml
 from intent_shaper.policy import SOURCE_RANK, evaluate_cases
 
 
-EVALUATED_CANDIDATE_SHA = "f5effa3d6da3e5879e10007492aeff39a1c643be"
-
-
 def git_result(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["git", "-C", str(repo), *args],
@@ -115,10 +112,14 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path.cwd())
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--candidate-sha", default=EVALUATED_CANDIDATE_SHA)
+    parser.add_argument("--candidate-sha")
     args = parser.parse_args()
 
     repo = args.repo.resolve()
+    candidate_sha = args.candidate_sha
+    if candidate_sha is None:
+        head_result = git_result(repo, "rev-parse", "HEAD")
+        candidate_sha = head_result.stdout.strip() if head_result.returncode == 0 else "unavailable"
     schema_path = repo / "schemas/personalization-plan.schema.json"
     receipt_schema_path = repo / "schemas/generated-ui-gate-receipt.schema.json"
     sample_path = repo / "examples/personalization-plan.valid.json"
@@ -158,9 +159,9 @@ def main() -> int:
     head_sha = head_result.stdout.strip() if head_result.returncode == 0 else "unavailable"
     parent_result = git_result(repo, "rev-parse", "--verify", "HEAD^1")
     base_sha = parent_result.stdout.strip() if parent_result.returncode == 0 else head_sha
-    merge_base_result = git_result(repo, "merge-base", args.candidate_sha, head_sha)
+    merge_base_result = git_result(repo, "merge-base", candidate_sha, head_sha)
     merge_base_sha = merge_base_result.stdout.strip() if merge_base_result.returncode == 0 else None
-    ancestry_result = git_result(repo, "merge-base", "--is-ancestor", args.candidate_sha, head_sha)
+    ancestry_result = git_result(repo, "merge-base", "--is-ancestor", candidate_sha, head_sha)
     candidate_is_ancestor = ancestry_result.returncode == 0
     if not candidate_is_ancestor:
         errors.append("provenance:candidate_not_ancestor_of_head")
@@ -180,7 +181,7 @@ def main() -> int:
         "errors": errors,
     }
     report["git"] = {
-        "candidate_sha": args.candidate_sha,
+        "candidate_sha": candidate_sha,
         "base_sha": base_sha,
         "head_sha": head_sha,
         "merge_base_sha": merge_base_sha,
@@ -189,7 +190,7 @@ def main() -> int:
     report["runtime_authorized"] = False
     report["deployment_authorized"] = False
     report["limitations"] = [
-        "Manual accessibility evidence is recorded by reference only; this harness does not invent human observations."
+        "Manual accessibility evidence requires an out-of-band trusted digest in QUIRK_TRUSTED_MANUAL_EVIDENCE_SHA256; this harness does not invent human observations."
     ]
     report["verdict"] = "REVISE" if errors else "candidate_evidence_complete"
     report["content_hash"] = canonical_hash(report)

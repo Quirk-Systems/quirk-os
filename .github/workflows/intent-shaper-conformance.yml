@@ -46,9 +46,12 @@ jobs:
         run: python -m unittest tests.test_intent_shaper -v
 
       - name: Run Intent Shaper conformance
+        env:
+          QUIRK_TRUSTED_MANUAL_EVIDENCE_SHA256: ${{ vars.QUIRK_TRUSTED_MANUAL_EVIDENCE_SHA256 }}
         run: |
           python scripts/validate_intent_shaper.py \
             --repo . \
+            --candidate-sha "${{ github.event.pull_request.head.sha }}" \
             --output evals/intent-shaper/conformance-results/qis-014.generated-ui-gate.json
 
       - name: Upload Intent Shaper evidence

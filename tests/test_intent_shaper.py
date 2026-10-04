@@ -4,6 +4,7 @@ import copy
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import unittest
@@ -298,6 +299,23 @@ class IntentShaperContractTests(unittest.TestCase):
         self.assertEqual("rejected", result["status"])
         self.assertIn("ACCESSIBILITY_MACHINE_CHECK_FAILED", result["reason_codes"])
 
+    def test_component_bindings_require_unique_ids_and_matching_prefixes(self) -> None:
+        component_ref = "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
+        _, artifact = intent_policy._contained_json(component_ref)
+        duplicate = copy.deepcopy(artifact)
+        duplicate["data_bindings"].append({**duplicate["data_bindings"][0], "source_ref": "intent.details"})
+        self.assertEqual(
+            ["COMPONENT_MANIFEST_INACCESSIBLE"],
+            intent_policy._component_contract_errors(duplicate, duplicate, "affordance.plain_answer"),
+        )
+
+        wrong_prefix = copy.deepcopy(artifact)
+        wrong_prefix["data_bindings"][0]["binding_id"] = "state.shared"
+        self.assertEqual(
+            ["COMPONENT_MANIFEST_INACCESSIBLE"],
+            intent_policy._component_contract_errors(wrong_prefix, wrong_prefix, "affordance.plain_answer"),
+        )
+
     def test_manual_evidence_is_bound_to_component_version_and_hash(self) -> None:
         component_ref = "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
         _, component = intent_policy._contained_json(component_ref)
@@ -330,15 +348,21 @@ class IntentShaperContractTests(unittest.TestCase):
         as_of = datetime(2026, 8, 12, 12, tzinfo=timezone.utc)
         loaded = (REPO / entry["evidence_ref"], artifact)
 
-        with patch("intent_shaper.policy._contained_json", return_value=loaded):
-            self.assertTrue(intent_policy._verified_manual_evidence(entry, "keyboard", as_of, [(component, component_hash)]))
+        with patch.dict(os.environ, {"QUIRK_TRUSTED_MANUAL_EVIDENCE_SHA256": ""}):
+            with patch("intent_shaper.policy._contained_json", return_value=loaded):
+                self.assertFalse(intent_policy._verified_manual_evidence(entry, "keyboard", as_of, [(component, component_hash)]))
+
+        with patch.dict(os.environ, {"QUIRK_TRUSTED_MANUAL_EVIDENCE_SHA256": artifact_hash}):
+            with patch("intent_shaper.policy._contained_json", return_value=loaded):
+                self.assertTrue(intent_policy._verified_manual_evidence(entry, "keyboard", as_of, [(component, component_hash)]))
 
         artifact["components"][0]["version"] = "9.9.9"
         entry["evidence_sha256"] = hashlib.sha256(
             json.dumps(artifact, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
         ).hexdigest()
-        with patch("intent_shaper.policy._contained_json", return_value=loaded):
-            self.assertFalse(intent_policy._verified_manual_evidence(entry, "keyboard", as_of, [(component, component_hash)]))
+        with patch.dict(os.environ, {"QUIRK_TRUSTED_MANUAL_EVIDENCE_SHA256": entry["evidence_sha256"]}):
+            with patch("intent_shaper.policy._contained_json", return_value=loaded):
+                self.assertFalse(intent_policy._verified_manual_evidence(entry, "keyboard", as_of, [(component, component_hash)]))
 
 
     def test_generated_ui_missing_manual_evidence_blocks(self) -> None:

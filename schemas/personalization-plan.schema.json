@@ -998,14 +998,14 @@
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "#/$defs/GeneratedUiBinding"
+            "$ref": "#/$defs/DataBinding"
           }
         },
         "state_bindings": {
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "#/$defs/GeneratedUiBinding"
+            "$ref": "#/$defs/StateBinding"
           }
         },
         "user_actions": {
@@ -1038,6 +1038,34 @@
           "type": "boolean"
         }
       }
+    },
+    "DataBinding": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/GeneratedUiBinding"
+        },
+        {
+          "properties": {
+            "binding_id": {
+              "pattern": "^binding\\."
+            }
+          }
+        }
+      ]
+    },
+    "StateBinding": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/GeneratedUiBinding"
+        },
+        {
+          "properties": {
+            "binding_id": {
+              "pattern": "^state\\."
+            }
+          }
+        }
+      ]
     },
     "GeneratedUiAction": {
       "type": "object",
@@ -1114,14 +1142,14 @@
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "#/$defs/GeneratedUiBinding"
+            "$ref": "#/$defs/DataBinding"
           }
         },
         "state_bindings": {
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "#/$defs/GeneratedUiBinding"
+            "$ref": "#/$defs/StateBinding"
           }
         },
         "user_actions": {
