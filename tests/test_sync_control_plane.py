@@ -220,6 +220,7 @@ class DatabaseGuardJobTests(unittest.TestCase):
                 "ci_runs_guard_cases": True,
                 "ci_reads_installed_guard_back": True,
                 "ci_runs_guard_cases_as_service_role": True,
+                "ci_evidence_depends_on_database_guard": True,
             },
             self.run_checks(self.live),
         )
@@ -271,6 +272,17 @@ class DatabaseGuardJobTests(unittest.TestCase):
         checks = self.run_checks(merged)
         self.assertFalse(checks["ci_runs_guard_cases_as_service_role"])
         self.assertTrue(checks["ci_runs_guard_cases"])
+
+    def test_eligibility_must_depend_on_the_database_job(self):
+        # Run in parallel, candidate-conformance computes and uploads an
+        # `ELIGIBLE_FOR_HUMAN_ADMISSION` decision even when the guard failed,
+        # and the artifact cannot contradict it: `migration_hardening_complete`
+        # only checks that the job is spelled in the workflow.
+        detached = copy.deepcopy(self.live)
+        del detached["jobs"]["candidate-conformance"]["needs"]
+        checks = self.run_checks(detached)
+        self.assertFalse(checks["ci_evidence_depends_on_database_guard"])
+        self.assertTrue(checks["ci_declares_database_guard_job"])
 
     def test_dropping_the_service_role_step_fails_that_check(self):
         gutted = copy.deepcopy(self.live)
@@ -377,6 +389,29 @@ class ManifestActivationCasesFileTests(unittest.TestCase):
         body = self.MIGRATION.read_text(encoding="utf-8").lower()
         self.assertIn("revoke execute on function", body)
         self.assertIn("to service_role;", body)
+
+    SKILL = ROOT / ".claude/skills/verify/SKILL.md"
+
+    def test_the_verify_recipe_does_not_drift_from_the_workflow(self):
+        """A recipe that cannot go red is the same defect as a guard that cannot refuse.
+
+        The skill was written one commit before the migration stopped opening
+        its own transaction and before the production-role cases existed, and
+        both of its instructions became wrong without anything failing. These
+        assertions are what make the next such drift fail here instead of in
+        somebody's terminal.
+        """
+        recipe = self.SKILL.read_text(encoding="utf-8")
+        # The migration's `lock table` is rejected outside a transaction block,
+        # so a loop without this flag aborts.
+        self.assertIn("--single-transaction -f \"$m\"", recipe)
+        self.assertNotIn("Do **not** add `--single-transaction`", recipe)
+        # Supabase creates service_role with BYPASSRLS; without it the
+        # production-role cases fail on RLS before reaching the trigger.
+        self.assertIn("bypassrls", recipe.lower())
+        # The recipe must drive the file that can detect a missing grant.
+        self.assertIn("manifest_activation_guard.service_role.sql", recipe)
+        self.assertIn("session-order dependent", recipe)
 
     def test_every_refusal_case_asserts_its_own_message(self):
         # A case that asserted rejection without naming the reason would stay

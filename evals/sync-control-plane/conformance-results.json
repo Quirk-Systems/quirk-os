@@ -252,6 +252,7 @@
     "ci_declares_database_guard_job": true,
     "ci_runs_guard_cases": true,
     "ci_reads_installed_guard_back": true,
+    "ci_evidence_depends_on_database_guard": true,
     "ci_runs_guard_cases_as_service_role": true
   },
   "mapping_proof": {
@@ -260,5 +261,5 @@
     "binding_roundtrip_stable": true,
     "receipt_roundtrip_stable": true
   },
-  "content_hash_sha256": "744412cd5490b16155e6b738c2480da7c003cba184d382f3a9e2c994125c8753"
+  "content_hash_sha256": "a18c5aa2b7f2961e9819f6293175e59e7c37115ca98571b86c78de3939c7d8cb"
 }

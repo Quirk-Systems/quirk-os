@@ -36,6 +36,15 @@ jobs:
     name: candidate-conformance
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    # The behavioural database proof runs FIRST and this job depends on it.
+    # These two were parallel, which meant a failing guard still let this job
+    # compute and upload an `ELIGIBLE_FOR_HUMAN_ADMISSION` artifact — the
+    # decision's `migration_hardening_complete` only checks that the job exists
+    # textually, so nothing in the artifact could contradict a database that
+    # refused to enforce anything. Eligibility is now downstream of the proof:
+    # if `database-guard` fails, this job does not run and no decision is
+    # produced at all.
+    needs: database-guard
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -61,6 +70,10 @@ jobs:
             --require-admit
 
       - name: Upload conformance evidence
+        # `always()` so a REVISE decision is still captured when the checks
+        # above fail. It cannot upload an ELIGIBLE artifact behind a failing
+        # database guard, because `needs: database-guard` means this job never
+        # starts in that case.
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -73,7 +86,7 @@ jobs:
     name: database-guard
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    # The candidate-conformance job above reads the migrations as text. It can
+    # The candidate-conformance job reads the migrations as text. It can
     # prove a predicate is spelled inside the enforcing definition and nothing
     # more. This job applies the migrations to a real PostgreSQL and asserts
     # that the installed trigger refuses each bypass by name, which is the only

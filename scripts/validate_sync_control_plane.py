@@ -137,8 +137,12 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
             "ci_runs_guard_cases": False,
             "ci_reads_installed_guard_back": False,
             "ci_runs_guard_cases_as_service_role": False,
+            "ci_evidence_depends_on_database_guard": False,
         }
-    job = (workflow or {}).get("jobs", {}).get("database-guard") or {}
+    jobs = (workflow or {}).get("jobs", {})
+    job = jobs.get("database-guard") or {}
+    needs = (jobs.get("candidate-conformance") or {}).get("needs")
+    needs = [needs] if isinstance(needs, str) else list(needs or [])
     runs = "\n".join(
         str(step.get("run", "")) for step in job.get("steps", []) if isinstance(step, dict)
     )
@@ -153,6 +157,16 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
         # function is checked when PL/pgSQL builds the trigger's cached plan,
         # which makes the privilege check session-order dependent: run after
         # the superuser cases and these pass with no grant at all.
+        # Eligibility must be downstream of the behavioural proof. Run in
+        # parallel, the Python job computes and uploads an
+        # `ELIGIBLE_FOR_HUMAN_ADMISSION` decision even when the database guard
+        # failed, and nothing in the artifact can contradict it: its
+        # `migration_hardening_complete` only checks that this job is spelled
+        # in the workflow.
+        # `bool(job)` as well, because a `needs:` naming a job that no longer
+        # exists is not a dependency on anything. Without that conjunct,
+        # deleting the job left this check green.
+        "ci_evidence_depends_on_database_guard": bool(job) and "database-guard" in needs,
         "ci_runs_guard_cases_as_service_role": any(
             "manifest_activation_guard.service_role.sql" in str(step.get("run", ""))
             and "manifest_activation_guard.run.sql" not in str(step.get("run", ""))
