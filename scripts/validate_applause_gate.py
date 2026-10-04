@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import time
 from pathlib import Path
 from typing import Any
 
@@ -113,16 +115,47 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path("."))
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--metrics-output", type=Path, help="Optional JSON output path for performance/workload metrics.")
+    parser.add_argument("--write-step-summary", action="store_true", help="Append metrics to GitHub step summary when available.")
     parser.add_argument("--require-pass", action="store_true")
     args = parser.parse_args()
+    started = time.perf_counter()
 
-    report = validate(args.repo.resolve())
+    repo = args.repo.resolve()
+    report = validate(repo)
     payload = json.dumps(report, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
     if args.output:
-        output = args.output if args.output.is_absolute() else args.repo / args.output
+        output = args.output if args.output.is_absolute() else repo / args.output
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    metrics = {
+        "validator": "validate_applause_gate.py",
+        "elapsed_seconds": time.perf_counter() - started,
+        "total_cases": report["total_cases"],
+        "schema_error_count": report["schema_error_count"],
+        "expected_mismatch_count": report["expected_mismatch_count"],
+        "verdict": report["verdict"],
+    }
+    if args.metrics_output:
+        metrics_output = args.metrics_output if args.metrics_output.is_absolute() else repo / args.metrics_output
+        metrics_output.parent.mkdir(parents=True, exist_ok=True)
+        metrics_output.write_text(json.dumps(metrics, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if args.write_step_summary and os.environ.get("GITHUB_STEP_SUMMARY"):
+        summary_lines = [
+            "## validate_applause_gate performance",
+            "",
+            "| metric | value |",
+            "| --- | ---: |",
+            f"| elapsed_seconds | {metrics['elapsed_seconds']:.6f} |",
+            f"| total_cases | {metrics['total_cases']} |",
+            f"| schema_error_count | {metrics['schema_error_count']} |",
+            f"| expected_mismatch_count | {metrics['expected_mismatch_count']} |",
+            f"| verdict | {metrics['verdict']} |",
+            "",
+        ]
+        with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+            handle.write("\n".join(summary_lines))
 
     print(payload)
     if args.require_pass and report["verdict"] != "PASS":

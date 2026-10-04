@@ -126,6 +126,13 @@ Gallery preservation does not make the object executable or canonical. Abandoned
 - Provider-resource and publication access remain blocked.
 - Future chambers appear as an extensible rail affordance, not a hard-coded promise.
 
+## Observability UX requirements
+
+- Show validator wall-clock telemetry (`elapsed_seconds`) as a non-authoritative trend signal.
+- Show workload dimensions beside timing (fixture count, schema checks, scanned files/bytes where relevant).
+- Mark telemetry as **evidence only**: never infer permission, admission, or Canon state from speed/confidence signals.
+- Link each chamber decision to the specific conformance artifact and metrics artifact used during review.
+
 ## Deliberately excluded from this artifact
 
 - runtime code;
