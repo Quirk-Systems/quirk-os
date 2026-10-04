@@ -7,7 +7,7 @@
     "owner": "Bryan",
     "budget": {
       "primary_sources": 4,
-      "search_calls": 8,
+      "search_calls": 10,
       "iteration_limit": 1,
       "release_authority": "human only"
     }
@@ -60,6 +60,17 @@
       "independence_group": "postgresql",
       "is_primary": true,
       "status": "admitted"
+    },
+    {
+      "id": "postgres-json",
+      "url": "https://www.postgresql.org/docs/16/datatype-json.html",
+      "title": "PostgreSQL 16 JSON types",
+      "publisher": "PostgreSQL Global Development Group",
+      "retrieved_at": "2026-10-04T15:26:44.253653+00:00",
+      "source_type": "official documentation",
+      "independence_group": "postgresql",
+      "is_primary": true,
+      "status": "admitted"
     }
   ],
   "evidence": [
@@ -80,6 +91,12 @@
       "source_id": "postgres-functions",
       "locator": "Parameters: SECURITY INVOKER / SECURITY DEFINER",
       "summary": "INVOKER uses caller privileges; DEFINER uses function-owner privileges. This distinction determines whether an application function can elevate a caller."
+    },
+    {
+      "id": "evidence.postgres-json",
+      "source_id": "postgres-json",
+      "locator": "8.14.1 JSON Input and Output Syntax; numeric notation and equality",
+      "summary": "JSONB output can change exponent notation, and numeric trailing zeros are insignificant to equality. It is not the original JSON byte stream."
     }
   ],
   "claims": [
@@ -130,6 +147,18 @@
       "confidence": 0.98,
       "confidence_rationale": "Directly stated by the authoritative service documentation; scoped to this behavior.",
       "status": "supported"
+    },
+    {
+      "id": "claim.postgres-json.1",
+      "text": "JSONB value equality and serialization do not establish equality with the CPython canonical hash preimage.",
+      "importance": "material",
+      "evidence_ids": [
+        "evidence.postgres-json"
+      ],
+      "evidence_policy": "single_primary",
+      "confidence": 0.98,
+      "confidence_rationale": "Official JSONB behavior directly shows why it cannot stand in for the separately chosen byte profile.",
+      "status": "supported"
     }
   ],
   "contradictions": [
@@ -174,6 +203,10 @@
     {
       "query": "Direct official documentation URLs and targeted find",
       "result": "Three primary sources admitted; one contradiction pass separated ownership from enforcement."
+    },
+    {
+      "query": "PostgreSQL JSON types, input/output numeric notation",
+      "result": "Delta check clarified JSONB projection versus canonical Python bytes; no parity claim."
     }
   ],
   "authority_effect": "none",
