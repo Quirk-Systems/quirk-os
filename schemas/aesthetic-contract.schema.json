@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/aesthetic-contract.schema.json",
+  "title": "Quirk Aesthetic Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "aesthetic_id",
+    "title",
+    "version",
+    "status",
+    "principles",
+    "preferences",
+    "prohibit",
+    "applies_to",
+    "authority_guardrails"
+  ],
+  "properties": {
+    "aesthetic_id": {
+      "type": "string",
+      "pattern": "^aesthetic\\.[a-z0-9._-]+$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "status": {
+      "enum": [
+        "candidate",
+        "evaluated",
+        "admitted",
+        "deprecated",
+        "retired"
+      ]
+    },
+    "principles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "preferences": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "prohibit": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "applies_to": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "writing",
+          "ui",
+          "diagram",
+          "music",
+          "image",
+          "motion",
+          "space",
+          "product_behavior"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "authority_guardrails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "must_not_hide"
+      ],
+      "properties": {
+        "must_not_hide": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "status",
+              "evidence",
+              "cost",
+              "uncertainty",
+              "authority",
+              "risk",
+              "price",
+              "accessibility"
+            ]
+          },
+          "minItems": 6,
+          "uniqueItems": true,
+          "allOf": [
+            {
+              "contains": {
+                "const": "evidence"
+              }
+            },
+            {
+              "contains": {
+                "const": "uncertainty"
+              }
+            },
+            {
+              "contains": {
+                "const": "authority"
+              }
+            },
+            {
+              "contains": {
+                "const": "risk"
+              }
+            },
+            {
+              "contains": {
+                "const": "price"
+              }
+            },
+            {
+              "contains": {
+                "const": "accessibility"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

@@ -8,6 +8,7 @@ on:
       - 'evals/intent-shaper/**'
       - 'examples/personalization-plan.valid.json'
       - 'policies/personalization-adaptation-policy.yaml'
+      - 'requirements-evals.txt'
       - 'schemas/personalization-plan.schema.json'
       - 'scripts/intent_shaper/**'
       - 'scripts/validate_intent_shaper.py'

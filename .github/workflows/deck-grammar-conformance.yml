@@ -1,0 +1,86 @@
+name: Deck Grammar Conformance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/deck-grammar-conformance.yml'
+      - 'diagrams/deck-grammar-*.mmd'
+      - 'diagrams/quirk-object-pack-scaffolder.mmd'
+      - 'docs/canon/**'
+      - 'docs/deck-grammar/**'
+      - 'evals/deck-grammar/**'
+      - 'examples/deck-grammar/**'
+      - 'presets/deck-grammar/**'
+      - 'proposed-moves/deck-grammar/**'
+      - 'schemas/active-hand.schema.json'
+      - 'schemas/aesthetic-contract.schema.json'
+      - 'schemas/affordance.schema.json'
+      - 'schemas/area.schema.json'
+      - 'schemas/art.schema.json'
+      - 'schemas/artifact.schema.json'
+      - 'schemas/asset.schema.json'
+      - 'schemas/card-definition.schema.json'
+      - 'schemas/card-instance.schema.json'
+      - 'schemas/collection.schema.json'
+      - 'schemas/eligible-deck.schema.json'
+      - 'schemas/entitlement-grant.schema.json'
+      - 'schemas/goal.schema.json'
+      - 'schemas/hand-preset.schema.json'
+      - 'schemas/intention.schema.json'
+      - 'scripts/deck_grammar/**'
+      - 'scripts/scaffold_quirk_object_pack.py'
+      - 'scripts/validate_deck_grammar.py'
+      - 'skills/quirk-deck-compiler/**'
+      - 'templates/quirk-object-pack/**'
+      - 'tests/test_deck_grammar.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deck-grammar-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate-deck-conformance:
+    name: candidate-deck-conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-evals.txt
+
+      - name: Install evaluation dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-evals.txt
+
+      - name: Run Deck Grammar tests
+        run: python -m unittest discover -s tests -p 'test_deck_grammar.py' -v
+
+      - name: Run Deck Grammar conformance
+        env:
+          PYTHONPATH: scripts
+        run: |
+          python scripts/validate_deck_grammar.py \
+            --repo . \
+            --output evals/deck-grammar/conformance-results.json \
+            --require-pass
+
+      - name: Upload Deck Grammar evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: deck-grammar-conformance
+          path: |
+            evals/deck-grammar/conformance-results.json
+            examples/deck-grammar/live-proof.json
+          if-no-files-found: error
+          retention-days: 30

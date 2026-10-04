@@ -61,6 +61,8 @@ The loader fails closed when:
 
 A running skill never rewrites itself. Historical versions remain addressable. Feedback produces a Proposed Move and receipt, not an invisible behavioral mutation.
 
+The post-run distill loop is the mechanical half of `observe → attempt → evaluate`: a `completed` receipt plus its trace can be distilled into a new `quirk-distilled-*` candidate package. That package enters the sequence at "mutation candidate" and no further. A distill promotion receipt moves it to reviewed candidate so the next run may read it; external admission remains the only path to a loadable successor version. See [`../distill-loop/README.md`](../distill-loop/README.md).
+
 ## Admission
 
 A version must separately pass applicable Quirk Approval, Procedures, Processes, Profiling, Interoperability, Security, Statistical, Lexical, and Quirk Pedantry testing. This PR supplies machine-verifiable package, integrity, runtime-boundary, and eval evidence. Human admission remains external by design.

@@ -1,5 +1,17 @@
 """Quirk Intent Shaper candidate policy package."""
 
-from .policy import evaluate_case, evaluate_cases
+from .policy import (
+    FailOnReadEvidencePort,
+    RecordingEvidencePort,
+    evaluate_case,
+    evaluate_cases,
+    evaluate_personalization_boundary,
+)
 
-__all__ = ["evaluate_case", "evaluate_cases"]
+__all__ = [
+    "FailOnReadEvidencePort",
+    "RecordingEvidencePort",
+    "evaluate_case",
+    "evaluate_cases",
+    "evaluate_personalization_boundary",
+]
