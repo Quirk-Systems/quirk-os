@@ -233,12 +233,36 @@ class IntentShaperContractTests(unittest.TestCase):
                 self.assertFalse(result["actual"]["deployment_authorized"])
 
 
-    def test_generated_ui_candidate_case_is_complete_but_not_runnable(self) -> None:
+    def test_generated_ui_candidate_with_placeholder_manual_refs_blocks(self) -> None:
         results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}
         actual = results["QIS-GUI-001"]["actual"]
-        self.assertEqual("candidate_evidence_complete", actual["status"])
-        self.assertEqual(["CANDIDATE_EVIDENCE_COMPLETE"], actual["reason_codes"])
-        self.assertEqual("provided", actual["manual_evidence_summary"]["keyboard"])
+        self.assertEqual("blocked_manual", actual["status"])
+        self.assertEqual(["MANUAL_EVIDENCE_MISSING"], actual["reason_codes"])
+        self.assertEqual("missing", actual["manual_evidence_summary"]["keyboard"])
+
+    def test_generated_ui_rejects_path_traversal_and_malformed_plan(self) -> None:
+        cases = {case["id"]: case for case in self.suite["cases"]}
+        traversal = copy.deepcopy(cases["QIS-GUI-005"])
+        traversal["input"]["generated_ui_plan"]["component_manifests"][0]["manifest_ref"] = "../../../../etc/passwd"
+        malformed = copy.deepcopy(cases["QIS-GUI-001"])
+        del malformed["input"]["generated_ui_plan"]["component_manifests"][0]["data_bindings"]
+
+        for case in (traversal, malformed):
+            with self.subTest(case=case["id"]):
+                actual = evaluate_case(case)["actual"]
+                self.assertEqual("rejected", actual["status"])
+                self.assertEqual([], list(self.receipt_validator.iter_errors(actual)))
+        self.assertIn("COMPONENT_MANIFEST_INACCESSIBLE", evaluate_case(traversal)["actual"]["reason_codes"])
+        self.assertIn("GENERATED_UI_PLAN_INVALID", evaluate_case(malformed)["actual"]["reason_codes"])
+
+    def test_generated_ui_receipt_schema_rejects_contradictory_reasons(self) -> None:
+        result = next(
+            item["actual"]
+            for item in evaluate_cases(self.suite["cases"])
+            if item["id"] == "QIS-GUI-008"
+        )
+        result["reason_codes"] = ["CANDIDATE_EVIDENCE_COMPLETE"]
+        self.assertTrue(list(self.receipt_validator.iter_errors(result)))
 
 
     def test_generated_ui_missing_manual_evidence_blocks(self) -> None:

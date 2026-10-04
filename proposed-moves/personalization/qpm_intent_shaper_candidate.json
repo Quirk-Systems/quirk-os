@@ -76,7 +76,7 @@
     "Generated UI remains outside the candidate schema until separate accessibility, reconstruction, fallback, and human gates are admitted.",
     "Feedback creates an immutable receipt before any adaptation proposal.",
     "Inferred preferences cannot self-promote into settings or Canon.",
-    "All twenty QIS and review-regression fixtures execute and pass.",
+    "All thirty-six QIS and review-regression fixtures execute and pass.",
     "One human admission decision defines permitted runtime scope."
   ]
 }

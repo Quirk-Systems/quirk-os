@@ -1,0 +1,18 @@
+{
+  "checker_id": "quirk.intent-shaper.manifest-contract-checker",
+  "checker_version": "1.0.0",
+  "component_id": "component.generated-ui.issue-intake-form",
+  "component_version": "1.2.3",
+  "component_manifest_sha256": "e562ca23cdbea16de0bc68e3e29eba457ca1a1581813f3e9c9e58454a395a85a",
+  "checks": {
+    "focus_order_declared": true,
+    "focus_visible_tokens": true,
+    "screen_reader_semantics_declared": true,
+    "reflow_zoom_support_declared": true,
+    "contrast_tokens_verified": true,
+    "reduced_motion_support_declared": true,
+    "errors_identifiable": true,
+    "status_announcements_mapped": true
+  },
+  "checked_at": "2026-08-12T00:00:00Z"
+}

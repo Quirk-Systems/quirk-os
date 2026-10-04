@@ -21,8 +21,13 @@ from intent_shaper.policy import SOURCE_RANK, evaluate_cases
 EVALUATED_CANDIDATE_SHA = "f5effa3d6da3e5879e10007492aeff39a1c643be"
 
 
-def git_output(repo: Path, *args: str) -> str:
-    return subprocess.check_output(["git", "-C", str(repo), *args], text=True).strip()
+def git_result(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", "-C", str(repo), *args],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
 
 
 REQUIRED_INVARIANTS = {
@@ -149,6 +154,19 @@ def main() -> int:
     errors.extend(receipt_errors)
     errors.extend(f"fixture:{result['id']}" for result in results if not result["passed"])
 
+    head_result = git_result(repo, "rev-parse", "HEAD")
+    head_sha = head_result.stdout.strip() if head_result.returncode == 0 else "unavailable"
+    parent_result = git_result(repo, "rev-parse", "--verify", "HEAD^1")
+    base_sha = parent_result.stdout.strip() if parent_result.returncode == 0 else head_sha
+    merge_base_result = git_result(repo, "merge-base", args.candidate_sha, head_sha)
+    merge_base_sha = merge_base_result.stdout.strip() if merge_base_result.returncode == 0 else None
+    ancestry_result = git_result(repo, "merge-base", "--is-ancestor", args.candidate_sha, head_sha)
+    candidate_is_ancestor = ancestry_result.returncode == 0
+    if not candidate_is_ancestor:
+        errors.append("provenance:candidate_not_ancestor_of_head")
+    if merge_base_sha is None:
+        errors.append("provenance:merge_base_unavailable")
+
     report = {
         "suite_id": suite["suite_id"],
         "status": "passed" if not errors else "failed",
@@ -161,18 +179,12 @@ def main() -> int:
         "results": results,
         "errors": errors,
     }
-    head_sha = git_output(repo, "rev-parse", "HEAD")
-    base_sha = git_output(repo, "rev-parse", "HEAD^1") if git_output(repo, "rev-list", "--count", "HEAD") != "1" else head_sha
-    merge_base_sha = git_output(repo, "merge-base", args.candidate_sha, head_sha)
-    ancestry_exit = subprocess.run(
-        ["git", "-C", str(repo), "merge-base", "--is-ancestor", args.candidate_sha, head_sha], check=False
-    ).returncode
     report["git"] = {
         "candidate_sha": args.candidate_sha,
         "base_sha": base_sha,
         "head_sha": head_sha,
         "merge_base_sha": merge_base_sha,
-        "candidate_ancestor_of_head": ancestry_exit == 0,
+        "candidate_ancestor_of_head": candidate_is_ancestor,
     }
     report["runtime_authorized"] = False
     report["deployment_authorized"] = False

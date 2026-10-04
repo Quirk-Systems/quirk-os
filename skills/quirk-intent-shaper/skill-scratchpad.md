@@ -395,7 +395,7 @@ The assessment becomes the persistent seed for future personalization rather tha
 Before this Skill becomes Active:
 
 - schema validation passes;
-- all twenty candidate and review-regression cases execute;
+- all thirty-six candidate and review-regression cases execute;
 - Preference Graph retrieval is purpose-scoped;
 - explicit overrides always win;
 - no-personalization mode is effective;

@@ -26,5 +26,57 @@
       "authority_effect": "propose_reversible"
     }
   ],
-  "semantic_fallback_ref": "affordance.plain_answer"
+  "semantic_fallback_ref": "affordance.plain_answer",
+  "accessibility_contract": {
+    "focus_order": [
+      "summary",
+      "selection",
+      "submit"
+    ],
+    "focus_indicator": {
+      "style": "2px solid #005fcc",
+      "contrast_ratio": 4.8
+    },
+    "screen_reader_semantics": [
+      {
+        "control_id": "summary",
+        "role": "textbox",
+        "accessible_name": "Issue summary"
+      },
+      {
+        "control_id": "selection",
+        "role": "combobox",
+        "accessible_name": "Issue category"
+      },
+      {
+        "control_id": "submit",
+        "role": "button",
+        "accessible_name": "Request review"
+      }
+    ],
+    "reflow_zoom": {
+      "minimum_viewport_width": 320,
+      "zoom_supported": true
+    },
+    "contrast_pairs": [
+      4.8,
+      7.1
+    ],
+    "reduced_motion": {
+      "prefers_reduced_motion": true,
+      "nonessential_animation_disabled": true
+    },
+    "errors": {
+      "associated_with_control": true,
+      "programmatically_identifiable": true
+    },
+    "status_announcements": {
+      "role": "status",
+      "aria_live": "polite"
+    }
+  },
+  "accessibility_evidence": {
+    "evidence_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.accessibility.json",
+    "content_hash_sha256": "27d759297b00f4dddeaa439348f22d33268c0489703c272561bd41faec5269b6"
+  }
 }

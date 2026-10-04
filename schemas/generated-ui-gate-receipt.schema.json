@@ -47,6 +47,7 @@
           "COMPONENT_MANIFEST_STALE",
           "COMPONENT_VERSION_INVALID",
           "GENERATED_UI_PLAN_MISSING",
+          "GENERATED_UI_PLAN_INVALID",
           "MANUAL_EVIDENCE_MISSING",
           "RECONSTRUCTION_INPUTS_MISSING",
           "SEMANTIC_FALLBACK_MISSING"
@@ -139,5 +140,75 @@
       "type": "string",
       "format": "date-time"
     }
-  }
+  },
+  "allOf": [
+      {
+        "if": {
+          "properties": {
+            "status": {"const": "candidate_evidence_complete"}
+          },
+          "required": ["status"]
+        },
+        "then": {
+          "properties": {
+            "reason_codes": {"const": ["CANDIDATE_EVIDENCE_COMPLETE"]},
+            "manual_evidence_summary": {
+              "properties": {
+                "keyboard": {"const": "provided"},
+                "focus_order_visibility": {"const": "provided"},
+                "screen_reader_semantics": {"const": "provided"},
+                "reflow_zoom": {"const": "provided"},
+                "contrast": {"const": "provided"},
+                "reduced_motion": {"const": "provided"},
+                "errors": {"const": "provided"},
+                "status_announcements": {"const": "provided"}
+              }
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "status": {"const": "blocked_manual"}
+          },
+          "required": ["status"]
+        },
+        "then": {
+          "properties": {
+            "reason_codes": {"const": ["MANUAL_EVIDENCE_MISSING"]}
+          },
+          "anyOf": [
+            {"properties": {"manual_evidence_summary": {"properties": {"keyboard": {"const": "missing"}}}}, "required": ["manual_evidence_summary"]},
+            {"properties": {"manual_evidence_summary": {"properties": {"focus_order_visibility": {"const": "missing"}}}}, "required": ["manual_evidence_summary"]},
+            {"properties": {"manual_evidence_summary": {"properties": {"screen_reader_semantics": {"const": "missing"}}}}, "required": ["manual_evidence_summary"]},
+            {"properties": {"manual_evidence_summary": {"properties": {"reflow_zoom": {"const": "missing"}}}}, "required": ["manual_evidence_summary"]},
+            {"properties": {"manual_evidence_summary": {"properties": {"contrast": {"const": "missing"}}}}, "required": ["manual_evidence_summary"]},
+            {"properties": {"manual_evidence_summary": {"properties": {"reduced_motion": {"const": "missing"}}}}, "required": ["manual_evidence_summary"]},
+            {"properties": {"manual_evidence_summary": {"properties": {"errors": {"const": "missing"}}}}, "required": ["manual_evidence_summary"]},
+            {"properties": {"manual_evidence_summary": {"properties": {"status_announcements": {"const": "missing"}}}}, "required": ["manual_evidence_summary"]}
+          ]
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "status": {"const": "rejected"}
+          },
+          "required": ["status"]
+        },
+        "then": {
+          "properties": {
+            "reason_codes": {
+              "minItems": 1,
+              "items": {
+                "not": {
+                  "enum": ["CANDIDATE_EVIDENCE_COMPLETE", "MANUAL_EVIDENCE_MISSING"]
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
 }

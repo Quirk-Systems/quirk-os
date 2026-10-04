@@ -11,7 +11,7 @@
     "audience": "Quirk maintainers",
     "constraints": ["candidate only", "no memory mutation"],
     "non_goals": ["permanent persona assignment"],
-    "completion_evidence": ["schema valid", "twenty cases pass"]
+    "completion_evidence": ["schema valid", "thirty-six cases pass"]
   },
   "purpose_partition": {
     "purpose": "personalization architecture",

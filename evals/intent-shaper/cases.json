@@ -796,7 +796,7 @@
               "component_id": "component.generated-ui.issue-intake-form",
               "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
               "version": "1.2.3",
-              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "content_hash_sha256": "25988e41abd54957f6677c35dec3f7f158f8a52adcfcf4705ae64a668b78b591",
               "data_bindings": [
                 {
                   "binding_id": "binding.intent.summary",
@@ -833,7 +833,7 @@
               "input.component.issue-intake-form"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -913,9 +913,9 @@
         "as_of": "2026-08-12T12:00:00Z"
       },
       "expected": {
-        "status": "candidate_evidence_complete",
+        "status": "blocked_manual",
         "reason_codes": [
-          "CANDIDATE_EVIDENCE_COMPLETE"
+          "MANUAL_EVIDENCE_MISSING"
         ],
         "runtime_authorized": false,
         "deployment_authorized": false
@@ -941,7 +941,7 @@
               "input.component.issue-intake-form"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -1023,7 +1023,9 @@
       "expected": {
         "status": "rejected",
         "reason_codes": [
-          "COMPONENT_MANIFEST_MISSING"
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED",
+          "COMPONENT_MANIFEST_MISSING",
+          "GENERATED_UI_PLAN_INVALID"
         ]
       }
     },
@@ -1040,7 +1042,7 @@
               "component_id": "component.generated-ui.issue-intake-form",
               "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
               "version": "latest",
-              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "content_hash_sha256": "25988e41abd54957f6677c35dec3f7f158f8a52adcfcf4705ae64a668b78b591",
               "data_bindings": [
                 {
                   "binding_id": "binding.intent.summary",
@@ -1077,7 +1079,7 @@
               "input.component.issue-intake-form"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -1159,7 +1161,10 @@
       "expected": {
         "status": "rejected",
         "reason_codes": [
-          "COMPONENT_VERSION_INVALID"
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED",
+          "COMPONENT_HASH_UNVERIFIABLE",
+          "COMPONENT_VERSION_INVALID",
+          "GENERATED_UI_PLAN_INVALID"
         ]
       }
     },
@@ -1176,7 +1181,7 @@
               "component_id": "component.generated-ui.issue-intake-form",
               "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
               "version": "1.2.3",
-              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "content_hash_sha256": "25988e41abd54957f6677c35dec3f7f158f8a52adcfcf4705ae64a668b78b591",
               "data_bindings": [
                 {
                   "binding_id": "binding.intent.summary",
@@ -1213,7 +1218,7 @@
               "input.component.issue-intake-form"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -1312,7 +1317,7 @@
               "component_id": "component.generated-ui.issue-intake-form",
               "manifest_ref": "skills/quirk-intent-shaper/generated-ui/missing.json",
               "version": "1.2.3",
-              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "content_hash_sha256": "25988e41abd54957f6677c35dec3f7f158f8a52adcfcf4705ae64a668b78b591",
               "data_bindings": [
                 {
                   "binding_id": "binding.intent.summary",
@@ -1349,7 +1354,7 @@
               "input.component.issue-intake-form"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -1431,6 +1436,7 @@
       "expected": {
         "status": "rejected",
         "reason_codes": [
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED",
           "COMPONENT_MANIFEST_INACCESSIBLE"
         ]
       }
@@ -1448,7 +1454,7 @@
               "component_id": "component.generated-ui.issue-intake-form",
               "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
               "version": "1.2.3",
-              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "content_hash_sha256": "25988e41abd54957f6677c35dec3f7f158f8a52adcfcf4705ae64a668b78b591",
               "data_bindings": [
                 {
                   "binding_id": "binding.intent.summary",
@@ -1485,7 +1491,7 @@
               "input.component.issue-intake-form"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -1567,7 +1573,8 @@
       "expected": {
         "status": "rejected",
         "reason_codes": [
-          "ACCESSIBILITY_MACHINE_CHECK_FAILED"
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED",
+          "GENERATED_UI_PLAN_INVALID"
         ]
       }
     },
@@ -1584,7 +1591,7 @@
               "component_id": "component.generated-ui.issue-intake-form",
               "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
               "version": "1.2.3",
-              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "content_hash_sha256": "25988e41abd54957f6677c35dec3f7f158f8a52adcfcf4705ae64a668b78b591",
               "data_bindings": [
                 {
                   "binding_id": "binding.intent.summary",
@@ -1621,7 +1628,7 @@
               "input.component.issue-intake-form"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -1703,7 +1710,10 @@
       "expected": {
         "status": "rejected",
         "reason_codes": [
-          "AUTHORITY_EXPANSION_REQUESTED"
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED",
+          "AUTHORITY_EXPANSION_REQUESTED",
+          "COMPONENT_HASH_UNVERIFIABLE",
+          "GENERATED_UI_PLAN_INVALID"
         ]
       }
     },
@@ -1720,7 +1730,7 @@
               "component_id": "component.generated-ui.issue-intake-form",
               "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
               "version": "1.2.3",
-              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "content_hash_sha256": "25988e41abd54957f6677c35dec3f7f158f8a52adcfcf4705ae64a668b78b591",
               "data_bindings": [
                 {
                   "binding_id": "binding.intent.summary",
@@ -1757,7 +1767,7 @@
               "input.component.issue-intake-form"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -1893,7 +1903,7 @@
               "input.component.issue-intake-form"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -1975,6 +1985,7 @@
       "expected": {
         "status": "rejected",
         "reason_codes": [
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED",
           "COMPONENT_HASH_UNVERIFIABLE"
         ]
       }
@@ -1992,7 +2003,7 @@
               "component_id": "component.generated-ui.issue-intake-form",
               "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
               "version": "1.2.3",
-              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "content_hash_sha256": "25988e41abd54957f6677c35dec3f7f158f8a52adcfcf4705ae64a668b78b591",
               "data_bindings": [
                 {
                   "binding_id": "binding.intent.summary",
@@ -2029,7 +2040,7 @@
               "input.component.issue-intake-form"
             ],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -2111,6 +2122,8 @@
       "expected": {
         "status": "rejected",
         "reason_codes": [
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED",
+          "GENERATED_UI_PLAN_INVALID",
           "SEMANTIC_FALLBACK_MISSING"
         ]
       }
@@ -2128,7 +2141,7 @@
               "component_id": "component.generated-ui.issue-intake-form",
               "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
               "version": "1.2.3",
-              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "content_hash_sha256": "25988e41abd54957f6677c35dec3f7f158f8a52adcfcf4705ae64a668b78b591",
               "data_bindings": [
                 {
                   "binding_id": "binding.intent.summary",
@@ -2161,7 +2174,7 @@
           "reconstruction_contract": {
             "input_refs": [],
             "deterministic_renderer_ref": "renderer.generated-ui.v1",
-            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            "replay_hash_sha256": "3a8403fd1d9038788d2feaa5a9b65b3b39b58709efcb121d475d9372df33fd11"
           },
           "accessibility": {
             "machine_checks": {
@@ -2243,6 +2256,7 @@
       "expected": {
         "status": "rejected",
         "reason_codes": [
+          "GENERATED_UI_PLAN_INVALID",
           "RECONSTRUCTION_INPUTS_MISSING"
         ]
       }

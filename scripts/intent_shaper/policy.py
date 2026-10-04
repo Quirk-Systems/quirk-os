@@ -15,6 +15,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Protocol
 
+from jsonschema import Draft202012Validator, FormatChecker
+
 SOURCE_RANK: dict[str, int] = {
     "explicit_current": 50,
     "purpose_scoped_setting": 45,
@@ -139,6 +141,9 @@ MACHINE_CHECK_FIELDS = (
     "errors_identifiable",
     "status_announcements_mapped",
 )
+SUPPORTED_RENDERERS = {"renderer.generated-ui.canonical-json.v1", "renderer.generated-ui.v1"}
+ACCESSIBILITY_CHECKER_ID = "quirk.intent-shaper.manifest-contract-checker"
+ACCESSIBILITY_CHECKER_VERSION = "1.0.0"
 
 
 class PersonalizationEvidencePort(Protocol):
@@ -452,11 +457,243 @@ def _canonical_json_sha256(path: Path) -> str:
     return hashlib.sha256(canonical).hexdigest()
 
 
+def _contained_json(path_ref: Any) -> tuple[Path, Any] | None:
+    if not isinstance(path_ref, str) or not path_ref or Path(path_ref).is_absolute():
+        return None
+    root = REPO_ROOT.resolve()
+    path = (root / path_ref).resolve()
+    if not path.is_relative_to(root) or not path.is_file():
+        return None
+    try:
+        return path, json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+
+
+def _generated_ui_schema_validator() -> Draft202012Validator:
+    schema = json.loads((REPO_ROOT / "schemas/personalization-plan.schema.json").read_text(encoding="utf-8"))
+    generated_ui_schema = {
+        "$schema": schema["$schema"],
+        "$defs": schema["$defs"],
+        "$ref": "#/$defs/GeneratedUiPlan",
+    }
+    return Draft202012Validator(generated_ui_schema, format_checker=FormatChecker())
+
+
+def _component_contract_errors(
+    component: Mapping[str, Any],
+    artifact: Any,
+    semantic_fallback_ref: str,
+) -> list[str]:
+    if not isinstance(artifact, Mapping):
+        return ["COMPONENT_MANIFEST_INACCESSIBLE"]
+    schema = json.loads((REPO_ROOT / "schemas/personalization-plan.schema.json").read_text(encoding="utf-8"))
+    artifact_schema = {
+        "$schema": schema["$schema"],
+        "$defs": schema["$defs"],
+        "$ref": "#/$defs/ComponentArtifactManifest",
+    }
+    validator = Draft202012Validator(artifact_schema, format_checker=FormatChecker())
+    if list(validator.iter_errors(artifact)):
+        return ["COMPONENT_MANIFEST_INACCESSIBLE"]
+    pinned_fields = ("component_id", "version", "data_bindings", "state_bindings", "user_actions")
+    if any(component.get(key) != artifact.get(key) for key in pinned_fields):
+        return ["COMPONENT_HASH_UNVERIFIABLE"]
+    if artifact.get("semantic_fallback_ref") != semantic_fallback_ref:
+        return ["SEMANTIC_FALLBACK_MISSING"]
+    return []
+
+
+def _accessibility_contract_checks(contract: Any) -> dict[str, bool]:
+    if not isinstance(contract, Mapping):
+        return {field: False for field in MACHINE_CHECK_FIELDS}
+
+    focus_order = contract.get("focus_order")
+    semantics = contract.get("screen_reader_semantics")
+    focus_ids = set(focus_order) if isinstance(focus_order, list) and all(isinstance(item, str) for item in focus_order) else set()
+    semantic_ids = {
+        item.get("control_id")
+        for item in semantics
+        if isinstance(item, Mapping)
+    } if isinstance(semantics, list) else set()
+    contrast_pairs = contract.get("contrast_pairs")
+    reduced_motion = contract.get("reduced_motion")
+    errors = contract.get("errors")
+    announcements = contract.get("status_announcements")
+    reflow_zoom = contract.get("reflow_zoom")
+    focus_indicator = contract.get("focus_indicator")
+
+    return {
+        "focus_order_declared": bool(focus_order) and len(focus_ids) == len(focus_order),
+        "focus_visible_tokens": (
+            isinstance(focus_indicator, Mapping)
+            and isinstance(focus_indicator.get("style"), str)
+            and bool(focus_indicator["style"])
+            and isinstance(focus_indicator.get("contrast_ratio"), (int, float))
+            and focus_indicator["contrast_ratio"] >= 3.0
+        ),
+        "screen_reader_semantics_declared": (
+            isinstance(semantics, list)
+            and bool(semantics)
+            and focus_ids == semantic_ids
+            and all(
+                isinstance(item.get("role"), str)
+                and bool(item["role"])
+                and isinstance(item.get("accessible_name"), str)
+                and bool(item["accessible_name"])
+                for item in semantics
+                if isinstance(item, Mapping)
+            )
+        ),
+        "reflow_zoom_support_declared": (
+            isinstance(reflow_zoom, Mapping)
+            and isinstance(reflow_zoom.get("minimum_viewport_width"), int)
+            and reflow_zoom.get("minimum_viewport_width") <= 320
+            and reflow_zoom.get("zoom_supported") is True
+        ),
+        "contrast_tokens_verified": (
+            isinstance(contrast_pairs, list)
+            and bool(contrast_pairs)
+            and all(isinstance(ratio, (int, float)) and ratio >= 4.5 for ratio in contrast_pairs)
+        ),
+        "reduced_motion_support_declared": (
+            isinstance(reduced_motion, Mapping)
+            and reduced_motion.get("prefers_reduced_motion") is True
+            and reduced_motion.get("nonessential_animation_disabled") is True
+        ),
+        "errors_identifiable": (
+            isinstance(errors, Mapping)
+            and errors.get("associated_with_control") is True
+            and errors.get("programmatically_identifiable") is True
+        ),
+        "status_announcements_mapped": (
+            isinstance(announcements, Mapping)
+            and announcements.get("role") in {"status", "alert"}
+            and announcements.get("aria_live") in {"polite", "assertive"}
+        ),
+    }
+
+
+def _verified_machine_checks(
+    accessibility: Any,
+    component_artifacts: list[tuple[Mapping[str, Any], str]],
+    *,
+    as_of: datetime,
+) -> bool:
+    if not isinstance(accessibility, Mapping):
+        return False
+    declarations = accessibility.get("machine_checks")
+    if not isinstance(declarations, Mapping) or not component_artifacts:
+        return False
+    computed: dict[str, bool] = {field: True for field in MACHINE_CHECK_FIELDS}
+    for component, _ in component_artifacts:
+        component_checks = _accessibility_contract_checks(component.get("accessibility_contract"))
+        computed = {field: computed[field] and component_checks[field] for field in MACHINE_CHECK_FIELDS}
+        evidence = component.get("accessibility_evidence")
+        if not isinstance(evidence, Mapping):
+            return False
+        loaded = _contained_json(evidence.get("evidence_ref"))
+        expected_digest = evidence.get("content_hash_sha256")
+        if loaded is None or not SHA256_RE.fullmatch(str(expected_digest or "")):
+            return False
+        _, receipt = loaded
+        if not isinstance(receipt, Mapping):
+            return False
+        actual_digest = hashlib.sha256(
+            json.dumps(receipt, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        ).hexdigest()
+        if actual_digest != expected_digest:
+            return False
+        if (
+            receipt.get("checker_id") != ACCESSIBILITY_CHECKER_ID
+            or receipt.get("checker_version") != ACCESSIBILITY_CHECKER_VERSION
+            or receipt.get("component_id") != component.get("component_id")
+            or receipt.get("component_version") != component.get("version")
+            or receipt.get("component_manifest_sha256") != _component_core_sha256(component)
+            or receipt.get("checks") != component_checks
+        ):
+            return False
+        try:
+            checked_at = _parse_time(receipt["checked_at"])
+        except (KeyError, TypeError, ValueError):
+            return False
+        if checked_at is None or checked_at > as_of:
+            return False
+    return all(computed.values()) and all(declarations.get(field) is computed[field] for field in MACHINE_CHECK_FIELDS)
+
+
+def _component_core_sha256(component: Mapping[str, Any]) -> str:
+    core = {key: value for key, value in component.items() if key != "accessibility_evidence"}
+    canonical = json.dumps(core, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
+
+
+def _verified_manual_evidence(entry: Mapping[str, Any], requirement: str, as_of: datetime) -> bool:
+    if entry.get("status") != "provided":
+        return False
+    evidence_ref = entry.get("evidence_ref")
+    if not isinstance(evidence_ref, str) or not evidence_ref.startswith("evals/intent-shaper/manual-evidence/"):
+        return False
+    loaded = _contained_json(evidence_ref)
+    expected_digest = entry.get("evidence_sha256")
+    if loaded is None or not SHA256_RE.fullmatch(str(expected_digest or "")):
+        return False
+    _, artifact = loaded
+    if not isinstance(artifact, Mapping):
+        return False
+    actual_digest = hashlib.sha256(
+        json.dumps(artifact, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+    if actual_digest != expected_digest:
+        return False
+    if artifact.get("requirement") != requirement or not isinstance(artifact.get("observation"), str):
+        return False
+    if not artifact["observation"].strip():
+        return False
+    reviewer = entry.get("reviewed_by")
+    if artifact.get("reviewed_by") != reviewer or not isinstance(reviewer, str) or not reviewer.startswith("human.") or len(reviewer) <= 6:
+        return False
+    if artifact.get("reviewed_at") != entry.get("reviewed_at"):
+        return False
+    try:
+        reviewed_at = _parse_time(artifact["reviewed_at"])
+    except (KeyError, TypeError, ValueError):
+        return False
+    return reviewed_at is not None and reviewed_at <= as_of
+
+
+def _reconstruction_hash(renderer_ref: Any, input_refs: Any) -> str | None:
+    if not isinstance(renderer_ref, str) or renderer_ref not in SUPPORTED_RENDERERS:
+        return None
+    if not isinstance(input_refs, list) or not input_refs:
+        return None
+    inputs: list[dict[str, str]] = []
+    aliases = {
+        "input.intent": "examples/personalization-plan.valid.json",
+        "input.preferences": "examples/personalization-plan.valid.json",
+        "input.component.issue-intake-form": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+    }
+    for ref in input_refs:
+        resolved_ref = aliases.get(ref, ref) if isinstance(ref, str) else ref
+        loaded = _contained_json(resolved_ref)
+        if loaded is None:
+            return None
+        _, value = loaded
+        if not isinstance(value, (Mapping, list)):
+            return None
+        canonical = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        inputs.append({"ref": ref, "content_hash_sha256": hashlib.sha256(canonical).hexdigest()})
+    preimage = {"renderer_ref": renderer_ref, "inputs": inputs}
+    return hashlib.sha256(
+        json.dumps(preimage, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+
+
 def _isoformat(value: datetime) -> str:
     return value.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def _manual_evidence_summary(entries: Any) -> dict[str, str]:
+def _manual_evidence_summary(entries: Any, *, as_of: datetime) -> dict[str, str]:
     summary = {requirement: "missing" for requirement in MANUAL_REQUIREMENTS}
     if not isinstance(entries, list):
         return summary
@@ -464,32 +701,56 @@ def _manual_evidence_summary(entries: Any) -> dict[str, str]:
         if not isinstance(entry, Mapping):
             continue
         requirement = str(entry.get("requirement", ""))
-        if requirement in summary and entry.get("status") == "provided":
+        if requirement in summary and _verified_manual_evidence(entry, requirement, as_of):
             summary[requirement] = "provided"
     return summary
 
 
-def _evaluate_generated_ui_gate(plan: Mapping[str, Any] | None, *, as_of: datetime) -> dict[str, Any]:
-    candidate = dict(plan or {})
+def _evaluate_generated_ui_gate(
+    plan: Any,
+    *,
+    as_of: datetime,
+    authority_ceiling: str = "propose",
+) -> dict[str, Any]:
+    candidate = dict(plan) if isinstance(plan, Mapping) else {}
     plan_id = str(candidate.get("plan_id") or "generated-ui.plan.missing")
+    if not re.fullmatch(r"generated-ui\.plan\.[a-z0-9._-]+", plan_id):
+        plan_id = "generated-ui.plan.invalid"
     semantic_fallback_ref = str(candidate.get("semantic_fallback_ref") or "missing://semantic-fallback")
     component_refs: list[str] = []
     reject_reasons: set[str] = set()
 
-    if not candidate:
+    if plan is None:
         reject_reasons.add("GENERATED_UI_PLAN_MISSING")
+    elif not isinstance(plan, Mapping):
+        reject_reasons.add("GENERATED_UI_PLAN_INVALID")
+    else:
+        try:
+            plan_validator = _generated_ui_schema_validator()
+            plan_errors = list(plan_validator.iter_errors(candidate))
+        except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError):
+            plan_errors = [None]
+        if plan_errors:
+            reject_reasons.add("GENERATED_UI_PLAN_INVALID")
 
     components = candidate.get("component_manifests")
     if not isinstance(components, list) or not components:
         reject_reasons.add("COMPONENT_MANIFEST_MISSING")
         components = []
 
+    component_artifacts: list[tuple[Mapping[str, Any], str]] = []
+    authority_ranks = {"none": -1, "read_candidate": 0, "propose_reversible": 2}
+    ceiling_ranks = {"observe": 0, "infer": 1, "propose": 2}
+    ceiling_rank = ceiling_ranks.get(authority_ceiling)
+    if ceiling_rank is None:
+        reject_reasons.add("AUTHORITY_EXPANSION_REQUESTED")
+
     for component in components:
         if not isinstance(component, Mapping):
             reject_reasons.add("COMPONENT_MANIFEST_MISSING")
             continue
         component_id = str(component.get("component_id", ""))
-        if component_id:
+        if re.fullmatch(r"component\.[a-z0-9._-]+", component_id):
             component_refs.append(component_id)
 
         version = str(component.get("version", ""))
@@ -501,17 +762,32 @@ def _evaluate_generated_ui_gate(plan: Mapping[str, Any] | None, *, as_of: dateti
         if not manifest_ref:
             reject_reasons.add("COMPONENT_MANIFEST_MISSING")
         else:
-            manifest_path = (REPO_ROOT / manifest_ref).resolve()
-            if not manifest_path.is_relative_to(REPO_ROOT.resolve()) or not manifest_path.is_file():
+            loaded = _contained_json(manifest_ref)
+            if loaded is None:
                 reject_reasons.add("COMPONENT_MANIFEST_INACCESSIBLE")
             else:
+                _, artifact = loaded
                 try:
-                    actual_hash = _canonical_json_sha256(manifest_path)
-                except (OSError, ValueError, TypeError):
+                    actual_hash = hashlib.sha256(
+                        json.dumps(artifact, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+                    ).hexdigest()
+                except (TypeError, ValueError):
                     reject_reasons.add("COMPONENT_MANIFEST_INACCESSIBLE")
                 else:
                     if not SHA256_RE.fullmatch(expected_hash) or actual_hash != expected_hash:
                         reject_reasons.add("COMPONENT_HASH_UNVERIFIABLE")
+                    else:
+                        errors = _component_contract_errors(component, artifact, semantic_fallback_ref)
+                        reject_reasons.update(errors)
+                        if not errors:
+                            component_artifacts.append((artifact, actual_hash))
+                if (
+                    isinstance(artifact, Mapping)
+                    and isinstance(artifact.get("component_id"), str)
+                    and re.fullmatch(r"component\.[a-z0-9._-]+", artifact["component_id"])
+                    and artifact["component_id"] not in component_refs
+                ):
+                    component_refs.append(str(artifact["component_id"]))
 
         actions = component.get("user_actions", [])
         if not isinstance(actions, list):
@@ -521,7 +797,8 @@ def _evaluate_generated_ui_gate(plan: Mapping[str, Any] | None, *, as_of: dateti
             if not isinstance(action, Mapping):
                 reject_reasons.add("AUTHORITY_EXPANSION_REQUESTED")
                 continue
-            if str(action.get("authority_effect")) not in ALLOWED_AUTHORITY_EFFECTS:
+            effect = str(action.get("authority_effect"))
+            if effect not in ALLOWED_AUTHORITY_EFFECTS or ceiling_rank is None or authority_ranks[effect] > ceiling_rank:
                 reject_reasons.add("AUTHORITY_EXPANSION_REQUESTED")
 
     authority_effects = candidate.get("authority_effects")
@@ -529,10 +806,18 @@ def _evaluate_generated_ui_gate(plan: Mapping[str, Any] | None, *, as_of: dateti
         reject_reasons.add("AUTHORITY_EXPANSION_REQUESTED")
     else:
         for effect in authority_effects:
-            if str(effect) not in ALLOWED_AUTHORITY_EFFECTS:
+            effect = str(effect)
+            if effect not in ALLOWED_AUTHORITY_EFFECTS or ceiling_rank is None or authority_ranks[effect] > ceiling_rank:
                 reject_reasons.add("AUTHORITY_EXPANSION_REQUESTED")
 
-    if not semantic_fallback_ref or semantic_fallback_ref == "missing://semantic-fallback":
+    if (
+        not semantic_fallback_ref
+        or semantic_fallback_ref == "missing://semantic-fallback"
+        or any(
+            artifact.get("semantic_fallback_ref") != semantic_fallback_ref
+            for artifact, _ in component_artifacts
+        )
+    ):
         reject_reasons.add("SEMANTIC_FALLBACK_MISSING")
 
     reconstruction = candidate.get("reconstruction_contract")
@@ -542,8 +827,11 @@ def _evaluate_generated_ui_gate(plan: Mapping[str, Any] | None, *, as_of: dateti
         input_refs = reconstruction.get("input_refs")
         replay_hash = str(reconstruction.get("replay_hash_sha256", ""))
         deterministic_renderer_ref = str(reconstruction.get("deterministic_renderer_ref", ""))
-        if not isinstance(input_refs, list) or not input_refs or not deterministic_renderer_ref or not SHA256_RE.fullmatch(
-            replay_hash
+        computed_replay_hash = _reconstruction_hash(deterministic_renderer_ref, input_refs)
+        if (
+            computed_replay_hash is None
+            or not SHA256_RE.fullmatch(replay_hash)
+            or computed_replay_hash != replay_hash
         ):
             reject_reasons.add("RECONSTRUCTION_INPUTS_MISSING")
 
@@ -558,16 +846,13 @@ def _evaluate_generated_ui_gate(plan: Mapping[str, Any] | None, *, as_of: dateti
         reject_reasons.add("COMPONENT_MANIFEST_STALE")
 
     accessibility = candidate.get("accessibility")
-    machine_checks: Mapping[str, Any] = {}
     manual_evidence: Any = []
     if isinstance(accessibility, Mapping):
-        if isinstance(accessibility.get("machine_checks"), Mapping):
-            machine_checks = accessibility["machine_checks"]
         manual_evidence = accessibility.get("manual_evidence", [])
-    if any(machine_checks.get(field) is not True for field in MACHINE_CHECK_FIELDS):
+    if not _verified_machine_checks(accessibility, component_artifacts, as_of=as_of):
         reject_reasons.add("ACCESSIBILITY_MACHINE_CHECK_FAILED")
 
-    manual_summary = _manual_evidence_summary(manual_evidence)
+    manual_summary = _manual_evidence_summary(manual_evidence, as_of=as_of)
     manual_missing = any(status != "provided" for status in manual_summary.values())
 
     if reject_reasons:
@@ -594,16 +879,57 @@ def _evaluate_generated_ui_gate(plan: Mapping[str, Any] | None, *, as_of: dateti
     }
 
 
+def _generated_ui_receipt(
+    plan_id: str,
+    reject_reasons: set[str],
+    component_refs: list[str],
+    semantic_fallback_ref: str,
+    manual_summary: dict[str, str],
+    as_of: datetime,
+) -> dict[str, Any]:
+    return {
+        "receipt_id": f"receipt.generated-ui.{plan_id.removeprefix('generated-ui.plan.')}",
+        "plan_id": plan_id,
+        "status": "rejected",
+        "reason_codes": sorted(reject_reasons),
+        "component_refs": sorted(set(component_refs)),
+        "semantic_fallback_ref": semantic_fallback_ref,
+        "runtime_authorized": False,
+        "deployment_authorized": False,
+        "manual_evidence_summary": manual_summary
+        or {requirement: "missing" for requirement in MANUAL_REQUIREMENTS},
+        "evaluated_at": _isoformat(as_of),
+    }
+
+
 def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:
     """Evaluate one deterministic QIS fixture and return evidence."""
 
     operation = str(case["operation"])
     payload = deepcopy(case.get("input", {}))
-    as_of = _parse_time(payload.get("as_of")) or datetime.now(timezone.utc)
+    invalid_gate_time = False
+    try:
+        as_of = _parse_time(payload.get("as_of")) or (
+            datetime.min.replace(tzinfo=timezone.utc)
+            if operation == "generated_ui_gate"
+            else datetime.now(timezone.utc)
+        )
+    except (TypeError, ValueError):
+        if operation != "generated_ui_gate":
+            raise
+        as_of = datetime.min.replace(tzinfo=timezone.utc)
+        invalid_gate_time = True
 
     if operation == "generated_ui_gate":
         plan = payload.get("generated_ui_plan")
-        result = _evaluate_generated_ui_gate(plan if isinstance(plan, Mapping) else None, as_of=as_of)
+        result = _evaluate_generated_ui_gate(
+            plan,
+            as_of=as_of,
+            authority_ceiling=str(payload.get("authority_ceiling", "propose")),
+        )
+        if invalid_gate_time:
+            result["status"] = "rejected"
+            result["reason_codes"] = ["GENERATED_UI_PLAN_INVALID"]
     elif operation == "resolve_preference":
         enabled = payload.get("personalization_enabled", True)
         if not isinstance(enabled, bool):
