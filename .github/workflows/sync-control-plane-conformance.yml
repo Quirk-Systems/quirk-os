@@ -25,7 +25,7 @@ on:
       - '.github/workflows/sync-control-plane-conformance.yml'
       - 'agents/quirk-sync-steward/**'
       - '.claude/skills/verify/SKILL.md'
-      - 'decisions/ADR-0001-cloudflare-boundary.md'
+      - 'decisions/**'
       - 'evals/sync-control-plane/**'
       - 'mappings/sync-control-plane.v1.yaml'
       - 'platform/cloudflare.manifest.yaml'
@@ -36,13 +36,18 @@ on:
       - 'schemas/**'
       - 'scripts/sync_control_plane/**'
       - 'scripts/validate_sync_control_plane.py'
+      - 'scripts/manifest_admission.py'
+      - 'scripts/prove_manifest_boundaries.py'
       - 'supabase/migrations/**'
       - 'supabase/tests/manifest_activation_guard.cases.sql'
       - 'supabase/tests/manifest_activation_guard.run.sql'
+      - 'supabase/tests/manifest_verified_projection.sql'
+      - 'supabase/tests/manifest_verified_projection.cutover.sql'
       - 'supabase/tests/manifest_activation_guard.service_role.sql'
       - 'supabase/tests/sync_control_plane_hardening.sql'
       - 'supabase/tests/sync_control_plane_outbox_claim_benchmark.sql'
       - 'tests/test_sync_control_plane.py'
+      - 'tests/test_manifest_admission.py'
       - 'tests/test_validator_metrics.py'
       - 'workflows/quirk-sync-control-plane.workflow.yaml'
   workflow_dispatch:
@@ -203,7 +208,7 @@ jobs:
                                    -c "create role authenticated nologin;" \
                                    -c "create role service_role nologin bypassrls;"
 
-      - name: Apply migrations in filename order
+      - name: Apply migrations preceding the verified projection cutover
         # --single-transaction per file, which is what `supabase db push` does.
         # No migration opens its own transaction: an in-file `commit` would
         # close the runner's, and 20261003090000's `lock table` is rejected
@@ -211,7 +216,8 @@ jobs:
         # fails on that line rather than splitting the audit from the cutover.
         run: |
           for migration in $(ls supabase/migrations/*.sql | sort); do
-            echo "--- applying ${migration}"
+            if [[ "${migration##*/}" > "20261004140000" ]]; then continue; fi
+            echo "Applying ${migration}"
             psql -v ON_ERROR_STOP=1 --single-transaction -f "${migration}"
           done
 
@@ -274,6 +280,27 @@ jobs:
           psql -v ON_ERROR_STOP=1 -t -A -c \
             "select count(*) from quirk_sync.manifest_registry" | tee /tmp/rows.txt
           grep -qx 0 /tmp/rows.txt
+
+      - name: Refuse cutover when legacy active rows have no human disposition
+        run: |
+          set +e
+          psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_verified_projection.cutover.sql > /tmp/cutover.txt 2>&1
+          result=$?
+          set -e
+          cat /tmp/cutover.txt
+          test "$result" -eq 3
+          grep -q 'legacy active manifests need human disposition' /tmp/cutover.txt
+
+      - name: Apply the verified projection cutover and later migrations
+        run: |
+          for migration in $(ls supabase/migrations/*.sql | sort); do
+            if [[ "${migration##*/}" < "20261004140000" ]]; then continue; fi
+            echo "Applying ${migration}"
+            psql -v ON_ERROR_STOP=1 --single-transaction -f "${migration}"
+          done
+
+      - name: Prove protected projection writes and refusals
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_verified_projection.sql
 
       - name: Verify outbox claim index and supported batch size
         run: psql -v ON_ERROR_STOP=1 -f supabase/tests/sync_control_plane_outbox_claim_benchmark.sql
