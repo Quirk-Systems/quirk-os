@@ -46,7 +46,7 @@ The manifest field remains **bare 64-character lowercase hex**. Do not change or
 
 The trusted Python path computes `H`, requires `manifest.content_hash == H`, requires `admission.evaluated_content_hash == H`, and requires the externally resolved approval subject digest/profile to equal `H`/this profile. Evaluation evidence must actually bind the evaluated subject, not just repeat the author's digest. A computed hash plus a fabricated approval record is still insufficient. Editing a covered field and recomputing both manifest hashes cannot reuse the old authentic approval.
 
-Use one `manifest_content_hash()` implementation across admission, fixture generation and evidence production. The generator is reviewable and committed; tests must independently mutate inputs rather than certify only matching constants. Existing code/fixtures are unchanged by this draft.
+Use one `manifest_content_hash()` implementation across admission, fixture generation and evidence production. The candidate generator and vectors are committed; tests independently mutate covered content, lifecycle fields and ingestion formats. The regenerated fixture is explicitly synthetic and grants no admission.
 
 ## Database and schema consequences
 
@@ -54,9 +54,11 @@ Adopt ADR-0002's single database-boundary decision: **PostgreSQL projects the ve
 
 Keep `runtime-manifest.v2`: selecting a preimage does not add or remove manifest fields. Version the profile as `runtime-manifest-content.v1`, with attestation `manifest-approval-attestation.v1` and admission-policy revision coordinated under ADR-0002. Old v2 fixtures/documents can remain readable as historical data; their placeholder/declaration hashes are not valid admission evidence under the new policy. If a required profile/attestation field is later added to the manifest, introduce v3 rather than smuggling it into metadata.
 
-Regenerate future fixtures through the shared generator after separately authorized implementation. Inventory other repositories and live consumers before migration; compatibility beyond inspected quirk-os files is unknown. Preserve all historical hashes/ledgers. Do not rehash old receipts in place; record corrections and human dispositions separately. Existing active rows without the required content/evaluation/approval binding block cutover pending disposition.
+Generate new candidate fixtures through the shared generator. Inventory other repositories and live consumers before migration; compatibility beyond inspected quirk-os files is unknown. Preserve all historical hashes/ledgers. Do not rehash old receipts in place; record corrections and human dispositions separately. Existing active rows without the required content/evaluation/approval binding block cutover pending disposition.
 
-## Later acceptance evidence — not executed by this draft
+## Acceptance evidence and admission limits
+
+Candidate hash vectors and adversarial mutations have been executed as part of the 252-test suite. See `evals/sync-control-plane/manifest-verifier-ci-d30ab0c54d7e.json` for exact-source CI evidence. This establishes the candidate Python profile and protected SQL projection cases; it does not establish authentic live consent or independent PostgreSQL verification.
 
 | Adversarial change | Expected observation |
 | --- | --- |
@@ -73,5 +75,4 @@ Require vectors over the current valid fixture and representative metadata befor
 ## Approval record
 
 **Design approval:** Bryan explicitly approved the recommended pair in this conversation on 2026-10-04: “Approved and Continue Additional Improvements Implemented via Iteratively Integrated and Enhanced Loop Engineering”. The approval also authorizes continued candidate implementation. The transcript supplies no GitHub review ID; this record is not a runtime activation attestation. No merge, deployment, credential provisioning, or live admission is recorded.
-
 
