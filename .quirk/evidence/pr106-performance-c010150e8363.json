@@ -1,0 +1,114 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr106.performance.c010150e8363",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "4b38bf437589248031cbe4a47bb13489e34dfbec",
+    "commit": "c010150e83630f893959678034230959fefa32dc",
+    "changed_paths": [
+      ".github/workflows/sync-control-plane-conformance.yml",
+      "scripts/deck_grammar/perf_benchmarks.py",
+      "scripts/validate_golden_pack.py",
+      "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
+      "supabase/tests/sync_control_plane_outbox_claim_benchmark.sql",
+      "tests/test_deck_grammar.py",
+      "tests/test_validator_metrics.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr106.performance-repairs",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Inclusive interpolated p95 and single-sample fallback pass deterministic regression; resolved metrics output is excluded from repeated relative and absolute path scans. Combined outbox index matches production status/attempt predicate. SQL benchmark uses the supported 100-row limit and is now executed by database-guard. Local PostgreSQL 18.3 via PGlite 0.5.8 passes the fixture and fails the missing-index negative control; fixture leaves zero outbox rows. Hosted PostgreSQL 16, hosted CI success, review approval, and merge are not established.",
+      "evidence_paths": [
+        ".github/workflows/sync-control-plane-conformance.yml",
+        "scripts/deck_grammar/perf_benchmarks.py",
+        "scripts/validate_golden_pack.py",
+        "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
+        "supabase/tests/sync_control_plane_outbox_claim_benchmark.sql",
+        "tests/test_deck_grammar.py",
+        "tests/test_validator_metrics.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/sync-control-plane-conformance.yml",
+      "state": "present",
+      "git_blob": "62e0e5f472d979d86d3e8290a2e929ffdd519b7c",
+      "sha256": "sha256:307b8644991c950844ccfa1da0fbe2a68ecaa3ae49a0bd669c0972092cd3c461"
+    },
+    {
+      "path": "scripts/deck_grammar/perf_benchmarks.py",
+      "state": "present",
+      "git_blob": "1c55a32275068c56f49d8637c0cd1f43c4c7a428",
+      "sha256": "sha256:fcdc5b20d6bd36e38e23a03ba9ae6e7dc18ccd621af34cb4f8c0ffc827c0190b"
+    },
+    {
+      "path": "scripts/validate_golden_pack.py",
+      "state": "present",
+      "git_blob": "dcb0a0366ec21d3771e7becf48f5a8bcc3bbc1b8",
+      "sha256": "sha256:e692ef2238741b686a12b2ca56aa4212793b4a202ace3bbd601f61fbfa9100b1"
+    },
+    {
+      "path": "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
+      "state": "present",
+      "git_blob": "455959daeedb3fd856131f210d2387c221b5aa9c",
+      "sha256": "sha256:a4f9e03a165a9e8a2362de2acd556c11e862409b08a2fe115d92a14db300cd4c"
+    },
+    {
+      "path": "supabase/tests/sync_control_plane_outbox_claim_benchmark.sql",
+      "state": "present",
+      "git_blob": "075f76b2d4cd4c6cdaf26f5b123baa6569cfcca1",
+      "sha256": "sha256:f642809d8b4e9ea38383bdeccb5557dd417b53278f2187ab5074d74701722505"
+    },
+    {
+      "path": "tests/test_deck_grammar.py",
+      "state": "present",
+      "git_blob": "77b218af5259ca1c674b2f6df4c0a8c4b8fb4f44",
+      "sha256": "sha256:8eb63a1ba014e81bdf39dbb97690714c8c3d2c918548437cc1a5120de17d410e"
+    },
+    {
+      "path": "tests/test_validator_metrics.py",
+      "state": "present",
+      "git_blob": "b7d513a68f8ec114a3c6ac5ef78c714f3e1c93c1",
+      "sha256": "sha256:c611b5cc06ac463c3d72883825a0bd4ed6fec33bb5c958e0dd0b47d6809fb91a"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PYTHONPATH=scripts uv run --python 3.13 --with-requirements requirements-evals.txt -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0,
+        "detail": "210 tests"
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0,
+        "detail": "Candidate merge gates; 16 Golden admission holds remain"
+      },
+      {
+        "command": "PGlite 0.5.8: apply all migrations transactionally; execute supabase/tests/sync_control_plane_outbox_claim_benchmark.sql; drop claim index; assert fixture failure; rollback",
+        "result": "pass",
+        "exit_code": 0,
+        "detail": "PostgreSQL 18.3 wasm; not hosted PostgreSQL 16"
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T11:12:57.459734+00:00"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:d2f897b02b37e7f19b2ac32f4df3d0d43516d30bfd9c2e505472dc51f077bf5e"
+}
