@@ -1,0 +1,81 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.intent-shaper-queue-governance-repair.2026-10-04",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "be0f89f3c240375c1bfdb5fd872d1fdc73501fa9",
+    "commit": "19a566b1eb5877d4bbcff824700d6664c0809a1c",
+    "changed_paths": [
+      "scripts/validate_golden_pack.py",
+      "tests/test_intent_validation.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.intent-shaper-queue-governance-repair.2026-10-04",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Append-only follow-up to qreceipt.intent-shaper-governance-repair.2026-10-04: independent review found unqueued PR3 Proposed Moves were excluded from admission blocker enforcement by directory-wide logic. The repaired scan exempts only paths actually processed by the tribunal queue; unqueued blockers HOLD candidate status and fail ADMITTED status, while queued blockers are counted once. Repair specialist observed 15 focused validation tests, 59 Intent-related tests, and 193 full-suite tests passing; 25/25 executable evaluator fixtures and Golden structural checks passed with 20 admission HOLDs and two explicitly reported legacy noncanonical exceptions. Parent verified the committed two-file snapshot SHA-256 41e180983a265d7e9c1477becedcb9e50201d9dbd5bb5dec306aa668bf461a2d matches the tested bytes. Existing receipts are preserved; their older test counts remain historical results, not current-head results. This mechanical regression repair neither supplies human observations nor grants runtime admission, generated UI, protected execution, memory/settings/Canon writes, or deployment. Hosted checks remain separate unclaimed proof.",
+      "evidence_paths": [
+        "scripts/validate_golden_pack.py",
+        "tests/test_intent_validation.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "scripts/validate_golden_pack.py",
+      "state": "present",
+      "git_blob": "5637b72fc92bd287bd56afc75f2e5f4e9b864d19",
+      "sha256": "sha256:068d304d931d74bb188a26d97676f904f415f3d59211e13531e97ef3b0a5d1df"
+    },
+    {
+      "path": "tests/test_intent_validation.py",
+      "state": "present",
+      "git_blob": "f772f13847fa21a6e4be16efba6b8659d669e15d",
+      "sha256": "sha256:f3fad2835f5dd03d94d3fe8d1d699c60184d0bac380f191ae8a108f3629cc9ae"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 /tmp/quirk-evals-venv/bin/python -m unittest discover -s tests -p 'test_intent_validation.py' -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 /tmp/quirk-evals-venv/bin/python -m unittest discover -s tests -p '*intent*.py' -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 /tmp/quirk-evals-venv/bin/python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 /tmp/quirk-evals-venv/bin/python scripts/validate_intent_shaper.py --repo . --output /tmp/intent-shaper-pr3-followup-results.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 /tmp/quirk-evals-venv/bin/python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check be0f89f3c240375c1bfdb5fd872d1fdc73501fa9..19a566b1eb5877d4bbcff824700d6664c0809a1c",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T04:58:39Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:190ecfdc4178c278264967232cf39934deb5c509c64bf2cd419b8d1111f0d643"
+}
