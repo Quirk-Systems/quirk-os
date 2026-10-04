@@ -1,0 +1,12 @@
+{
+  "area_id": "area.quirk-architecture",
+  "title": "Quirk Architecture",
+  "owner_ref": "human.bryan",
+  "status": "active",
+  "scope": ["canonical object grammar", "governed personalization", "repository architecture", "agent and platform interoperability"],
+  "boundaries": ["creative persona selection cannot grant authority", "music-specific preference evidence cannot leak into protected repository decisions"],
+  "purpose_partitions": ["deck_grammar_live_proof", "repository_admission", "creative_system_design"],
+  "sensitivity": "internal",
+  "default_settings_ref": "settings.deck-grammar.default",
+  "metadata": {"candidate_pack": true}
+}

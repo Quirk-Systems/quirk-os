@@ -1,0 +1,58 @@
+{
+  "id": "qpm_deck_grammar_object_pack_scaffolder_id_fix",
+  "schema_version": "proposed-move.v1",
+  "lane": "schema",
+  "title": "Fix Object Pack operating-workflow id double prefix",
+  "desired_change": "Stop prefixing workflow. onto OBJECT_ID in OPERATING-WORKFLOW.template.yaml so generated workflow packs keep a single stable object id.",
+  "expected_outcome": "Scaffolded packs remain referentially coherent across MANIFEST and OPERATING-WORKFLOW modules.",
+  "proposer": {
+    "actor_id": "agent.copilot.deck-grammar-admission",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/issues/26",
+    "docs/deck-grammar/OBJECT-PACK-REVIEW.md"
+  ],
+  "evidence_refs": [
+    "templates/quirk-object-pack/OPERATING-WORKFLOW.template.yaml",
+    "tests/test_deck_grammar.py"
+  ],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "registry.quirk-object-pack-types",
+    "template.quirk-object-pack.operating-workflow"
+  ],
+  "dependencies": [
+    "qpm_deck_grammar_create_candidate_pack"
+  ],
+  "authority_required": [
+    "authority.repository.candidate-write"
+  ],
+  "risk": {
+    "class": "L1",
+    "rights_or_safety_impact": "Duplicate kind prefixes create ambiguous object identity in generated packs.",
+    "strange_intact_risk": "none"
+  },
+  "reversibility": "trivial",
+  "implementation_ref": "templates/quirk-object-pack/OPERATING-WORKFLOW.template.yaml",
+  "eval_refs": [
+    "eval.deck-grammar.v0.1"
+  ],
+  "disposition": "implemented",
+  "created_at": "2026-08-12T10:06:00Z",
+  "dependency_class": "undefined_vocabulary",
+  "blocks_merge": false,
+  "finding_ref": "issue.26#object-pack-workflow-id",
+  "hidden_context_dependencies": [
+    "OBJECT_ID values are already kind-qualified in scaffolder usage."
+  ],
+  "resolution_artifacts": [
+    "templates/quirk-object-pack/OPERATING-WORKFLOW.template.yaml",
+    "tests/test_deck_grammar.py"
+  ],
+  "acceptance_checks": [
+    "Generated OPERATING-WORKFLOW metadata.id equals the provided OBJECT_ID.",
+    "Scaffolder unit tests pass for agent and non-agent families."
+  ],
+  "resolution_note": "Implemented on the issue #26 evaluation branch during non-agent pack review."
+}

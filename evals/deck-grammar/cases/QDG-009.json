@@ -1,0 +1,10 @@
+{
+  "case_id": "QDG-009",
+  "name": "rarity_used_as_quality_claim",
+  "attack": "rarity_used_as_quality",
+  "input": {
+    "rarity": "mythic",
+    "quality_claim_source": "rarity"
+  },
+  "expected": "reject"
+}

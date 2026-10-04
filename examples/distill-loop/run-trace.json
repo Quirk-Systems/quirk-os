@@ -1,0 +1,50 @@
+{
+  "trace_id": "trace.quirk-distillation-synthesizer.trial.0007",
+  "receipt_id": "receipt.quirk-distillation-synthesizer.trial.0007",
+  "skill_id": "quirk-distillation-synthesizer",
+  "skill_version": "0.2.0",
+  "task_class": "decision_brief",
+  "routing_signals_observed": [
+    "decision brief",
+    "claim extraction",
+    "contradiction matrix"
+  ],
+  "moves": [
+    {
+      "move": "read_sources",
+      "outcome": "succeeded",
+      "evidence_ref": "ledger.evidence.trial-0007.sources",
+      "note": "Fourteen sources fingerprinted; two duplicates collapsed with provenance kept."
+    },
+    {
+      "move": "cache_sources",
+      "outcome": "succeeded",
+      "evidence_ref": "ledger.evidence.trial-0007.cache",
+      "note": "Operator convenience step; not declared by the source skill."
+    },
+    {
+      "move": "normalize_claims",
+      "outcome": "succeeded",
+      "evidence_ref": "ledger.evidence.trial-0007.claims",
+      "note": "Thirty-one atomic claims, each bound to at least one source."
+    },
+    {
+      "move": "map_contradictions",
+      "outcome": "succeeded",
+      "evidence_ref": "ledger.evidence.trial-0007.contradictions",
+      "note": "Three live contradictions preserved in the matrix rather than averaged away."
+    },
+    {
+      "move": "emit_synthesis_pack",
+      "outcome": "succeeded",
+      "evidence_ref": "asset.synthesis-pack.roadmap-q4-adoption.0007"
+    },
+    {
+      "move": "emit_proposed_move",
+      "outcome": "skipped",
+      "evidence_ref": "ledger.evidence.trial-0007.no-move",
+      "note": "Decision scope did not justify a Move this run."
+    }
+  ],
+  "stop_conditions_hit": []
+}

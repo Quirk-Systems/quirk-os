@@ -1,0 +1,232 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/furniture-brief-contract.schema.json",
+  "title": "Quirk Furniture Brief Contract (F3 -> F11 Grounded-to-Banger)",
+  "description": "Candidate contract (not yet promoted to Canon; no admission/execution/publication authority is granted by conformance to this schema alone). Carries F-cubed provenance, the twelve asset types, load-bearing Furniture, GRIP scoring, and a provider-neutral Song Brief. This document is a $defs library: consumers validate against one named def (e.g. #/$defs/compile_request) rather than the document root; 'type: object' is declared here only to satisfy the repo-wide Golden Gates structural check that every schemas/*.schema.json file declares $schema/$id/title/type.",
+  "type": "object",
+  "$defs": {
+    "f_tier": {
+      "type": "string",
+      "enum": ["F0", "F1", "F2", "F3"],
+      "description": "F0 fantasy, F1 observation, F2 lived/anonymized, F3 co-owned intimacy."
+    },
+    "identity_risk": {
+      "type": "string",
+      "enum": ["none", "low", "medium", "high"]
+    },
+    "provenance_and_consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "f_tier",
+        "adult_confirmed",
+        "consent_to_intimacy",
+        "consent_to_store",
+        "consent_to_publish",
+        "anonymized",
+        "identity_risk",
+        "source_provenance"
+      ],
+      "properties": {
+        "f_tier": { "$ref": "#/$defs/f_tier" },
+        "adult_confirmed": {
+          "type": ["boolean", "null"],
+          "description": "Must be exactly true to pass. Missing/null/false is treated as ambiguous and refuses."
+        },
+        "consent_to_intimacy": {
+          "type": ["boolean", "null"],
+          "description": "Required true for F2/F3. Never a substitute for consent_to_store or consent_to_publish."
+        },
+        "consent_to_store": {
+          "type": ["boolean", "null"],
+          "description": "Independent of consent_to_intimacy. Must be exactly true to pass."
+        },
+        "consent_to_publish": {
+          "type": ["boolean", "null"],
+          "description": "Independent of consent_to_intimacy and consent_to_store. Carried into the Song Brief as publication_permitted; never assumed true."
+        },
+        "anonymized": { "type": ["boolean", "null"] },
+        "identity_risk": { "$ref": "#/$defs/identity_risk" },
+        "source_provenance": { "type": "string", "minLength": 1 }
+      }
+    },
+    "furniture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bodies_position", "objects_obstruction", "distance_movement",
+        "temperature", "acoustics", "geography", "privacy_pressure"
+      ],
+      "properties": {
+        "bodies_position": { "type": "string" },
+        "objects_obstruction": { "type": "string" },
+        "distance_movement": { "type": "string" },
+        "temperature": { "type": "string" },
+        "acoustics": { "type": "string" },
+        "geography": { "type": "string" },
+        "privacy_pressure": { "type": "string" }
+      }
+    },
+    "asset_id": { "type": "string", "minLength": 1 },
+    "asset_base": {
+      "type": "object",
+      "required": ["asset_id", "asset_type", "parent_ids"],
+      "properties": {
+        "asset_id": { "$ref": "#/$defs/asset_id" },
+        "parent_ids": { "type": "array", "items": { "$ref": "#/$defs/asset_id" } }
+      }
+    },
+    "asset": {
+      "allOf": [{ "$ref": "#/$defs/asset_base" }],
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": { "asset_type": { "const": "reality_shard" }, "text": { "type": "string", "minLength": 1 } },
+          "required": ["asset_type", "text"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "asset_type": { "const": "want_resistance_pair" },
+            "want": { "type": "string" },
+            "resistance": { "type": "string" }
+          },
+          "required": ["asset_type", "want", "resistance"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "asset_type": { "const": "power_vector" },
+            "holder": { "type": "string" },
+            "target": { "type": "string" },
+            "direction": { "type": "string" }
+          },
+          "required": ["asset_type", "holder", "target", "direction"]
+        },
+        {
+          "type": "object",
+          "properties": { "asset_type": { "const": "consent_beat" }, "beat": { "type": "string" } },
+          "required": ["asset_type", "beat"],
+          "description": "In-fiction narrative beat naming a consent moment inside the song's story. Distinct from, and never a substitute for, the real-world provenance_and_consent block."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "asset_type": { "const": "sensory_triad" },
+            "sight": { "type": "string" },
+            "sound": { "type": "string" },
+            "touch": { "type": "string" }
+          },
+          "required": ["asset_type", "sight", "sound", "touch"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "asset_type": { "const": "contradiction_pair" },
+            "a": { "type": "string" },
+            "b": { "type": "string" }
+          },
+          "required": ["asset_type", "a", "b"]
+        },
+        {
+          "type": "object",
+          "properties": { "asset_type": { "const": "phrase_atom" }, "text": { "type": "string" } },
+          "required": ["asset_type", "text"]
+        },
+        {
+          "type": "object",
+          "properties": { "asset_type": { "const": "hook_thesis" }, "text": { "type": "string" } },
+          "required": ["asset_type", "text"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "asset_type": { "const": "sonic_cell" },
+            "tempo_feel": { "type": "string" },
+            "texture": { "type": "string" },
+            "space": { "type": "string" }
+          },
+          "required": ["asset_type", "tempo_feel", "texture", "space"],
+          "description": "Provider-neutral sonic descriptor. No vendor names, tags, or model identifiers."
+        }
+      ]
+    },
+    "compile_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["batch_id", "provenance", "assets", "furniture"],
+      "properties": {
+        "batch_id": { "type": "string", "minLength": 1 },
+        "provenance": { "$ref": "#/$defs/provenance_and_consent" },
+        "assets": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/asset" } },
+        "furniture": { "$ref": "#/$defs/furniture" },
+        "next_bounded_experiment": { "type": "string" },
+        "compiled_at": { "type": "string" }
+      }
+    },
+    "grip_score": {
+      "type": "object",
+      "required": ["grounded", "reciprocal", "irreplaceable", "performable", "total", "gate_threshold", "passes_gate"],
+      "properties": {
+        "grounded": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "reciprocal": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "irreplaceable": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "performable": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "total": { "type": "integer", "minimum": 0, "maximum": 8 },
+        "gate_threshold": { "const": 7 },
+        "passes_gate": { "type": "boolean" }
+      }
+    },
+    "song_brief": {
+      "type": "object",
+      "required": [
+        "asset_type", "song_brief_id", "batch_id", "f_tier", "source_provenance",
+        "storage_permitted", "publication_permitted", "grip", "furniture",
+        "lineage", "provider"
+      ],
+      "properties": {
+        "asset_type": { "const": "song_brief" },
+        "song_brief_id": { "type": "string", "pattern": "^brief\\.[0-9a-f]{16}$" },
+        "batch_id": { "type": "string" },
+        "f_tier": { "$ref": "#/$defs/f_tier" },
+        "source_provenance": { "type": "string" },
+        "storage_permitted": { "type": "boolean" },
+        "publication_permitted": { "type": "boolean" },
+        "grip": { "$ref": "#/$defs/grip_score" },
+        "furniture": { "type": "object" },
+        "lineage": { "type": "object" },
+        "next_bounded_experiment": { "type": ["string", "null"] },
+        "provider": {
+          "const": null,
+          "description": "Provider-neutral by contract. No Suno/Udio/vendor binding at this layer."
+        }
+      }
+    },
+    "generation_receipt_entry": {
+      "type": "object",
+      "required": [
+        "receipt_id", "seq", "prev_hash", "batch_id", "revision", "input_hash",
+        "output_hash", "decision", "refusal_codes", "proof_state", "non_actions",
+        "authority_ceiling_observed", "no_authority_escalation", "immutable", "entry_hash"
+      ],
+      "properties": {
+        "receipt_id": { "type": "string", "pattern": "^receipt\\.furniture-brief\\.[a-z0-9._-]+\\.\\d{4}$" },
+        "seq": { "type": "integer", "minimum": 1 },
+        "prev_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "batch_id": { "type": "string" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "input_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "output_hash": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "decision": { "enum": ["FINALIZE", "FLOP"] },
+        "refusal_codes": { "type": "array", "items": { "type": "string" } },
+        "proof_state": { "type": "object" },
+        "non_actions": { "type": "array", "items": { "type": "string" } },
+        "authority_ceiling_observed": { "enum": ["observe", "infer", "propose", "execute_bounded"] },
+        "no_authority_escalation": { "const": true },
+        "immutable": { "const": true },
+        "supersedes_receipt_id": { "type": "string" },
+        "entry_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

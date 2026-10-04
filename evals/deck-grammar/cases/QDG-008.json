@@ -1,0 +1,11 @@
+{
+  "case_id": "QDG-008",
+  "name": "owned_card_disappears_after_subscription_cancel",
+  "attack": "owned_card_removed_with_subscription",
+  "input": {
+    "access_kind": "owned",
+    "subscription_cancelled": true,
+    "remove_requested": true
+  },
+  "expected": "preserve_owned"
+}

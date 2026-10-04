@@ -1,0 +1,64 @@
+{
+  "id": "qpm_deck_grammar_aesthetic_guard_hardening",
+  "schema_version": "proposed-move.v1",
+  "lane": "eval",
+  "title": "Harden aesthetic hide protections for price and accessibility",
+  "desired_change": "Make Deck Grammar aesthetic guardrails and QDG-005 reject any attempt to hide evidence, uncertainty, authority, risk, price, or accessibility, and require those six fields in aesthetic-contract.schema.json.",
+  "expected_outcome": "Aesthetic contracts cannot launder consequential information out of reviewable Hands or generated surfaces.",
+  "proposer": {
+    "actor_id": "agent.copilot.deck-grammar-admission",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/issues/26",
+    "docs/deck-grammar/ADMISSION-EVALUATION.md"
+  ],
+  "evidence_refs": [
+    "scripts/deck_grammar/guards.py",
+    "schemas/aesthetic-contract.schema.json",
+    "evals/deck-grammar/cases/QDG-005.json",
+    "tests/test_deck_grammar.py"
+  ],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "schema.aesthetic-contract",
+    "eval.deck-grammar.QDG-005",
+    "skill.quirk-deck-compiler"
+  ],
+  "dependencies": [
+    "qpm_deck_grammar_create_candidate_pack"
+  ],
+  "authority_required": [
+    "authority.repository.candidate-write"
+  ],
+  "risk": {
+    "class": "L1",
+    "rights_or_safety_impact": "Without this hardening, aesthetics could hide price or accessibility while still passing adversarial fixtures.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "scripts/deck_grammar/guards.py",
+  "eval_refs": [
+    "eval.deck-grammar.v0.1"
+  ],
+  "disposition": "implemented",
+  "created_at": "2026-08-12T10:05:00Z",
+  "dependency_class": "missing_evidence_contract",
+  "blocks_merge": false,
+  "finding_ref": "issue.26#aesthetic-price-accessibility",
+  "hidden_context_dependencies": [
+    "Checklist language is stricter than the original candidate guard set."
+  ],
+  "resolution_artifacts": [
+    "scripts/deck_grammar/guards.py",
+    "schemas/aesthetic-contract.schema.json",
+    "evals/deck-grammar/cases/QDG-005.json",
+    "tests/test_deck_grammar.py"
+  ],
+  "acceptance_checks": [
+    "Guard rejects must_hide containing price or accessibility.",
+    "Aesthetic schema requires the six checklist fields in must_not_hide.",
+    "QDG-005 and unit tests pass."
+  ],
+  "resolution_note": "Implemented on the issue #26 evaluation branch as part of the revise recommendation."
+}

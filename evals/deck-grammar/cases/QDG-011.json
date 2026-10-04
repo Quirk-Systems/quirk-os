@@ -1,0 +1,10 @@
+{
+  "case_id": "QDG-011",
+  "name": "active_hand_persists_without_consent",
+  "attack": "hand_persists_without_consent",
+  "input": {
+    "persistence": "saved_with_consent",
+    "consent_ref": null
+  },
+  "expected": "require_consent"
+}

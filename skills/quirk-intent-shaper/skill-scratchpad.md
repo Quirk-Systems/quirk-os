@@ -341,7 +341,7 @@ personalization:
   preference_decay: enabled
   show_used_preferences: on_request
   allow_persona_selection: true
-  allow_generated_ui: task_gated
+  allow_generated_ui: off # candidate; requires separate admission
   allow_exploration: reversible_low_stakes_only
 
 expression:
@@ -395,13 +395,13 @@ The assessment becomes the persistent seed for future personalization rather tha
 Before this Skill becomes Active:
 
 - schema validation passes;
-- all eleven evaluation cases execute;
+- all twenty candidate and review-regression cases execute;
 - Preference Graph retrieval is purpose-scoped;
 - explicit overrides always win;
 - no-personalization mode is effective;
 - persona selection never grants authority;
 - sensitive inference is blocked;
-- generated UI uses admitted components and accessibility checks;
+- generated UI remains rejected until admitted components, accessibility, reconstruction, fallback, and human evidence exist;
 - feedback creates immutable receipts;
 - preference updates remain proposed;
 - one human admission decision names permitted use.
