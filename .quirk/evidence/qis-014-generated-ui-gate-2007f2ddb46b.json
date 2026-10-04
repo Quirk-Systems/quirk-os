@@ -23,7 +23,7 @@
       "claim_id": "qclaim.qis-014-generated-ui-gate.implementation.2007f2ddb46b",
       "claim_type": "implementation",
       "authority_effect": "none",
-      "statement": "Adds the QIS-014 fail-closed generated UI gate: scripts/intent_shaper/policy.py evaluates generated_ui_gate operations, schemas/generated-ui-gate-receipt.schema.json defines the emitted gate receipt, schemas/personalization-plan.schema.json is extended for it, skills/quirk-intent-shaper/generated-ui/issue-intake-form.json is the bound generated UI, scripts/validate_intent_shaper.py validates each gate receipt against the schema and records the pinned evaluated candidate SHA, the Intent Shaper Conformance workflow writes evals/intent-shaper/conformance-results/qis-014.generated-ui-gate.json, and .gitignore excludes that generated output. Hosted CI outcome, ruleset behavior, and merge approval are not established by this receipt.",
+      "statement": "Retrospectively binds the nine-path QIS-014 diff in merged PR 37, from 2347cb050bd4fda1c0cb70b10fb907be20e20974 to historical subject 2007f2ddb46b6a13161f808c85a8bf976777230d. At that subject, scripts/intent_shaper/policy.py evaluates generated_ui_gate operations, schemas/generated-ui-gate-receipt.schema.json defines the emitted gate receipt, schemas/personalization-plan.schema.json is extended for it, skills/quirk-intent-shaper/generated-ui/issue-intake-form.json is the bound generated UI, scripts/validate_intent_shaper.py validates gate receipts against the schema and records the evaluated candidate SHA, the Intent Shaper Conformance workflow writes evals/intent-shaper/conformance-results/qis-014.generated-ui-gate.json, and .gitignore excludes that generated output. The subject diff passes git diff --check. This receipt is recorded after PR 37 merged as ca168180c8c165ad086495344f490823c3c886ba; it does not retroactively change the original failed Evidence Binding run. Hosted Intent Shaper Conformance behavior (its checkout is shallow), ruleset behavior, generated-UI admission sufficiency, and admission, activation, merge, or release authority are not established.",
       "evidence_paths": [
         ".github/workflows/intent-shaper-conformance.yml",
         ".gitignore",
@@ -38,7 +38,7 @@
       "claim_id": "qclaim.qis-014-generated-ui-gate.test.2007f2ddb46b",
       "claim_type": "test",
       "authority_effect": "none",
-      "statement": "Extends evals/intent-shaper/cases.json with generated UI gate fixtures and tests/test_intent_shaper.py with matching unit tests; at the subject commit tests.test_intent_shaper passes (27 tests) and scripts/validate_intent_shaper.py exits 0 with every fixture passing.",
+      "statement": "Extends evals/intent-shaper/cases.json with generated UI gate fixtures and tests/test_intent_shaper.py with matching unit tests. Fresh local verification ran at a clean checkout of historical subject 2007f2ddb46b6a13161f808c85a8bf976777230d using Python 3.12.14 and the pinned requirements-evals.txt dependencies: tests.test_intent_shaper passes all 27 tests; scripts/validate_intent_shaper.py, with --candidate-sha set to the same subject, exits 0 with all 36 fixtures passing, runtime_authorized=false, and deployment_authorized=false; the full unittest suite passes all 206 tests. verification.verified_at records the actual completion of these commands before this successor receipt commit. Manual accessibility evidence is recorded by reference only; this harness does not establish human observations.",
       "evidence_paths": [
         "evals/intent-shaper/cases.json",
         "tests/test_intent_shaper.py"
@@ -104,22 +104,32 @@
   "verification": {
     "commands": [
       {
+        "command": "git diff --check 2347cb050bd4fda1c0cb70b10fb907be20e20974..2007f2ddb46b6a13161f808c85a8bf976777230d",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
         "command": "python -m unittest tests.test_intent_shaper -v",
         "result": "pass",
         "exit_code": 0
       },
       {
-        "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results/qis-014.generated-ui-gate.json",
+        "command": "python scripts/validate_intent_shaper.py --repo . --candidate-sha 2007f2ddb46b6a13161f808c85a8bf976777230d --output /workspace/scratch/b874919fcc8b/qis-014-verification/qis-014.generated-ui-gate.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_*.py'",
         "result": "pass",
         "exit_code": 0
       }
     ],
-    "verified_at": "2026-10-04T13:20:00Z"
+    "verified_at": "2026-10-04T13:35:31Z"
   },
   "authority": {
     "admission_effect": "none",
     "authority_ref": null
   },
   "correction": null,
-  "receipt_sha256": "sha256:11cc746cad4111e00c5b1735cced2312b9b7fbae67a803725bb56b79a262e557"
+  "receipt_sha256": "sha256:c8ac72f53e292ac2a3f99775a21c519bcd590238c787c4fbd43f1cdba8d98dd4"
 }
