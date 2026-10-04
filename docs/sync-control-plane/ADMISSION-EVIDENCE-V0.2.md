@@ -6,8 +6,8 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `a18c5aa2b7f2961e9819f6293175e59e7c37115ca98571b86c78de3939c7d8cb`  
-**Evidence revision (the tree that reproduces that hash):** `893cd3028bce618f176bfcc54856f3fdc2cd01a0`
+**Content hash (SHA-256):** `c5feeaeaf7340d3435818c56261f838747aa62568f8fa0bf2cb1a95ec06f2068`  
+**Evidence revision (the tree that reproduces that hash):** `731d4996feda357a1db87e9b31b458c98b9aa090`
 
 > **Why two revisions.** The candidate commit names the subject that was
 > evaluated. The evidence revision names the tree whose validator and inputs
@@ -21,13 +21,13 @@
 > Reproduce with:
 >
 > ```sh
-> git checkout 893cd3028bce618f176bfcc54856f3fdc2cd01a0
+> git checkout 731d4996feda357a1db87e9b31b458c98b9aa090
 > python scripts/validate_sync_control_plane.py --repo . \
 >   --output evals/sync-control-plane/conformance-results.json --require-admit
 > ```
 >
 > Observed at that revision in a detached worktree:
-> `a18c5aa2b7f2961e9819f6293175e59e7c37115ca98571b86c78de3939c7d8cb`, matching
+> `c5feeaeaf7340d3435818c56261f838747aa62568f8fa0bf2cb1a95ec06f2068`, matching
 > both the tracked artifact and the line above.
 
 > **Digest history**, recorded because a hash replaced without a note is
@@ -59,15 +59,27 @@
 >   Codex review of `3417a8d` found that this decision was computed in
 >   parallel with the proof it cites, so a failing database guard still
 >   left an `ELIGIBLE_FOR_HUMAN_ADMISSION` artifact to be uploaded.
-> - `a18c5aa2…` — current, produced at `893cd30` as above.
+> - `a18c5aa2…` — covered the first form of the eligibility gate, a bare
+>   `needs: database-guard`. Produced at `893cd30`. Superseded when the
+>   Codex review of `7d91ecc` pointed out that a job whose dependency
+>   failed reports as *skipped*, and GitHub counts a skipped required check
+>   as a successful one, so that form could have turned a red guard into a
+>   green required check.
+> - `c5feeaea…` — current, produced at `731d499` as above.
 
-> **What produces this decision.** `candidate-conformance` now declares
-> `needs: database-guard`, so the eligibility decision is computed only after
-> the behavioural database proof has passed. It was previously computed in
-> parallel with it, which meant a database guard that enforced nothing did not
-> prevent this document's decision from being produced and uploaded.
-> `migration_hardening_complete` cannot catch that on its own: it checks that
-> the job is spelled in the workflow, not that it passed.
+> **What produces this decision.** `candidate-conformance` declares
+> `needs: database-guard` and runs with `if: always()`, failing explicitly when
+> that guard's result is not `success`. Both halves are load-bearing. Computed
+> in parallel, as it was before `893cd30`, a database guard that enforced
+> nothing did not stop this decision being produced and uploaded —
+> `migration_hardening_complete` cannot catch that, because it checks the job
+> is spelled in the workflow, not that it passed. Gated by a bare `needs:`, as
+> it was in `893cd30`, a failed guard would have left this job *skipped*, which
+> GitHub counts as a successful required status check.
+>
+> The uploaded artifact is also no longer able to be a stale pass: the tracked
+> `conformance-results.json` is removed before any check runs, so the upload
+> carries a decision this run computed or fails.
 
 This document consolidates the technical evidence for each admission criterion. It does not constitute admission. Bryan's explicit approve, revise, reject, or supersede decision is required before any activation, Canon promotion, merge, authority expansion, or production deployment.
 
