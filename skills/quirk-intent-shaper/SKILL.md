@@ -1,6 +1,12 @@
 ---
 name: quirk-intent-shaper
 description: Compile explicit intent, purpose-scoped preference evidence, persona selection, voice/tone/aesthetic rules, platform effects, settings, authority, and task affordances into a reversible Personalization Plan and adaptive response experience.
+version: 0.2.0
+status: candidate
+family: build
+authority_ceiling: propose
+manifest: manifest.json
+eval_suite: ../../evals/skills/intent-shaper-conformance.json
 ---
 
 # Quirk Intent Shaper

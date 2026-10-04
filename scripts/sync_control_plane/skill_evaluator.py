@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
+
+from intent_shaper.policy import evaluate_case
 
 
 def _out(
@@ -181,6 +185,29 @@ def _value(scenario: str, data: dict[str, Any]) -> dict[str, Any]:
     return _out("abstain", "request_productization_evidence", True, "PRODUCTIZATION_EVIDENCE_INCOMPLETE")
 
 
+def _intent_shaper(scenario: str, data: dict[str, Any]) -> dict[str, Any]:
+    del data
+    fixture_ids = {
+        "manual_evidence_required": "QIS-GUI-001",
+        "authority_expansion_rejected": "QIS-GUI-007",
+        "placeholder_manual_evidence_rejected": "QIS-GUI-001",
+        "runtime_activation_denied": "QIS-GUI-007",
+    }
+    fixture_id = fixture_ids.get(scenario)
+    if fixture_id is None:
+        return _out("abstain", "request_admission_evidence", True, "INTENT_SHAPER_EVIDENCE_REQUIRED")
+
+    suite_path = Path(__file__).resolve().parents[2] / "evals" / "intent-shaper" / "cases.json"
+    suite = json.loads(suite_path.read_text(encoding="utf-8"))
+    fixture = next(case for case in suite["cases"] if case["id"] == fixture_id)
+    receipt = evaluate_case(fixture)["actual"]
+    if receipt["status"] == "blocked_manual":
+        return _out("abstain", "request_manual_accessibility_evidence", True, *receipt["reason_codes"])
+    if receipt["status"] == "rejected":
+        return _out("stop", "reject_generated_ui_candidate", True, *receipt["reason_codes"])
+    return _out("pass", "emit_candidate_evidence_receipt", False, *receipt["reason_codes"])
+
+
 _SKILL_HANDLERS = {
     "quirk-source-authority-resolver": _source_authority,
     "quirk-object-contract-engineer": _object_contract,
@@ -193,6 +220,7 @@ _SKILL_HANDLERS = {
     "quirk-probabilistic-forecaster": _forecast,
     "quirk-roadmap-board-orchestrator": _roadmap,
     "quirk-value-foundry": _value,
+    "quirk-intent-shaper": _intent_shaper,
 }
 
 

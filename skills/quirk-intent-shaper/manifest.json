@@ -1,0 +1,173 @@
+{
+  "$schema": "../../schemas/skill-package.schema.json",
+  "api_version": "quirk.dev/skill/v1alpha1",
+  "kind": "SkillPackage",
+  "id": "quirk-intent-shaper",
+  "title": "Quirk Intent Shaper",
+  "version": "0.2.0",
+  "status": "candidate",
+  "family": "build",
+  "purpose": "Compile explicit intent, purpose-scoped preference evidence, persona selection, expression constraints, platform effects, settings, and task affordances into a reversible candidate plan.",
+  "authority": {
+    "ceiling": "propose",
+    "capability_does_not_imply_authority": true,
+    "requires_external_grant": true,
+    "requires_independent_approval_for_active": true,
+    "self_activation": false,
+    "self_escalation": false,
+    "canon_promotion": false,
+    "irreversible_write": false
+  },
+  "triggers": {
+    "when_to_use": [
+      "Use when task quality depends on explicit intent, scoped preferences, expression constraints, or bounded task affordances."
+    ],
+    "when_not_to_use": [
+      "Do not use to infer sensitive traits, impersonate a user, or change settings or saved memory."
+    ],
+    "routing_signals": [
+      "personalization",
+      "preference",
+      "persona",
+      "generated_ui"
+    ],
+    "collision_behavior": "block"
+  },
+  "contract": {
+    "inputs": [
+      {
+        "name": "current_request",
+        "type": "object",
+        "required": true
+      },
+      {
+        "name": "scoped_evidence",
+        "type": "array",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "personalization_plan",
+        "type": "object",
+        "required": true
+      },
+      {
+        "name": "candidate_receipt",
+        "type": "object",
+        "required": true
+      }
+    ],
+    "invariants": [
+      "explicit_current_instruction_precedence",
+      "purpose_scoped_retrieval",
+      "authority_ceiling_preserved",
+      "generated_ui_never_authorizes_runtime"
+    ],
+    "failure_conditions": [
+      "evidence_provenance_missing",
+      "authority_expansion",
+      "generated_ui_contract_invalid"
+    ],
+    "stop_conditions": [
+      "sensitive_inference_required",
+      "user_impersonation_requested",
+      "runtime_activation_requested",
+      "manual_accessibility_evidence_missing"
+    ]
+  },
+  "method": {
+    "moves": [
+      "resolve_explicit_intent",
+      "partition_preference_evidence",
+      "evaluate_candidate_contract",
+      "emit_candidate_receipt"
+    ],
+    "sequence": [
+      "Resolve current intent and purpose before reading stored preference evidence.",
+      "Apply explicit instruction precedence and reject unsupported authority expansion.",
+      "Validate generated UI component, replay, machine-check, fallback, and human evidence.",
+      "Emit a non-authorizing receipt and stop before runtime or deployment."
+    ],
+    "decision_points": [
+      "Is candidate evidence complete and attributable for this purpose?",
+      "Would the requested action exceed propose authority or bypass a human evidence gate?"
+    ],
+    "approval_gates": [
+      "Generated UI remains a candidate until independently reviewed accessibility evidence is present.",
+      "Runtime activation and deployment require separate external admission and grants."
+    ]
+  },
+  "resources": [
+    {
+      "resource_type": "preference_evidence",
+      "access": "read",
+      "required": true,
+      "constraints": [
+        "purpose_scoped",
+        "provenance_required"
+      ]
+    },
+    {
+      "resource_type": "candidate_receipt",
+      "access": "reference",
+      "required": true,
+      "constraints": [
+        "append_only",
+        "non_authorizing"
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "name": "intent_shaper",
+      "actions": [
+        "resolve_intent",
+        "evaluate_candidate",
+        "emit_receipt"
+      ],
+      "required": true
+    }
+  ],
+  "quality": {
+    "eval_suite_ref": "evals/skills/intent-shaper-conformance.json",
+    "required_case_kinds": [
+      "positive",
+      "adversarial",
+      "regression",
+      "authority"
+    ],
+    "minimum_score": 1.0,
+    "regression_required": true,
+    "anti_patterns": [
+      "self_attested_accessibility",
+      "preference_leakage",
+      "inferred_authority"
+    ]
+  },
+  "learning": {
+    "mutation_mode": "propose_only",
+    "historical_rewrite": false,
+    "promotion_requires_external_admission": true,
+    "feedback_capture": "append_only_receipt"
+  },
+  "compatibility": {
+    "mapping_ref": "mappings/skill-package.v1.yaml",
+    "runtime_manifest_ref": "schemas/runtime-manifest.schema.json",
+    "minimum_runtime_contract": "0.2.0"
+  },
+  "provenance": {
+    "source_path": "skills/quirk-intent-shaper/SKILL.md",
+    "derived_from": [
+      "Quirk Intent Shaper candidate contract and generated-UI admission review"
+    ],
+    "steward": "quirk-os-maintainers",
+    "created_at": "2026-10-04T12:00:00Z"
+  },
+  "integrity": {
+    "source_algorithm": "git-blob-sha1",
+    "source_blob_sha": "2517270eb5026796d83d0eb167b01a3605efbd40",
+    "manifest_algorithm": "sha256-canonical-json-v1",
+    "manifest_sha256": "d8f186496d261a9d316f5779baf797a12e267a1ff1bca9fd1c6267546b28302d"
+  }
+}

@@ -26,11 +26,11 @@ CORE_SKILLS = {
     "quirk-roadmap-board-orchestrator",
     "quirk-value-foundry",
 }
-EXTENSION_SKILLS = {"quirk-applause-gate"}
+EXTENSION_SKILLS = {"quirk-applause-gate", "quirk-intent-shaper"}
 EXPECTED_SKILLS = CORE_SKILLS | EXTENSION_SKILLS
 # Draft packages remain source-visible but cannot join the manifested runtime
 # registry until their separate admission dockets pass.
-DRAFT_CANDIDATE_SKILLS = {"quirk-deck-compiler", "quirk-intent-shaper"}
+DRAFT_CANDIDATE_SKILLS = {"quirk-deck-compiler"}
 DISTILLED_PREFIX = "quirk-distilled-"
 REQUIRED_KINDS = {"positive", "adversarial", "regression", "authority"}
 PLACEHOLDER_MARKERS = ("TO" + "DO", "FIX" + "ME", "T" + "BD", "X" + "XX")
@@ -179,25 +179,29 @@ def main() -> int:
         manifests[skill_id] = manifest
 
     core_path = root / "evals" / "skills" / "conformance.json"
-    extension_path = root / "evals" / "skills" / "applause-gate-conformance.json"
+    extension_paths = [
+        root / "evals" / "skills" / "applause-gate-conformance.json",
+        root / "evals" / "skills" / "intent-shaper-conformance.json",
+    ]
     try:
         core_cases = json.loads(core_path.read_text(encoding="utf-8"))
-        extension_cases = json.loads(extension_path.read_text(encoding="utf-8"))
+        extension_suites = [json.loads(path.read_text(encoding="utf-8")) for path in extension_paths]
     except Exception as exc:
         fail("EVAL_JSON_INVALID", str(exc))
-        core_cases, extension_cases = [], []
+        core_cases, extension_suites = [], []
 
-    if not isinstance(core_cases, list) or not isinstance(extension_cases, list):
+    if not isinstance(core_cases, list) or any(not isinstance(suite, list) for suite in extension_suites):
         fail("EVAL_SUITE_INVALID", "skill conformance suites must be arrays")
-        core_cases, extension_cases = [], []
+        core_cases, extension_suites = [], []
+    extension_cases = [case for suite in extension_suites for case in suite]
     cases = [*core_cases, *extension_cases]
 
     if len(core_cases) != 44:
         fail("CORE_EVAL_COUNT", f"expected immutable core 44 cases, found {len(core_cases)}")
-    if len(extension_cases) != 4:
-        fail("EXTENSION_EVAL_COUNT", f"expected 4 Applause Gate cases, found {len(extension_cases)}")
-    if len(cases) != 48:
-        fail("EVAL_COUNT", f"expected 48 combined cases, found {len(cases)}")
+    if len(extension_cases) != 8:
+        fail("EXTENSION_EVAL_COUNT", f"expected 8 extension cases, found {len(extension_cases)}")
+    if len(cases) != 52:
+        fail("EVAL_COUNT", f"expected 52 combined cases, found {len(cases)}")
 
     case_ids: set[str] = set()
     case_kinds: dict[str, set[str]] = defaultdict(set)
@@ -224,7 +228,11 @@ def main() -> int:
             fail("EVAL_VERSION_DRIFT", f"{case_id}: version does not match manifest")
 
         try:
-            actual = evaluate_shared_skill_case(case) if skill_id == "quirk-applause-gate" else evaluate_skill_case(case)
+            actual = (
+                evaluate_shared_skill_case(case)
+                if skill_id == "quirk-applause-gate"
+                else evaluate_skill_case(case)
+            )
         except Exception as exc:
             fail("EVAL_EXECUTION", f"{case_id}: {exc}")
             continue
@@ -250,7 +258,7 @@ def main() -> int:
     for skill_id in sorted(EXPECTED_SKILLS):
         if case_kinds.get(skill_id) != REQUIRED_KINDS:
             fail("EVAL_SKILL_COVERAGE", f"{skill_id}: expected all four eval kinds")
-    if set(kind_counts) != REQUIRED_KINDS or any(kind_counts[kind] != 12 for kind in REQUIRED_KINDS):
+    if set(kind_counts) != REQUIRED_KINDS or any(kind_counts[kind] != 13 for kind in REQUIRED_KINDS):
         fail("EVAL_CLASS_BALANCE", f"combined kind counts: {dict(kind_counts)}")
 
     authority_path = root / "evals" / "skills" / "authority-boundary.json"
@@ -259,9 +267,13 @@ def main() -> int:
         expected_core_authority = [case for case in core_cases if case.get("kind") == "authority"]
         if authority_cases != expected_core_authority:
             fail("AUTHORITY_SUBSET_DRIFT", "core authority-boundary.json must remain exact for v0.2 suite")
-        extension_authority = [case for case in extension_cases if case.get("kind") == "authority"]
-        if len(extension_authority) != 1:
-            fail("EXTENSION_AUTHORITY_COUNT", "Applause Gate must have exactly one shared authority case")
+        for skill_id in EXTENSION_SKILLS:
+            extension_authority = [
+                case for case in extension_cases
+                if case.get("skill_id") == skill_id and case.get("kind") == "authority"
+            ]
+            if len(extension_authority) != 1:
+                fail("EXTENSION_AUTHORITY_COUNT", f"{skill_id} must have exactly one authority case")
     except Exception as exc:
         fail("AUTHORITY_SUBSET_INVALID", str(exc))
 
@@ -270,12 +282,12 @@ def main() -> int:
         registry = json.loads(registry_path.read_text(encoding="utf-8"))
         if registry.get("status") != "candidate":
             fail("REGISTRY_AUTHORITY_BREACH", "registry must remain candidate")
-        if registry.get("version") != "0.3.0":
-            fail("REGISTRY_VERSION", "12-skill registry must be version 0.3.0")
+        if registry.get("version") != "0.4.0":
+            fail("REGISTRY_VERSION", "13-skill registry must be version 0.4.0")
         entries = registry.get("skills", [])
         by_id = {entry.get("id"): entry for entry in entries}
-        if set(by_id) != EXPECTED_SKILLS or len(entries) != 12:
-            fail("REGISTRY_SKILL_DRIFT", "registry must contain exactly the expected 12 skills")
+        if set(by_id) != EXPECTED_SKILLS or len(entries) != 13:
+            fail("REGISTRY_SKILL_DRIFT", "registry must contain exactly the expected 13 skills")
         leaked = sorted(skill_id for skill_id in by_id if str(skill_id).startswith(DISTILLED_PREFIX))
         if leaked:
             fail("REGISTRY_DISTILLED_LEAK", f"auto-distilled candidates may not join the registry: {leaked}")
@@ -342,10 +354,10 @@ def main() -> int:
     if findings:
         for finding in findings:
             print(f"{finding['level'].upper()} {finding['code']}: {finding['message']}", file=sys.stderr)
-        print(f"skill conformance failed: {len(findings)} finding(s), {len(manifests)}/12 manifests, {passed_cases}/{len(cases)} cases", file=sys.stderr)
+        print(f"skill conformance failed: {len(findings)} finding(s), {len(manifests)}/13 manifests, {passed_cases}/{len(cases)} cases", file=sys.stderr)
         return 1
 
-    print("validated 12 candidate skills, 12 immutable manifests, 4 schemas, 48 executable cases, registry integrity, and fail-closed runtime boundaries")
+    print("validated 13 candidate skills, 13 immutable manifests, 4 schemas, 52 executable cases, registry integrity, and fail-closed runtime boundaries")
     return 0
 
 

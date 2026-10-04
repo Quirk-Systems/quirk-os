@@ -206,6 +206,8 @@ class FailOnReadEvidencePort(RecordingEvidencePort):
 def _parse_time(value: str | None) -> datetime | None:
     if value is None:
         return None
+    if not isinstance(value, str):
+        raise ValueError("date-time must be a string")
     normalized = value.replace("Z", "+00:00")
     parsed = datetime.fromisoformat(normalized)
     if parsed.tzinfo is None:

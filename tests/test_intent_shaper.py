@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 from jsonschema import Draft202012Validator, FormatChecker
 import yaml
@@ -13,6 +14,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 
 from intent_shaper.policy import evaluate_case, evaluate_cases  # noqa: E402
+from intent_shaper import policy as intent_policy  # noqa: E402
 from validate_intent_shaper import validate_policy  # noqa: E402
 
 
@@ -246,14 +248,23 @@ class IntentShaperContractTests(unittest.TestCase):
         traversal["input"]["generated_ui_plan"]["component_manifests"][0]["manifest_ref"] = "../../../../etc/passwd"
         malformed = copy.deepcopy(cases["QIS-GUI-001"])
         del malformed["input"]["generated_ui_plan"]["component_manifests"][0]["data_bindings"]
+        malformed_time = copy.deepcopy(cases["QIS-GUI-001"])
+        malformed_time["input"]["as_of"] = "not-a-date"
+        malformed_time_type = copy.deepcopy(cases["QIS-GUI-001"])
+        malformed_time_type["input"]["as_of"] = []
+        replay_mismatch = copy.deepcopy(cases["QIS-GUI-001"])
+        replay_mismatch["input"]["generated_ui_plan"]["reconstruction_contract"]["replay_hash_sha256"] = "f" * 64
 
-        for case in (traversal, malformed):
+        for case in (traversal, malformed, malformed_time, malformed_time_type, replay_mismatch):
             with self.subTest(case=case["id"]):
                 actual = evaluate_case(case)["actual"]
                 self.assertEqual("rejected", actual["status"])
                 self.assertEqual([], list(self.receipt_validator.iter_errors(actual)))
         self.assertIn("COMPONENT_MANIFEST_INACCESSIBLE", evaluate_case(traversal)["actual"]["reason_codes"])
         self.assertIn("GENERATED_UI_PLAN_INVALID", evaluate_case(malformed)["actual"]["reason_codes"])
+        self.assertEqual(["GENERATED_UI_PLAN_INVALID"], evaluate_case(malformed_time)["actual"]["reason_codes"])
+        self.assertEqual(["GENERATED_UI_PLAN_INVALID"], evaluate_case(malformed_time_type)["actual"]["reason_codes"])
+        self.assertIn("RECONSTRUCTION_INPUTS_MISSING", evaluate_case(replay_mismatch)["actual"]["reason_codes"])
 
     def test_generated_ui_receipt_schema_rejects_contradictory_reasons(self) -> None:
         result = next(
@@ -263,6 +274,27 @@ class IntentShaperContractTests(unittest.TestCase):
         )
         result["reason_codes"] = ["CANDIDATE_EVIDENCE_COMPLETE"]
         self.assertTrue(list(self.receipt_validator.iter_errors(result)))
+
+    def test_generated_ui_rejects_tampered_machine_check_receipt(self) -> None:
+        case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-GUI-001"))
+        load_json = intent_policy._contained_json
+
+        def tampered_json(path_ref: object) -> tuple[Path, object] | None:
+            loaded = load_json(path_ref)
+            if (
+                loaded is not None
+                and str(path_ref).endswith("issue-intake-form.accessibility.json")
+                and isinstance(loaded[1], dict)
+            ):
+                receipt = copy.deepcopy(loaded[1])
+                receipt["checks"]["focus_order_declared"] = False
+                return loaded[0], receipt
+            return loaded
+
+        with patch("intent_shaper.policy._contained_json", side_effect=tampered_json):
+            result = evaluate_case(case)["actual"]
+        self.assertEqual("rejected", result["status"])
+        self.assertIn("ACCESSIBILITY_MACHINE_CHECK_FAILED", result["reason_codes"])
 
 
     def test_generated_ui_missing_manual_evidence_blocks(self) -> None:

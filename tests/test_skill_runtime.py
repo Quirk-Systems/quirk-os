@@ -69,7 +69,7 @@ class SkillIntegrityTests(unittest.TestCase):
             path for path in SKILLS.glob("*/manifest.json")
             if not path.parent.name.startswith("quirk-distilled-")
         ]
-        self.assertEqual(len(manifests), 12)
+        self.assertEqual(len(manifests), 13)
         for path in manifests:
             manifest = json.loads(path.read_text(encoding="utf-8"))
             source = (path.parent / "SKILL.md").read_text(encoding="utf-8")

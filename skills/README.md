@@ -2,7 +2,7 @@
 
 Status: **candidate / non-operative**.
 
-The manifest registry now contains 12 candidate Skill packages. Eleven retain the Skills v0.2 shared conformance suite; `quirk-applause-gate` joins through a bounded v0.3 registry extension with its own four-case shared conformance slice. Every package remains evidence-only until separately admitted.
+The manifest registry now contains 13 candidate Skill packages. Eleven retain the Skills v0.2 shared conformance suite; `quirk-applause-gate` and `quirk-intent-shaper` join through bounded registry extensions with four conformance cases each. Every package remains evidence-only until separately admitted.
 
 Each manifested package contains:
 

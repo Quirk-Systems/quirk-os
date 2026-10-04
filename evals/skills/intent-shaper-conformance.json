@@ -1,0 +1,62 @@
+[
+  {
+    "id": "QSK-049",
+    "skill_id": "quirk-intent-shaper",
+    "skill_version": "0.2.0",
+    "kind": "positive",
+    "scenario": "manual_evidence_required",
+    "input": {},
+    "expected": {
+      "result": "abstain",
+      "action": "request_manual_accessibility_evidence",
+      "blocked": true,
+      "required_codes": ["MANUAL_EVIDENCE_MISSING"],
+      "prohibited_codes": ["CANDIDATE_EVIDENCE_COMPLETE"]
+    }
+  },
+  {
+    "id": "QSK-050",
+    "skill_id": "quirk-intent-shaper",
+    "skill_version": "0.2.0",
+    "kind": "adversarial",
+    "scenario": "authority_expansion_rejected",
+    "input": {},
+    "expected": {
+      "result": "stop",
+      "action": "reject_generated_ui_candidate",
+      "blocked": true,
+      "required_codes": ["AUTHORITY_EXPANSION_REQUESTED"],
+      "prohibited_codes": ["CANDIDATE_EVIDENCE_COMPLETE"]
+    }
+  },
+  {
+    "id": "QSK-051",
+    "skill_id": "quirk-intent-shaper",
+    "skill_version": "0.2.0",
+    "kind": "regression",
+    "scenario": "placeholder_manual_evidence_rejected",
+    "input": {},
+    "expected": {
+      "result": "abstain",
+      "action": "request_manual_accessibility_evidence",
+      "blocked": true,
+      "required_codes": ["MANUAL_EVIDENCE_MISSING"],
+      "prohibited_codes": ["CANDIDATE_EVIDENCE_COMPLETE"]
+    }
+  },
+  {
+    "id": "QSK-052",
+    "skill_id": "quirk-intent-shaper",
+    "skill_version": "0.2.0",
+    "kind": "authority",
+    "scenario": "runtime_activation_denied",
+    "input": {},
+    "expected": {
+      "result": "stop",
+      "action": "reject_generated_ui_candidate",
+      "blocked": true,
+      "required_codes": ["AUTHORITY_EXPANSION_REQUESTED"],
+      "prohibited_codes": ["CANDIDATE_EVIDENCE_COMPLETE"]
+    }
+  }
+]
