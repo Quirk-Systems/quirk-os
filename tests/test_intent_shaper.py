@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import copy
+from datetime import datetime, timezone
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -295,6 +297,48 @@ class IntentShaperContractTests(unittest.TestCase):
             result = evaluate_case(case)["actual"]
         self.assertEqual("rejected", result["status"])
         self.assertIn("ACCESSIBILITY_MACHINE_CHECK_FAILED", result["reason_codes"])
+
+    def test_manual_evidence_is_bound_to_component_version_and_hash(self) -> None:
+        component_ref = "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json"
+        _, component = intent_policy._contained_json(component_ref)
+        component_hash = hashlib.sha256(
+            json.dumps(component, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        ).hexdigest()
+        artifact = {
+            "requirement": "keyboard",
+            "observation": "Reviewed keyboard navigation in the pinned component.",
+            "reviewed_by": "human.reviewer",
+            "reviewed_at": "2026-08-12T00:00:00Z",
+            "components": [
+                {
+                    "component_id": component["component_id"],
+                    "version": component["version"],
+                    "content_hash_sha256": component_hash,
+                }
+            ],
+        }
+        artifact_hash = hashlib.sha256(
+            json.dumps(artifact, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        ).hexdigest()
+        entry = {
+            "status": "provided",
+            "evidence_ref": "evals/intent-shaper/manual-evidence/keyboard.json",
+            "evidence_sha256": artifact_hash,
+            "reviewed_by": artifact["reviewed_by"],
+            "reviewed_at": artifact["reviewed_at"],
+        }
+        as_of = datetime(2026, 8, 12, 12, tzinfo=timezone.utc)
+        loaded = (REPO / entry["evidence_ref"], artifact)
+
+        with patch("intent_shaper.policy._contained_json", return_value=loaded):
+            self.assertTrue(intent_policy._verified_manual_evidence(entry, "keyboard", as_of, [(component, component_hash)]))
+
+        artifact["components"][0]["version"] = "9.9.9"
+        entry["evidence_sha256"] = hashlib.sha256(
+            json.dumps(artifact, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        ).hexdigest()
+        with patch("intent_shaper.policy._contained_json", return_value=loaded):
+            self.assertFalse(intent_policy._verified_manual_evidence(entry, "keyboard", as_of, [(component, component_hash)]))
 
 
     def test_generated_ui_missing_manual_evidence_blocks(self) -> None:

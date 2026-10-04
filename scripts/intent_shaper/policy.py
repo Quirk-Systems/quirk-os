@@ -630,7 +630,12 @@ def _component_core_sha256(component: Mapping[str, Any]) -> str:
     return hashlib.sha256(canonical).hexdigest()
 
 
-def _verified_manual_evidence(entry: Mapping[str, Any], requirement: str, as_of: datetime) -> bool:
+def _verified_manual_evidence(
+    entry: Mapping[str, Any],
+    requirement: str,
+    as_of: datetime,
+    component_artifacts: list[tuple[Mapping[str, Any], str]],
+) -> bool:
     if entry.get("status") != "provided":
         return False
     evidence_ref = entry.get("evidence_ref")
@@ -651,6 +656,16 @@ def _verified_manual_evidence(entry: Mapping[str, Any], requirement: str, as_of:
     if artifact.get("requirement") != requirement or not isinstance(artifact.get("observation"), str):
         return False
     if not artifact["observation"].strip():
+        return False
+    expected_components = [
+        {
+            "component_id": component["component_id"],
+            "version": component["version"],
+            "content_hash_sha256": digest,
+        }
+        for component, digest in sorted(component_artifacts, key=lambda item: item[0].get("component_id", ""))
+    ]
+    if not expected_components or artifact.get("components") != expected_components:
         return False
     reviewer = entry.get("reviewed_by")
     if artifact.get("reviewed_by") != reviewer or not isinstance(reviewer, str) or not reviewer.startswith("human.") or len(reviewer) <= 6:
@@ -695,7 +710,12 @@ def _isoformat(value: datetime) -> str:
     return value.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def _manual_evidence_summary(entries: Any, *, as_of: datetime) -> dict[str, str]:
+def _manual_evidence_summary(
+    entries: Any,
+    *,
+    as_of: datetime,
+    component_artifacts: list[tuple[Mapping[str, Any], str]],
+) -> dict[str, str]:
     summary = {requirement: "missing" for requirement in MANUAL_REQUIREMENTS}
     if not isinstance(entries, list):
         return summary
@@ -703,7 +723,7 @@ def _manual_evidence_summary(entries: Any, *, as_of: datetime) -> dict[str, str]
         if not isinstance(entry, Mapping):
             continue
         requirement = str(entry.get("requirement", ""))
-        if requirement in summary and _verified_manual_evidence(entry, requirement, as_of):
+        if requirement in summary and _verified_manual_evidence(entry, requirement, as_of, component_artifacts):
             summary[requirement] = "provided"
     return summary
 
@@ -854,7 +874,11 @@ def _evaluate_generated_ui_gate(
     if not _verified_machine_checks(accessibility, component_artifacts, as_of=as_of):
         reject_reasons.add("ACCESSIBILITY_MACHINE_CHECK_FAILED")
 
-    manual_summary = _manual_evidence_summary(manual_evidence, as_of=as_of)
+    manual_summary = _manual_evidence_summary(
+        manual_evidence,
+        as_of=as_of,
+        component_artifacts=component_artifacts,
+    )
     manual_missing = any(status != "provided" for status in manual_summary.values())
 
     if reject_reasons:
