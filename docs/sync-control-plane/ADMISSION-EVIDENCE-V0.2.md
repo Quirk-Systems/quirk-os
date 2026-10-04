@@ -6,8 +6,8 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `9fb64e360024fbbd9706822f61aec5b3e449450e8883fd9eab3e97656dc89852`  
-**Evidence revision (the tree that reproduces that hash):** `cedcc1d82a0ca43ad6ae1ef68ab6efa58366afdc`
+**Content hash (SHA-256):** `7f5407dd9c0d9619f72178afbdab33ad192c39b0fd9881787ebea38a457e8d64`  
+**Evidence revision (the tree that reproduces that hash):** `000cc14652cbe73335dc69825539bfd6075cf531`
 
 > **Why two revisions.** The candidate commit names the subject that was
 > evaluated. The evidence revision names the tree whose validator and inputs
@@ -21,13 +21,13 @@
 > Reproduce with:
 >
 > ```sh
-> git checkout cedcc1d82a0ca43ad6ae1ef68ab6efa58366afdc
+> git checkout 000cc14652cbe73335dc69825539bfd6075cf531
 > python scripts/validate_sync_control_plane.py --repo . \
 >   --output evals/sync-control-plane/conformance-results.json --require-admit
 > ```
 >
 > Observed at that revision in a detached worktree:
-> `9fb64e360024fbbd9706822f61aec5b3e449450e8883fd9eab3e97656dc89852`, matching
+> `7f5407dd9c0d9619f72178afbdab33ad192c39b0fd9881787ebea38a457e8d64`, matching
 > both the tracked artifact and the line above.
 
 > **Digest history**, recorded because a hash replaced without a note is
@@ -69,7 +69,12 @@
 >   content-hash linkage check. Produced at `731d499`. Superseded when the
 >   Codex review of `f75b422` found that this workflow did not trigger on
 >   the verification recipe its own test treats as a dependency.
-> - `9fb64e36…` — current, produced at `cedcc1d` as above.
+> - `9fb64e36…` — covered `ci_triggers_on_the_verify_recipe`. Produced at
+>   `cedcc1d`. Superseded when that check was merged into
+>   `ci_path_filter_covers_job_inputs`, after the Codex review of
+>   `e348176` found the filter also failed to cover every migration the
+>   guard job applies and the document you are reading.
+> - `7f5407dd…` — current, produced at `000cc14` as above.
 
 > **What produces this decision.** `candidate-conformance` declares
 > `needs: database-guard` and runs with `if: always()`, failing explicitly when
