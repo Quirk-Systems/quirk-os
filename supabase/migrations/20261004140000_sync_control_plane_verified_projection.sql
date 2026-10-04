@@ -22,7 +22,8 @@ begin
     raise exception 'runtime/browser role can assume the verifier role; cutover refused';
   end if;
   if exists (select 1 from pg_auth_members
-             where roleid=(select oid from pg_roles where rolname='quirk_manifest_verifier')) then
+             where roleid=(select oid from pg_roles where rolname='quirk_manifest_verifier')
+                or member=(select oid from pg_roles where rolname='quirk_manifest_verifier')) then
     raise exception 'verifier membership must be separately admitted after cutover';
   end if;
 end $$;

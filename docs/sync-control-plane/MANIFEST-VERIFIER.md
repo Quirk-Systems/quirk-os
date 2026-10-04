@@ -102,3 +102,19 @@ cutover is intentionally invalid because broad registry writes have been revoked
 The deliberate trust-gap findings remain open pending protected bootstrap,
 authentic positive/negative live-review evidence and consumer enforcement.
 Local or hosted synthetic proof is candidate evidence, never final admission.
+
+### PR #132 verifier gap repairs
+
+Evaluation v1 admits at most 32 materials, validated before any material read.
+Each verification allows at most 64 authenticated GitHub GET attempts (including
+failed calls), with immutable tree cache and request count reset for each run.
+The existing 1 MiB response and 20-page review census limits remain in force.
+The final observation compares base/head repository IDs and names, branch refs,
+commit SHAs and PR author ID, plus open/non-draft/unmerged state and the exact
+review. Same-commit retargeting fails closed; this is no atomicity guarantee.
+
+Cutover refuses every membership edge where the verifier is either role or
+member. NOINHERIT alone does not prevent SET ROLE. CI attempts reverse browser,
+reverse neutral, transitive reverse and inbound neutral grants before applying
+the candidate migration, requiring each to fail at the membership refusal.
+These repairs confer no host admission, credentials, runtime activation or merge.

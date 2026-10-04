@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from sync_control_plane.attestation import ApprovalError, GitHubApprovalVerifier, GitHubReader
+from sync_control_plane.attestation import ApprovalError, GitHubApprovalVerifier, GitHubReader, MAX_GITHUB_REQUESTS
 from sync_control_plane.content import ContentError, manifest_content_hash, manifest_preimage, strict_json_loads
 from sync_control_plane.policy import validate_manifest_admission
 from sync_control_plane.projection import prepare_projection
@@ -81,8 +81,8 @@ def scenario():
                       materials=[{'path': 'fixtures/raw.txt', 'sha256': hashlib.sha256(material).hexdigest()}])
     data = {
         PR_API: {'state': 'open', 'draft': False, 'merged': False, 'user': {'id': 998},
-                 'head': {'sha': HEAD, 'repo': {'full_name': REPO}},
-                 'base': {'sha': BASE, 'ref': 'main', 'repo': {'full_name': REPO}}},
+                 'head': {'sha': HEAD, 'ref': 'candidate', 'repo': {'full_name': REPO, 'id': 123}},
+                 'base': {'sha': BASE, 'ref': 'main', 'repo': {'full_name': REPO, 'id': 123}}},
         REVIEW_API: review, CENSUS_API: [copy.deepcopy(review)],
     }
     def put(path, revision, raw):
@@ -336,6 +336,70 @@ class ApprovalCrossingTests(unittest.TestCase):
                 reader.change_on_repeat[endpoint] = final
                 with self.assertRaisesRegex(ApprovalError, 'changed during verification'):
                     verifier.verify(candidate, context)
+
+    def test_same_commit_identity_races_refused(self):
+        for side in ('base', 'head'):
+            for field in ('ref', 'repository_name', 'repository_id', 'missing_repository'):
+                with self.subTest(side=side, field=field):
+                    candidate, _, context, reader, verifier = scenario()
+                    final = copy.deepcopy(reader.data[PR_API])
+                    if field == 'ref':
+                        final[side]['ref'] = 'unprotected'
+                    elif field == 'repository_name':
+                        final[side]['repo']['full_name'] = 'untrusted/other'
+                    elif field == 'repository_id':
+                        final[side]['repo']['id'] = 456
+                    else:
+                        final[side]['repo'] = None
+                    reader.change_on_repeat[PR_API] = final
+                    with self.assertRaises(ApprovalError):
+                        verifier.verify(candidate, context)
+
+    def test_material_limit_checked_before_any_material_read(self):
+        from jsonschema import Draft202012Validator
+        schema = json.loads((ROOT / 'schemas/manifest-evaluation.schema.json').read_text())
+        for count in (32, 33):
+            candidate, _, context, reader, verifier = scenario()
+            endpoint = ROOT_API + '/contents/' + EVAL_PATH + '?ref=' + HEAD
+            record = json.loads(base64.b64decode(reader.data[endpoint]['content']))
+            record['materials'] = [{'path': f'fixtures/material-{i}.txt', 'sha256': 'a' * 64}
+                                   for i in range(count)]
+            errors = list(Draft202012Validator(schema).iter_errors(record))
+            self.assertEqual(bool(errors), count > 32)
+            reader.data[endpoint]['content'] = base64.b64encode(json.dumps(record).encode()).decode()
+            if count == 32:
+                material = b'material at limit'
+                digest = hashlib.sha256(material).hexdigest()
+                for entry in record['materials']:
+                    entry['sha256'] = digest
+                    reader.data[f"{ROOT_API}/contents/{entry['path']}?ref={HEAD}"] = {
+                        'type': 'file', 'encoding': 'base64', 'sha': 'c' * 40,
+                        'content': base64.b64encode(material).decode()}
+                    reader.data[f'{ROOT_API}/git/trees/{HEAD}?recursive=1']['tree'].append({
+                        'path': entry['path'], 'type': 'blob', 'mode': '100644', 'sha': 'c' * 40})
+                reader.data[endpoint]['content'] = base64.b64encode(json.dumps(record).encode()).decode()
+                verifier.verify(candidate, context)
+                self.assertEqual(sum('/contents/fixtures/material-' in call for call in reader.calls), 32)
+                self.assertLessEqual(len(reader.calls), MAX_GITHUB_REQUESTS)
+            else:
+                with self.assertRaisesRegex(ApprovalError, 'invalid manifest evaluation'):
+                    verifier.verify(candidate, context)
+                self.assertFalse(any('/contents/fixtures/material-' in call for call in reader.calls))
+
+    def test_aggregate_request_budget_and_fresh_verification(self):
+        candidate, _, context, reader, verifier = scenario()
+        # A transport-independent proof: the cap refuses the 65th call before
+        # it reaches even a synthetic authenticated reader.
+        for _ in range(MAX_GITHUB_REQUESTS):
+            verifier._get(PR_API)
+        with self.assertRaisesRegex(ApprovalError, 'request budget'):
+            verifier._get(PR_API)
+        self.assertEqual(len(reader.calls), MAX_GITHUB_REQUESTS)
+        verifier.verify(candidate, context)
+        first = verifier._requests
+        verifier.verify(candidate, context)
+        self.assertEqual(verifier._requests, first)
+        self.assertLessEqual(first, MAX_GITHUB_REQUESTS)
 
     def test_candidate_branch_cannot_install_its_own_codeowners(self):
         candidate, _, context, reader, verifier = scenario()

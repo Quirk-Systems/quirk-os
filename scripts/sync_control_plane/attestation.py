@@ -16,6 +16,9 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 from .content import HASH_PROFILE, manifest_content_hash, strict_json_loads
 
 
+MAX_GITHUB_REQUESTS = 64
+
+
 class ApprovalError(ValueError):
     pass
 
@@ -88,6 +91,21 @@ class GitHubApprovalVerifier:
         self.policy = strict_json_loads(json.dumps(policy, allow_nan=False))
         self.reader = reader
         self._trees = {}
+        self._requests = 0
+
+    def _get(self, endpoint: str):
+        # Count before transport, including failed calls. Each verification has
+        # a fixed aggregate authenticated request budget, independent of input.
+        if self._requests >= MAX_GITHUB_REQUESTS:
+            raise ApprovalError("GitHub request budget exceeded")
+        self._requests += 1
+        return self.reader.get(endpoint)
+
+    @staticmethod
+    def _identity(pr: dict) -> tuple:
+        return tuple((pr[side]["sha"], pr[side]["ref"],
+                      pr[side]["repo"]["full_name"], pr[side]["repo"]["id"])
+                     for side in ("base", "head")) + (pr["user"]["id"],)
 
     def _file(self, root: str, path: str, revision: str) -> bytes:
         if not re.fullmatch(r"[0-9a-f]{40}", revision):
@@ -96,14 +114,14 @@ class GitHubApprovalVerifier:
             raise ApprovalError("invalid source path")
         tree_key = (root, revision)
         if tree_key not in self._trees:
-            tree = self.reader.get(f"{root}/git/trees/{revision}?recursive=1")
+            tree = self._get(f"{root}/git/trees/{revision}?recursive=1")
             if tree.get("truncated") is not False or not isinstance(tree.get("tree"), list):
                 raise ApprovalError("complete immutable source tree required")
             self._trees[tree_key] = {entry["path"]: entry for entry in tree["tree"]}
         entry = self._trees[tree_key].get(path, {})
         if entry.get("type") != "blob" or entry.get("mode") not in ("100644", "100755"):
             raise ApprovalError("source must be a regular Git file")
-        result = self.reader.get(f"{root}/contents/{quote(path, safe='/')}?ref={revision}")
+        result = self._get(f"{root}/contents/{quote(path, safe='/')}?ref={revision}")
         if result.get("type") != "file" or result.get("encoding") != "base64":
             raise ApprovalError("source must be a regular file")
         if result.get("sha") != entry["sha"]:
@@ -111,6 +129,8 @@ class GitHubApprovalVerifier:
         return base64.b64decode(result["content"].replace("\n", ""), validate=True)
 
     def verify(self, manifest: dict, context: dict, *, now: datetime | None = None) -> dict:
+        self._requests = 0
+        self._trees = {}
         try:
             return self._verify(manifest, context, now or datetime.now(timezone.utc))
         except ApprovalError:
@@ -129,7 +149,7 @@ class GitHubApprovalVerifier:
         pr_number, review_id = context["pr_number"], context["review_id"]
         if type(pr_number) is not int or type(review_id) is not int or min(pr_number, review_id) < 1:
             raise ApprovalError("invalid review identity")
-        pr = self.reader.get(f"{root}/pulls/{pr_number}")
+        pr = self._get(f"{root}/pulls/{pr_number}")
         if pr.get("state") != "open" or pr.get("draft") or pr.get("merged"):
             raise ApprovalError("open reviewable candidate required")
         head, base = pr["head"]["sha"], pr["base"]["sha"]
@@ -137,7 +157,8 @@ class GitHubApprovalVerifier:
             raise ApprovalError("unapproved target branch")
         if pr["base"]["repo"]["full_name"] != repo or pr["head"]["repo"]["full_name"] != repo:
             raise ApprovalError("cross-repository activation is unsupported")
-        review = self.reader.get(f"{root}/pulls/{pr_number}/reviews/{review_id}")
+        identity = self._identity(pr)
+        review = self._get(f"{root}/pulls/{pr_number}/reviews/{review_id}")
         if review["state"] != "APPROVED" or review["commit_id"] != head or not review.get("submitted_at"):
             raise ApprovalError("current exact-head approved review required")
         author = review["user"]
@@ -216,7 +237,7 @@ class GitHubApprovalVerifier:
                 raise ApprovalError("evaluation material digest mismatch")
         reviews = []
         for page in range(1, 21):
-            batch = self.reader.get(f"{root}/pulls/{pr_number}/reviews?per_page=100&page={page}")
+            batch = self._get(f"{root}/pulls/{pr_number}/reviews?per_page=100&page={page}")
             if not isinstance(batch, list):
                 raise ApprovalError("invalid review census")
             reviews.extend(batch)
@@ -241,9 +262,9 @@ class GitHubApprovalVerifier:
             raise ApprovalError("ambiguous activation approvals")
         # Re-read immediately before yielding: head/base/review changes during
         # resolution invalidate the observation; no cross-provider atomicity claim.
-        final = self.reader.get(f"{root}/pulls/{pr_number}")
-        final_review = self.reader.get(f"{root}/pulls/{pr_number}/reviews/{review_id}")
-        if final["head"]["sha"] != head or final["base"]["sha"] != base or final.get("state") != "open" or final.get("draft") or final.get("merged"):
+        final = self._get(f"{root}/pulls/{pr_number}")
+        final_review = self._get(f"{root}/pulls/{pr_number}/reviews/{review_id}")
+        if self._identity(final) != identity or final.get("state") != "open" or final.get("draft") or final.get("merged"):
             raise ApprovalError("candidate changed during verification")
         if final_review != review:
             raise ApprovalError("review changed during verification")
