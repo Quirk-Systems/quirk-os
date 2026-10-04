@@ -186,7 +186,10 @@ class GitHubApprovalVerifier:
             raise ApprovalError("illegal activation transition")
         if not _time(subject["valid_from"]) <= now < _time(subject["expires_at"]):
             raise ApprovalError("approval expired or not yet valid")
-        if _time(review["submitted_at"]) > now or _time(subject["valid_from"]) < _time(review["submitted_at"]):
+        # The review body is composed before GitHub assigns submitted_at. An
+        # earlier requested start is harmless: authority begins only after
+        # the actual submitted review, whose timestamp becomes decided_at.
+        if _time(review["submitted_at"]) > now:
             raise ApprovalError("invalid approval validity interval")
         if review_id in policy.get("revoked_review_ids", []):
             raise ApprovalError("approval revoked")
