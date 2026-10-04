@@ -266,16 +266,28 @@ class ApprovalCrossingTests(unittest.TestCase):
                 with self.assertRaisesRegex(ApprovalError, 'own activation'):
                     verifier.verify(candidate, context)
 
-    def test_expiry_not_yet_valid_and_backdated_validity_refused(self):
+    def test_expiry_and_not_yet_valid_approval_refused(self):
         for field, value in [('expires_at', '2026-10-04T14:30:00Z'),
-                             ('valid_from', '2026-10-04T14:31:00Z'),
-                             ('valid_from', '2026-10-04T13:59:00Z')]:
+                             ('valid_from', '2026-10-04T14:31:00Z')]:
             with self.subTest(field=field, value=value):
                 candidate, subject, context, reader, verifier = scenario()
                 subject[field] = value
                 set_subject(reader, subject)
                 with self.assertRaises(ApprovalError):
                     verifier.verify(candidate, context)
+
+    def test_body_composed_before_submission_does_not_backdate_authority(self):
+        candidate, subject, context, reader, verifier = scenario()
+        subject['valid_from'] = '2026-10-04T13:59:00Z'
+        set_subject(reader, subject)
+        record = verifier.verify(candidate, context)
+        self.assertEqual('2026-10-04T14:00:00Z', record['decided_at'])
+
+    def test_future_provider_submission_cannot_confer_authority(self):
+        candidate, _, context, reader, verifier = scenario()
+        reader.data[REVIEW_API]['submitted_at'] = '2026-10-04T14:31:00Z'
+        with self.assertRaisesRegex(ApprovalError, 'invalid approval validity interval'):
+            verifier.verify(candidate, context)
 
     def test_revocation_and_changes_requested_invalidate_approval(self):
         for state, marker in [('CHANGES_REQUESTED', ''), ('COMMENTED', 'quirk-manifest-revocation')]:
