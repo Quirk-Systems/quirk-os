@@ -1,0 +1,62 @@
+{
+  "authority_effect": "none",
+  "clock": "synthetic frozen clock",
+  "implementation_ref": "sha256:d5c1f6cff6e5207550fd37e8514d027640a8c6338d1ae3bd1d0da34c670a40f6",
+  "file_sha256": {
+    "scripts/sync_control_plane/attestation.py": "bd170e0d07ba504a3c12fea1483b6eec2ea8cd5b430ce19a0af37e597e80deb2",
+    "scripts/sync_control_plane/content.py": "cff3e57e6cba714d8cf0b3d34294a86ed6e81ce18a56f89ceaaa85597bd63fab",
+    "scripts/sync_control_plane/policy.py": "cbd3a6aaabb616c7f1f012a3b2897348b3f1d0490823f51ae9d0a9b629eb76bd",
+    "scripts/sync_control_plane/projection.py": "8e403419d7a101b2172208af1174485876501470e5d5615755a9ac3500e270ce",
+    "schemas/manifest-approval-attestation.schema.json": "0168ba999f032b013b8fea9473f08d5f171d3367d2bb681c700ce442dc5e6005",
+    "schemas/manifest-evaluation.schema.json": "cd2f026285d9c8c757c0468cccff2573d6ec8357ba007b78c00994a21602a2aa",
+    "schemas/runtime-manifest.schema.json": "b6acc3c886444e9c8c789782e713f3774a4913a16efdfa997710ceb34185c48e",
+    "tests/test_manifest_admission.py": "35dc74df3a52064ef2731dd291c38a61e4c231945d68d27a2b4441af9d583b1d",
+    "scripts/prove_manifest_boundaries.py": "05a60c0346906bdf3a5fed53dc0b1ee85e827f3bacea2f28f434fc4293fbf012"
+  },
+  "receipts": [
+    {
+      "receipt_id": "receipt.exact-review",
+      "boundary_id": "boundary.manifest-review-proposal",
+      "contract_version": "0.1.0",
+      "decision": "ALLOW",
+      "reason_codes": [
+        "BOUNDARY_ALLOW_EXACT"
+      ],
+      "subject": "agent.synthetic",
+      "object_hash": "02869a17965b473c138b5ba06d8fef55753456640a5e1350e6468cabc52b348c",
+      "purpose": "test the approved candidate predicate",
+      "authority_source_ids": [
+        "authority.approved-design"
+      ],
+      "decided_at": "2026-10-04T15:03:49.575705+00:00",
+      "enforcement_point": "prepare_projection / GitHubApprovalVerifier with MemoryReader",
+      "side_effects": [
+        "in_memory_projection_returned"
+      ],
+      "candidate_unchanged": true,
+      "database_calls": 0,
+      "network_calls": 0
+    },
+    {
+      "receipt_id": "receipt.old-review",
+      "boundary_id": "boundary.manifest-review-proposal",
+      "contract_version": "0.1.0",
+      "decision": "DENY",
+      "reason_codes": [
+        "APPROVAL_HASH_MISMATCH"
+      ],
+      "subject": "agent.synthetic",
+      "object_hash": "02869a17965b473c138b5ba06d8fef55753456640a5e1350e6468cabc52b348c",
+      "purpose": "test the approved candidate predicate",
+      "authority_source_ids": [
+        "authority.approved-design"
+      ],
+      "decided_at": "2026-10-04T15:03:49.575705+00:00",
+      "enforcement_point": "prepare_projection / GitHubApprovalVerifier with MemoryReader",
+      "side_effects": [],
+      "candidate_unchanged": true,
+      "database_calls": 0,
+      "network_calls": 0
+    }
+  ]
+}
