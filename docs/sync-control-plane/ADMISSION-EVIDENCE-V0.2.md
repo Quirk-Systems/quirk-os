@@ -1,12 +1,112 @@
 # Quirk Sync Control Plane v0.2 — Admission Evidence
 
 **Candidate:** `program.quirk-sync-control-plane` v0.2.0  
-**Candidate commit:** `f344af21ff96e9e748a0a0c65dbc20ae71912222`  
+**Candidate commit (the subject evaluated):** `f344af21ff96e9e748a0a0c65dbc20ae71912222`  
 **PR:** Quirk-Systems/quirk-os#5  
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `ab07a616af2effda9a93a1edca3c8284e6c764479bd5de7a234bd93998d6a76b`
+**Content hash (SHA-256):** `00c4fe397482663723ab7f416ded910262d3c87f43dd048778fb3e743ca63965`  
+**Evidence revision (the tree that reproduces that hash):** `bb9b2325ba4bba29ce8e712921de1da607fdc06b`
+
+> **Why two revisions.** The candidate commit names the subject that was
+> evaluated. The evidence revision names the tree whose validator and inputs
+> produce the hash above, and they are not the same commit:
+> `evals/sync-control-plane/conformance-results.json` does not exist at
+> `f344af21`, so that revision cannot reproduce this digest and never could.
+> Pairing a candidate commit with a regenerated hash and nothing else invited
+> the reading that the hash was the digest of the evidence at that commit,
+> which was not true.
+>
+> Reproduce with:
+>
+> ```sh
+> git checkout bb9b2325ba4bba29ce8e712921de1da607fdc06b
+> python scripts/validate_sync_control_plane.py --repo . \
+>   --output evals/sync-control-plane/conformance-results.json --require-admit
+> ```
+>
+> Observed at that revision in a detached worktree:
+> `00c4fe397482663723ab7f416ded910262d3c87f43dd048778fb3e743ca63965`, matching
+> both the tracked artifact and the line above.
+
+> **Digest history**, recorded because a hash replaced without a note is
+> indistinguishable from one that was always that value. The decision above is
+> unchanged throughout and still is not admission.
+>
+> - `ab07a616…` — covered a payload recording the retired error
+>   `self-requested activation requires independent human or authorized service approval`.
+>   Superseded when that rule became an independent-human-approver check. Its
+>   producing revision is not recorded anywhere in this repository and is not
+>   guessed here; the artifact reached `main` through a merge rather than a
+>   generation step.
+> - `e63fd964…` — covered the replacement error and the first two migration
+>   static checks. Produced at `be80180e2d2548346809c83b96842aac92c826c1`.
+>   Superseded when those checks were scoped to the rule function, because a
+>   whole-file search for a predicate stayed satisfied even when the enforcing
+>   definition had lost it.
+> - `0ac9f28d…` — covered the seventeen static checks as they stood before CI
+>   executed any SQL. Produced at `b2b95cd`. Superseded by the three
+>   `ci_*` checks, which assert the `database-guard` job still exists and
+>   still runs the cases through the driver that discards its rows.
+> - `f7392196…` — covered the first three `ci_*` checks, added when the
+>   database guard began executing in CI. Produced at `38d53cc`. Superseded
+>   when the Codex review of that commit found that the rule function was
+>   never granted to `service_role` and that the migration's own
+>   `begin`/`commit` closes `supabase db push`'s transaction.
+> - `744412cd…` — covered the `service_role` grant and the removal of the
+>   migration's own transaction. Produced at `d969a9f`. Superseded when the
+>   Codex review of `3417a8d` found that this decision was computed in
+>   parallel with the proof it cites, so a failing database guard still
+>   left an `ELIGIBLE_FOR_HUMAN_ADMISSION` artifact to be uploaded.
+> - `a18c5aa2…` — covered the first form of the eligibility gate, a bare
+>   `needs: database-guard`. Produced at `893cd30`. Superseded when the
+>   Codex review of `7d91ecc` pointed out that a job whose dependency
+>   failed reports as *skipped*, and GitHub counts a skipped required check
+>   as a successful one, so that form could have turned a red guard into a
+>   green required check.
+> - `c5feeaea…` — covered the second form of the eligibility gate and the
+>   content-hash linkage check. Produced at `731d499`. Superseded when the
+>   Codex review of `f75b422` found that this workflow did not trigger on
+>   the verification recipe its own test treats as a dependency.
+> - `9fb64e36…` — covered `ci_triggers_on_the_verify_recipe`. Produced at
+>   `cedcc1d`. Superseded when that check was merged into
+>   `ci_path_filter_covers_job_inputs`, after the Codex review of
+>   `e348176` found the filter also failed to cover every migration the
+>   guard job applies and the document you are reading.
+> - `7f5407dd…` — covered the merged path-coverage check. Produced at
+>   `000cc14`. Superseded when the Codex review of `4d8e9dc` found that
+>   nothing compared the committed artifact to what the tree produces, so a
+>   change altering the payload while leaving this document and the
+>   artifact untouched passed every check — including the test that
+>   compares them to each other.
+> - `13b694d7…` — covered the staleness gate. Produced at `9cb8b4a`.
+>   Superseded when the guard became SECURITY DEFINER and
+>   `rule_privilege_lanes` was added to assert it, because the service_role
+>   grant on the rule function masks the guard losing that property.
+> - `00c4fe39…` — current, produced at `bb9b232` as above.
+
+> **What produces this decision.** `candidate-conformance` declares
+> `needs: database-guard` and runs with `if: always()`, failing explicitly when
+> that guard's result is not `success`. Both halves are load-bearing. Computed
+> in parallel, as it was before `893cd30`, a database guard that enforced
+> nothing did not stop this decision being produced and uploaded —
+> `migration_hardening_complete` cannot catch that, because it checks the job
+> is spelled in the workflow, not that it passed. Gated by a bare `needs:`, as
+> it was in `893cd30`, a failed guard would have left this job *skipped*, which
+> GitHub counts as a successful required status check.
+>
+> The uploaded artifact is also no longer able to be a stale pass: the tracked
+> `conformance-results.json` is removed before any check runs, so the upload
+> carries a decision this run computed or fails.
+>
+> **And the committed artifact cannot be stale either.** The job diffs the
+> regenerated result against the committed blob and fails when they differ, so
+> the digest above is bound in both directions: a test asserts this document
+> quotes the committed artifact, and that diff asserts the committed artifact is
+> what the tree produces. Until `9cb8b4a` only the first link existed, which
+> meant a change altering the payload while leaving both untouched compared
+> stale to stale and passed.
 
 This document consolidates the technical evidence for each admission criterion. It does not constitute admission. Bryan's explicit approve, revise, reject, or supersede decision is required before any activation, Canon promotion, merge, authority expansion, or production deployment.
 
@@ -30,17 +130,25 @@ This document consolidates the technical evidence for each admission criterion. 
 
 **Evidence**
 
-Three independent enforcement layers all reject SCP-011 (self_promotion_attack):
+Two enforcement layers reject SCP-011 (self_promotion_attack), and both are now
+executed in CI. An earlier version of this section claimed three and counted
+JSON Schema among them; that was never true and the artifact says so.
 
-| Layer | Rejection |
-| --- | --- |
-| JSON Schema (`schemas/runtime-manifest.schema.json`) | `approved_by` must differ from `requested_by` |
-| Python policy (`scripts/sync_control_plane/policy.py`) | "requester may not approve its own manifest transition"; "self-requested activation requires independent human or authorized service approval" |
-| PostgreSQL trigger (`guard_manifest_activation`) | present in migration static check |
+| Layer | Rejects SCP-011? | On what evidence |
+| --- | --- | --- |
+| JSON Schema (`schemas/runtime-manifest.schema.json`) | **No** | `self_promotion_schema_errors: []` in the conformance artifact. The `admission` object carries no constraint relating `requested_by` to `approved_by` — JSON Schema is not expressing this rule, which is why `validate_manifest_admission` exists at all: its docstring reads "Return policy violations that JSON Schema cannot express alone." `test_self_promotion_rejected` now asserts the fixture is schema-valid, precisely so the rejection has to come from policy. |
+| Python policy (`scripts/sync_control_plane/policy.py`) | Yes | `self_promotion_policy_errors` records two: `requester may not approve its own manifest transition` and `activation requires approval by an independent human principal`. Executed on every CI run of the conformance validator. |
+| PostgreSQL trigger (`quirk_sync.manifest_activation_violation`, raised by `guard_manifest_activation`) | Yes | Executed by the `database-guard` job in `.github/workflows/sync-control-plane-conformance.yml`: the job applies every migration to a PostgreSQL 16 service, reads `pg_get_functiondef` back to assert the installed guard delegates to the rule function, then runs `supabase/tests/manifest_activation_guard.run.sql` — nine cases where a sibling-agent approval, a bare `human.` principal, a malformed requester, an omitted rights-review key and an omitted `collision_behavior` are each refused by their own message, and one well-formed activation is admitted. A separate step then runs `manifest_activation_guard.service_role.sql` in its own psql session as `service_role`, which is what writes in production. That file revokes `service_role`'s EXECUTE on the rule function before its first write, so enforcement there is carried by the guard being SECURITY DEFINER and nothing else; it has to be its own session, and the revoke has to come first, because PL/pgSQL caches the guard's inner-call plan and a write ahead of the revoke would let it pass on a guard that had lost that property. The job's read-back asserts on the installed functions that the guard is SECURITY DEFINER with `pg_temp` last in its search_path and the rule function is not — separately from the cases, because the service_role grant would otherwise mask a guard that silently reverted to invoker. The static checks `rule_*`, `guard_delegates_to_rules` and `audit_uses_rule_function` remain, but they are now a spelling test in front of a behavioural one rather than the whole of it. |
 
-Fixture SCP-011 passes with `reject_capability_to_authority_escalation`. Unit test `test_self_promotion_rejected` passes. Schema attack `self_promotion_policy_errors` returns the expected two policy errors.
+Fixture SCP-011 passes with `reject_capability_to_authority_escalation`, and
+`test_self_promotion_rejected` passes.
 
-**Status:** satisfied by three independent enforcement layers
+**Status:** satisfied by two layers, both executed in CI, and the database
+layer is now exercised under the role that writes in production rather than
+only under a superuser. What neither layer establishes is that a named human
+actually approved anything: both check the *shape* of `approved_by`, and a
+string shaped like `human.bryan` is not an attestation — see
+`docs/briefs/2026-10-03-approval-attestation.md`.
 
 ---
 
