@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 import time
 from collections import Counter, defaultdict
@@ -126,7 +127,9 @@ def main() -> int:
             continue
         if frontmatter.get("name") != skill_id:
             fail("DRAFT_SKILL_NAME_MISMATCH", f"{source_path.relative_to(root)}: name mismatch")
-        if "Status: `candidate`" not in source_text and "status: candidate" not in source_text.lower():
+        contract = re.search(r"(?ms)^## (?:Quirk contract|Contract)\n(.*?)(?=^## |\Z)", source_text)
+        statuses = re.findall(r"(?m)^- Status: `([^`]+)`\s*$", contract[1]) if contract else []
+        if statuses != ["candidate"] or frontmatter.get("status", "candidate") != "candidate":
             fail("DRAFT_SKILL_STATUS", f"{source_path.relative_to(root)}: draft must remain candidate")
         if (root / "skills" / skill_id / "manifest.json").exists():
             fail("DRAFT_SKILL_MANIFEST_PRESENT", f"{skill_id}: draft package may not join manifest registry")
