@@ -1,0 +1,158 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.qis-negative-fixtures-one-defect.b6d95b45080a",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "c1a16ed1e5905eb362a28d86727030e0ab8875d3",
+    "commit": "b6d95b45080aa42f3f41098f1facab19c1236851",
+    "changed_paths": [
+      ".gitignore",
+      "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+      "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+      "evals/qis-agent-harness/receipt.hash-mismatch.json",
+      "evals/qis-agent-harness/receipt.material-mismatch.json",
+      "evals/qis-agent-harness/receipt.missing-evidence.json",
+      "evals/qis-agent-harness/receipt.unexpected-field.json",
+      "evals/qis-agent-harness/receipt.unknown-verdict.json",
+      "evals/qis-agent-harness/receipt.valid.json",
+      "tests/test_qis_harness.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.qis-negative-fixtures-one-defect.b6d95b45080a",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Subject b6d95b45080aa42f3f41098f1facab19c1236851 (single parent c1a16ed1e5905eb362a28d86727030e0ab8875d3, which merges main ec10bcc69c1a91d7c9bc4818e2378ea4df2368fb) rebuilds the seven negative QIS harness fixtures as evals/qis-agent-harness/receipt.valid-provenance.json plus exactly one defect each, keeping only a fixture-specific receipt_id and a recomputed receipt_hash (hash-mismatch keeps an all-f receipt_hash instead). Each now validates with exactly one error: ancestry-mismatch (repository/is_traceable_descendant false), critical-failure-pass (non-empty critical_failures with PASS), hash-mismatch (receipt_hash mismatch), material-mismatch (materials[0] sha256 zeroed), missing-evidence (evidence_refs[3] missing file), unexpected-field (cute_dashboard), unknown-verdict (MAYBE). Previously material-mismatch also failed on 2 unrelated stale material digests, critical-failure-pass and missing-evidence on 8, and hash-mismatch on 10 plus 2 ancestry errors. It deletes the superseded receipt.valid.json, which failed 8 material checks and was loaded by no test. tests/test_qis_harness.py now asserts the exact error list per fixture, that each negative differs from the valid fixture at exactly its declared defect path, and that the fixture directory holds only the valid fixture and the seven known negatives; a mutation check restoring the old material-mismatch fixture failed both new assertions. receipt.valid-provenance.json is unchanged and validates with zero errors. Recorded local checks on Python 3.12.3 passed: 45 focused Intent Shaper and harness tests, 36/36 Intent Shaper conformance fixtures, and 231 repository tests via unittest discover. Historical receipts that cite receipt.valid.json stay unchanged and keep their historical subjects. Fixture command counts and repository SHAs remain synthetic test data. This receipt claims no hosted CI result and no admission, merge, activation, deployment, persistence or Canon authority.",
+      "evidence_paths": [
+        "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+        "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+        "evals/qis-agent-harness/receipt.hash-mismatch.json",
+        "evals/qis-agent-harness/receipt.material-mismatch.json",
+        "evals/qis-agent-harness/receipt.missing-evidence.json",
+        "evals/qis-agent-harness/receipt.unexpected-field.json",
+        "evals/qis-agent-harness/receipt.unknown-verdict.json",
+        "evals/qis-agent-harness/receipt.valid.json",
+        "tests/test_qis_harness.py"
+      ]
+    },
+    {
+      "claim_id": "qclaim.intent-shaper-conformance-output-ignored.b6d95b45080a",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "The subject adds evals/intent-shaper/conformance-results.json to .gitignore so the documented command python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json leaves no untracked output; git status --short --ignored reported it as ignored after a local run. The existing evals/intent-shaper/conformance-results/ directory entry is kept for the intent-shaper-conformance workflow output.",
+      "evidence_paths": [
+        ".gitignore"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".gitignore",
+      "state": "present",
+      "git_blob": "754c337f8b2b96d6db7272ec41466a927b0b551b",
+      "sha256": "sha256:07c30e1dfa33b134569412b718587daa00af1fb43f6154353c7cdec814857e03"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+      "state": "present",
+      "git_blob": "83f74abec43fe1b9bc3b634cd277d91394bdc74c",
+      "sha256": "sha256:cbbf69e805042992e318ac01ab65a7504145dab41e52f7eafeab14971249259d"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+      "state": "present",
+      "git_blob": "ce9a6ec23e40c33e92adcc7db126113f1936972a",
+      "sha256": "sha256:8da5997dc2b27cb13e84b1094a877275b96d51190c6081c7dac47975a74b0fd8"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.hash-mismatch.json",
+      "state": "present",
+      "git_blob": "00e4393de6fecf8412d0a057814830a28fba4ab7",
+      "sha256": "sha256:cb9b4e4b57cfa25f88687e3aa9c3ecb132fab8c9eff1c98f97c7ab3709fb5e7f"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.material-mismatch.json",
+      "state": "present",
+      "git_blob": "40192db77740a900370a11653d42f08ee91cf239",
+      "sha256": "sha256:8e025193a8545395997f11bca221f94adc4017e76c1cde09ad1009fc237b0c6d"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.missing-evidence.json",
+      "state": "present",
+      "git_blob": "c43e47db966102f4575c64481f8b550134d6a596",
+      "sha256": "sha256:d5ff83a9b5a2f08c63b8a8df50f68c91441c02cb553c49322fc8d77cfafd48f8"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.unexpected-field.json",
+      "state": "present",
+      "git_blob": "b4b950689b3d396179b7fcdd8cf19ef0dadaaca6",
+      "sha256": "sha256:50338eedd0724168ea464607cb35b0236f96ebe1e6926938d1aba4a39318939d"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.unknown-verdict.json",
+      "state": "present",
+      "git_blob": "44b72733a99f263d86d7cea67ae244e053c3a0c1",
+      "sha256": "sha256:1883b2981faaf23416b71e9c6ef4c452d5023b5a4999147887774709d1c7abe0"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.valid.json",
+      "state": "deleted",
+      "git_blob": null,
+      "sha256": null
+    },
+    {
+      "path": "tests/test_qis_harness.py",
+      "state": "present",
+      "git_blob": "33273b1ddd22eb4aff4f8a3796032fd6a5ba8d54",
+      "sha256": "sha256:30e2a2df6488cd44448769d62138416f040254a419b92ac172a273da9d537ced"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "git diff --check c1a16ed1e5905eb362a28d86727030e0ab8875d3 b6d95b45080aa42f3f41098f1facab19c1236851",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor ec10bcc69c1a91d7c9bc4818e2378ea4df2368fb b6d95b45080aa42f3f41098f1facab19c1236851",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git status --short --ignored evals/intent-shaper",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-05T12:32:17Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:e6a984cd8145382b60cb3b46ff8bfccc02f2d0e978d0509a78100e547a237e13"
+}
