@@ -28,7 +28,7 @@
       "claim_id": "qclaim.qis-agent-harness.6cbccabb50e2",
       "claim_type": "evidence",
       "authority_effect": "none",
-      "statement": "Binds the 14-file diff of 6cbccabb50e2589a16a6bfd53c0fa107452cd806 from main 2347cb050bd4fda1c0cb70b10fb907be20e20974: the candidate-only QIS agent harness (Copilot instructions, Intent Shaper path instructions and admission skill, qis-agent-harness workflow, qis-evidence-envelope schema, validate_qis_harness evaluator, seven receipt fixtures, and tests). The subject descends from agent/quirk-intent-shaper candidate f5effa3d6da3e5879e10007492aeff39a1c643be. The recorded commands are the only verification established here: 35 focused unittest cases passed with 0 failures and 0 errors, and receipt.valid.json validated with error_count 0. Intent Shaper conformance output, hosted CI results, and numbered admission gates are not established. This is not admission, activation, merge, deployment, persistence, or Canon promotion authority; Bryan remains the only admission authority.",
+      "statement": "Binds the original 14-file QIS agent harness diff from 2347cb050bd4fda1c0cb70b10fb907be20e20974 to 6cbccabb50e2589a16a6bfd53c0fa107452cd806. Fresh local verification at this historical subject passed: Git diff and ancestry checks, 35 focused Intent Shaper and harness tests, the valid receipt fixture, the full test suite, and Intent Shaper conformance written outside tracked files. This preserves historical implementation and test evidence; it does not claim current fixture freshness, hosted checks, or admission, activation, merge, deployment, persistence, or Canon authority.",
       "evidence_paths": [
         ".github/copilot-instructions.md",
         ".github/instructions/intent-shaper.instructions.md",
@@ -136,7 +136,7 @@
   "verification": {
     "commands": [
       {
-        "command": "git diff --check 2347cb050bd4fda1c0cb70b10fb907be20e20974..6cbccabb50e2589a16a6bfd53c0fa107452cd806",
+        "command": "git diff --check 2347cb050bd4fda1c0cb70b10fb907be20e20974 6cbccabb50e2589a16a6bfd53c0fa107452cd806",
         "result": "pass",
         "exit_code": 0
       },
@@ -159,14 +159,24 @@
         "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid.json",
         "result": "pass",
         "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /workspace/scratch/b874919fcc8b/readify-logs/historical124-conformance.json",
+        "result": "pass",
+        "exit_code": 0
       }
     ],
-    "verified_at": "2026-10-04T12:51:57Z"
+    "verified_at": "2026-10-05T02:58:25Z"
   },
   "authority": {
     "admission_effect": "none",
     "authority_ref": null
   },
   "correction": null,
-  "receipt_sha256": "sha256:3b12542683afdd66b43a446bcc8c5d0af23576e0c3dfec7c734e6ee407a49f32"
+  "receipt_sha256": "sha256:8a1e28fc150021a4151e6fcbdaa54195eee6b10875db259a1c42bbad2513763b"
 }
