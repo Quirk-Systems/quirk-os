@@ -229,6 +229,12 @@ def _canonical_value(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
+def _is_applicable(preference: Mapping[str, Any], *, scope: str, as_of: datetime) -> bool:
+    """Source precedence applies only after purpose scope and validity are established."""
+
+    return _is_active(preference, as_of=as_of) and str(preference.get("scope", "")) in {scope, "global"}
+
+
 def _select_preference(
     preferences: Iterable[Mapping[str, Any]],
     *,
@@ -238,7 +244,11 @@ def _select_preference(
 ) -> dict[str, Any]:
     all_preferences = [dict(item) for item in preferences]
     if not personalization_enabled:
-        usable = [item for item in all_preferences if item.get("source") == "explicit_current"]
+        usable = [
+            item
+            for item in all_preferences
+            if item.get("source") == "explicit_current" and _is_applicable(item, scope=scope, as_of=as_of)
+        ]
         return {
             "selected_refs": [item["ref"] for item in usable],
             "ignored_refs": [item["ref"] for item in all_preferences if item not in usable],
@@ -249,11 +259,7 @@ def _select_preference(
     usable: list[dict[str, Any]] = []
     ignored: list[dict[str, Any]] = []
     for item in all_preferences:
-        if not _is_active(item, as_of=as_of):
-            ignored.append(item)
-            continue
-        item_scope = str(item.get("scope", ""))
-        if item.get("source") != "explicit_current" and item_scope not in {scope, "global"}:
+        if not _is_applicable(item, scope=scope, as_of=as_of):
             ignored.append(item)
             continue
         usable.append(item)
@@ -404,6 +410,8 @@ def evaluate_personalization_boundary(
                 "reason_code": "off_mode_noncurrent_evidence",
                 "read_trace": list(evidence_port.trace),
             }
+        as_of = _parse_time(payload.get("as_of")) or datetime.now(timezone.utc)
+        applicable = [item for item in current if _is_applicable(item, scope=scope, as_of=as_of)]
         projection = {
             "preferences": [
                 {
@@ -411,7 +419,7 @@ def evaluate_personalization_boundary(
                     "value": item.get("value"),
                     "source": item.get("source"),
                 }
-                for item in current
+                for item in applicable
             ],
             "voice_profile_ref": None,
             "aesthetic_profile_ref": None,
@@ -592,6 +600,36 @@ def _evaluate_generated_ui_gate(plan: Mapping[str, Any] | None, *, as_of: dateti
         "manual_evidence_summary": manual_summary,
         "evaluated_at": _isoformat(as_of),
     }
+
+
+def validate_plan_semantics(plan: Mapping[str, Any]) -> list[str]:
+    """Plan-level invariants that JSON Schema cannot express."""
+
+    errors: list[str] = []
+    hand = plan.get("persona_hand")
+    if isinstance(hand, Mapping):
+        primary = hand.get("primary")
+        supporting = hand.get("supporting") or []
+        selections = ([primary] if primary is not None else []) + list(supporting)
+        if selections:
+            weights = [
+                selection.get("weight")
+                for selection in selections
+                if isinstance(selection, Mapping) and type(selection.get("weight")) in {int, float}
+            ]
+            if primary is None or len(weights) != len(selections) or round(sum(weights), 6) != 1.0:
+                errors.append("plan:persona_hand:invalid_weight_total")
+
+    partition = plan.get("purpose_partition")
+    scope_key = partition.get("scope_key") if isinstance(partition, Mapping) else None
+    excluded = set(partition.get("excluded_scopes") or []) if isinstance(partition, Mapping) else set()
+    for index, preference in enumerate(plan.get("preferences") or []):
+        if not isinstance(preference, Mapping) or preference.get("decision") != "use":
+            continue
+        preference_scope = preference.get("scope")
+        if preference_scope in excluded or preference_scope not in {scope_key, "global"}:
+            errors.append(f"plan:preferences/{index}:cross_purpose_preference_leakage")
+    return errors
 
 
 def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:

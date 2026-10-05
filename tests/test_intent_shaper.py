@@ -12,7 +12,7 @@ import yaml
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 
-from intent_shaper.policy import evaluate_case, evaluate_cases  # noqa: E402
+from intent_shaper.policy import evaluate_case, evaluate_cases, validate_plan_semantics  # noqa: E402
 from validate_intent_shaper import validate_policy  # noqa: E402
 
 
@@ -48,7 +48,7 @@ class IntentShaperContractTests(unittest.TestCase):
         results = evaluate_cases(self.suite["cases"])
         failures = [result for result in results if not result["passed"]]
         self.assertEqual([], failures)
-        self.assertEqual(36, len(results))
+        self.assertEqual(38, len(results))
 
     def test_malformed_date_time_is_rejected(self) -> None:
         plan = copy.deepcopy(self.sample)
@@ -160,6 +160,44 @@ class IntentShaperContractTests(unittest.TestCase):
             ["pref.current.one", "pref.current.three", "pref.saved.two"],
             results["QIS-R03"]["actual"]["ignored_refs"],
         )
+
+    def test_current_instructions_must_match_purpose_scope(self) -> None:
+        results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}
+        self.assertEqual(["pref.saved.evidence_first"], results["QIS-R03A"]["actual"]["selected_refs"])
+        self.assertEqual(["pref.current.stage_drama"], results["QIS-R03A"]["actual"]["ignored_refs"])
+        self.assertEqual(["pref.current.terse"], results["QIS-R03B"]["actual"]["selected_refs"])
+
+    def test_boundary_off_projection_excludes_cross_purpose_current(self) -> None:
+        case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012"))
+        case["input"]["current_request_preferences"].append(
+            {
+                "ref": "pref.current.stage_drama",
+                "dimension": "tone",
+                "value": "dramatic",
+                "source": "explicit_current",
+                "confidence": 1.0,
+                "scope": "music.performance",
+            }
+        )
+        actual = evaluate_case(case)["actual"]
+        self.assertEqual([], actual["read_trace"])
+        self.assertNotIn("dramatic", [item["value"] for item in actual["protected_projection"]["preferences"]])
+
+    def test_representative_plan_semantics_pass(self) -> None:
+        self.assertEqual([], validate_plan_semantics(self.sample))
+
+    def test_plan_persona_weights_must_total_one(self) -> None:
+        plan = copy.deepcopy(self.sample)
+        plan["persona_hand"]["supporting"][0]["weight"] = 1.0
+        self.assertIn("plan:persona_hand:invalid_weight_total", validate_plan_semantics(plan))
+        plan["persona_hand"]["primary"]["weight"] = 0
+        plan["persona_hand"]["supporting"][0]["weight"] = 0
+        self.assertIn("plan:persona_hand:invalid_weight_total", validate_plan_semantics(plan))
+
+    def test_plan_rejects_cross_purpose_used_preference(self) -> None:
+        plan = copy.deepcopy(self.sample)
+        plan["preferences"][0]["scope"] = "music.performance"
+        self.assertIn("plan:preferences/0:cross_purpose_preference_leakage", validate_plan_semantics(plan))
 
     def test_unknown_platform_and_sensitive_persona_fail_closed(self) -> None:
         results = {result["id"]: result for result in evaluate_cases(self.suite["cases"])}

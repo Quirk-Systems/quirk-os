@@ -591,6 +591,82 @@
       }
     },
     {
+      "id": "QIS-R03A",
+      "name": "cross_purpose_current_instruction_is_not_admitted",
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "security.incident",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {
+            "ref": "pref.current.stage_drama",
+            "dimension": "tone",
+            "value": "dramatic",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "music.performance"
+          },
+          {
+            "ref": "pref.saved.evidence_first",
+            "dimension": "tone",
+            "value": "evidence_first",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "security.incident"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [
+          "pref.saved.evidence_first"
+        ],
+        "ignored_refs": [
+          "pref.current.stage_drama"
+        ],
+        "stored_retrieval": true,
+        "conflicts": []
+      }
+    },
+    {
+      "id": "QIS-R03B",
+      "name": "personalization_off_rejects_cross_purpose_current_instruction",
+      "operation": "personalization_off",
+      "input": {
+        "scope": "security.incident",
+        "as_of": "2026-08-11T23:30:00-05:00",
+        "preferences": [
+          {
+            "ref": "pref.current.stage_drama",
+            "dimension": "tone",
+            "value": "dramatic",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "music.performance"
+          },
+          {
+            "ref": "pref.current.terse",
+            "dimension": "verbosity",
+            "value": "terse",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "security.incident"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [
+          "pref.current.terse"
+        ],
+        "ignored_refs": [
+          "pref.current.stage_drama"
+        ],
+        "stored_retrieval": false,
+        "conflicts": [],
+        "persona_hand": [],
+        "saved_profile_loaded": false
+      }
+    },
+    {
       "id": "QIS-R04",
       "name": "sensitive_persona_is_rejected",
       "operation": "persona_hand",

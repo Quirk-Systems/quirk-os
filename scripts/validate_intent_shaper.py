@@ -15,7 +15,7 @@ import sys
 from jsonschema import Draft202012Validator, FormatChecker
 import yaml
 
-from intent_shaper.policy import SOURCE_RANK, evaluate_cases
+from intent_shaper.policy import SOURCE_RANK, evaluate_cases, validate_plan_semantics
 
 
 EVALUATED_CANDIDATE_SHA = "f5effa3d6da3e5879e10007492aeff39a1c643be"
@@ -133,6 +133,7 @@ def main() -> int:
         Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(sample),
         key=lambda error: list(error.path),
     )
+    sample_semantic_errors = validate_plan_semantics(sample) if not sample_errors else []
     policy_errors = validate_policy(policy)
     results = evaluate_cases(suite["cases"])
     receipt_errors: list[str] = []
@@ -145,6 +146,7 @@ def main() -> int:
 
     errors: list[str] = []
     errors.extend(f"sample:{'/'.join(map(str, error.path))}:{error.message}" for error in sample_errors)
+    errors.extend(f"sample:{error}" for error in sample_semantic_errors)
     errors.extend(policy_errors)
     errors.extend(receipt_errors)
     errors.extend(f"fixture:{result['id']}" for result in results if not result["passed"])
@@ -153,7 +155,7 @@ def main() -> int:
         "suite_id": suite["suite_id"],
         "status": "passed" if not errors else "failed",
         "schema_valid": True,
-        "sample_valid": not sample_errors,
+        "sample_valid": not sample_errors and not sample_semantic_errors,
         "policy_valid": not policy_errors,
         "generated_ui_receipt_schema_valid": not receipt_errors,
         "fixtures_passed": sum(1 for result in results if result["passed"]),
