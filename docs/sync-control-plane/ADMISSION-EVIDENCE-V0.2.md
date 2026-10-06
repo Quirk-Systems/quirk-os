@@ -7,17 +7,17 @@
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
 **Content hash (SHA-256):** `6be9994e86edbba1ef450fe15fef6aafac9cd3cddbcd829ee908eebefb281bcf`
-**Evidence revision (the tree that reproduces that hash):** `ac57ab65fc0e92766eeb76f0d1243ba0d7d3f6b0`
+**Evidence revision (the tree that reproduces that hash):** `5eba46384016260155056726c6ec26ba66e16193`
 
 Current successor reproduction (CPython 3.13):
 
 ```sh
-git checkout ac57ab65fc0e92766eeb76f0d1243ba0d7d3f6b0
+git checkout 5eba46384016260155056726c6ec26ba66e16193
 python scripts/validate_sync_control_plane.py --repo . \
   --output evals/sync-control-plane/conformance-results.json --require-admit
 ```
 
-This hash records the synthetic-approval refusal, computed fixture digest and
+This hash records the synthetic-approval refusal, protected-registry denial, computed fixture digest and
 staged projection workflow checks. It grants no admission. The focused Python
 boundary proof is synthetic; actual database execution is recorded separately
 by the successor CI run. The historical candidate identity above is retained;
