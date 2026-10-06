@@ -185,12 +185,12 @@
         "exit_code": 0
       }
     ],
-    "verified_at": "2026-10-06T04:48:47.893935+00:00"
+    "verified_at": "2026-10-06T04:48:47.893935Z"
   },
   "authority": {
     "admission_effect": "none",
     "authority_ref": null
   },
   "correction": null,
-  "receipt_sha256": "sha256:e2531c13a105f8bff3388c3e6f249d9df0f4211ae220fcaa5371f44128ca10b4"
+  "receipt_sha256": "sha256:08991bda2026b0eb80725d8302f384825f05b6296b118b83a888021f4ebf5319"
 }
