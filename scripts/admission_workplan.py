@@ -38,6 +38,9 @@ def read_json(root: Path, path: str) -> dict:
 def build_plan(root: Path = ROOT) -> dict:
     queue = read_json(root, QUEUE)
     audit = read_json(root, AUDIT)
+    for document, expected in ((queue, "proposed-move-queue.v1"), (audit, "hold-audit.v1")):
+        if document.get("schema_version") != expected:
+            raise ValueError("unsupported schema_version: expected " + expected)
     head = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
     source = audit["source_commit"]
     if not isinstance(source, str) or len(source) != 40 or any(c not in "0123456789abcdef" for c in source):
@@ -65,6 +68,8 @@ def build_plan(root: Path = ROOT) -> dict:
         artifacts = []
         for path in row["actual_existing_artifact_paths"]:
             target = local_path(root, path)
+            if target.exists() and not target.is_file():
+                raise ValueError("admission evidence must name a concrete file: " + path)
             artifacts.append({"path": path, "present": target.is_file(), "sha256": hashlib.sha256(target.read_bytes()).hexdigest() if target.is_file() else None})
         tasks.append({
             "move_id": move["id"], "lane": move["lane"], "risk": move["risk"]["class"],
