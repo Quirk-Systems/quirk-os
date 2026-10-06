@@ -53,7 +53,9 @@ do $$ declare runtime_role text; begin
  end loop;
  if exists(select 1 from pg_roles where rolname='quirk_approval_ingestor' and (rolcanlogin or rolsuper or rolcreaterole or rolbypassrls)) then raise exception 'ingestor role has unsafe attributes'; end if;
 end $$;
-set role service_role;
+-- SESSION AUTHORIZATION is essential: SET ROLE alone keeps superuser
+-- session_user and would permit assuming any role, invalidating this test.
+set session authorization service_role;
 do $$ begin
  begin
   insert into quirk_sync.github_approval_registry(grant_id) values ('fabricated');
@@ -68,7 +70,7 @@ do $$ begin
   raise exception 'service role can assume ingestor';
  exception when insufficient_privilege then null; end;
 end $$;
-reset role;
+reset session authorization;
 -- The isolated role can ingest/refresh/revoke but cannot alter immutable bindings.
 set role quirk_approval_ingestor;
 insert into quirk_sync.github_approval_registry
