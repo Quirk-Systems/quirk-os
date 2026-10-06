@@ -1,0 +1,371 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr132-four-review-repairs-ce162ef12b02",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "9dfb4ffa95ce954b689233e3fdc989936f789242",
+    "commit": "ce162ef12b02c1760719f389f641165c3d181bdb",
+    "changed_paths": [
+      ".claude/skills/verify/SKILL.md",
+      ".github/CODEOWNERS",
+      ".github/workflows/sync-control-plane-conformance.yml",
+      ".quirk/evidence/manifest-verifier-candidate-8cd0b9410c59.json",
+      ".quirk/evidence/manifest-verifier-candidate-b516bfa13b8b.json",
+      ".quirk/evidence/pr132-integrated-a8f24f3e1feb.json",
+      ".quirk/evidence/pr132-qis-provenance-80c39750b2a2.json",
+      ".quirk/evidence/pr132-verifier-gaps-c6fb1d5389d2.json",
+      "decisions/ADR-0002-manifest-approval-trust-root.md",
+      "decisions/ADR-0003-manifest-content-hash-preimage.md",
+      "docs/briefs/2026-10-04-manifest-verifier-boundaries.md",
+      "docs/changelog/2026-10-06-pr132-review-repairs.md",
+      "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+      "docs/sync-control-plane/MANIFEST-VERIFIER.md",
+      "evals/golden-admission/hold-audit.json",
+      "evals/qis-agent-harness/receipt.valid-pr132-provenance.json",
+      "evals/sync-control-plane/conformance-results.json",
+      "evals/sync-control-plane/content-hash-vectors.json",
+      "evals/sync-control-plane/manifest-boundary-crossings.json",
+      "evals/sync-control-plane/manifest-boundary-proof.json",
+      "evals/sync-control-plane/manifest-verifier-ci-44052ab52255.json",
+      "evals/sync-control-plane/manifest-verifier-ci-d30ab0c54d7e.json",
+      "evals/sync-control-plane/manifest-verifier-research.json",
+      "evals/sync-control-plane/valid-active-manifest.json",
+      "policies/manifest-admission-policy.yaml",
+      "policies/manifest-verifier-policy.candidate.json",
+      "schemas/manifest-approval-attestation.schema.json",
+      "schemas/manifest-evaluation.schema.json",
+      "scripts/manifest_admission.py",
+      "scripts/prove_manifest_boundaries.py",
+      "scripts/sync_control_plane/attestation.py",
+      "scripts/sync_control_plane/content.py",
+      "scripts/sync_control_plane/policy.py",
+      "scripts/sync_control_plane/projection.py",
+      "scripts/validate_sync_control_plane.py",
+      "supabase/migrations/20261004140000_sync_control_plane_verified_projection.sql",
+      "supabase/tests/manifest_verified_projection.cutover.sql",
+      "supabase/tests/manifest_verified_projection.membership.sql",
+      "supabase/tests/manifest_verified_projection.replication.sql",
+      "supabase/tests/manifest_verified_projection.sql",
+      "tests/test_github_approval.py",
+      "tests/test_manifest_admission.py",
+      "tests/test_qis_harness.py",
+      "tests/test_sync_control_plane.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr132-four-review-repairs-ce162ef12b02",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Four manifest approval/projection review defects repaired with adversarial regressions; current main reconciled. All 298 Python tests, local conformance byte reproduction, and candidate Golden gates pass. Hosted PostgreSQL validation remains pending. Candidate policy remains disabled, all 16 admission holds retained, and no runtime authority established.",
+      "evidence_paths": [
+        "supabase/tests/manifest_verified_projection.replication.sql",
+        "supabase/tests/manifest_verified_projection.sql",
+        "tests/test_manifest_admission.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".claude/skills/verify/SKILL.md",
+      "state": "present",
+      "git_blob": "c3ba6744e95f2da27e4608637c5aae36340e1f88",
+      "sha256": "sha256:338b154d012cfa63a06bb340a16631b14f94c7b2551df733092b5fc7bf11feb4"
+    },
+    {
+      "path": ".github/CODEOWNERS",
+      "state": "present",
+      "git_blob": "c567f7212f4b09f1c4c2fc3837f68d2a2d9e9fb5",
+      "sha256": "sha256:be4079c5cd614b633b7529082b2fad58cb017db388cf266145dfc58d73f2f1c0"
+    },
+    {
+      "path": ".github/workflows/sync-control-plane-conformance.yml",
+      "state": "present",
+      "git_blob": "58f2a9149f372efab0f5cd48481d1565ebf3835e",
+      "sha256": "sha256:1bdcf19be3bc3ff69ea99e1917dff7a76303301246ba6d2b519cb307f91adc3d"
+    },
+    {
+      "path": ".quirk/evidence/manifest-verifier-candidate-8cd0b9410c59.json",
+      "state": "present",
+      "git_blob": "2fa60d595dd96ab09aacb8bbab9b69733af110f3",
+      "sha256": "sha256:9d8fde9463f221b99ef4725f156ccc7d4c18ce52a326b4d6745071d73b491f5a"
+    },
+    {
+      "path": ".quirk/evidence/manifest-verifier-candidate-b516bfa13b8b.json",
+      "state": "present",
+      "git_blob": "d314a320e0a6945fdfd3f2117215178b3014a739",
+      "sha256": "sha256:9d9e96f3be034d84ea5e5c6e5cd971d3fff890efb94e09d0c35b36ba7f5fb734"
+    },
+    {
+      "path": ".quirk/evidence/pr132-integrated-a8f24f3e1feb.json",
+      "state": "present",
+      "git_blob": "a44418072dffcaa9ef28bc6f54c327ca5783fd26",
+      "sha256": "sha256:b2c5305db31ffac9eec8a25da6b4ba309bf61211abae34899c109eeddf24c383"
+    },
+    {
+      "path": ".quirk/evidence/pr132-qis-provenance-80c39750b2a2.json",
+      "state": "present",
+      "git_blob": "41e40b6f5a107c4be9c62c24ce6e314bc684585f",
+      "sha256": "sha256:81a671f14f49342e6476aaf0f9de1d8fcb09eb15c72e7e58a356963debba36f4"
+    },
+    {
+      "path": ".quirk/evidence/pr132-verifier-gaps-c6fb1d5389d2.json",
+      "state": "present",
+      "git_blob": "92c76991dd4962dd820565fe1d1e4f99c694dbc0",
+      "sha256": "sha256:fe5dc647c9cb9c665b62390f75ac31d422226115c16cca1094d3226e03e4da7c"
+    },
+    {
+      "path": "decisions/ADR-0002-manifest-approval-trust-root.md",
+      "state": "present",
+      "git_blob": "3b79318419e5abaeb3fc4779117c1e88ca9ead58",
+      "sha256": "sha256:946cc44dbfa197943b497f8bb7242de716e51172587a5ab22c122bf5664b9e7b"
+    },
+    {
+      "path": "decisions/ADR-0003-manifest-content-hash-preimage.md",
+      "state": "present",
+      "git_blob": "e4c54b5f8b63cb33345992485988e58584b48ab4",
+      "sha256": "sha256:9af14cbe6ef3e5f8ba8a0a7441793235e4384830998bad37101e444771950c52"
+    },
+    {
+      "path": "docs/briefs/2026-10-04-manifest-verifier-boundaries.md",
+      "state": "present",
+      "git_blob": "475077c337de252a17ff60d9aadc934acd5783e9",
+      "sha256": "sha256:b7dec49c84024de6758939b9d91910d90c400024ea884bb241c1202488430ddc"
+    },
+    {
+      "path": "docs/changelog/2026-10-06-pr132-review-repairs.md",
+      "state": "present",
+      "git_blob": "b7b3d95eaca4e01c712559518fff7309426b5a0c",
+      "sha256": "sha256:1f5094adcf3fdf1dfcfa8d8f1914bfc58557c0e9959fa86619b2d9459b9ca00f"
+    },
+    {
+      "path": "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+      "state": "present",
+      "git_blob": "1932ae3f4bc5bc63fc3ccf962b35ce34f802ea1c",
+      "sha256": "sha256:29fd4614cb73cdfa15d6f853241914dff7eda351060caf642523c3cbb9432e69"
+    },
+    {
+      "path": "docs/sync-control-plane/MANIFEST-VERIFIER.md",
+      "state": "present",
+      "git_blob": "dbe0da9756ef284617fcac71d9b746b2e0d5004c",
+      "sha256": "sha256:224fe8ca01256eef25862cfbcaf9a12bf6dccec4dd78d1fb24afad3752764e4c"
+    },
+    {
+      "path": "evals/golden-admission/hold-audit.json",
+      "state": "present",
+      "git_blob": "428a7e917b8dd3a12bf6b262da268269e7aabf31",
+      "sha256": "sha256:9779a18b14daf89e2e774aada112296caee9d00b144c3007cf1110b1a22b7719"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.valid-pr132-provenance.json",
+      "state": "present",
+      "git_blob": "0d91c545d9cb16c7b5518b31c51e3245919b608e",
+      "sha256": "sha256:93f984396f8502c2f8b4a1595c66deef513bb25544d07e6c55c87df72b0e2239"
+    },
+    {
+      "path": "evals/sync-control-plane/conformance-results.json",
+      "state": "present",
+      "git_blob": "203b2ec87a16aaf008b39c9e0e91c37e1bc4c82a",
+      "sha256": "sha256:59d42925fe736d145e2f85706e72c9c179698e8fba3941aeef3d911996856ec3"
+    },
+    {
+      "path": "evals/sync-control-plane/content-hash-vectors.json",
+      "state": "present",
+      "git_blob": "5ea553e7a5409f49896b3e12c5cabc56f08db21d",
+      "sha256": "sha256:05a50766ee77ae062d508377df14b16b150bb979accbef1f078dbcafca163806"
+    },
+    {
+      "path": "evals/sync-control-plane/manifest-boundary-crossings.json",
+      "state": "present",
+      "git_blob": "c902564b78a951bd7fe4b8b7e542970e3b20ffaa",
+      "sha256": "sha256:cfc8bfd722b6e3bdd54f4dc2c02ffb87a13595bc6ed96f6ddc958525eef7fe10"
+    },
+    {
+      "path": "evals/sync-control-plane/manifest-boundary-proof.json",
+      "state": "present",
+      "git_blob": "d30f66027c717dce5d69762339aeeedb18db2380",
+      "sha256": "sha256:fc86688db1a94e6a843a16ae75f10b3e3770fe75f223c589fe26849d2d7ed368"
+    },
+    {
+      "path": "evals/sync-control-plane/manifest-verifier-ci-44052ab52255.json",
+      "state": "present",
+      "git_blob": "b968d8e53afb8a3cb78540efa1990711bfbd2079",
+      "sha256": "sha256:ed52c7fb77d025a8aab865dba8c04f0100a4dec53248f38db2182e5920bce7fe"
+    },
+    {
+      "path": "evals/sync-control-plane/manifest-verifier-ci-d30ab0c54d7e.json",
+      "state": "present",
+      "git_blob": "eca4ddd67174a5ea7daba97886b71b85397d62ed",
+      "sha256": "sha256:e5376982327ebd34eb20abe6bfbcdfa8a24eb77b3ace40cd3f82026298fe8a6d"
+    },
+    {
+      "path": "evals/sync-control-plane/manifest-verifier-research.json",
+      "state": "present",
+      "git_blob": "a74ef5f744501a38c16e9006e6e04efddaeba562",
+      "sha256": "sha256:75f3f3aa1afe3a1b79683ae7bb55b02b4476bd6403ff11b15192d94bde6eec02"
+    },
+    {
+      "path": "evals/sync-control-plane/valid-active-manifest.json",
+      "state": "present",
+      "git_blob": "5f8747e037480eddf68c18ddef72c5a1008157e1",
+      "sha256": "sha256:6164a1cf21aba2b1d5edbf021602b680190d3a619a8eec9db915bba20222a0fb"
+    },
+    {
+      "path": "policies/manifest-admission-policy.yaml",
+      "state": "present",
+      "git_blob": "8c25ecdfe645ae745c03f9b4ba194b73d0ccb485",
+      "sha256": "sha256:8e20f1219a80d7cb3f768ed866c3493ee0331fd66fce53a274ba21d3fbdf06a5"
+    },
+    {
+      "path": "policies/manifest-verifier-policy.candidate.json",
+      "state": "present",
+      "git_blob": "449f8b54b061512ac4f2095c55a40012e20a5826",
+      "sha256": "sha256:492e058ce8e4263be3ad2f33d48b006941b8c5dc84523e344ce8946210999395"
+    },
+    {
+      "path": "schemas/manifest-approval-attestation.schema.json",
+      "state": "present",
+      "git_blob": "82b94e1d95cef09e9ae4710e02c102512b34db39",
+      "sha256": "sha256:0168ba999f032b013b8fea9473f08d5f171d3367d2bb681c700ce442dc5e6005"
+    },
+    {
+      "path": "schemas/manifest-evaluation.schema.json",
+      "state": "present",
+      "git_blob": "181f1b556efaac830849ae8128c4322aafde465c",
+      "sha256": "sha256:ddd29371104d2e2e310691873c4388616bf0226d4e44994f157c787467268552"
+    },
+    {
+      "path": "scripts/manifest_admission.py",
+      "state": "present",
+      "git_blob": "82717187a4f7ef694a520921360914ef1b428738",
+      "sha256": "sha256:9ae589565e0bc9777c88912683a6ae25da92807f5794f02ef14d1302fa7171d2"
+    },
+    {
+      "path": "scripts/prove_manifest_boundaries.py",
+      "state": "present",
+      "git_blob": "68de6813f15ef30179574f2529561ff6b61d083c",
+      "sha256": "sha256:cdc9415195b278975e714317ebe2381ea9572ba733ed12540ac26e1a1dfc6155"
+    },
+    {
+      "path": "scripts/sync_control_plane/attestation.py",
+      "state": "present",
+      "git_blob": "4b03b38623ac3d5f34e3d2d2e0cbf4dc7679b3a5",
+      "sha256": "sha256:6ccaf2022543e4367ffd51a7f6927eef65af3c46aa2a09d92fbbeaeb9ad17187"
+    },
+    {
+      "path": "scripts/sync_control_plane/content.py",
+      "state": "present",
+      "git_blob": "3de4dfc250fd80337179c18f7a335e6940e87037",
+      "sha256": "sha256:cff3e57e6cba714d8cf0b3d34294a86ed6e81ce18a56f89ceaaa85597bd63fab"
+    },
+    {
+      "path": "scripts/sync_control_plane/policy.py",
+      "state": "present",
+      "git_blob": "a959d258b0da1999530be36387b9dd8927fb67a4",
+      "sha256": "sha256:078d96ff5eda0d5774253b09a242cdc93a340e00ff7a465bb8a359cc132246fe"
+    },
+    {
+      "path": "scripts/sync_control_plane/projection.py",
+      "state": "present",
+      "git_blob": "fa1b695be6ccca913506add5a745a61423bb4a4f",
+      "sha256": "sha256:8e403419d7a101b2172208af1174485876501470e5d5615755a9ac3500e270ce"
+    },
+    {
+      "path": "scripts/validate_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "b5828bea343a1902d5f1403c608547c86822fe39",
+      "sha256": "sha256:5fbdd6b3f33759b7e45bac9f9eac4bf9fa58c295f09a0dc2a5fab208d46d6a60"
+    },
+    {
+      "path": "supabase/migrations/20261004140000_sync_control_plane_verified_projection.sql",
+      "state": "present",
+      "git_blob": "a724a3bafcaa6bdc3b9d6ad9dcea3d9f51fade4a",
+      "sha256": "sha256:1a0cc11bd77367fe9870ccc2074a3abfd1ab09bc2fb1843f770302d7209bcfb4"
+    },
+    {
+      "path": "supabase/tests/manifest_verified_projection.cutover.sql",
+      "state": "present",
+      "git_blob": "20cd0cdde3b436e84d420f52078667ac3c426e05",
+      "sha256": "sha256:90b52d570ceae46fdf3de3d77a1e5ab398c7023522c6515169280256fb09de9c"
+    },
+    {
+      "path": "supabase/tests/manifest_verified_projection.membership.sql",
+      "state": "present",
+      "git_blob": "4978efd57846a3776210bcdc08cf9c5d9f90c1c9",
+      "sha256": "sha256:997e399b8f1f9319fa0cf0f2dd3376c3b1366b659fe041941ce1de6ce5fdc0db"
+    },
+    {
+      "path": "supabase/tests/manifest_verified_projection.replication.sql",
+      "state": "present",
+      "git_blob": "c4f71095b229522752430860cb763a05c451637d",
+      "sha256": "sha256:b107eb10edec0baa9b8206e78c6342a330a0a546070d4f541fa9213513e0d1ab"
+    },
+    {
+      "path": "supabase/tests/manifest_verified_projection.sql",
+      "state": "present",
+      "git_blob": "c722ac41bb72b20b8c8f8f311e9cd3eb61797778",
+      "sha256": "sha256:e8e4eec5c04cae663eb572d6ae1864a61c12bad75d69692f6cbf3ca2fea04faf"
+    },
+    {
+      "path": "tests/test_github_approval.py",
+      "state": "present",
+      "git_blob": "c9cc25916e9c8c48b49c471a78d2bee9a0f01a55",
+      "sha256": "sha256:fbe3ccc0cc56ff7ffe706a93f02736257ebceb7c6b3759f52c15da0edc9a9b8a"
+    },
+    {
+      "path": "tests/test_manifest_admission.py",
+      "state": "present",
+      "git_blob": "91ebf1fde3e4355816dcbcec3c4405cea102c144",
+      "sha256": "sha256:fc8e207ef4e5bd39a26f22ead0ff938cfd1da667a88647276f800fbfbb1725e7"
+    },
+    {
+      "path": "tests/test_qis_harness.py",
+      "state": "present",
+      "git_blob": "24fe526292f486ee6de5e707d8a0f33c7e9de9fb",
+      "sha256": "sha256:0a7b6e41e3864bf81ee5d7aba337b01efe6a47b43e90dc16767a575e30b32abe"
+    },
+    {
+      "path": "tests/test_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "aa84cfff1d2e91ab4d72c2396d1690620da0b4f2",
+      "sha256": "sha256:7aee44d7029c65e10cb69c3e71e068fe3f8a37e52adacc17b2e2225a772a2344"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PATH=/workspace/scratch/98ca569246b7/pr132-venv/bin:$PATH python -m unittest discover -s tests",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "/workspace/scratch/98ca569246b7/pr132-venv/bin/python scripts/validate_sync_control_plane.py --output /tmp/pr132-subject-conformance.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "cmp evals/sync-control-plane/conformance-results.json /tmp/pr132-subject-conformance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "/workspace/scratch/98ca569246b7/pr132-venv/bin/python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-06T21:32:10Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:bbc223bfe2994664667dd4acc2ae530e17129f47bb975eedf0c67bd02e8460e8"
+}
