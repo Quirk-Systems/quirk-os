@@ -34,7 +34,7 @@ class QISHarnessTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.schema = load("schemas/qis-evidence-envelope.schema.json")
         cls.fixture_dir = ROOT / "evals/qis-agent-harness"
-        cls.valid = load("evals/qis-agent-harness/receipt.valid-pr132-provenance.json")
+        cls.valid = load("evals/qis-agent-harness/receipt.valid-provenance.json")
 
     def errors_for(self, relative_path: str) -> list[str]:
         return validate_receipt(load(relative_path), self.schema, repo=ROOT)
@@ -43,34 +43,89 @@ class QISHarnessTests(unittest.TestCase):
         Draft202012Validator.check_schema(self.schema)
 
     def test_valid_receipt_fixture_passes_and_hash_is_stable(self) -> None:
-        self.assertEqual([], self.errors_for("evals/qis-agent-harness/receipt.valid-pr132-provenance.json"))
+        self.assertEqual([], self.errors_for("evals/qis-agent-harness/receipt.valid-provenance.json"))
         expected_hash = hashlib.sha256(canonical_receipt_payload(self.valid)).hexdigest()
         self.assertEqual(expected_hash, receipt_hash(self.valid))
         self.assertEqual(expected_hash, self.valid["receipt_hash"])
 
-    def test_unknown_verdict_fixture_fails(self) -> None:
-        errors = self.errors_for("evals/qis-agent-harness/receipt.unknown-verdict.json")
-        self.assertTrue(any("verdict" in error for error in errors))
+    NEGATIVE_FIXTURES = {
+        "receipt.ancestry-mismatch.json": (
+            {("repository", "is_traceable_descendant")},
+            ["repository/is_traceable_descendant: True was expected"],
+        ),
+        "receipt.critical-failure-pass.json": (
+            {("critical_failures",)},
+            ["critical failures cannot coexist with a PASS verdict"],
+        ),
+        "receipt.hash-mismatch.json": (
+            set(),
+            None,
+        ),
+        "receipt.material-mismatch.json": (
+            {("materials", 0, "sha256")},
+            ["materials[0]: sha256 mismatch for .github/copilot-instructions.md"],
+        ),
+        "receipt.missing-evidence.json": (
+            {("evidence_refs",)},
+            ["evidence_refs[3]: missing file evals/qis-agent-harness/does-not-exist.json"],
+        ),
+        "receipt.unexpected-field.json": (
+            {("cute_dashboard",)},
+            ["<root>: Additional properties are not allowed ('cute_dashboard' was unexpected)"],
+        ),
+        "receipt.unknown-verdict.json": (
+            {("verdict",)},
+            ["verdict: 'MAYBE' is not one of ['PASS', 'REVISE', 'FAIL']"],
+        ),
+    }
+    IDENTITY_PATHS = {("receipt_id",), ("receipt_hash",)}
 
-    def test_missing_evidence_fixture_fails(self) -> None:
-        errors = self.errors_for("evals/qis-agent-harness/receipt.missing-evidence.json")
-        self.assertTrue(any("missing file" in error for error in errors))
+    def changed_paths(self, left, right, path=()) -> set[tuple]:
+        if isinstance(left, dict) and isinstance(right, dict):
+            changed = set()
+            for key in left.keys() | right.keys():
+                if key not in left or key not in right:
+                    changed.add(path + (key,))
+                else:
+                    changed |= self.changed_paths(left[key], right[key], path + (key,))
+            return changed
+        if isinstance(left, list) and isinstance(right, list) and len(left) == len(right):
+            changed = set()
+            for index, (a, b) in enumerate(zip(left, right)):
+                changed |= self.changed_paths(a, b, path + (index,))
+            return changed
+        return set() if left == right else {path}
 
-    def test_unexpected_field_fixture_fails(self) -> None:
-        errors = self.errors_for("evals/qis-agent-harness/receipt.unexpected-field.json")
-        self.assertTrue(any("Additional properties are not allowed" in error for error in errors))
+    def test_fixture_directory_is_exactly_valid_plus_known_negatives(self) -> None:
+        self.assertEqual(
+            {"receipt.valid-provenance.json", "receipt.valid-pr132-provenance.json", *self.NEGATIVE_FIXTURES},
+            {path.name for path in self.fixture_dir.glob("*.json")},
+        )
 
-    def test_hash_mismatch_fixture_fails(self) -> None:
-        errors = self.errors_for("evals/qis-agent-harness/receipt.hash-mismatch.json")
-        self.assertTrue(any("receipt_hash mismatch" in error for error in errors))
+    def test_each_negative_fixture_is_valid_plus_exactly_one_defect(self) -> None:
+        for name, (defect_paths, _) in self.NEGATIVE_FIXTURES.items():
+            with self.subTest(fixture=name):
+                fixture = load(f"evals/qis-agent-harness/{name}")
+                self.assertEqual(
+                    f"receipt.qis-agent-harness.fixture-{name.removeprefix('receipt.').removesuffix('.json')}",
+                    fixture["receipt_id"],
+                )
+                self.assertEqual(
+                    defect_paths,
+                    self.changed_paths(self.valid, fixture) - self.IDENTITY_PATHS,
+                )
+                if name == "receipt.hash-mismatch.json":
+                    self.assertNotEqual(receipt_hash(fixture), fixture["receipt_hash"])
+                else:
+                    self.assertEqual(receipt_hash(fixture), fixture["receipt_hash"])
 
-    def test_critical_failure_cannot_hide_behind_pass(self) -> None:
-        errors = self.errors_for("evals/qis-agent-harness/receipt.critical-failure-pass.json")
-        self.assertIn("critical failures cannot coexist with a PASS verdict", errors)
-
-    def test_ancestry_mismatch_fails_closed(self) -> None:
-        errors = self.errors_for("evals/qis-agent-harness/receipt.ancestry-mismatch.json")
-        self.assertTrue(any("is_traceable_descendant" in error or "merge_base_sha" in error for error in errors))
+    def test_negative_fixtures_fail_with_exact_errors(self) -> None:
+        for name, (_, expected) in self.NEGATIVE_FIXTURES.items():
+            with self.subTest(fixture=name):
+                path = f"evals/qis-agent-harness/{name}"
+                if expected is None:
+                    expected = [f"receipt_hash mismatch: expected {receipt_hash(load(path))}"]
+                self.assertEqual(expected, self.errors_for(path))
 
     def validate_resealed(self, receipt: dict, repo: Path = ROOT) -> list[str]:
         receipt["receipt_hash"] = receipt_hash(receipt)
@@ -101,11 +156,6 @@ class QISHarnessTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             errors = validate_receipt(self.valid, self.schema, repo=Path(directory))
             self.assertTrue(any("ancestry could not be verified" in error for error in errors))
-
-    def test_material_digest_mismatch_fixture_fails(self) -> None:
-        errors = self.errors_for("evals/qis-agent-harness/receipt.material-mismatch.json")
-        self.assertTrue(any("sha256 mismatch" in error for error in errors))
-        self.assertFalse(any("receipt_hash mismatch" in error for error in errors))
 
     def test_material_mutation_invalidates_provenance(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

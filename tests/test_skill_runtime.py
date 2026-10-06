@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import json
 import unittest
+from unittest.mock import Mock
 from pathlib import Path
 
 from jsonschema import Draft202012Validator, FormatChecker
@@ -34,7 +35,7 @@ def admitted_copy(skill_id: str = "quirk-source-authority-resolver") -> tuple[di
     manifest["admission"] = {
         "decision": "approved",
         "decision_ref": f"decision.{skill_id}.admit.0001",
-        "requested_by": f"requester.{skill_id}",
+        "requested_by": f"agent.{skill_id}",
         "approved_by": "human.bryan",
         "decided_at": "2026-08-12T03:30:00Z",
     }
@@ -52,7 +53,7 @@ def valid_grant(manifest: dict) -> dict:
         "skill_manifest_sha256": manifest["integrity"]["manifest_sha256"],
         "decision": "approved",
         "admission_ref": manifest["admission"]["decision_ref"],
-        "requested_by": "operator.test",
+        "requested_by": "agent.test",
         "approved_by": "human.bryan",
         "issued_at": "2026-08-12T04:00:00Z",
         "expires_at": "2026-08-12T06:00:00Z",
@@ -105,7 +106,7 @@ class SkillLoaderTests(unittest.TestCase):
     def test_separately_admitted_version_with_scoped_grant_loads(self) -> None:
         manifest, source = admitted_copy()
         grant = valid_grant(manifest)
-        result = load_skill_for_execution(manifest, source, grant, now=self.NOW)
+        result = load_skill_for_execution(manifest, source, grant, now=self.NOW, approval_registry=Mock(allows=Mock(return_value=True)))
         self.assertTrue(result["loaded"], result["errors"])
 
     def test_over_ceiling_grant_is_rejected(self) -> None:
@@ -157,8 +158,48 @@ class SkillLoaderTests(unittest.TestCase):
         grant = valid_grant(manifest)
         grant["allowed_actions"] = []
         errors = validate_skill_grant(manifest, grant, now=self.NOW)
-        self.assertTrue(any("missing required fields" in error for error in errors))
-        self.assertIn("runtime grant must allow at least one declared action", errors)
+        self.assertTrue(any("schema violation at allowed_actions" in error for error in errors))
+
+    def test_malformed_grants_fail_closed_without_raising(self) -> None:
+        manifest, source = admitted_copy()
+        grant = valid_grant(manifest)
+        malformed = [None, [], "grant.invalid", {}, {**grant, "allowed_actions": [["nested"]]},
+                     {**grant, "allowed_actions": "read"}, {**grant, "issued_at": 123},
+                     {**grant, "grant_id": "invalid"}, {**grant, "purpose": "x"},
+                     {**grant, "revoked": True}, {**grant, "decision": "revoked"}]
+        for candidate in malformed:
+            with self.subTest(grant=candidate):
+                result = load_skill_for_execution(manifest, source, candidate, now=self.NOW)
+                self.assertFalse(result["loaded"])
+                self.assertTrue(any("runtime grant schema violation" in error for error in result["errors"]))
+
+    def test_nonhuman_or_malformed_approvers_are_rejected(self) -> None:
+        manifest, source = admitted_copy()
+        for approver in ["agent.other", "service.other", "system.other", "human.", "human.Bryan", "human.bryan\n"]:
+            for boundary in ["admission", "grant"]:
+                with self.subTest(approver=approver, boundary=boundary):
+                    candidate = copy.deepcopy(manifest)
+                    if boundary == "admission":
+                        candidate["admission"]["approved_by"] = approver
+                        candidate["integrity"]["manifest_sha256"] = manifest_digest(candidate)
+                    grant = valid_grant(candidate)
+                    if boundary == "grant":
+                        grant["approved_by"] = approver
+                    result = load_skill_for_execution(candidate, source, grant, now=self.NOW)
+                    self.assertFalse(result["loaded"])
+                    self.assertIn(
+                        f"{'skill admission' if boundary == 'admission' else 'runtime grant'} requires approval by an independent human principal",
+                        result["errors"],
+                    )
+
+    def test_malformed_requester_is_rejected_at_both_boundaries(self) -> None:
+        manifest, _ = admitted_copy()
+        grant = valid_grant(manifest)
+        manifest["admission"]["requested_by"] = "operator.test"
+        grant["requested_by"] = "agent."
+        errors = validate_skill_grant(manifest, grant, now=self.NOW)
+        self.assertIn("skill admission requester must be a well-formed principal", errors)
+        self.assertIn("runtime grant requester must be a well-formed principal", errors)
 
 
 class SkillContractTests(unittest.TestCase):

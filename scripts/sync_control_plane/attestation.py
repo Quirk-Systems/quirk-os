@@ -71,10 +71,13 @@ def grant_ref(review_id: int, subject: dict) -> str:
 
 
 def approval_subject(body: str) -> dict:
-    blocks = re.findall(r"```quirk-manifest-approval\s*\n(.*?)\n```", body, re.S)
-    if len(blocks) != 1:
-        raise ApprovalError("one explicit manifest approval block required")
-    subject = strict_json_loads(blocks[0])
+    # A deliberately narrow consent format: the entire review is one exact,
+    # unindented fence. Prose, quoted/list/HTML examples, nested/longer fences,
+    # and incomplete or multiple blocks cannot convey consent accidentally.
+    match = re.fullmatch(r"```quirk-manifest-approval[ \t]*\r?\n(.*?)\r?\n```[ \t]*", body.strip("\r\n"), re.S)
+    if match is None:
+        raise ApprovalError("one explicit manifest approval block occupying the entire review required")
+    subject = strict_json_loads(match[1])
     from jsonschema import Draft202012Validator, FormatChecker
     from pathlib import Path
     schema = strict_json_loads((Path(__file__).resolve().parents[2] /
@@ -142,6 +145,9 @@ class GitHubApprovalVerifier:
         policy = self.policy
         if policy.get("enabled") is not True or policy.get("protection_verified") is not True:
             raise ApprovalError("verifier policy is not admitted; bootstrap required")
+        revoked = policy.get("revoked_review_ids", [])
+        if not isinstance(revoked, list) or any(type(value) is not int or value <= 0 for value in revoked):
+            raise ApprovalError("revoked_review_ids must be a list of positive integers")
         repo = policy["repository"]
         if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
             raise ApprovalError("invalid trusted repository")
@@ -212,7 +218,7 @@ class GitHubApprovalVerifier:
         # the actual submitted review, whose timestamp becomes decided_at.
         if _time(review["submitted_at"]) > now:
             raise ApprovalError("invalid approval validity interval")
-        if review_id in policy.get("revoked_review_ids", []):
+        if review_id in revoked:
             raise ApprovalError("approval revoked")
         source = strict_json_loads(self._file(root, subject["manifest_path"], head))
         if source.get("status") not in ("candidate", "paused") or source.get("admission") is not None:

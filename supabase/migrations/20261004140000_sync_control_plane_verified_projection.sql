@@ -13,7 +13,7 @@ begin
     create role quirk_manifest_verifier nologin noinherit nobypassrls;
   end if;
   if exists (select 1 from pg_roles where rolname='quirk_manifest_verifier'
-             and (rolcanlogin or rolsuper or rolcreaterole or rolcreatedb or rolbypassrls or rolinherit)) then
+             and (rolcanlogin or rolsuper or rolcreaterole or rolcreatedb or rolreplication or rolbypassrls or rolinherit)) then
     raise exception 'verifier role has unsupported privileges; cutover refused';
   end if;
   if pg_has_role('service_role','quirk_manifest_verifier','MEMBER')
@@ -119,7 +119,7 @@ begin
               case when tg_op='UPDATE' then old.status else r.expected_from_status end,'active',
               new.requested_by,new.approved_by,new.admission_decision_ref,new.authority_grant_ref,
               new.evaluated_content_hash,r.verified_projection->'manifest'->'admission'->'evidence_refs',
-              new.admitted_at);
+              clock_timestamp());
   else
     insert into quirk_sync.manifest_transition_ledger
       (transition_key,manifest_id,manifest_key,manifest_version,from_status,to_status,

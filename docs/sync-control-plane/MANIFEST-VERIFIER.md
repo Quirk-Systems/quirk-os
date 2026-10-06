@@ -118,3 +118,20 @@ member. NOINHERIT alone does not prevent SET ROLE. CI attempts reverse browser,
 reverse neutral, transitive reverse and inbound neutral grants before applying
 the candidate migration, requiring each to fail at the membership refusal.
 These repairs confer no host admission, credentials, runtime activation or merge.
+
+### PR 132 review repairs
+
+Consent reviews must consist entirely of one unindented, exact triple-backtick
+`quirk-manifest-approval` JSON fence. Additional prose, quoted examples, nested
+fences, HTML wrappers, and duplicate/incomplete fences fail closed. Submit
+commentary separately. Installed `revoked_review_ids` must be a list of positive
+JSON integers; strings, booleans, and mixed or malformed collections are refused
+before any GitHub request.
+
+The registry's `admitted_at` remains the review submission time (decision evidence).
+Activation history uses the database write's `clock_timestamp()` for `occurred_at`.
+A pre-existing verifier role with REPLICATION is refused during cutover.
+
+Integration with the protected approval registry on main preserves its mandatory
+binding checks; a registry result alone does not satisfy this candidate's live
+verifier and computed-content gate. No candidate policy is enabled.

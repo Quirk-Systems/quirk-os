@@ -53,7 +53,7 @@ class FrozenVerifier(GitHubApprovalVerifier):
 
 def body(subject):
     fence = chr(96) * 3
-    return 'Explicit synthetic activation consent.\n' + fence + 'quirk-manifest-approval\n' + json.dumps(subject) + '\n' + fence
+    return fence + 'quirk-manifest-approval\n' + json.dumps(subject) + '\n' + fence
 
 
 def scenario():
@@ -203,8 +203,14 @@ class ApprovalCrossingTests(unittest.TestCase):
         self.assertEqual('projection', result['database_verification'])
         self.assertEqual('none', result['authority_effect'])
         self.assertEqual('human.synthetic', result['manifest']['admission']['approved_by'])
-        self.assertEqual([], validate_manifest_admission(result['manifest'], verifier=verifier, context=context))
-        self.assertEqual(2, reader.calls.count(CENSUS_API))
+        from unittest.mock import Mock
+        self.assertIn('trusted GitHub approval registry is required',
+                      validate_manifest_admission(result['manifest'], verifier=verifier, context=context))
+        self.assertTrue(validate_manifest_admission(result['manifest'], verifier=verifier, context=context,
+                       approval_registry=Mock(allows=Mock(return_value=False))))
+        self.assertEqual([], validate_manifest_admission(result['manifest'], verifier=verifier, context=context,
+                         approval_registry=Mock(allows=Mock(return_value=True))))
+        self.assertEqual(4, reader.calls.count(CENSUS_API))
 
     def test_unadmitted_policy_stops_before_any_api_resolution(self):
         for field in ('enabled', 'protection_verified'):
@@ -212,6 +218,33 @@ class ApprovalCrossingTests(unittest.TestCase):
                 candidate, _, context, reader, verifier = scenario()
                 verifier.policy[field] = False
                 with self.assertRaisesRegex(ApprovalError, 'bootstrap required'):
+                    verifier.verify(candidate, context)
+                self.assertEqual([], reader.calls)
+
+    def test_approval_examples_and_ambiguous_fences_are_not_consent(self):
+        for wrapper in [lambda text: '````markdown\n' + text + '\n````',
+                        lambda text: '~~~~markdown\n' + text + '\n~~~~',
+                        lambda text: '\n'.join('> ' + line for line in text.splitlines()),
+                        lambda text: '\n'.join('    ' + line for line in text.splitlines()),
+                        lambda text: '<!--\n' + text + '\n-->',
+                        lambda text: '<div>\n' + text + '\n</div>',
+                        lambda text: 'Example only:\n' + text,
+                        lambda text: text + '\n' + text,
+                        lambda text: text[:-3],
+                        lambda text: text.replace('```', '````')]:
+            candidate, subject, context, reader, verifier = scenario()
+            reader.data[REVIEW_API]['body'] = wrapper(body(subject))
+            with self.subTest(review=reader.data[REVIEW_API]['body']):
+                with self.assertRaises(ApprovalError):
+                    verifier.verify(candidate, context)
+
+    def test_malformed_revocation_policy_fails_before_api_reads(self):
+        for revoked in [['81'], [81.0], [True], [False], [0], [-1], [None],
+                        [81, '82'], '81', {'81': True}, None]:
+            candidate, _, context, reader, verifier = scenario()
+            verifier.policy['revoked_review_ids'] = revoked
+            with self.subTest(revoked=revoked):
+                with self.assertRaisesRegex(ApprovalError, 'positive integers'):
                     verifier.verify(candidate, context)
                 self.assertEqual([], reader.calls)
 

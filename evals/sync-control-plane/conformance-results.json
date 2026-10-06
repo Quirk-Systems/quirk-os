@@ -212,6 +212,7 @@
           "activation requires approval by an independent human principal",
           "declared content hash does not match computed content",
           "evaluated content hash does not match computed content",
+          "trusted GitHub approval registry is required",
           "trusted approval verifier and activation context required"
         ]
       }
@@ -221,6 +222,7 @@
     "valid_active_schema_errors": [],
     "valid_active_structure_errors": [],
     "valid_active_policy_errors": [
+      "trusted GitHub approval registry is required",
       "trusted approval verifier and activation context required"
     ],
     "self_promotion_schema_errors": [],
@@ -229,6 +231,7 @@
       "activation requires approval by an independent human principal",
       "declared content hash does not match computed content",
       "evaluated content hash does not match computed content",
+      "trusted GitHub approval registry is required",
       "trusted approval verifier and activation context required"
     ],
     "rights_unclear_schema_errors": [
@@ -282,5 +285,5 @@
     "binding_roundtrip_stable": true,
     "receipt_roundtrip_stable": true
   },
-  "content_hash_sha256": "a77099dc3e79171b10f9a4c94b891d18759f74322e5f3f271e1b33603f9c1b57"
+  "content_hash_sha256": "6be9994e86edbba1ef450fe15fef6aafac9cd3cddbcd829ee908eebefb281bcf"
 }

@@ -18,7 +18,7 @@ insert into projection_probe values (jsonb_build_object(
     'admission',jsonb_build_object('decision','approved','decision_ref','decision.sql.synthetic',
       'authority_grant_ref','grant.sql.synthetic','requested_by','agent.synthetic','approved_by','human.synthetic',
       'evaluated_content_hash',repeat('a',64),'transition_ref','transition.sql.synthetic',
-      'decided_at',clock_timestamp(),'evidence_refs','["synthetic-eval"]'::jsonb)),
+      'decided_at',clock_timestamp()-interval '1 hour','evidence_refs','["synthetic-eval"]'::jsonb)),
   'approval',jsonb_build_object('schema_version','verified-manifest-approval.v1',
     'database_verification','projection','authority_effect','none','approved_by','human.synthetic',
     'authority_grant_ref','grant.sql.synthetic','verified_at',clock_timestamp(),
@@ -64,6 +64,10 @@ select pg_temp.expect_refusal('select quirk_sync.apply_verified_manifest_project
 select pg_temp.expect_refusal('set role quirk_manifest_verifier', 'permission denied');
 reset session authorization;
 
+-- Delayed projection preserves the old review time but records this write's time.
+create temp table activation_window(started_at timestamptz);
+insert into activation_window values (clock_timestamp());
+grant select on activation_window to quirk_manifest_verifier;
 -- Legitimate projection at the supported edge, then exact retry with no effects.
 set role quirk_manifest_verifier;
 select quirk_sync.apply_verified_manifest_projection(p) from projection_probe;
@@ -74,6 +78,16 @@ begin
      or (select count(*) from quirk_sync.manifest_projection_receipts)<>1
      or (select count(*) from quirk_sync.manifest_transition_ledger)<>1 then
     raise exception 'exact retry produced additional effects';
+  end if;
+  if not exists (
+    select 1 from quirk_sync.manifest_transition_ledger l
+    join quirk_sync.manifest_registry m on m.id=l.manifest_id
+    cross join activation_window w cross join projection_probe probe
+    where l.occurred_at >= w.started_at and l.occurred_at <= clock_timestamp()
+      and m.admitted_at=(probe.p->'manifest'->'admission'->>'decided_at')::timestamptz
+      and l.occurred_at > m.admitted_at + interval '30 minutes'
+  ) then
+    raise exception 'activation history backdated or review decision time lost';
   end if;
 end $$;
 select pg_temp.expect_refusal(

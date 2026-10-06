@@ -38,12 +38,17 @@ on:
       - 'scripts/validate_sync_control_plane.py'
       - 'scripts/manifest_admission.py'
       - 'scripts/prove_manifest_boundaries.py'
+      - 'scripts/ingest_github_approval.py'
+      - 'tests/test_github_approval.py'
+      - 'tests/test_skill_runtime.py'
       - 'supabase/migrations/**'
+      - 'supabase/tests/github_approval_registry.sql'
       - 'supabase/tests/manifest_activation_guard.cases.sql'
       - 'supabase/tests/manifest_activation_guard.run.sql'
       - 'supabase/tests/manifest_verified_projection.sql'
       - 'supabase/tests/manifest_verified_projection.cutover.sql'
       - 'supabase/tests/manifest_verified_projection.membership.sql'
+      - 'supabase/tests/manifest_verified_projection.replication.sql'
       - 'supabase/tests/manifest_activation_guard.service_role.sql'
       - 'supabase/tests/sync_control_plane_hardening.sql'
       - 'supabase/tests/sync_control_plane_outbox_claim_benchmark.sql'
@@ -278,6 +283,9 @@ jobs:
           psql -v ON_ERROR_STOP=1 \
             -f supabase/tests/manifest_activation_guard.service_role.sql
 
+      - name: Run GitHub approval registry adversarial cases
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/github_approval_registry.sql
+
       - name: Assert the cases left no active manifest behind
         run: |
           psql -v ON_ERROR_STOP=1 -t -A -c \
@@ -309,6 +317,16 @@ jobs:
             test "$result" -eq 3
             grep -q 'verifier membership must be separately admitted after cutover' /tmp/membership.txt
           done
+
+      - name: Refuse replication-enabled verifier roles before cutover
+        run: |
+          set +e
+          psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_verified_projection.replication.sql > /tmp/replication.txt 2>&1
+          result=$?
+          set -e
+          cat /tmp/replication.txt
+          test "$result" -eq 3
+          grep -q 'verifier role has unsupported privileges' /tmp/replication.txt
 
       - name: Apply the verified projection cutover and later migrations
         run: |

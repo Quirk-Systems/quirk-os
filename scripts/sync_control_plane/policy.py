@@ -4,6 +4,8 @@ import re
 from datetime import datetime, timezone
 from typing import Any
 
+from .approval import authorization_errors
+
 
 def _parse_dt(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
@@ -107,7 +109,7 @@ def validate_manifest_structure(manifest: dict[str, Any]) -> list[str]:
     return errors
 
 
-def validate_manifest_admission(manifest: dict[str, Any], *, verifier=None, context=None) -> list[str]:
+def validate_manifest_admission(manifest: dict[str, Any], *, verifier=None, context=None, approval_registry=None) -> list[str]:
     """Fail closed: shape + computed content + externally resolved human consent.
 
     verifier/context are installed by the trusted host, never supplied inside
@@ -129,6 +131,15 @@ def validate_manifest_admission(manifest: dict[str, Any], *, verifier=None, cont
     admission = manifest.get("admission") or {}
     if admission.get("evaluated_content_hash") != digest:
         errors.append("evaluated content hash does not match computed content")
+    from .github_approval import manifest_contract
+    errors.extend(authorization_errors(
+        approval_registry, grant_id=admission.get("authority_grant_ref"), subject_kind="manifest",
+        subject_id=manifest.get("manifest_key"), subject_version=manifest.get("version"),
+        subject_digest=manifest.get("content_hash"), authority_ceiling=manifest.get("authority_ceiling"),
+        allowed_actions=["activate_manifest"], requested_by=admission.get("requested_by"),
+        approved_by=admission.get("approved_by"), decision_ref=admission.get("decision_ref"),
+        subject_contract=manifest_contract(manifest),
+    ))
     if verifier is None or context is None:
         return errors + ["trusted approval verifier and activation context required"]
     try:

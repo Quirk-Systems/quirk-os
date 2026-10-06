@@ -27,7 +27,7 @@ from distill_loop.evaluator import evaluate_distilled_case
 from distill_loop.ledger import append_entry, candidate_state, new_ledger, verify_ledger
 from distill_loop.promotion import apply_promotion, validate_promotion_receipt
 from distill_loop.trigger import post_run_distill
-from sync_control_plane.skill_runtime import load_skill_for_execution, validate_manifest_integrity
+from sync_control_plane.skill_runtime import load_skill_for_execution, validate_manifest_integrity, manifest_digest
 
 EXAMPLE_DIR = Path("examples/distill-loop")
 
@@ -60,7 +60,7 @@ def _synthetic_grant(manifest: dict[str, Any]) -> dict[str, Any]:
         "skill_manifest_sha256": manifest["integrity"]["manifest_sha256"],
         "decision": "approved",
         "admission_ref": "decision.probe.none",
-        "requested_by": "operator.probe",
+        "requested_by": "agent.probe",
         "approved_by": "human.probe",
         "issued_at": "2026-09-19T00:00:00Z",
         "expires_at": "2026-09-19T02:00:00Z",
@@ -68,6 +68,24 @@ def _synthetic_grant(manifest: dict[str, Any]) -> dict[str, Any]:
         "allowed_actions": [manifest["tools"][0]["actions"][0]],
         "purpose": "prove the runtime loader rejects distilled candidates",
     }
+
+
+def _runtime_status_probe(manifest: dict[str, Any], skill_text: str, status: str) -> dict[str, Any]:
+    """Isolate status using synthetic admission/registry fixtures, never real authority."""
+    from unittest.mock import Mock
+
+    probe = copy.deepcopy(manifest)
+    probe["status"] = status
+    probe["admission"] = {
+        "decision": "approved", "decision_ref": "decision.probe.none",
+        "requested_by": "agent.probe", "approved_by": "human.probe",
+        "decided_at": "2026-09-19T00:00:00Z",
+    }
+    probe["integrity"]["manifest_sha256"] = manifest_digest(probe)
+    return load_skill_for_execution(
+        probe, skill_text, _synthetic_grant(probe), now="2026-09-19T01:00:00Z",
+        approval_registry=Mock(allows=Mock(return_value=True)),
+    )
 
 
 def run_example(repo: Path) -> dict[str, Any]:
@@ -169,12 +187,15 @@ def validate(repo: Path) -> dict[str, Any]:
             fail("STARTER_SUITE_TOO_COMPLETE", "the loop must not author adversarial or regression cases itself")
 
         # 2. The runtime loader rejects the candidate even with a fully formed grant.
-        loaded = load_skill_for_execution(manifest, skill_text, _synthetic_grant(manifest), now="2026-09-19T01:00:00Z")
+        loaded = _runtime_status_probe(manifest, skill_text, "candidate")
+        admitted = _runtime_status_probe(manifest, skill_text, "admitted")
         controls["runtime_loader_rejects_candidate"] = (
-            not loaded["loaded"] and "runtime loader rejects unadmitted skill version" in loaded["errors"]
+            not loaded["loaded"]
+            and loaded["errors"] == ["runtime loader rejects unadmitted skill version"]
+            and admitted["loaded"] and admitted["errors"] == []
         )
         if not controls["runtime_loader_rejects_candidate"]:
-            fail("RUNTIME_LOADER_FAIL_OPEN", f"{loaded}")
+            fail("RUNTIME_LOADER_FAIL_OPEN", f"candidate={loaded}; admitted_control={admitted}")
 
         # 3. Registry never carries a distilled candidate.
         registry = _json(repo / "skills" / "registry.json")
