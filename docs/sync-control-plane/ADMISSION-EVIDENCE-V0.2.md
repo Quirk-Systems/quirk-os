@@ -6,8 +6,8 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `00c4fe397482663723ab7f416ded910262d3c87f43dd048778fb3e743ca63965`  
-**Evidence revision (the tree that reproduces that hash):** `bb9b2325ba4bba29ce8e712921de1da607fdc06b`
+**Content hash (SHA-256):** `4a7896a68d248891ce3a7e884f47e8c77bc6dece7543961a3fa678969210b811`
+**Evidence revision (the tree that reproduces that hash):** `cac286e95d9163f5afb1b131c3f02ad35ee0cd89`
 
 > **Why two revisions.** The candidate commit names the subject that was
 > evaluated. The evidence revision names the tree whose validator and inputs
@@ -21,14 +21,16 @@
 > Reproduce with:
 >
 > ```sh
-> git checkout bb9b2325ba4bba29ce8e712921de1da607fdc06b
+> git checkout cac286e95d9163f5afb1b131c3f02ad35ee0cd89
 > python scripts/validate_sync_control_plane.py --repo . \
 >   --output evals/sync-control-plane/conformance-results.json --require-admit
 > ```
 >
-> Observed at that revision in a detached worktree:
-> `00c4fe397482663723ab7f416ded910262d3c87f43dd048778fb3e743ca63965`, matching
-> both the tracked artifact and the line above.
+> Regenerated from this approval-repair implementation:
+> `4a7896a68d248891ce3a7e884f47e8c77bc6dece7543961a3fa678969210b811`. The current tracked artifact carries this output.
+> The implementation revision's earlier tracked artifact was stale; hosted CI
+> correctly rejected that stale decision. This revision updates the artifact
+> and its named digest together; it does not admit any manifest.
 
 > **Digest history**, recorded because a hash replaced without a note is
 > indistinguishable from one that was always that value. The decision above is
@@ -84,7 +86,11 @@
 >   Superseded when the guard became SECURITY DEFINER and
 >   `rule_privilege_lanes` was added to assert it, because the service_role
 >   grant on the rule function masks the guard losing that property.
-> - `00c4fe39…` — current, produced at `bb9b232` as above.
+> - `00c4fe39…` — produced at `bb9b232`. Superseded when the approval repair
+>   added the default-deny protected-registry diagnostic to self-promotion.
+> - `4a7896a6…` — current, produced by `cac286e95d9163f5afb1b131c3f02ad35ee0cd89`.
+>   Synthetic positive conformance tests use an explicit mock resolver; no
+>   real grant, human review or runtime authorization is manufactured.
 
 > **What produces this decision.** `candidate-conformance` declares
 > `needs: database-guard` and runs with `if: always()`, failing explicitly when
