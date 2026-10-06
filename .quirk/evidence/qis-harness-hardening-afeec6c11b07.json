@@ -1,0 +1,84 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.qis-harness-hardening.afeec6c11b07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "928fc09d86dfd5c3299a63d0324391afd1cb06bb",
+    "commit": "afeec6c11b079f21e42a6e290df00ff850020dd0",
+    "changed_paths": [
+      ".github/workflows/qis-agent-harness.yml",
+      "scripts/validate_qis_harness.py",
+      "tests/test_qis_harness.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.qis-harness-hardening.afeec6c11b07",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Hardens the candidate-only QIS agent harness in three rounds on top of 8794a8f9877f01ee5a040b8d897574c3563db7ad. Input integrity: validate_qis_harness.py now parses receipts strictly, rejecting duplicate object keys and NaN/Infinity constants, and reports unreadable, malformed, missing or out-of-repository receipts as a structured fail-closed summary instead of a traceback. Semantic edge cases: duplicate command names are rejected and the git ancestry check is bounded by a timeout that fails closed. Workflow process: the harness receipt builder anchors on the final unittest summary line, so a stray OK, a trailing traceback, NO TESTS RAN or a missing log can no longer produce a passing or schema-invalid receipt; malformed or partial conformance output yields REVISE; checkout no longer persists credentials. Local verification on Python 3.12: 49 focused tests, 235 repository tests, 36/36 Intent Shaper conformance cases, valid provenance fixture with zero errors; the new tests were confirmed to fail (14 failures, 2 errors) against the previous evaluator and workflow. The valid provenance fixture's pinned materials are unchanged. This records local verification only; hosted CI, admission, runtime authority, deployment and merge are not established.",
+      "evidence_paths": [
+        ".github/workflows/qis-agent-harness.yml",
+        "scripts/validate_qis_harness.py",
+        "tests/test_qis_harness.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/qis-agent-harness.yml",
+      "state": "present",
+      "git_blob": "36778b5aa71b99804b6408490385b0c4201d641a",
+      "sha256": "sha256:d0ca7c9df2ca2e3b5554d85587ca7e41bd38a3553024da7cc36fa7ec45e91101"
+    },
+    {
+      "path": "scripts/validate_qis_harness.py",
+      "state": "present",
+      "git_blob": "0b2c5f2f1611c0588c9a5ea3c61e8ad75846efba",
+      "sha256": "sha256:a4b917ccb4533e81377fa2bb990fd53ab6a70bec925397a8b8ec389e2fea4ff1"
+    },
+    {
+      "path": "tests/test_qis_harness.py",
+      "state": "present",
+      "git_blob": "68c93eacdaae4c8908fbf65ac6b08ea6d4fc95c2",
+      "sha256": "sha256:2631fce60000feb1bdbb3a0c57e41e1afff31e2c1fce57e7135c412571221c53"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check 928fc09d86dfd5c3299a63d0324391afd1cb06bb afeec6c11b079f21e42a6e290df00ff850020dd0",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-06T01:27:16Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:f071bfd7ebb85d292015bfb8a9980d95ddf6a1f194cabadb1b4146b336ddd0d5"
+}
