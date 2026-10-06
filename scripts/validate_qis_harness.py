@@ -16,10 +16,28 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 CANDIDATE_BRANCH = "agent/quirk-intent-shaper"
 CANDIDATE_SHA = "f5effa3d6da3e5879e10007492aeff39a1c643be"
+GIT_TIMEOUT_SECONDS = 30
+
+
+def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"duplicate JSON object key {key!r}")
+        value[key] = item
+    return value
+
+
+def _reject_non_finite_constant(name: str) -> Any:
+    raise ValueError(f"non-standard JSON constant {name}")
 
 
 def load_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
+    return json.loads(
+        path.read_text(encoding="utf-8"),
+        object_pairs_hook=_reject_duplicate_keys,
+        parse_constant=_reject_non_finite_constant,
+    )
 
 
 def canonical_receipt_payload(receipt: dict[str, Any]) -> bytes:
@@ -72,12 +90,13 @@ def semantic_errors(receipt: dict[str, Any], repo: Path | None = None) -> list[s
                 ["git", "-C", str(repo), "merge-base", CANDIDATE_SHA, repository["head_sha"]],
                 text=True,
                 stderr=subprocess.PIPE,
+                timeout=GIT_TIMEOUT_SECONDS,
             ).strip()
             if actual_merge_base != CANDIDATE_SHA:
                 errors.append("repository.head_sha is not a traceable descendant of the evaluated candidate")
             if merge_base_sha != actual_merge_base:
                 errors.append("repository.merge_base_sha does not match Git history")
-        except (OSError, subprocess.CalledProcessError) as exc:
+        except (OSError, subprocess.SubprocessError) as exc:
             errors.append(f"repository ancestry could not be verified against Git history: {exc}")
 
     materials = receipt.get("materials", [])
@@ -115,7 +134,13 @@ def semantic_errors(receipt: dict[str, Any], repo: Path | None = None) -> list[s
     if verdict == "PASS" and critical_failures:
         errors.append("critical failures cannot coexist with a PASS verdict")
 
+    command_names: set[str] = set()
     for index, command in enumerate(receipt.get("commands", [])):
+        name = command.get("name")
+        if name in command_names:
+            errors.append(f"commands[{index}]: duplicate command name {name!r}")
+        else:
+            command_names.add(name)
         counts = command.get("counts", {})
         passed = counts.get("passed")
         failed = counts.get("failed")
@@ -165,15 +190,24 @@ def main() -> int:
 
     schema = load_json(schema_path)
     Draft202012Validator.check_schema(schema)
-    receipt = load_json(receipt_path)
-    errors = validate_receipt(receipt, schema, repo=repo)
+    receipt: Any = None
+    try:
+        receipt = load_json(receipt_path)
+    except (OSError, UnicodeDecodeError, ValueError, RecursionError) as exc:
+        errors = [f"receipt could not be loaded as strict JSON: {exc}"]
+    else:
+        errors = validate_receipt(receipt, schema, repo=repo)
 
+    try:
+        receipt_label = str(receipt_path.resolve().relative_to(repo))
+    except ValueError:
+        receipt_label = str(receipt_path)
     summary = {
-        "receipt": str(receipt_path.relative_to(repo)),
+        "receipt": receipt_label,
         "valid": not errors,
         "error_count": len(errors),
         "errors": errors,
-        "receipt_hash": receipt.get("receipt_hash"),
+        "receipt_hash": receipt.get("receipt_hash") if isinstance(receipt, dict) else None,
     }
     print(json.dumps(summary, indent=2))
     return 0 if not errors else 1

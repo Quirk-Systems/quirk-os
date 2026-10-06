@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from validate_qis_harness import (  # noqa: E402
     canonical_receipt_payload,
+    load_json,
     receipt_hash,
     validate_receipt,
 )
@@ -205,6 +206,66 @@ class QISHarnessTests(unittest.TestCase):
                 receipt[field][0] = []
             self.assertTrue(self.validate_resealed(receipt))
 
+    def test_duplicate_command_names_fail_closed(self) -> None:
+        receipt = copy.deepcopy(self.valid)
+        receipt["commands"][1]["name"] = receipt["commands"][0]["name"]
+        self.assertEqual(
+            ["commands[1]: duplicate command name 'focused_tests'"],
+            self.validate_resealed(receipt),
+        )
+
+    def test_strict_json_rejects_duplicate_keys_and_non_finite_numbers(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "receipt.json"
+            for text, message in (
+                ('{"verdict": "FAIL", "verdict": "PASS"}', "duplicate JSON object key 'verdict'"),
+                ('{"total": NaN}', "non-standard JSON constant NaN"),
+                ('{"total": -Infinity}', "non-standard JSON constant -Infinity"),
+            ):
+                with self.subTest(text=text):
+                    path.write_text(text, encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, re.escape(message)):
+                        load_json(path)
+
+    def run_cli(self, receipt_path: Path) -> tuple[int, dict]:
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "scripts/validate_qis_harness.py"),
+             "--repo", str(ROOT), "--receipt", str(receipt_path)],
+            text=True, capture_output=True,
+        )
+        self.assertNotIn("Traceback", result.stderr)
+        return result.returncode, json.loads(result.stdout)
+
+    def test_cli_fails_closed_with_structured_summary_for_unloadable_receipts(self) -> None:
+        duplicate = json.dumps(self.valid).replace('"verdict": "PASS"', '"verdict": "FAIL", "verdict": "PASS"', 1)
+        with tempfile.TemporaryDirectory() as directory:
+            for name, content in (
+                ("duplicate.json", duplicate.encode("utf-8")),
+                ("truncated.json", b'{"schema_version": '),
+                ("binary.json", b"\xff\xfe\x00"),
+                ("missing.json", None),
+            ):
+                with self.subTest(receipt=name):
+                    path = Path(directory) / name
+                    if content is not None:
+                        path.write_bytes(content)
+                    returncode, summary = self.run_cli(path)
+                    self.assertEqual(1, returncode)
+                    self.assertFalse(summary["valid"])
+                    self.assertEqual(1, summary["error_count"])
+                    self.assertTrue(summary["errors"][0].startswith("receipt could not be loaded as strict JSON"))
+                    self.assertIsNone(summary["receipt_hash"])
+                    self.assertEqual(str(path), summary["receipt"])
+
+    def test_cli_accepts_valid_receipt_outside_repository(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "receipt.json"
+            path.write_text(json.dumps(self.valid), encoding="utf-8")
+            returncode, summary = self.run_cli(path)
+            self.assertEqual(0, returncode, summary)
+            self.assertEqual(str(path), summary["receipt"])
+            self.assertEqual(self.valid["receipt_hash"], summary["receipt_hash"])
+
     def test_instruction_files_stay_short_and_match_repo_commands(self) -> None:
         repo_text = (ROOT / ".github/copilot-instructions.md").read_text(encoding="utf-8")
         path_text = (ROOT / ".github/instructions/intent-shaper.instructions.md").read_text(
@@ -287,19 +348,42 @@ class QISHarnessTests(unittest.TestCase):
                 RECEIPT_PATH=str(receipt_path),
                 RUNNER_OS="Linux",
             )
-            for summary, failed in (("OK", 0), ("FAILED (failures=2, errors=1)", 3)):
-                with self.subTest(summary=summary):
-                    log.write_text(f"Ran 45 tests in 0.2s\n\n{summary}\n", encoding="utf-8")
+            for log_text, conformance, counts, verdict in (
+                ("Ran 45 tests in 0.2s\n\nOK\n", None, (45, 0, 45), "PASS"),
+                ("Ran 45 tests in 0.2s\n\nOK (skipped=2)\n", None, (45, 0, 45), "PASS"),
+                ("Ran 45 tests in 0.2s\n\nFAILED (failures=2, errors=1)\n", None, (42, 3, 45), "REVISE"),
+                (
+                    "test_ok ... ok\nOK\nRan 45 tests in 0.2s\n\nFAILED (errors=1, unexpected successes=1)\n",
+                    None, (43, 2, 45), "REVISE",
+                ),
+                ("Ran 45 tests in 0.2s\n\nOK\nTraceback (most recent call last):\n", None, (44, 1, 45), "REVISE"),
+                ("Ran 0 tests in 0.000s\n\nNO TESTS RAN\n", None, (0, 1, 1), "REVISE"),
+                ("", None, (0, 1, 1), "REVISE"),
+                (
+                    "Ran 45 tests in 0.2s\n\nOK\n",
+                    {"status": "passed", "fixtures_total": 25, "fixtures_passed": 24}, (45, 0, 45), "REVISE",
+                ),
+                ("Ran 45 tests in 0.2s\n\nOK\n", "{not json", (45, 0, 45), "REVISE"),
+            ):
+                with self.subTest(log=log_text, conformance=conformance):
+                    conformance_path = repo / "evals/intent-shaper/conformance-results.json"
+                    if conformance is None:
+                        conformance = {"status": "passed", "fixtures_total": 25, "fixtures_passed": 25}
+                    conformance_path.write_text(
+                        conformance if isinstance(conformance, str) else json.dumps(conformance),
+                        encoding="utf-8",
+                    )
+                    log.write_text(log_text, encoding="utf-8")
                     subprocess.run(
                         ["bash", "-e"], input=build["run"], text=True,
                         cwd=repo, env=env, check=True, capture_output=True,
                     )
                     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
                     self.assertEqual(
-                        {"passed": 45 - failed, "failed": failed, "total": 45},
+                        dict(zip(("passed", "failed", "total"), counts)),
                         receipt["commands"][0]["counts"],
                     )
-                    self.assertEqual("PASS" if failed == 0 else "REVISE", receipt["verdict"])
+                    self.assertEqual(verdict, receipt["verdict"])
                     self.assertEqual(receipt_hash(receipt), receipt["receipt_hash"])
                     subprocess.run(
                         ["python", str(ROOT / "scripts/validate_qis_harness.py"),
@@ -322,6 +406,7 @@ class QISHarnessTests(unittest.TestCase):
         build = next(step for step in steps if step["name"] == "Build harness receipt")
         self.assertEqual(head_ref, checkout["with"]["ref"])
         self.assertEqual("0", checkout["with"]["fetch-depth"])
+        self.assertEqual("false", checkout["with"]["persist-credentials"])
         self.assertEqual(head_ref, build["env"]["HEAD_SHA"])
         self.assertIn(f"name: qis-agent-harness-{head_ref}", workflow_text)
         self.assertIn(f"RECEIPT_PATH: evals/qis-agent-harness/qis-agent-harness-{head_ref}.json", workflow_text)
