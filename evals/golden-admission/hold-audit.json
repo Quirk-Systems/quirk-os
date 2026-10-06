@@ -344,8 +344,16 @@
       "actual_existing_artifact_paths": [
         "requirements-evals.txt",
         ".github/workflows/golden-gates.yml",
-        "supabase/migrations/",
-        "decisions/"
+        "supabase/migrations/20260811113009_ship_without_bryan_projection.sql",
+        "supabase/migrations/20260811_sync_control_plane_candidate.sql",
+        "supabase/migrations/20260811_sync_control_plane_outbox_object_index.sql",
+        "supabase/migrations/20260812030000_sync_control_plane_contracts.sql",
+        "supabase/migrations/20260812030001_sync_control_plane_evidence.sql",
+        "supabase/migrations/20260812030002_sync_control_plane_delivery.sql",
+        "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
+        "supabase/migrations/20261003090000_sync_control_plane_independent_approval.sql",
+        "supabase/migrations/20261006043743_github_approval_registry.sql",
+        "decisions/ADR-0001-cloudflare-boundary.md"
       ],
       "missing_requested_artifact_paths": [
         "LICENSE",

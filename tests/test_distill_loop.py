@@ -144,7 +144,16 @@ class TriggerTests(unittest.TestCase):
         self.assertEqual(second["files"], self.result["files"])
 
     def test_runtime_loader_rejects_distilled_candidate_with_full_grant(self) -> None:
-        manifest = self.result["manifest"]
+        from unittest.mock import Mock
+        from sync_control_plane.skill_runtime import manifest_digest
+
+        manifest = copy.deepcopy(self.result["manifest"])
+        manifest["admission"] = {
+            "decision": "approved", "decision_ref": "decision.probe.0001",
+            "requested_by": "agent.probe", "approved_by": "human.probe",
+            "decided_at": "2026-09-19T00:00:00Z",
+        }
+        manifest["integrity"]["manifest_sha256"] = manifest_digest(manifest)
         grant = {
             "grant_id": "grant.probe.0001",
             "skill_id": manifest["id"],
@@ -152,7 +161,7 @@ class TriggerTests(unittest.TestCase):
             "skill_manifest_sha256": manifest["integrity"]["manifest_sha256"],
             "decision": "approved",
             "admission_ref": "decision.probe.0001",
-            "requested_by": "operator.probe",
+            "requested_by": "agent.probe",
             "approved_by": "human.probe",
             "issued_at": "2026-09-19T00:00:00Z",
             "expires_at": "2026-09-19T02:00:00Z",
@@ -160,9 +169,32 @@ class TriggerTests(unittest.TestCase):
             "allowed_actions": [manifest["method"]["moves"][0]],
             "purpose": "prove distilled candidates never execute",
         }
-        loaded = load_skill_for_execution(manifest, self.result["skill_text"], grant, now="2026-09-19T01:00:00Z")
+        registry = Mock(allows=Mock(return_value=True))
+        loaded = load_skill_for_execution(manifest, self.result["skill_text"], grant, now="2026-09-19T01:00:00Z", approval_registry=registry)
         self.assertFalse(loaded["loaded"])
-        self.assertIn("runtime loader rejects unadmitted skill version", loaded["errors"])
+        self.assertEqual(["runtime loader rejects unadmitted skill version"], loaded["errors"])
+        registry.allows.assert_called_once()
+        # Paired positive control changes only status and its derived digest.
+        manifest["status"] = "admitted"
+        manifest["integrity"]["manifest_sha256"] = manifest_digest(manifest)
+        grant["skill_manifest_sha256"] = manifest["integrity"]["manifest_sha256"]
+        loaded = load_skill_for_execution(manifest, self.result["skill_text"], grant, now="2026-09-19T01:00:00Z", approval_registry=registry)
+        self.assertTrue(loaded["loaded"], loaded["errors"])
+        self.assertEqual([], loaded["errors"])
+        self.assertEqual("candidate", self.result["manifest"]["status"])
+
+    def test_conformance_refuses_unrelated_grant_error(self) -> None:
+        from unittest.mock import patch
+        import validate_distill_loop as conformance
+
+        original = conformance._synthetic_grant
+        def malformed_requester(manifest):
+            return {**original(manifest), "requested_by": "operator.probe"}
+        with patch.object(conformance, "_synthetic_grant", side_effect=malformed_requester):
+            report = conformance.validate(ROOT)
+        self.assertFalse(report["controls"]["runtime_loader_rejects_candidate"])
+        self.assertEqual("FAIL", report["verdict"])
+        self.assertIn("RUNTIME_LOADER_FAIL_OPEN", [f["code"] for f in report["findings"]])
 
     def test_starter_suite_is_honest_and_incomplete(self) -> None:
         report = run_eval_suite(self.result["eval_suite"], self.result["manifest"], case_schema=self.fx.schemas["skill_eval_case"])
