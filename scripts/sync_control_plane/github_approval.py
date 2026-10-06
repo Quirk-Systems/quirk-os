@@ -138,22 +138,35 @@ def verified_record(api, pr_number: int, request_path: str, *, now: str) -> dict
                 "decision_ref", "issued_at", "expires_at", "purpose"}
     if set(request) != required:
         raise ValueError("approval request fields must match the version 1 contract")
-    if request["approved_by"] != APPROVER or request["requested_by"] == APPROVER:
-        raise PolicyInvalidation("approval requester must be distinct from designated human")
-    if not isinstance(request["purpose"], str) or len(request["purpose"]) < 12:
-        raise PolicyInvalidation("approval requires a concrete purpose")
+    # Validate the entire immutable document before any authorization decision.
+    # Wrong-typed or malformed data cannot prove withdrawal of a verified grant.
+    if any(not isinstance(request[key], str) or not request[key]
+           for key in required - {"allowed_actions"}):
+        raise ValueError("approval request values must be non-empty strings")
     if not re.fullmatch(r"grant\.[a-z0-9._-]+", request["grant_id"]):
         raise ValueError("invalid grant identity")
+    for key in ("requested_by", "approved_by"):
+        if not re.fullmatch(r"(?:agent|human|service|system)\.[a-z0-9._-]+", request[key]):
+            raise ValueError("malformed approval principal")
+    if not re.fullmatch(r"[a-f0-9]{64}", request["subject_digest"]):
+        raise ValueError("invalid request subject digest")
+    if (not re.fullmatch(r"[a-zA-Z0-9_./-]+\.json", request["subject_path"])
+            or ".." in request["subject_path"].split("/")):
+        raise ValueError("unsafe subject path")
+    actions = request["allowed_actions"]
+    if (not isinstance(actions, list) or not actions or any(
+            not isinstance(a, str) or not re.fullmatch(r"[a-z][a-z0-9_]*", a)
+            for a in actions) or len(set(actions)) != len(actions)):
+        raise ValueError("invalid operation scope shape")
+    issued_at, expires_at = _instant(request["issued_at"]), _instant(request["expires_at"])
+    if request["approved_by"] != APPROVER or request["requested_by"] == APPROVER:
+        raise PolicyInvalidation("approval requester must be distinct from designated human")
+    if len(request["purpose"]) < 12:
+        raise PolicyInvalidation("approval requires a concrete purpose")
     if request_path != f".quirk/approval-requests/{request['grant_id']}.json":
         raise PolicyInvalidation("request path must match grant identity")
-    if not re.fullmatch(r"(?:agent|human|service|system)\.[a-z0-9._-]+", request["requested_by"]):
-        raise ValueError("malformed requesting principal")
-    if not isinstance(request["allowed_actions"], list) or not request["allowed_actions"] or any(
-        not isinstance(a, str) or not re.fullmatch(r"[a-z][a-z0-9_]*", a) for a in request["allowed_actions"]
-    ) or len(set(request["allowed_actions"])) != len(request["allowed_actions"]):
-        raise PolicyInvalidation("invalid operation scope")
     instant = _instant(now)
-    if not (_instant(request["issued_at"]) <= instant < _instant(request["expires_at"])):
+    if not (issued_at <= instant < expires_at):
         raise PolicyInvalidation("approval request is not currently valid")
     subject = api.document(request["subject_path"], commit)
     if request["subject_kind"] == "skill":

@@ -270,3 +270,46 @@ class ApprovalTests(unittest.TestCase):
         self.assertFalse(refresh(connection, api, 'grant.manifest.valid', now=NOW))
         api.get.assert_not_called()
         self.assertEqual(cursor.execute.call_count, 2)
+
+    def test_malformed_request_values_never_revoke_and_can_recover(self):
+        fixture = FixtureAPI().request
+        cases = [(key, value) for key in fixture for value in (None, 42, True, {}, [])
+                 if not (key == 'allowed_actions' and value == [])]
+        cases += [('allowed_actions', value) for value in ([], [None], [42], [{}],
+                  ['activate_manifest', 'activate_manifest'], ['bad action'])]
+        cases += [('issued_at', 'bad timestamp'), ('expires_at', '2026-10-06T05:00:00'),
+                  ('subject_digest', 'bad digest'), ('subject_path', '../bad.json'),
+                  ('approved_by', 'bad principal'), ('requested_by', 'bad principal'),
+                  ('grant_id', 'bad identity')]
+        for key, value in cases:
+            with self.subTest(key=key, value=value):
+                api = FixtureAPI(); api.request[key] = value
+                connection, cursor = self.refresh_fixture()
+                with self.assertRaises(ValueError) as error:
+                    refresh(connection, api, 'grant.manifest.valid', now=NOW)
+                self.assertNotIsInstance(error.exception, PolicyInvalidation)
+                self.assertEqual(cursor.execute.call_count, 2)
+                cursor.fetchone.side_effect = [('quirk_approval_ingestor',),
+                    (141, '.quirk/approval-requests/grant.manifest.valid.json', SHA, 1, None)]
+                self.assertTrue(refresh(connection, FixtureAPI(), 'grant.manifest.valid', now=NOW))
+                self.assertIn('set verified_at=', cursor.execute.call_args.args[0])
+
+    def test_complete_request_shape_precedes_policy_interpretation(self):
+        for key in FixtureAPI().request:
+            with self.subTest(key=key):
+                api = FixtureAPI()
+                api.request['approved_by'] = 'human.other'
+                api.request[key] = None
+                with self.assertRaises(ValueError) as error:
+                    self.verify(api)
+                self.assertNotIsInstance(error.exception, PolicyInvalidation)
+
+    def test_well_formed_request_policy_failures_remain_sticky(self):
+        for key, value in [('approved_by', 'human.other'), ('purpose', 'too short'),
+                           ('allowed_actions', ['delete_all']), ('subject_kind', 'other'),
+                           ('subject_digest', 'e' * 64)]:
+            with self.subTest(key=key):
+                api = FixtureAPI(); api.request[key] = value
+                connection, cursor = self.refresh_fixture()
+                self.assertFalse(refresh(connection, api, 'grant.manifest.valid', now=NOW))
+                self.assertIn('set revoked_at=', cursor.execute.call_args.args[0])
