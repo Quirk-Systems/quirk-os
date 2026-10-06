@@ -4,7 +4,12 @@ import copy
 import hashlib
 import json
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
+
+from jsonschema import Draft202012Validator, FormatChecker
+
+from .policy import _is_independent_approver, _is_principal
 
 AUTHORITY_RANK = {
     "observe": 0,
@@ -69,7 +74,7 @@ def declared_actions(manifest: dict[str, Any]) -> set[str]:
 
 def validate_skill_grant(
     manifest: dict[str, Any],
-    grant: dict[str, Any],
+    grant: Any,
     *,
     now: str,
 ) -> list[str]:
@@ -77,36 +82,40 @@ def validate_skill_grant(
     if manifest.get("status") != "admitted":
         errors.append("runtime loader rejects unadmitted skill version")
 
-    required_grant_fields = (
-        "grant_id",
-        "skill_id",
-        "skill_version",
-        "skill_manifest_sha256",
-        "decision",
-        "admission_ref",
-        "requested_by",
-        "approved_by",
-        "issued_at",
-        "expires_at",
-        "authority_ceiling",
-        "allowed_actions",
-        "purpose",
+    # The public loader is called directly; it cannot assume a separate schema
+    # pass happened. Reject malformed containers and fields before set/time use.
+    schema_path = Path(__file__).resolve().parents[2] / "schemas" / "skill-runtime-grant.schema.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    schema_errors = sorted(
+        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(grant),
+        key=lambda error: (tuple(str(part) for part in error.absolute_path), error.message),
     )
-    missing_fields = [
-        field for field in required_grant_fields
-        if grant.get(field) in (None, "", [])
-    ]
-    if missing_fields:
-        errors.append(f"runtime grant missing required fields: {', '.join(missing_fields)}")
+    if schema_errors:
+        errors.extend(
+            f"runtime grant schema violation at {'/'.join(str(part) for part in error.absolute_path) or '<root>'}: {error.message}"
+            for error in schema_errors
+        )
+        return errors
 
+    # Principal shape blocks structural self-approval; caller-supplied human
+    # names still do not authenticate approval. Trusted attestation/revocation
+    # lookup remains outside this candidate loader (see the approval brief).
     admission = manifest.get("admission") or {}
     if admission.get("decision") != "approved" or not admission.get("decision_ref"):
         errors.append("admitted skill requires external admission decision")
+    if not _is_principal(admission.get("requested_by")):
+        errors.append("skill admission requester must be a well-formed principal")
+    if not _is_independent_approver(admission.get("approved_by")):
+        errors.append("skill admission requires approval by an independent human principal")
     if admission.get("requested_by") == admission.get("approved_by"):
         errors.append("skill admission requester and approver must be distinct")
 
     if grant.get("decision") != "approved":
         errors.append("runtime grant decision must be approved")
+    if not _is_principal(grant.get("requested_by")):
+        errors.append("runtime grant requester must be a well-formed principal")
+    if not _is_independent_approver(grant.get("approved_by")):
+        errors.append("runtime grant requires approval by an independent human principal")
     if grant.get("requested_by") == grant.get("approved_by"):
         errors.append("runtime grant requester and approver must be distinct")
     if grant.get("skill_id") != manifest.get("id"):
@@ -151,7 +160,7 @@ def validate_skill_grant(
 def load_skill_for_execution(
     manifest: dict[str, Any],
     source_text: str,
-    grant: dict[str, Any],
+    grant: Any,
     *,
     now: str,
 ) -> dict[str, Any]:
@@ -161,7 +170,7 @@ def load_skill_for_execution(
         "loaded": not errors,
         "skill_id": manifest.get("id"),
         "skill_version": manifest.get("version"),
-        "grant_id": grant.get("grant_id"),
+        "grant_id": grant.get("grant_id") if isinstance(grant, dict) else None,
         "errors": errors,
     }
 

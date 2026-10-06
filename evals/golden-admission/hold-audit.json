@@ -1,0 +1,507 @@
+{
+  "schema_version": "hold-audit.v1",
+  "source_commit": "017d7f700982b63b31d3a24f3886d89898277c49",
+  "audit_scope": "Local repository artifacts only; no live provider state verified and no queue or receipt mutated.",
+  "summary": {
+    "hold_count": 16,
+    "verified_holds": 0,
+    "historic_findings_are_not_current_facts": true
+  },
+  "moves": [
+    {
+      "move_id": "qpm_pr3_authority_approval_manifest",
+      "disposition": "new",
+      "acceptance_checks": [
+        "Every L2\u2013L5 sample resolves to allow, deny, hold, or escalate.",
+        "No agent can self-promote its proposal.",
+        "Waivers require a receipt and cannot waive non-waivable gates.",
+        "Repository permission alone never satisfies semantic authority."
+      ],
+      "acceptance_gaps": [
+        "Existing independent-approval and grant checks do not constitute authority-ID owner/role resolution across L2-L5.",
+        "No authority manifest/schema, CODEOWNERS, full allow/deny/hold/escalate matrix, or waiver authorization implementation.",
+        "Runtime-grant validation checks inline fields rather than establishing an external authoritative grant registry."
+      ],
+      "actual_existing_artifact_paths": [
+        "schemas/runtime-manifest.schema.json",
+        "schemas/skill-runtime-grant.schema.json",
+        "scripts/sync_control_plane/policy.py",
+        "scripts/sync_control_plane/skill_runtime.py",
+        "tests/test_sync_control_plane.py",
+        "tests/test_skill_runtime.py",
+        "supabase/tests/manifest_activation_guard.cases.sql"
+      ],
+      "missing_requested_artifact_paths": [
+        "authority/manifest.yaml",
+        "schemas/authority.schema.json",
+        ".github/CODEOWNERS",
+        "docs/policy/authority-resolution.md",
+        "evals/authority/"
+      ],
+      "recommended_next_implementation": "Add policy-bound principal registry, risk/scope resolution and waiver contracts; keep actual grants separate from synthetic fixtures.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": false,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_canonical_vocabulary_strange_intact",
+      "disposition": "new",
+      "acceptance_checks": [
+        "Each term has ID, definition, purpose, owner, interfaces, examples, counterexamples, lifecycle, and enforcement boundary.",
+        "Strange Intact passes calibrated positive and negative fixtures.",
+        "A voice-neutral implementation remains conformant.",
+        "Wordplay is preserved where canonical and not generalized into mandatory profanity."
+      ],
+      "acceptance_gaps": [
+        "Vocabulary exists in prose; no complete per-term contract/schema and executable calibrated Strange Intact rubric.",
+        "No voice-neutral/wordplay conformance specimen or calibration receipt."
+      ],
+      "actual_existing_artifact_paths": [
+        "docs/golden-project-pack/README.md",
+        "docs/golden-project-pack/ARCHITECTURE.md"
+      ],
+      "missing_requested_artifact_paths": [
+        "docs/canon/quirk-language.md",
+        "schemas/quirk-term.schema.json",
+        "evals/strange-intact/"
+      ],
+      "recommended_next_implementation": "Implement term registry with required fields and neutral-versus-styled fixtures; preserve candidate status pending language-owner adoption.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": false,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_cloudflare_edge_decision",
+      "disposition": "new",
+      "acceptance_checks": [
+        "The decision names adopt, adapt, reject, or defer with rationale.",
+        "If adopted, preview and production deployment paths are distinct and commit-addressable.",
+        "Vercel/Cloudflare/Supabase responsibility overlap is prohibited or explicitly resolved.",
+        "Secrets and outbound access are bounded.",
+        "Cloudflare cannot mutate canon."
+      ],
+      "acceptance_gaps": [
+        "Actual defer decision with rationale and no-canon/no-overlap boundary exists at alternate ADR path.",
+        "No acceptance-mapped decision receipt or exhaustive secrets/outbound-bound conformance evidence.",
+        "Adoption-only preview/production conditions are not applicable while deferred; no adoption is established."
+      ],
+      "actual_existing_artifact_paths": [
+        "decisions/ADR-0001-cloudflare-boundary.md",
+        "platform/cloudflare.manifest.yaml",
+        "tests/test_sync_control_plane.py"
+      ],
+      "missing_requested_artifact_paths": [
+        "decisions/ADR-cloudflare-role.md",
+        "docs/platforms/cloudflare.md",
+        "wrangler.toml"
+      ],
+      "recommended_next_implementation": "Reuse defer ADR/manifest and add explicit acceptance mapping plus no-active-binding tests; do not provision provider to close a defer-compatible hold.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": false,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_complete_contracts_queue_semantics",
+      "disposition": "new",
+      "acceptance_checks": [
+        "Every normative object in the architecture has a schema and executable fixture.",
+        "Queue replay is idempotent.",
+        "Concurrent approvers cannot produce two operative outcomes for one versioned subject.",
+        "Stale proposals fail closed.",
+        "Comments cannot serialize as commands or transitions."
+      ],
+      "acceptance_gaps": [
+        "There are many current schemas; historic four-schema finding is stale.",
+        "Authority, LogRecord, Eval, EvalRun, Gate, GateResult, OutcomeRecord, Challenge, Comment, PoisonMarker, ForgettingAction, Release and ResourceRef lack a complete normative-object fixture inventory.",
+        "Outbox leases/retries exist but do not prove Proposed Move concurrent approver uniqueness, stale-write rejection and comment-as-command rejection."
+      ],
+      "actual_existing_artifact_paths": [
+        "schemas/proposed-move.schema.json",
+        "schemas/proposed-move-queue.schema.json",
+        "schemas/ledger-transition.schema.json",
+        "schemas/sync-run-receipt.schema.json",
+        "schemas/runtime-manifest.schema.json",
+        "supabase/migrations/20260812030002_sync_control_plane_delivery.sql",
+        "supabase/tests/sync_control_plane_hardening.sql"
+      ],
+      "missing_requested_artifact_paths": [
+        "docs/contracts/proposed-move-queue.md",
+        "fixtures/contracts/",
+        "evals/queue-integrity/"
+      ],
+      "recommended_next_implementation": "Inventory normative objects and implement missing schemas/fixtures plus versioned queue state machine and transactional concurrency tests.",
+      "human_evidence_needed": false,
+      "live_provider_or_external_evidence_needed": false,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_eval_threat_model_tribunal_harness",
+      "disposition": "new",
+      "acceptance_checks": [
+        "Known silent mutation, zombie truth, authority laundering, receipt fiction, consent creep, poison resurrection, and comment-as-command cases fail.",
+        "Forgetting tests cover primary storage, projections, indexes, vectors, caches, exports, and receipts.",
+        "Link and schema-instance checks run in CI.",
+        "Reliability-sensitive evals declare k, pass metric, grader mix, and variance.",
+        "The tribunal can be rerun by a contributor with no private context."
+      ],
+      "acceptance_gaps": [
+        "Current executable negative tests and SHA-pinned Golden Actions invalidate historical no-adversarial-test/tag-pinned claims.",
+        "No complete threat-model artifact or acceptance-bound coverage for zombie truth, consent creep, poison resurrection and comment-as-command.",
+        "No seven-surface forgetting/non-resurrection test suite or CI-wide link and schema-instance validation.",
+        "Reliability-sensitive repeated trials/grader mix/variance and no-private-context tribunal rerun lack complete receipts."
+      ],
+      "actual_existing_artifact_paths": [
+        "scripts/validate_golden_pack.py",
+        "scripts/validate_qis_harness.py",
+        "tests/test_qis_harness.py",
+        "tests/test_sync_control_plane.py",
+        "tests/test_intent_shaper.py",
+        ".github/workflows/golden-gates.yml",
+        "evals/qis-agent-harness/receipt.valid-provenance.json"
+      ],
+      "missing_requested_artifact_paths": [
+        "THREAT-MODEL.md",
+        "evals/ledger-fuckery-detector/",
+        "evals/ship-without-bryan/",
+        "scripts/validate_schema_instances.py"
+      ],
+      "recommended_next_implementation": "Expand actual validators into named threat-model cases and reference recovery/forgetting tests; explicitly distinguish deterministic evidence from human/model reliability trials.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": false,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_executable_vertical_slice_bootstrap",
+      "disposition": "new",
+      "acceptance_checks": [
+        "A clean environment completes bootstrap from documented commands.",
+        "Positive and negative fixtures run deterministically.",
+        "A receipt reconstructs transition, authority, evidence, and outcome debt.",
+        "A contributor adds one bounded capability using only repository instructions.",
+        "A documented failure can be induced and recovered."
+      ],
+      "acceptance_gaps": [
+        "Deterministic conformance setup exists; original claim that no executable implementation exists is stale.",
+        "No complete accountable-mutation reference slice with replay/recovery and portable authority/evidence/outcome-debt receipt.",
+        "No independent contributor extension completion evidence."
+      ],
+      "actual_existing_artifact_paths": [
+        "README.md",
+        "requirements-evals.txt",
+        "docs/sync-control-plane/README.md",
+        "scripts/validate_sync_control_plane.py",
+        "tests/test_sync_control_plane.py",
+        "supabase/tests/sync_control_plane_hardening.sql"
+      ],
+      "missing_requested_artifact_paths": [
+        "pyproject.toml",
+        "src/quirk_core/",
+        "examples/accountable-mutation/",
+        "fixtures/"
+      ],
+      "recommended_next_implementation": "Extend current Python conformance bootstrap into one local end-to-end mutation and recovery demo, then run outsider extension trial.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": false,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_google_drive_workplane_manifest",
+      "disposition": "new",
+      "acceptance_checks": [
+        "Every critical Drive resource has an ID, owner, content class, hash/version, and Git fallback.",
+        "A denied-Drive-access test still allows repository orientation and release review.",
+        "Drive comments can only create Proposed Moves.",
+        "Superseded Drive projections are visibly marked.",
+        "Forgetting propagates to exports and indexes under Quirk control."
+      ],
+      "acceptance_gaps": [
+        "No Drive resource inventory with verified IDs/owners/hash/version/Git fallback.",
+        "No denied-access orientation/release test, Drive-comment proposal adapter, superseded projection marker or export/index forgetting evidence."
+      ],
+      "actual_existing_artifact_paths": [
+        "docs/sync-control-plane/README.md",
+        "schemas/projection-envelope.schema.json"
+      ],
+      "missing_requested_artifact_paths": [
+        "workplanes/google-drive.manifest.yaml",
+        "docs/runbooks/drive-reconstruction.md",
+        "exports/drive-control-index.md",
+        "evals/workplane-portability/"
+      ],
+      "recommended_next_implementation": "Create versioned inventory and offline fallback contract, then test denied-access behavior; obtain actual authorized resource metadata.",
+      "human_evidence_needed": false,
+      "live_provider_or_external_evidence_needed": true,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_merge_blocking_receipt_outcome_gate",
+      "disposition": "new",
+      "acceptance_checks": [
+        "CI fails while any blocks_merge move is not verified.",
+        "Verified blockers require receipt_ref and all acceptance checks to be evidenced.",
+        "Duplicate move IDs fail validation.",
+        "The PR remains draft and receives a REQUEST_CHANGES tribunal review.",
+        "Merge rules require the Ship It Without Bryan check before canon promotion."
+      ],
+      "acceptance_gaps": [
+        "Current validator intentionally allows candidate merges while recording admission holds; literal original CI-fails-for-any-blocker check conflicts with current candidate/admission separation.",
+        "Resolved move requires nonempty receipt/evidence/resolution strings, but does not validate referenced receipt bytes or every acceptance-check evidence.",
+        "Duplicate IDs and queue blocker consistency are checked.",
+        "Live PR draft/review/ruleset requirements not evidenced locally; no docs/runbooks/github-ruleset.md."
+      ],
+      "actual_existing_artifact_paths": [
+        "schemas/proposed-move.schema.json",
+        "schemas/proposed-move-queue.schema.json",
+        "proposed-moves/pr-3/queue.json",
+        "scripts/validate_golden_pack.py",
+        ".github/workflows/golden-gates.yml"
+      ],
+      "missing_requested_artifact_paths": [
+        "docs/runbooks/github-ruleset.md"
+      ],
+      "recommended_next_implementation": "Disposition superseded candidate-merge wording through approved policy; add content-bound per-check receipts and live admission ruleset/review verification without conflating merges with canon.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": true,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_multimedia_rights_accessibility_provenance",
+      "disposition": "new",
+      "acceptance_checks": [
+        "A stranger can locate canon, identify transformations, verify rights, use accessible alternatives, and withdraw the derivative.",
+        "Claims added or omitted are explicit.",
+        "C2PA is treated as provenance evidence, not truth certification.",
+        "A no-native-affordance derivative fails.",
+        "The specimen does not impersonate Bryan."
+      ],
+      "acceptance_gaps": [
+        "Media-derivative schema exists; no medium-native transformed specimen, rights provenance, accessible alternative or withdrawal receipt.",
+        "No no-native-affordance failure test, explicit claim diff or non-impersonation evidence."
+      ],
+      "actual_existing_artifact_paths": [
+        "schemas/media-derivative.schema.json"
+      ],
+      "missing_requested_artifact_paths": [
+        "examples/multimedia-multipliziert/",
+        "rights/",
+        "accessibility/",
+        "evals/media/"
+      ],
+      "recommended_next_implementation": "Use repository-owned neutral source to build one licensed accessible derivative and executable withdrawal/provenance tests, then verify outsider usability.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": false,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_operator_personalization_boundaries",
+      "disposition": "new",
+      "acceptance_checks": [
+        "At least three operator roles complete documented Golden Paths.",
+        "Personal PreferenceEdges cannot validate without purpose, context, authority, validity, and reference or explicit system default.",
+        "Cross-namespace access fails closed in tests.",
+        "Native, reconstructed, and archaeological context remain distinguishable."
+      ],
+      "acceptance_gaps": [
+        "Existing purpose-partition, expiry and no-self-promotion policy tests are partial coverage, not three operator Golden Path completion receipts.",
+        "No namespace/operator schema, full PreferenceEdge contract, or cross-namespace storage-access demonstration.",
+        "Native/reconstructed/archaeological context distinction lacks acceptance-bound artifact."
+      ],
+      "actual_existing_artifact_paths": [
+        "docs/personalization/INTENT-AFFECT-AFFORDANCE-ARCHITECTURE.md",
+        "policies/personalization-adaptation-policy.yaml",
+        "schemas/personalization-plan.schema.json",
+        "scripts/intent_shaper/policy.py",
+        "tests/test_intent_shaper.py",
+        "evals/intent-shaper/cases.json"
+      ],
+      "missing_requested_artifact_paths": [
+        "docs/operators/operator-contracts.md",
+        "docs/policy/personalization-boundaries.md",
+        "schemas/namespace.schema.json",
+        "schemas/operator.schema.json",
+        "evals/context-partition/"
+      ],
+      "recommended_next_implementation": "Reuse Intent Shaper policy and add operator/namespace/context-provenance contracts plus three executable Golden Paths.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": false,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_release_migrations_supply_chain",
+      "disposition": "new",
+      "acceptance_checks": [
+        "A release candidate resolves version, migration, rollback, authority, eval, and receipt references.",
+        "Actions and dependencies are pinned according to documented policy.",
+        "A security reporter has a documented channel.",
+        "License and contribution terms are explicit.",
+        "Protocol and schema compatibility rules are tested."
+      ],
+      "acceptance_gaps": [
+        "Golden Actions are SHA pinned; historic mutable-tag finding is stale for that workflow.",
+        "LICENSE, CONTRIBUTING.md, SECURITY.md, CHANGELOG.md and RELEASE.md absent.",
+        "No fully resolved release manifest or compatibility/rollback/authority/receipt proof."
+      ],
+      "actual_existing_artifact_paths": [
+        "requirements-evals.txt",
+        ".github/workflows/golden-gates.yml",
+        "supabase/migrations/",
+        "decisions/"
+      ],
+      "missing_requested_artifact_paths": [
+        "LICENSE",
+        "CONTRIBUTING.md",
+        "SECURITY.md",
+        "CHANGELOG.md",
+        "RELEASE.md"
+      ],
+      "recommended_next_implementation": "Create candidate release/security/compatibility policy and tested manifest; explicit license selection requires actual rights-owner decision.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": false,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_research_top_minds_evidence",
+      "disposition": "new",
+      "acceptance_checks": [
+        "Every adopted claim resolves to exact primary evidence and access date.",
+        "Each Mind Card includes selection rationale, disagreements, falsifiers, and institutional context.",
+        "A freshness check can supersede stale claims.",
+        "No expert name acts as authority by itself.",
+        "Research adoption creates Proposed Moves rather than canon."
+      ],
+      "acceptance_gaps": [
+        "ResearchClaim schema exists but preserved source/claim/MindCard packets, access dates and source census are missing.",
+        "No executable freshness supersession or adoption-to-Proposed-Move evidence."
+      ],
+      "actual_existing_artifact_paths": [
+        "schemas/research-claim.schema.json",
+        "docs/golden-project-pack/CURRENT-RESEARCH.md",
+        "docs/golden-project-pack/TOP-MINDS.md"
+      ],
+      "missing_requested_artifact_paths": [
+        "research/sources/",
+        "research/claims/",
+        "research/mind-cards/",
+        "schemas/mind-card.schema.json",
+        "docs/research/source-census.md"
+      ],
+      "recommended_next_implementation": "Create typed source and MindCard packets using exact retrieved primary artifacts; implement freshness/reversal and proposed-adoption tests.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": true,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_supabase_projection_contract",
+      "disposition": "new",
+      "acceptance_checks": [
+        "Migration is present in Git and applied once to quirk-os-alpha.",
+        "Tables live in a non-exposed schema with no anon/authenticated grants and RLS enabled.",
+        "Every projected row carries source commit, content hash, canonical state, and source path.",
+        "Security and performance advisors show no unresolved tribunal-created finding.",
+        "Projection rebuild and deletion/forgetting are tested."
+      ],
+      "acceptance_gaps": [
+        "Git migration exists with private schema, role revocations and RLS; live apply-once state not established by repository.",
+        "proposed_moves carries source path/hash/commit/canonical state; tribunal_runs lacks equivalent content_hash/source_path fields.",
+        "No current intended-project advisor receipt or tested tribunal projection rebuild/deletion/forgetting."
+      ],
+      "actual_existing_artifact_paths": [
+        "supabase/migrations/20260811113009_ship_without_bryan_projection.sql"
+      ],
+      "missing_requested_artifact_paths": [
+        "docs/platforms/supabase.md",
+        "evals/projection/supabase/"
+      ],
+      "recommended_next_implementation": "Reconcile migration history with intended project, add missing provenance fields safely, test role access/rebuild/forgetting and bind live advisor evidence.",
+      "human_evidence_needed": false,
+      "live_provider_or_external_evidence_needed": true,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_supabase_security_reconciliation",
+      "disposition": "new",
+      "acceptance_checks": [
+        "Every API-exposed table has an explicit access decision, grants, and RLS policy set appropriate to its ownership model.",
+        "Every intentionally private table is demonstrably inaccessible to anon and authenticated roles.",
+        "public.rls_auto_enable() is removed, converted to an appropriate invoker model, or moved/revoked with explicit justification and tests.",
+        "The vector extension warning is remediated or accepted through an explicit documented waiver with evidence.",
+        "Supabase security advisors show no unresolved tribunal-created WARN finding before release.",
+        "A clean-environment operator can explain and reproduce the Supabase access model without Bryan."
+      ],
+      "acceptance_gaps": [
+        "No current live security snapshot: historical warnings cannot be assumed still active.",
+        "No repository acceptance-bound access decisions for public.preference_edges/preference_references, public.rls_auto_enable or vector-extension warning.",
+        "No approved waiver/remediation receipt or clean-operator access-model runbook."
+      ],
+      "actual_existing_artifact_paths": [
+        "supabase/tests/sync_control_plane_hardening.sql",
+        "supabase/migrations/20260811113009_ship_without_bryan_projection.sql"
+      ],
+      "missing_requested_artifact_paths": [
+        "docs/platforms/supabase-security.md",
+        "supabase/migrations/<generated>_supabase_security_reconciliation.sql",
+        "evals/security/supabase/",
+        "receipts/supabase-security-reconciliation.json"
+      ],
+      "recommended_next_implementation": "Read live grants/functions/extensions/advisors; create narrowly scoped reconciliation migration and tests from actual findings, then capture post-change evidence.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": true,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_system_identity_topology",
+      "disposition": "new",
+      "acceptance_checks": [
+        "A new contributor correctly places five representative objects with no oral guidance.",
+        "Every primary layer has owner, inputs, outputs, prohibited responsibilities, dependency direction, and extraction criteria.",
+        "All references to Core, OS, Systems, Quirkverse, and Control resolve to canonical IDs."
+      ],
+      "acceptance_gaps": [
+        "No canonical identity-stack/topology ADR or five-object outsider-placement receipt.",
+        "Layer owners, prohibited responsibilities and extraction criteria not supplied as a complete typed contract.",
+        "Existing prose names layers but lacks canonical-ID reference validation."
+      ],
+      "actual_existing_artifact_paths": [
+        "docs/golden-project-pack/README.md",
+        "docs/golden-project-pack/ARCHITECTURE.md",
+        "docs/sync-control-plane/README.md"
+      ],
+      "missing_requested_artifact_paths": [
+        "docs/canon/identity-stack.md",
+        "docs/architecture/repository-topology.md",
+        "decisions/ADR-0001-core-inside-quirk-os.md"
+      ],
+      "recommended_next_implementation": "Write candidate identity/topology contracts and automated reference checks; run an independent contributor placement exercise.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": false,
+      "verified": false
+    },
+    {
+      "move_id": "qpm_pr3_vercel_deployment_decision",
+      "disposition": "new",
+      "acceptance_checks": [
+        "The decision names adopt, adapt, reject, or defer with rationale.",
+        "If adopted, a preview deployment is commit-addressable and non-authoritative.",
+        "Environment ownership and secret boundaries are explicit.",
+        "Rollback and observability are verified.",
+        "Vercel cannot mutate canon."
+      ],
+      "acceptance_gaps": [
+        "Current topology permits admitted delivery projection but no explicit provider ADR/manifest or adopted preview/rollback/observability evidence.",
+        "Current live Vercel project/team state unknown; historical absence is not proof of current absence."
+      ],
+      "actual_existing_artifact_paths": [
+        "docs/sync-control-plane/README.md"
+      ],
+      "missing_requested_artifact_paths": [
+        "decisions/ADR-vercel-role.md",
+        "docs/platforms/vercel.md",
+        "platform/vercel.manifest.yaml"
+      ],
+      "recommended_next_implementation": "Record candidate defer decision or verify existing admitted delivery project with bounded secrets/rollback/commit receipt; operator chooses substantive adoption.",
+      "human_evidence_needed": true,
+      "live_provider_or_external_evidence_needed": true,
+      "verified": false
+    }
+  ]
+}
