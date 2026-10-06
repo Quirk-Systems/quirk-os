@@ -283,9 +283,6 @@ jobs:
           psql -v ON_ERROR_STOP=1 \
             -f supabase/tests/manifest_activation_guard.service_role.sql
 
-      - name: Run GitHub approval registry adversarial cases
-        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/github_approval_registry.sql
-
       - name: Assert the cases left no active manifest behind
         run: |
           psql -v ON_ERROR_STOP=1 -t -A -c \
@@ -328,16 +325,28 @@ jobs:
           test "$result" -eq 3
           grep -q 'verifier role has unsupported privileges' /tmp/replication.txt
 
-      - name: Apply the verified projection cutover and later migrations
+      - name: Apply the verified projection cutover
         run: |
           for migration in $(ls supabase/migrations/*.sql | sort); do
             if [[ "${migration##*/}" < "20261004140000" ]]; then continue; fi
+            if [[ "${migration##*/}" > "20261004140000" ]]; then continue; fi
             echo "Applying ${migration}"
             psql -v ON_ERROR_STOP=1 --single-transaction -f "${migration}"
           done
 
       - name: Prove protected projection writes and refusals
         run: psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_verified_projection.sql
+
+      - name: Apply later migrations in order after projection proof
+        run: |
+          for migration in $(ls supabase/migrations/*.sql | sort); do
+            if [[ "${migration##*/}" < "20261004140000" || "${migration##*/}" == "20261004140000"* ]]; then continue; fi
+            echo "Applying ${migration}"
+            psql -v ON_ERROR_STOP=1 --single-transaction -f "${migration}"
+          done
+
+      - name: Run GitHub approval registry adversarial cases
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/github_approval_registry.sql
 
       - name: Verify outbox claim index and supported batch size
         run: psql -v ON_ERROR_STOP=1 -f supabase/tests/sync_control_plane_outbox_claim_benchmark.sql
