@@ -25,7 +25,10 @@ create table quirk_sync.github_approval_registry (
   subject_version text not null check (length(subject_version) > 0),
   subject_contract jsonb not null check (jsonb_typeof(subject_contract) = 'object'),
   subject_digest text not null check (subject_digest ~ '^[a-f0-9]{64}$'),
-  authority_ceiling text not null check (authority_ceiling in ('observe','infer','propose','execute_reversible','enforce_invariant','execute_protected')),
+  authority_ceiling text not null check (
+    (subject_kind = 'skill' and authority_ceiling in ('observe','infer','propose','execute_bounded'))
+    or (subject_kind = 'manifest' and authority_ceiling in ('observe','infer','propose','execute_reversible','enforce_invariant','execute_protected'))
+  ),
   allowed_actions jsonb not null check (jsonb_typeof(allowed_actions) = 'array' and jsonb_array_length(allowed_actions) > 0 and not jsonb_path_exists(allowed_actions, '$[*] ? (@.type() != "string")')),
   requested_by text not null check (requested_by ~ '^(human|agent|service|system)\.[a-z0-9._-]+$'),
   approved_by text not null check (approved_by = 'human.bryan' and approved_by <> requested_by),

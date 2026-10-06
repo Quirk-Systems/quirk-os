@@ -71,6 +71,20 @@ do $$ begin
  exception when insufficient_privilege then null; end;
 end $$;
 reset session authorization;
+-- Skill runtime ceilings differ from manifest admission ceilings.
+insert into quirk_sync.github_approval_registry
+(grant_id,subject_kind,subject_id,subject_version,subject_contract,subject_digest,authority_ceiling,allowed_actions,requested_by,approved_by,decision_ref,repository,request_commit,request_path,pr_number,review_id,reviewer_id,reviewer_login,issued_at,expires_at,verified_at)
+select 'grant.bounded',subject_kind,subject_id,subject_version,subject_contract,subject_digest,'execute_bounded','["propose"]'::jsonb,requested_by,approved_by,decision_ref,repository,request_commit,request_path,pr_number,review_id,reviewer_id,reviewer_login,issued_at,expires_at,verified_at from quirk_sync.github_approval_registry where grant_id='grant.test';
+do $$ begin
+ if not quirk_sync.github_approval_allows('grant.bounded','skill','skill.test','1.0.0',repeat('a',64),'execute_bounded','["propose"]','agent.test','human.bryan','decision.test') then raise exception 'valid bounded skill denied'; end if;
+ begin
+  insert into quirk_sync.github_approval_registry
+  (grant_id,subject_kind,subject_id,subject_version,subject_contract,subject_digest,authority_ceiling,allowed_actions,requested_by,approved_by,decision_ref,repository,request_commit,request_path,pr_number,review_id,reviewer_id,reviewer_login,issued_at,expires_at,verified_at)
+  select 'grant.invalid-bounded','manifest',subject_id,subject_version,subject_contract,subject_digest,'execute_bounded',allowed_actions,requested_by,approved_by,decision_ref,repository,request_commit,request_path,pr_number,review_id,reviewer_id,reviewer_login,issued_at,expires_at,verified_at from quirk_sync.github_approval_registry where grant_id='grant.test';
+  raise exception 'manifest accepted skill-only bounded ceiling';
+ exception when check_violation then null; end;
+end $$;
+
 -- The isolated role can ingest/refresh/revoke but cannot alter immutable bindings.
 set role quirk_approval_ingestor;
 insert into quirk_sync.github_approval_registry
