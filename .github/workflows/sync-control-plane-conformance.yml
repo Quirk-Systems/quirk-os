@@ -329,7 +329,7 @@ jobs:
         run: |
           for migration in $(ls supabase/migrations/*.sql | sort); do
             if [[ "${migration##*/}" < "20261004140000" ]]; then continue; fi
-            if [[ "${migration##*/}" > "20261004140000" ]]; then continue; fi
+            if [[ "${migration##*/}" > "20261004140000_sync_control_plane_verified_projection.sql" ]]; then continue; fi
             echo "Applying ${migration}"
             psql -v ON_ERROR_STOP=1 --single-transaction -f "${migration}"
           done
