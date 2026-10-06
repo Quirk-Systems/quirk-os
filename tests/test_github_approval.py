@@ -2,9 +2,9 @@ import copy
 import json
 import unittest
 from pathlib import Path
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock, patch
 
-from scripts.sync_control_plane.github_approval import verified_record, manifest_contract, strict_json, ingest, refresh
+from scripts.sync_control_plane.github_approval import verified_record, manifest_contract, strict_json, ingest, refresh, PolicyInvalidation, GitHubAPI
 from scripts.sync_control_plane.approval import PostgresApprovalRegistry
 from scripts.sync_control_plane.policy import validate_manifest_admission
 from scripts.sync_control_plane.skill_runtime import load_skill_for_execution
@@ -23,7 +23,7 @@ class FixtureAPI:
             subject_path='agents/valid.json',authority_ceiling='propose',allowed_actions=['activate_manifest'],
             requested_by='agent.valid',approved_by='human.bryan',decision_ref='decision.manifest.valid',
             issued_at='2026-10-06T03:00:00Z',expires_at='2026-10-06T05:00:00Z',purpose='bounded activation review')
-        self.pr = dict(head=dict(sha=SHA),base=dict(ref='main',repo=dict(full_name='Quirk-Systems/quirk-os')),draft=False,state='open',merged=False)
+        self.pr = dict(head=dict(sha=SHA),base=dict(ref='main',sha='c'*40,repo=dict(id=1316249812,full_name='Quirk-Systems/quirk-os')),draft=False,state='open',merged=False)
         self.review = dict(id=1,user=dict(id=207279,login='bryansayler',type='User'),state='APPROVED',commit_id=SHA,submitted_at='2026-10-06T03:30:00Z')
         self.reviews = [self.review]
         self.pr_calls = 0
@@ -146,3 +146,127 @@ class ApprovalTests(unittest.TestCase):
         api=Mock();api.get.side_effect=OSError('unavailable')
         with self.assertRaises(OSError):refresh(connection,api,'grant.manifest.valid',now=NOW)
         self.assertEqual(cursor.execute.call_count,2)
+
+    def refresh_fixture(self):
+        connection = MagicMock()
+        cursor = connection.cursor.return_value.__enter__.return_value
+        cursor.fetchone.side_effect = [('quirk_approval_ingestor',),
+            (141, '.quirk/approval-requests/grant.manifest.valid.json', SHA, 1, None)]
+        return connection, cursor
+
+    def test_mutable_repository_metadata_does_not_revoke_or_deny(self):
+        api = FixtureAPI()
+        initial, final = copy.deepcopy(api.pr), copy.deepcopy(api.pr)
+        initial['base']['repo'].update(stargazers_count=10, updated_at='2026-10-06T03:00:00Z')
+        final['base']['repo'].update(stargazers_count=11, updated_at=NOW, description='new description')
+        final['base']['label'] = 'unrelated label'
+        api.get = Mock(side_effect=[initial, api.reviews, final])
+        connection, cursor = self.refresh_fixture()
+        self.assertTrue(refresh(connection, api, 'grant.manifest.valid', now=NOW))
+        self.assertIn('set verified_at=', cursor.execute.call_args.args[0])
+
+    def test_security_relevant_base_drift_revokes(self):
+        for field, value in [('id', 999), ('full_name', 'other/repository'),
+                             ('ref', 'other-branch'), ('sha', 'd' * 40)]:
+            with self.subTest(field=field):
+                api = FixtureAPI()
+                final = copy.deepcopy(api.pr)
+                target = final['base']['repo'] if field in {'id', 'full_name'} else final['base']
+                target[field] = value
+                api.get = Mock(side_effect=[api.pr, api.reviews, final])
+                connection, cursor = self.refresh_fixture()
+                self.assertFalse(refresh(connection, api, 'grant.manifest.valid', now=NOW))
+                self.assertIn('set revoked_at=', cursor.execute.call_args.args[0])
+
+    def test_malformed_responses_never_write_and_can_recover(self):
+        malformed_prs = [None, [], {}, {'head': None}]
+        for path in [('head', 'sha'), ('base', 'sha'), ('base', 'repo'),
+                     ('base', 'repo', 'id'), ('base', 'repo', 'full_name'),
+                     ('draft',), ('state',), ('merged',)]:
+            value = copy.deepcopy(FixtureAPI().pr)
+            target = value
+            for key in path[:-1]:
+                target = target[key]
+            del target[path[-1]]
+            malformed_prs.append(value)
+        for field, value in [('draft', None), ('merged', None), ('state', 'unknown')]:
+            pr = copy.deepcopy(FixtureAPI().pr); pr[field] = value
+            malformed_prs.append(pr)
+        responses = []
+        for pr in malformed_prs:
+            responses.extend([[pr], [FixtureAPI().pr, FixtureAPI().reviews, pr]])
+        responses.extend([[FixtureAPI().pr, value] for value in [None, {}, [None], [{}]]])
+        for field in ['id', 'state', 'commit_id', 'submitted_at', 'user']:
+            review = copy.deepcopy(FixtureAPI().review); del review[field]
+            responses.append([FixtureAPI().pr, [review]])
+        for field, value in [('state', 'unknown'), ('submitted_at', None),
+                             ('submitted_at', 'bad timestamp'), ('commit_id', None), ('user', None)]:
+            review = copy.deepcopy(FixtureAPI().review); review[field] = value
+            responses.append([FixtureAPI().pr, [review]])
+        for sequence in responses:
+            with self.subTest(sequence=sequence):
+                api = FixtureAPI(); api.get = Mock(side_effect=sequence)
+                connection, cursor = self.refresh_fixture()
+                with self.assertRaises((ValueError, KeyError, TypeError, AttributeError)) as error:
+                    refresh(connection, api, 'grant.manifest.valid', now=NOW)
+                self.assertNotIsInstance(error.exception, PolicyInvalidation)
+                self.assertEqual(cursor.execute.call_count, 2)
+                # Same unrevoked row is eligible for a later complete verification.
+                cursor.fetchone.side_effect = [('quirk_approval_ingestor',),
+                    (141, '.quirk/approval-requests/grant.manifest.valid.json', SHA, 1, None)]
+                self.assertTrue(refresh(connection, FixtureAPI(), 'grant.manifest.valid', now=NOW))
+                self.assertIn('set verified_at=', cursor.execute.call_args.args[0])
+
+    def test_truncated_200_json_is_protocol_failure_without_revocation(self):
+        import io
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.geturl.return_value = 'https://api.github.com/repos/Quirk-Systems/quirk-os/pulls/141'
+        response.read = io.BytesIO(b'{"head":').read
+        with patch('scripts.sync_control_plane.github_approval.build_opener') as opener:
+            opener.return_value.open.return_value = response
+            connection, cursor = self.refresh_fixture()
+            with self.assertRaises(json.JSONDecodeError):
+                refresh(connection, GitHubAPI('fixture-token'), 'grant.manifest.valid', now=NOW)
+            self.assertEqual(cursor.execute.call_count, 2)
+
+    def test_protocol_failure_at_document_or_later_page_never_revokes(self):
+        for stage in ['request', 'subject', 'missing_subject', 'later_page']:
+            with self.subTest(stage=stage):
+                api = FixtureAPI()
+                if stage == 'request':
+                    api.document = Mock(side_effect=ValueError('malformed inline document'))
+                elif stage == 'subject':
+                    api.document = Mock(side_effect=[api.request, json.JSONDecodeError('truncated', '{', 1)])
+                elif stage == 'missing_subject':
+                    api.document = Mock(side_effect=[api.request, {}])
+                else:
+                    api.get = Mock(side_effect=[api.pr, [api.review] * 100, {}])
+                connection, cursor = self.refresh_fixture()
+                with self.assertRaises((ValueError, KeyError)) as error:
+                    refresh(connection, api, 'grant.manifest.valid', now=NOW)
+                self.assertNotIsInstance(error.exception, PolicyInvalidation)
+                self.assertEqual(cursor.execute.call_count, 2)
+
+    def test_verified_policy_failures_and_original_binding_changes_revoke(self):
+        for change in ['head', 'draft', 'closed', 'empty_reviews', 'review_identity', 'expiry']:
+            with self.subTest(change=change):
+                api = FixtureAPI()
+                if change == 'head': api.change_head = True
+                elif change == 'draft': api.pr['draft'] = True
+                elif change == 'closed': api.pr['state'] = 'closed'
+                elif change == 'empty_reviews': api.reviews = []
+                elif change == 'review_identity': api.review['id'] = 2
+                elif change == 'expiry': api.request['expires_at'] = NOW
+                connection, cursor = self.refresh_fixture()
+                self.assertFalse(refresh(connection, api, 'grant.manifest.valid', now=NOW))
+                self.assertIn('set revoked_at=', cursor.execute.call_args.args[0])
+
+    def test_existing_revocation_is_sticky_without_api_call(self):
+        connection, cursor = self.refresh_fixture()
+        cursor.fetchone.side_effect = [('quirk_approval_ingestor',),
+            (141, '.quirk/approval-requests/grant.manifest.valid.json', SHA, 1, NOW)]
+        api = Mock()
+        self.assertFalse(refresh(connection, api, 'grant.manifest.valid', now=NOW))
+        api.get.assert_not_called()
+        self.assertEqual(cursor.execute.call_count, 2)
