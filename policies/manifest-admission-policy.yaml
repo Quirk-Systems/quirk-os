@@ -2,7 +2,7 @@ api_version: quirk.dev/policy/v1alpha1
 kind: Policy
 metadata:
   id: policy.manifest-admission
-  version: 0.3.0
+  version: 0.4.0
   status: candidate
 invariant: capability_never_implies_authority
 rules:
@@ -49,3 +49,23 @@ protected_actions:
   - expand_authority
   - merge_pull_request
   - deploy_production
+
+verification_contract:
+  hash_profile: runtime-manifest-content.v1
+  attestation_schema: manifest-approval-attestation.v1
+  approval_root: exact_head_scoped_human_github_review
+  ownership_source: protected_base_branch_CODEOWNERS_and_installed_account_ID_mapping
+  database_independence: projection
+  database_write_role: quirk_manifest_verifier
+  bootstrap: blocked_until_host_policy_and_repository_protection_are_admitted
+  requirements:
+    - compute_content_hash_including_all_metadata
+    - resolve_review_identity_scope_expiry_revocation_and_evaluation_materials
+    - compare_entire_admission_envelope_with_resolved_consent
+    - refuse_fabricated_refs_and_ambiguous_or_unavailable_approval
+    - reverify_immediately_before_database_transaction
+    - preserve_append_only_history_and_zero_effect_replay
+  limitations:
+    - PostgreSQL_does_not_independently_resolve_GitHub_or_recompute_Python_JSON_hashes
+    - privileged_verifier_or_database_administrator_compromise_is_outside_this_boundary
+    - review_resolution_and_database_write_are_not_cross_provider_atomic

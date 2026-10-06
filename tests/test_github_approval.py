@@ -100,10 +100,12 @@ class ApprovalTests(unittest.TestCase):
         api=FixtureAPI()
         protected=dict(grant_id=api.request['grant_id'],subject_kind='manifest',
             subject_id=api.request['subject_id'],subject_version='1.0.0',subject_digest=api.request['subject_digest'],
-            authority_ceiling='propose',allowed_actions=['activate_manifest'],requested_by='agent.valid',
-            approved_by='human.bryan',decision_ref='decision.manifest.valid',subject_contract=manifest_contract(api.subject))
+            authority_ceiling='propose',allowed_actions=['activate_manifest'],requested_by=api.subject['admission']['requested_by'],
+            approved_by=api.subject['admission']['approved_by'],decision_ref='decision.manifest.valid',subject_contract=manifest_contract(api.subject))
         registry=Mock(allows=Mock(side_effect=lambda **binding: binding==protected))
-        self.assertEqual(validate_manifest_admission(api.subject,approval_registry=registry),[])
+        self.assertIn('trusted approval verifier and activation context required',
+                      validate_manifest_admission(api.subject,approval_registry=registry))
+        registry.allows.assert_called_with(**protected)
         for field,value in [('tools',[{'ref':'tool.delete','allowed_actions':['delete_all']}]),('version','2.0.0'),('authority_ceiling','execute_protected')]:
             manifest=copy.deepcopy(api.subject);manifest[field]=value
             self.assertTrue(validate_manifest_admission(manifest,approval_registry=registry))

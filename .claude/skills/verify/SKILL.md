@@ -211,3 +211,21 @@ the same defect as a guard that cannot refuse.
 su postgres -c "/usr/lib/postgresql/16/bin/pg_ctl -D /var/lib/postgresql/scratch/data -m immediate stop"
 rm -rf /var/lib/postgresql/scratch
 ```
+
+
+## Verified projection successor (ADR-0002/0003)
+
+The positive `service_role` cases above apply only to the migration prefix
+before `20261004140000_sync_control_plane_verified_projection.sql`. Run them
+before that cutover, exactly as the conformance workflow does. The successor
+revokes broad registry writes; re-running those old positive cases afterward
+must fail on privileges.
+
+Use the workflow's two migration stages, its expected-failure legacy cutover
+probe, then `supabase/tests/manifest_verified_projection.sql`. That suite rolls
+back all synthetic effects and tests allowed projection, exact retry, denied
+browser/service writes, payload drift, stale observations, history mutation,
+stop, and reapproval. It proves the SQL lane only. A synthetic envelope from
+this suite is never proof of GitHub approval or independently computed hashes.
+No migration creates login credentials or grants runtime membership in the
+verifier role. The Python candidate policy remains disabled until bootstrap.

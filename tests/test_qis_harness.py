@@ -98,7 +98,7 @@ class QISHarnessTests(unittest.TestCase):
 
     def test_fixture_directory_is_exactly_valid_plus_known_negatives(self) -> None:
         self.assertEqual(
-            {"receipt.valid-provenance.json", *self.NEGATIVE_FIXTURES},
+            {"receipt.valid-provenance.json", "receipt.valid-pr132-provenance.json", *self.NEGATIVE_FIXTURES},
             {path.name for path in self.fixture_dir.glob("*.json")},
         )
 
