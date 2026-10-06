@@ -3,7 +3,10 @@ begin;
 insert into quirk_sync.github_approval_registry
 (grant_id,subject_kind,subject_id,subject_version,subject_contract,subject_digest,authority_ceiling,allowed_actions,requested_by,approved_by,decision_ref,repository,request_commit,request_path,pr_number,review_id,reviewer_id,reviewer_login,issued_at,expires_at,verified_at)
 values ('grant.test','skill','skill.test','1.0.0','{}'::jsonb,repeat('a',64),'propose','["propose"]','agent.test','human.bryan','decision.test','Quirk-Systems/quirk-os',repeat('0',40),'tests/synthetic-request.json',1,1,207279,'bryansayler',now()-interval '1 minute',now()+interval '1 hour',now());
-do $$ declare mutation text; ok boolean; begin
+do $$ declare mutation text; ok boolean; invalid_actions jsonb; begin
+ foreach invalid_actions in array array[null::jsonb,'{}'::jsonb,'[]'::jsonb,'[123]'::jsonb,'[null]'::jsonb] loop
+  if quirk_sync.github_approval_allows('grant.test','skill','skill.test','1.0.0',repeat('a',64),'propose',invalid_actions,'agent.test','human.bryan','decision.test') then raise exception 'invalid actions admitted'; end if;
+ end loop;
  if not quirk_sync.github_approval_allows('grant.test','skill','skill.test','1.0.0',repeat('a',64),'propose','["propose"]','agent.test','human.bryan','decision.test') then raise exception 'valid registry denied'; end if;
  if quirk_sync.github_approval_allows('absent','skill','skill.test','1.0.0',repeat('a',64),'propose','["propose"]','agent.test','human.fabricated','decision.test') then raise exception 'fabricated human admitted'; end if;
  if quirk_sync.github_approval_allows('grant.test','skill','skill.test','1.0.0',repeat('b',64),'propose','["propose"]','agent.test','human.bryan','decision.test') then raise exception 'wrong digest admitted'; end if;
@@ -38,6 +41,18 @@ do $$ declare mutation text; ok boolean; begin
  exception when raise_exception then if sqlerrm <> 'GitHub approval revocation is sticky' then raise; end if; end;
 end $$;
 
+-- Read back the role boundary including indirect membership and schema writes.
+do $$ declare runtime_role text; begin
+ foreach runtime_role in array array['service_role','anon','authenticated'] loop
+  if pg_has_role(runtime_role, 'quirk_approval_ingestor','MEMBER')
+   or has_table_privilege(runtime_role,'quirk_sync.github_approval_registry','INSERT')
+   or has_table_privilege(runtime_role,'quirk_sync.github_approval_registry','UPDATE')
+   or has_schema_privilege(runtime_role,'quirk_sync','CREATE') then
+   raise exception 'runtime role crosses approval boundary: %',runtime_role;
+  end if;
+ end loop;
+ if exists(select 1 from pg_roles where rolname='quirk_approval_ingestor' and (rolcanlogin or rolsuper or rolcreaterole or rolbypassrls)) then raise exception 'ingestor role has unsafe attributes'; end if;
+end $$;
 set role service_role;
 do $$ begin
  begin
@@ -51,6 +66,23 @@ do $$ begin
  begin
   execute 'set local role quirk_approval_ingestor';
   raise exception 'service role can assume ingestor';
+ exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+-- The isolated role can ingest/refresh/revoke but cannot alter immutable bindings.
+set role quirk_approval_ingestor;
+insert into quirk_sync.github_approval_registry
+(grant_id,subject_kind,subject_id,subject_version,subject_contract,subject_digest,authority_ceiling,allowed_actions,requested_by,approved_by,decision_ref,repository,request_commit,request_path,pr_number,review_id,reviewer_id,reviewer_login,issued_at,expires_at,verified_at)
+select 'grant.ingestor',subject_kind,subject_id,subject_version,subject_contract,subject_digest,authority_ceiling,allowed_actions,requested_by,approved_by,decision_ref,repository,request_commit,request_path,pr_number,review_id,reviewer_id,reviewer_login,issued_at,expires_at,verified_at from quirk_sync.github_approval_registry where grant_id='grant.test';
+update quirk_sync.github_approval_registry set verified_at=statement_timestamp(),revoked_at=statement_timestamp() where grant_id='grant.ingestor';
+do $$ begin
+ begin
+  update quirk_sync.github_approval_registry set subject_digest=repeat('c',64) where grant_id='grant.ingestor';
+  raise exception 'ingestor can rewrite binding';
+ exception when insufficient_privilege then null; end;
+ begin
+  update quirk_sync.github_approval_humans set principal='human.fabricated';
+  raise exception 'ingestor can manufacture human allowlist';
  exception when insufficient_privilege then null; end;
 end $$;
 reset role;

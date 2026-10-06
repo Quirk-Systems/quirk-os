@@ -74,7 +74,7 @@ create function quirk_sync.github_approval_allows(
  p_authority_ceiling text,p_actions jsonb,p_requested_by text,p_approved_by text,p_decision_ref text,p_subject_contract jsonb default '{}'::jsonb
 ) returns boolean language sql stable security definer
 set search_path = pg_catalog, quirk_sync, pg_temp as $$
- select coalesce(jsonb_typeof(p_actions) = 'array' and jsonb_array_length(p_actions) > 0
+ select case when jsonb_typeof(p_actions) is distinct from 'array' then false else coalesce(jsonb_array_length(p_actions) > 0
    and not jsonb_path_exists(p_actions, '$[*] ? (@.type() != "string")') and exists (
    select 1 from quirk_sync.github_approval_registry a
    join quirk_sync.github_approval_humans h on (h.reviewer_id,h.reviewer_login,h.principal) = (a.reviewer_id,a.reviewer_login,a.approved_by)
@@ -85,7 +85,7 @@ set search_path = pg_catalog, quirk_sync, pg_temp as $$
      and a.requested_by=p_requested_by and a.approved_by=p_approved_by and a.decision_ref=p_decision_ref
      and a.issued_at <= statement_timestamp() and a.expires_at > statement_timestamp() and a.revoked_at is null
      and a.verified_at <= statement_timestamp() and a.verified_at >= statement_timestamp() - interval '5 minutes'
- ), false)
+ ), false) end
 $$;
 revoke all on function quirk_sync.github_approval_allows(text,text,text,text,text,text,jsonb,text,text,text,jsonb) from public,anon,authenticated;
 grant execute on function quirk_sync.github_approval_allows(text,text,text,text,text,text,jsonb,text,text,text,jsonb) to service_role;
