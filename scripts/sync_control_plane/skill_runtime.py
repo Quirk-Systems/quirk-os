@@ -9,6 +9,7 @@ from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 
+from .approval import authorization_errors
 from .policy import _is_independent_approver, _is_principal
 
 AUTHORITY_RANK = {
@@ -77,6 +78,7 @@ def validate_skill_grant(
     grant: Any,
     *,
     now: str,
+    approval_registry: Any = None,
 ) -> list[str]:
     errors: list[str] = []
     if manifest.get("status") != "admitted":
@@ -97,9 +99,7 @@ def validate_skill_grant(
         )
         return errors
 
-    # Principal shape blocks structural self-approval; caller-supplied human
-    # names still do not authenticate approval. Trusted attestation/revocation
-    # lookup remains outside this candidate loader (see the approval brief).
+    # Structural admission and scope checks supplement the protected registry.
     admission = manifest.get("admission") or {}
     if admission.get("decision") != "approved" or not admission.get("decision_ref"):
         errors.append("admitted skill requires external admission decision")
@@ -154,6 +154,13 @@ def validate_skill_grant(
     except (KeyError, TypeError, ValueError) as exc:
         errors.append(f"invalid runtime grant time contract: {exc}")
 
+    errors.extend(authorization_errors(
+        approval_registry, grant_id=grant["grant_id"], subject_kind="skill",
+        subject_id=manifest.get("id"), subject_version=manifest.get("version"),
+        subject_digest=manifest_digest(manifest), authority_ceiling=grant["authority_ceiling"],
+        allowed_actions=grant["allowed_actions"], requested_by=grant["requested_by"],
+        approved_by=grant["approved_by"], decision_ref=grant["admission_ref"], subject_contract={},
+    ))
     return errors
 
 
@@ -163,9 +170,10 @@ def load_skill_for_execution(
     grant: Any,
     *,
     now: str,
+    approval_registry: Any = None,
 ) -> dict[str, Any]:
     errors = validate_manifest_integrity(manifest, source_text)
-    errors.extend(validate_skill_grant(manifest, grant, now=now))
+    errors.extend(validate_skill_grant(manifest, grant, now=now, approval_registry=approval_registry))
     return {
         "loaded": not errors,
         "skill_id": manifest.get("id"),

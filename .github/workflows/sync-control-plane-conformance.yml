@@ -36,7 +36,11 @@ on:
       - 'schemas/**'
       - 'scripts/sync_control_plane/**'
       - 'scripts/validate_sync_control_plane.py'
+      - 'scripts/ingest_github_approval.py'
+      - 'tests/test_github_approval.py'
+      - 'tests/test_skill_runtime.py'
       - 'supabase/migrations/**'
+      - 'supabase/tests/github_approval_registry.sql'
       - 'supabase/tests/manifest_activation_guard.cases.sql'
       - 'supabase/tests/manifest_activation_guard.run.sql'
       - 'supabase/tests/manifest_activation_guard.service_role.sql'
@@ -270,6 +274,9 @@ jobs:
         run: |
           psql -v ON_ERROR_STOP=1 \
             -f supabase/tests/manifest_activation_guard.service_role.sql
+
+      - name: Run GitHub approval registry adversarial cases
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/github_approval_registry.sql
 
       - name: Assert the cases left no active manifest behind
         run: |

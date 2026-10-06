@@ -21,6 +21,11 @@
 -- COMMITS when nothing raises, and the first case below is supposed to raise
 -- nothing, so it leaves an admitted active manifest in the database. That is
 -- the reason the driver exists.
+-- Synthetic approval; transaction rolls back. Never a real authorization.
+insert into quirk_sync.github_approval_registry
+(grant_id,subject_kind,subject_id,subject_version,subject_contract,subject_digest,authority_ceiling,allowed_actions,requested_by,approved_by,decision_ref,repository,request_commit,request_path,pr_number,review_id,reviewer_id,reviewer_login,issued_at,expires_at,verified_at)
+values ('grant.sql.valid','manifest','agent.sql-valid','9.9.1',jsonb_build_object('manifest_key','agent.sql-valid','manifest_kind','agent','version','9.9.1','canonical_uri','https://github.com/Quirk-Systems/quirk-os/pull/5','authority_ceiling','propose','domains','["sync"]'::jsonb,'tools','[]'::jsonb,'inputs_schema_ref','schemas/source-binding.schema.json','outputs_schema_ref','schemas/sync-run-receipt.schema.json','trigger_contract',null,'skill_refs','[]'::jsonb,'rights_review',null,'eval_refs','["eval.sql.valid"]'::jsonb,'stop_conditions','["missing_authority"]'::jsonb,'metadata','{}'::jsonb),repeat('a',64),'propose','["activate_manifest"]','agent.sql-valid','human.bryan','decision.sql.valid','Quirk-Systems/quirk-os',repeat('0',40),'tests/synthetic-request.json',1,1,207279,'bryansayler',now()-interval '1 minute',now()+interval '1 hour',now());
+
 -- Valid activation must pass with independent approval.
 do $$
 declare

@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import json
 import unittest
+from unittest.mock import Mock
 from pathlib import Path
 
 from jsonschema import Draft202012Validator, FormatChecker
@@ -105,7 +106,7 @@ class SkillLoaderTests(unittest.TestCase):
     def test_separately_admitted_version_with_scoped_grant_loads(self) -> None:
         manifest, source = admitted_copy()
         grant = valid_grant(manifest)
-        result = load_skill_for_execution(manifest, source, grant, now=self.NOW)
+        result = load_skill_for_execution(manifest, source, grant, now=self.NOW, approval_registry=Mock(allows=Mock(return_value=True)))
         self.assertTrue(result["loaded"], result["errors"])
 
     def test_over_ceiling_grant_is_rejected(self) -> None:

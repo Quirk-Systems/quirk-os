@@ -333,7 +333,10 @@ def main() -> int:
 
     valid_active = load_json(repo / "evals/sync-control-plane/valid-active-manifest.json")
     valid_schema_errors = validate(schemas["manifest"], valid_active)
-    valid_policy_errors = validate_manifest_admission(valid_active)
+    # Structural positive fixture only. This isolated conformance stub cannot
+    # issue runtime authority; production defaults to no protected registry.
+    from unittest.mock import Mock
+    valid_policy_errors = validate_manifest_admission(valid_active, approval_registry=Mock(allows=Mock(return_value=True)))
 
     self_promotion = load_json(repo / "evals/sync-control-plane/cases/SCP-011.json")["manifest"]
     self_schema_errors = validate(schemas["manifest"], self_promotion)
