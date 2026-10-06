@@ -4,6 +4,8 @@ import re
 from datetime import datetime, timezone
 from typing import Any
 
+from .approval import authorization_errors
+
 
 def _parse_dt(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
@@ -25,13 +27,7 @@ def _parse_dt(value: str) -> datetime:
 # `validate_manifest_admission` directly, and a bare `"human."` would satisfy a
 # prefix test while naming nobody.
 #
-# What this does NOT establish: `approved_by` is a string the judged manifest
-# supplies, so `human.fabricated` with invented decision and grant references
-# passes. This rule removes the structural bypass — the self-declared flag and
-# the `agent.` approver — but it does not prove a human approved anything, and
-# no approval registry or attestation exists in this path to check against.
-# Closing that needs a record the manifest cannot author; the design and the
-# decisions it waits on are in docs/briefs/2026-10-03-approval-attestation.md.
+# This checks structure only; active admission also requires protected database approval.
 _INDEPENDENT_APPROVER = re.compile(r"human\.[a-z0-9._-]+")
 
 # Any well-formed principal, mirroring schemas/runtime-manifest.schema.json. The
@@ -50,7 +46,7 @@ def _is_independent_approver(approved_by: Any) -> bool:
     return isinstance(approved_by, str) and _INDEPENDENT_APPROVER.fullmatch(approved_by) is not None
 
 
-def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:
+def validate_manifest_admission(manifest: dict[str, Any], *, approval_registry: Any = None) -> list[str]:
     """Return policy violations that JSON Schema cannot express alone."""
     errors: list[str] = []
     if manifest.get("status") != "active":
@@ -100,6 +96,15 @@ def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:
         if trigger.get("collision_behavior") != "block" or not trigger.get("routing_policy"):
             errors.append("multi-skill orchestrator requires fail-closed trigger routing contract")
 
+    from .github_approval import manifest_contract
+    errors.extend(authorization_errors(
+        approval_registry, grant_id=admission.get("authority_grant_ref"), subject_kind="manifest",
+        subject_id=manifest.get("manifest_key"), subject_version=manifest.get("version"),
+        subject_digest=manifest.get("content_hash"), authority_ceiling=manifest.get("authority_ceiling"),
+        allowed_actions=["activate_manifest"], requested_by=requested_by,
+        approved_by=approved_by, decision_ref=admission.get("decision_ref"),
+        subject_contract=manifest_contract(manifest),
+    ))
     return errors
 
 

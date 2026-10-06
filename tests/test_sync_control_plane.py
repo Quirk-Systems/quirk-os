@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import Mock
 from pathlib import Path
 
 import yaml
@@ -54,7 +55,7 @@ class SyncControlPlaneTests(unittest.TestCase):
     def test_valid_active_manifest(self):
         manifest = load("evals/sync-control-plane/valid-active-manifest.json")
         self.assertEqual([], self.validate(self.manifest_schema, manifest))
-        self.assertEqual([], validate_manifest_admission(manifest))
+        self.assertEqual([], validate_manifest_admission(manifest, approval_registry=Mock(allows=Mock(return_value=True))))
 
     def test_self_promotion_rejected(self):
         manifest = load("evals/sync-control-plane/cases/SCP-011.json")["manifest"]
@@ -136,7 +137,7 @@ class SyncControlPlaneTests(unittest.TestCase):
         self.assertEqual(manifest["admission"]["requested_by"], manifest["manifest_key"])
         manifest["metadata"] = {"self_requested": True}
         self.assertEqual([], self.validate(self.manifest_schema, manifest))
-        self.assertEqual([], validate_manifest_admission(manifest))
+        self.assertEqual([], validate_manifest_admission(manifest, approval_registry=Mock(allows=Mock(return_value=True))))
 
     def test_cloudflare_deferred_binding_is_valid(self):
         binding = {
