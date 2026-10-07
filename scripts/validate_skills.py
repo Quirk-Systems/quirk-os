@@ -75,6 +75,7 @@ def status_bullets(text: str) -> list[str]:
     for item in re.findall(r"(?m)^[ \t]*(?:>[ \t]*)*(?:[-+*]|[0-9]+[.)])[ \t]+(.*?)[ \t]*$", text):
         label = html.unescape(item)
         label = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", label)
+        label = re.sub(r"\[([^\]]+)\](?:[ \t]*\[[^\]]*\])?", r"\1", label)
         label = re.sub(r"<[^>]*>", "", label)
         label = re.sub(r"[\\`*_~]", "", label)
         if re.match(r"(?i)^Status[ \t]*:", label):

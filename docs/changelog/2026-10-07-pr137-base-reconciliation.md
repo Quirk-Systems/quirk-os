@@ -7,3 +7,4 @@
 - Address Codex's follow-up findings: count unquoted status declarations and reject malformed current-preference timestamps before any protected read in either personalization mode.
 - Count status bullets across the entire skill source and require RFC 3339 format validation before timestamp parsing, including ordinary-section status contradictions and Python-only ISO syntax regressions.
 - Normalize Markdown status labels before counting declarations, covering emphasis, code, links, HTML, ordered lists, and blockquotes while requiring the sole canonical candidate line in the contract.
+- Recognize reference-style status labels; validate current preference shape and defer boundary timestamp parsing to its structured rejection path, with adversarial cases through the conformance dispatcher.

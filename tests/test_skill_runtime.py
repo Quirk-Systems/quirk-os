@@ -111,6 +111,9 @@ class SkillIntegrityTests(unittest.TestCase):
                 ("formatted_quoted_status", "DRAFT_SKILL_STATUS"),
                 ("formatted_entity_status", "DRAFT_SKILL_STATUS"),
                 ("formatted_strikethrough_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_reference_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_collapsed_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_shortcut_status", "DRAFT_SKILL_STATUS"),
                 ("registry", "REGISTRY_SKILL_DRIFT"),
             )
             for attack, expected_code in attacks:
@@ -142,6 +145,9 @@ class SkillIntegrityTests(unittest.TestCase):
                             "formatted_quoted_status": "> - **Status:** active",
                             "formatted_entity_status": "- Status&#58; active",
                             "formatted_strikethrough_status": "- ~~Status:~~ active",
+                            "formatted_reference_status": "- [Status:][contract] active\n\n[contract]: #contract",
+                            "formatted_collapsed_status": "- [Status:][] active\n\n[Status:]: #contract",
+                            "formatted_shortcut_status": "- [Status:] active\n\n[Status:]: #contract",
                         }
                         source.write_text(original_source + "\n## Admission posture\n\n" + declarations[attack] + "\n")
                     elif attack in {"outside_star_status", "outside_lowercase_status", "moved_candidate_status"}:

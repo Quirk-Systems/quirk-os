@@ -439,7 +439,32 @@ def evaluate_personalization_boundary(
         }
 
     scope = str(payload.get("scope", "global"))
-    current = [dict(item) for item in payload.get("current_request_preferences", [])]
+    current_input = payload.get("current_request_preferences", [])
+    current_valid = isinstance(current_input, list)
+    if current_valid:
+        for item in current_input:
+            if (not isinstance(item, Mapping)
+                    or any(not isinstance(item.get(key), str) or not item[key]
+                           for key in ("ref", "dimension", "scope", "source"))
+                    or item["source"] not in SOURCE_RANK
+                    or type(item.get("confidence")) not in {int, float}
+                    or not 0 <= item["confidence"] <= 1
+                    or not math.isfinite(item["confidence"])
+                    or "value" not in item):
+                current_valid = False
+                break
+            try:
+                json.dumps(item["value"], sort_keys=True, allow_nan=False)
+            except (TypeError, ValueError):
+                current_valid = False
+                break
+    if not current_valid:
+        return {
+            "status": "rejected",
+            "reason_code": "current_preference_invalid",
+            "read_trace": list(evidence_port.trace),
+        }
+    current = [dict(item) for item in current_input]
     try:
         as_of = _parse_time(payload.get("as_of")) or datetime.now(timezone.utc)
         for item in current:
@@ -674,7 +699,10 @@ def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:
 
     operation = str(case["operation"])
     payload = deepcopy(case.get("input", {}))
-    as_of = _parse_time(payload.get("as_of")) or datetime.now(timezone.utc)
+    # The boundary owns timestamp validation and its structured rejection.
+    as_of = None if operation == "personalization_boundary" else (
+        _parse_time(payload.get("as_of")) or datetime.now(timezone.utc)
+    )
 
     if operation == "generated_ui_gate":
         plan = payload.get("generated_ui_plan")

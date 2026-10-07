@@ -382,6 +382,44 @@ class IntentShaperContractTests(unittest.TestCase):
                         self.assertEqual("rejected", actual["status"])
                         self.assertEqual("current_preference_timestamp_invalid", actual["reason_code"])
                         self.assertEqual([], actual["read_trace"])
+                        wrapped = evaluate_case({
+                            "id": "invalid-boundary-timestamp",
+                            "operation": "personalization_boundary",
+                            "input": payload,
+                            "expected": {"status": "rejected",
+                                         "reason_code": "current_preference_timestamp_invalid",
+                                         "read_trace": []},
+                        })
+                        self.assertTrue(wrapped["passed"])
+
+    def test_boundary_rejects_malformed_current_preferences_through_dispatcher(self) -> None:
+        base = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012"))
+        attacks = [None, {}, [None], [1], ["current"]]
+        for field, values in {
+            "confidence": ("high", None, True, -0.1, 1.1, 10**1000, float("nan"), float("inf"), [], {}),
+            "ref": (None, 1, "", []),
+            "dimension": (None, 1, "", []),
+            "scope": (None, 1, "", []),
+            "source": (None, 1, "", "unknown"),
+            "value": ({"invalid": float("nan")}, {1, 2}, {1: "one", "two": "two"}),
+        }.items():
+            for value in values:
+                item = self.preference("current")
+                item[field] = value
+                attacks.append([item])
+        for field in ("confidence", "ref", "dimension", "scope", "source", "value"):
+            item = self.preference("current")
+            del item[field]
+            attacks.append([item])
+        for enabled in (False, True):
+            for attack in attacks:
+                with self.subTest(enabled=enabled, attack=attack):
+                    case = copy.deepcopy(base)
+                    case["input"]["settings"]["personalization_enabled"] = enabled
+                    case["input"]["current_request_preferences"] = attack
+                    case["expected"] = {"status": "rejected", "reason_code": "current_preference_invalid", "read_trace": []}
+                    self.assertTrue(evaluate_case(case)["passed"])
+        self.assertTrue(all(item["passed"] for item in evaluate_cases([case, base])))
 
     def test_off_boundary_accepts_null_and_offset_current_validity(self) -> None:
         case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012"))
