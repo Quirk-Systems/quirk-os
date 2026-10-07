@@ -10,6 +10,8 @@ import copy
 import json
 import re
 from datetime import datetime, timezone
+from pathlib import Path
+from jsonschema import Draft202012Validator, FormatChecker
 from urllib.parse import quote
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 
@@ -20,6 +22,57 @@ APPROVER = "human.bryan"
 CONTRACT_FIELDS = ("manifest_key", "manifest_kind", "version", "canonical_uri", "authority_ceiling",
                    "domains", "tools", "inputs_schema_ref", "outputs_schema_ref", "trigger_contract",
                    "skill_refs", "rights_review", "eval_refs", "stop_conditions", "metadata")
+
+
+class PolicyInvalidation(ValueError):
+    """A complete response proves that the approval policy no longer holds."""
+
+
+def _subject_document(subject, schema_name: str) -> None:
+    """Reject incomplete/malformed immutable documents before policy decisions."""
+    schema_path = Path(__file__).resolve().parents[2] / "schemas" / schema_name
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    checker = FormatChecker()
+    if not {"date-time", "uri"} <= checker.checkers.keys():
+        raise ValueError("subject format validators unavailable; install requirements-evals.txt")
+    error = next(Draft202012Validator(schema, format_checker=checker).iter_errors(subject), None)
+    if error is not None:
+        raise ValueError(f"invalid GitHub subject document: {error.message}")
+
+
+def _pr_binding(pr) -> tuple:
+    """Validate response shape before interpreting authorization fields."""
+    head, base = pr["head"], pr["base"]
+    repo = base["repo"]
+    binding = (repo["id"], repo["full_name"], base["ref"], base["sha"])
+    if (type(binding[0]) is not int or binding[0] <= 0
+            or any(not isinstance(v, str) or not v for v in binding[1:])
+            or not re.fullmatch(r"[a-f0-9]{40}", binding[3])
+            or not isinstance(head["sha"], str)
+            or not re.fullmatch(r"[a-f0-9]{40}", head["sha"])
+            or type(pr["draft"]) is not bool or type(pr["merged"]) is not bool
+            or pr["state"] not in {"open", "closed"}):
+        raise ValueError("invalid GitHub pull response")
+    return binding
+
+
+def _review_response(review) -> None:
+    # Missing fields, unknown enums and invalid timestamps are protocol failures,
+    # not proof that a human withdrew approval. Validate every paginated entry.
+    user = review["user"]
+    if (type(review["id"]) is not int or review["id"] <= 0
+            or type(user["id"]) is not int or user["id"] <= 0
+            or not isinstance(user["login"], str) or not user["login"]
+            or user["type"] not in {"User", "Bot", "Organization"}
+            or review["state"] not in {"APPROVED", "CHANGES_REQUESTED", "COMMENTED", "DISMISSED", "PENDING"}
+            or not isinstance(review["commit_id"], str)
+            or not re.fullmatch(r"[a-f0-9]{40}", review["commit_id"])):
+        raise ValueError("invalid GitHub review response")
+    if review["submitted_at"] is None:
+        if review["state"] != "PENDING":
+            raise ValueError("submitted GitHub review lacks timestamp")
+    else:
+        _instant(review["submitted_at"])
 
 
 def manifest_contract(manifest: dict) -> dict:
@@ -85,58 +138,74 @@ def verified_record(api, pr_number: int, request_path: str, *, now: str) -> dict
     if not re.fullmatch(r"\.quirk/approval-requests/[a-z0-9._-]+\.json", request_path):
         raise ValueError("approval must use a dedicated request file")
     pr = api.get(f"pulls/{pr_number}")
+    base_binding = _pr_binding(pr)
     commit = pr["head"]["sha"]
     if not re.fullmatch(r"[a-f0-9]{40}", commit):
         raise ValueError("invalid request commit")
     if pr["base"]["repo"]["full_name"] != REPOSITORY or pr["base"]["ref"] != "main":
-        raise ValueError("approval request must target canonical repository main")
+        raise PolicyInvalidation("approval request must target canonical repository main")
     if pr.get("draft") is not False or not (pr.get("state") == "open" or pr.get("merged") is True):
-        raise ValueError("approval PR must be ready or merged")
+        raise PolicyInvalidation("approval PR must be ready or merged")
     request = api.document(request_path, commit)
     required = {"grant_id", "subject_kind", "subject_id", "subject_version", "subject_digest",
                 "subject_path", "authority_ceiling", "allowed_actions", "requested_by", "approved_by",
                 "decision_ref", "issued_at", "expires_at", "purpose"}
     if set(request) != required:
         raise ValueError("approval request fields must match the version 1 contract")
-    if request["approved_by"] != APPROVER or request["requested_by"] == APPROVER:
-        raise ValueError("approval requester must be distinct from designated human")
-    if not isinstance(request["purpose"], str) or len(request["purpose"]) < 12:
-        raise ValueError("approval requires a concrete purpose")
+    # Validate the entire immutable document before any authorization decision.
+    # Wrong-typed or malformed data cannot prove withdrawal of a verified grant.
+    if any(not isinstance(request[key], str) or not request[key]
+           for key in required - {"allowed_actions"}):
+        raise ValueError("approval request values must be non-empty strings")
     if not re.fullmatch(r"grant\.[a-z0-9._-]+", request["grant_id"]):
         raise ValueError("invalid grant identity")
+    for key in ("requested_by", "approved_by"):
+        if not re.fullmatch(r"(?:agent|human|service|system)\.[a-z0-9._-]+", request[key]):
+            raise ValueError("malformed approval principal")
+    if not re.fullmatch(r"[a-f0-9]{64}", request["subject_digest"]):
+        raise ValueError("invalid request subject digest")
+    if (not re.fullmatch(r"[a-zA-Z0-9_./-]+\.json", request["subject_path"])
+            or ".." in request["subject_path"].split("/")):
+        raise ValueError("unsafe subject path")
+    actions = request["allowed_actions"]
+    if (not isinstance(actions, list) or not actions or any(
+            not isinstance(a, str) or not re.fullmatch(r"[a-z][a-z0-9_]*", a)
+            for a in actions) or len(set(actions)) != len(actions)):
+        raise ValueError("invalid operation scope shape")
+    issued_at, expires_at = _instant(request["issued_at"]), _instant(request["expires_at"])
+    if request["approved_by"] != APPROVER or request["requested_by"] == APPROVER:
+        raise PolicyInvalidation("approval requester must be distinct from designated human")
+    if len(request["purpose"]) < 12:
+        raise PolicyInvalidation("approval requires a concrete purpose")
     if request_path != f".quirk/approval-requests/{request['grant_id']}.json":
-        raise ValueError("request path must match grant identity")
-    if not re.fullmatch(r"(?:agent|human|service|system)\.[a-z0-9._-]+", request["requested_by"]):
-        raise ValueError("malformed requesting principal")
-    if not isinstance(request["allowed_actions"], list) or not request["allowed_actions"] or any(
-        not isinstance(a, str) or not re.fullmatch(r"[a-z][a-z0-9_]*", a) for a in request["allowed_actions"]
-    ) or len(set(request["allowed_actions"])) != len(request["allowed_actions"]):
-        raise ValueError("invalid operation scope")
+        raise PolicyInvalidation("request path must match grant identity")
     instant = _instant(now)
-    if not (_instant(request["issued_at"]) <= instant < _instant(request["expires_at"])):
-        raise ValueError("approval request is not currently valid")
+    if not (issued_at <= instant < expires_at):
+        raise PolicyInvalidation("approval request is not currently valid")
     subject = api.document(request["subject_path"], commit)
     if request["subject_kind"] == "skill":
         from .skill_runtime import manifest_digest, declared_actions, AUTHORITY_RANK
+        _subject_document(subject, "skill-package.schema.json")
         digest = manifest_digest(subject)
         identity, version = subject.get("id"), subject.get("version")
         if request["authority_ceiling"] not in AUTHORITY_RANK or AUTHORITY_RANK[request["authority_ceiling"]] > AUTHORITY_RANK.get(subject.get("authority", {}).get("ceiling"), -1):
-            raise ValueError("request exceeds subject authority")
+            raise PolicyInvalidation("request exceeds subject authority")
         if not set(request["allowed_actions"]) <= declared_actions(subject):
-            raise ValueError("request exceeds subject operations")
+            raise PolicyInvalidation("request exceeds subject operations")
         contract = {}
     elif request["subject_kind"] == "manifest":
-        digest = subject.get("content_hash")
+        _subject_document(subject, "runtime-manifest.schema.json")
+        digest = subject["content_hash"]
         identity, version = subject.get("manifest_key"), subject.get("version")
         contract = manifest_contract(subject)
         if request["allowed_actions"] != ["activate_manifest"] or request["authority_ceiling"] != subject.get("authority_ceiling"):
-            raise ValueError("manifest approval scope mismatch")
+            raise PolicyInvalidation("manifest approval scope mismatch")
     else:
-        raise ValueError("unknown approval subject kind")
-    if (request["subject_id"], request["subject_version"], request["subject_digest"]) != (identity, version, digest):
-        raise ValueError("approval subject binding mismatch")
+        raise PolicyInvalidation("unknown approval subject kind")
     if not isinstance(digest, str) or not re.fullmatch(r"[a-f0-9]{64}", digest):
         raise ValueError("invalid subject digest")
+    if (request["subject_id"], request["subject_version"], request["subject_digest"]) != (identity, version, digest):
+        raise PolicyInvalidation("approval subject binding mismatch")
     # Paginate completely. Conservative latest-review semantics deny comments,
     # dismissal, and changes requested after an approval; a fresh approval restores it.
     reviews = []
@@ -144,6 +213,8 @@ def verified_record(api, pr_number: int, request_path: str, *, now: str) -> dict
         batch = api.get(f"pulls/{pr_number}/reviews?per_page=100&page={page}")
         if not isinstance(batch, list):
             raise ValueError("invalid GitHub review response")
+        for entry in batch:
+            _review_response(entry)
         reviews.extend(batch)
         if len(batch) < 100:
             break
@@ -151,15 +222,16 @@ def verified_record(api, pr_number: int, request_path: str, *, now: str) -> dict
         raise ValueError("approval review pagination limit exceeded")
     human = [r for r in reviews if r.get("user", {}).get("id") == REVIEWER_ID and r.get("submitted_at")]
     if not human:
-        raise ValueError("designated human has not approved")
+        raise PolicyInvalidation("designated human has not approved")
     review = max(human, key=lambda r: (_instant(r["submitted_at"]), r["id"]))
     if review.get("state") != "APPROVED" or review.get("commit_id") != commit or review.get("user", {}).get("type") != "User" or review["user"].get("login") != REVIEWER_LOGIN:
-        raise ValueError("latest designated human review does not approve exact request head")
+        raise PolicyInvalidation("latest designated human review does not approve exact request head")
     if _instant(review["submitted_at"]) > instant:
-        raise ValueError("approval review is in the future")
+        raise PolicyInvalidation("approval review is in the future")
     final_pr = api.get(f"pulls/{pr_number}")
-    if final_pr["head"]["sha"] != commit or final_pr["base"] != pr["base"] or final_pr.get("draft") is not False or not (final_pr.get("state") == "open" or final_pr.get("merged") is True):
-        raise ValueError("approval request changed during verification")
+    final_base_binding = _pr_binding(final_pr)
+    if final_pr["head"]["sha"] != commit or final_base_binding != base_binding or final_pr.get("draft") is not False or not (final_pr.get("state") == "open" or final_pr.get("merged") is True):
+        raise PolicyInvalidation("approval request changed during verification")
     record = {key: value for key, value in request.items() if key not in {"subject_path", "purpose"}}
     record.update(repository=REPOSITORY, request_commit=commit, request_path=request_path,
                   pr_number=pr_number, review_id=review["id"], reviewer_id=REVIEWER_ID,
@@ -184,7 +256,8 @@ def ingest(connection, api, pr_number: int, request_path: str, *, now: str) -> d
 def refresh(connection, api, grant_id: str, *, now: str) -> bool:
     """Recheck original exact review; sticky revocation on observed invalidation.
 
-Transport outages do not refresh verified_at. The DB freshness cap denies use.
+Transport and protocol failures propagate without updating either timestamp.
+The DB freshness cap denies use until successful verification resumes.
 The trusted worker commits its transaction, and never shares its connection.
 """
     with connection.cursor() as cursor:
@@ -198,7 +271,7 @@ The trusted worker commits its transaction, and never shares its connection.
         try:
             record = verified_record(api, row[0], row[1], now=now)
             valid = (record["grant_id"], record["request_commit"], record["review_id"]) == (grant_id, row[2], row[3])
-        except (ValueError, KeyError, TypeError):
+        except PolicyInvalidation:
             valid = False
         if valid:
             cursor.execute("update quirk_sync.github_approval_registry set verified_at=%s where grant_id=%s", (now, grant_id))

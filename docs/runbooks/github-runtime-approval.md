@@ -18,11 +18,21 @@ The latest submitted review by the designated human must be `APPROVED` on the
 exact current request head, with user type `User`. Draft, closed-unmerged,
 non-main-base, dismissed, newer commented/changes-requested, forged, old-head
 and mid-fetch head changes deny ingestion. A fresh review uses a new grant ID
-after revocation. Review refresh failures leave the previous verification time;
-a database check denies records older than five minutes. Observed review
-invalidation marks sticky revocation. Revocation propagation is bounded by this
+after revocation. Verification compares base repository ID/full name, base ref
+and base SHA across reads; mutable repository metadata is excluded.
+Transport, JSON decoding and incomplete/invalid API response failures propagate
+without writing either `verified_at` or `revoked_at`. Retry the trusted worker;
+a database check denies records older than five minutes. Only a verified policy
+invalidation (or a changed original grant/head/review binding) marks sticky
+revocation. Later successful verification can refresh an unrevoked row. Revocation propagation is bounded by this
 freshness window, not instantaneous. GitHub API authentication is never supplied
 by a judged runtime payload.
+
+Subject documents must pass their complete skill-package or runtime-manifest
+schema, including formats and digest shape, before subject scope or binding
+mismatches can establish policy invalidation. Install `requirements-evals.txt`
+in the trusted worker to enable date-time and URI format checking. Missing format
+validators fail closed without updating either timestamp.
 
 Before live rollout, audit current migration state and active manifests. The
 migration refuses pre-existing active rows without matching protected records;
