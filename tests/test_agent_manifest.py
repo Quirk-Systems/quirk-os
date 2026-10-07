@@ -127,6 +127,28 @@ class AgentManifestTests(unittest.TestCase):
         self.assertIn("REGISTRY_SCHEMA", codes(report))
         self.assertEqual(report["manifest_digests"], {})
 
+    def test_rights_review_principal_rejects_line_breaks(self) -> None:
+        original = self.load()
+        for domains in (["sync"], ["data_productization"]):
+            for principal in ("human.reviewer", "human.reviewer\n", "human.reviewer\r\n"):
+                with self.subTest(domains=domains, principal=principal):
+                    manifest = json.loads(json.dumps(original))
+                    manifest["domains"] = domains
+                    manifest["rights_review"] = {
+                        "outcome": "approved", "license_verified": True,
+                        "privacy_review": "approved", "provenance_complete": True,
+                        "reviewed_by": principal, "reviewed_at": "2026-10-04T00:00:00Z",
+                        "evidence_refs": ["evals/sync-control-plane/cases/SCP-008.json"],
+                    }
+                    self.write(manifest)
+                    self.reseal()
+                    report = validate_repository(self.root)
+                    if principal == "human.reviewer":
+                        self.assertEqual(report["findings"], [])
+                    else:
+                        self.assertIn("AGENT_SCHEMA", codes(report))
+                        self.assertEqual(report["manifest_digests"], {})
+
     def test_symlink_manifest_cannot_claim_target_as_source_blob(self) -> None:
         path = self.manifest_path()
         target = self.root / "original-agent.yaml"
