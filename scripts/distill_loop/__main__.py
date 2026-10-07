@@ -18,7 +18,10 @@ import argparse
 import contextlib
 import errno
 import json
+import os
+import re
 import sys
+import time
 from pathlib import Path
 
 try:
@@ -34,11 +37,12 @@ except ImportError:  # pragma: no cover - POSIX hosts
 class LockUnavailable(RuntimeError):
     """No reliable interprocess lock exists on this host; guarded writes fail closed."""
 
-from .common import LEDGER_PATH, load_schemas, write_files
+from .common import LEDGER_PATH, load_schemas, sha256_json, write_files
 from .context import next_run_context
 from .ledger import new_ledger
 from .promotion import apply_promotion, attest_promotion
 from .trigger import post_run_distill
+from sync_control_plane.skill_runtime import validate_manifest_integrity
 
 
 def _load(path: Path):
@@ -51,82 +55,71 @@ def _ledger(root: Path):
 
 
 LOCK_NAME = "distill-ledger.lock"
-# msvcrt.locking(LK_LOCK) blocks for up to ten one-second attempts per call and reports
-# contention as EDEADLOCK. Retrying that a bounded number of times is a wait; retrying
-# anything else, or forever, would be a spin that never fails closed.
 WINDOWS_LOCK_ATTEMPTS = 6
-CONTENTION_ERRNOS = frozenset(code for code in (getattr(errno, "EDEADLOCK", None), getattr(errno, "EDEADLK", None)) if code)
+CONTENTION_ERRNOS = frozenset(
+    code
+    for code in (
+        getattr(errno, "EDEADLOCK", None),
+        getattr(errno, "EDEADLK", None),
+        getattr(errno, "EACCES", None),
+        getattr(errno, "EPERM", None),
+    )
+    if code
+)
 
 
 def _lock_handle(handle) -> None:
-    """Take an exclusive, blocking interprocess lock or raise LockUnavailable.
-
-    POSIX uses flock. Windows uses msvcrt.locking, retried only on confirmed
-    contention and only a bounded number of times. Any other host has no reliable
-    primitive and must not write at all: an unlocked check-then-write is exactly
-    the lost-update the guard exists to prevent.
-    """
+    if os.name == "nt":
+        if msvcrt is None:
+            raise LockUnavailable("no interprocess lock primitive available on this host")
+        handle.seek(0)
+        for _ in range(WINDOWS_LOCK_ATTEMPTS):
+            try:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+                return
+            except OSError as exc:
+                if exc.errno not in CONTENTION_ERRNOS:
+                    raise LockUnavailable(f"lock primitive failed: {exc}") from exc
+                time.sleep(0.05)
+        raise LockUnavailable(f"lock still contended after {WINDOWS_LOCK_ATTEMPTS} attempts")
     if fcntl is not None:
         try:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
         except OSError as exc:
             raise LockUnavailable(f"lock primitive failed: {exc}") from exc
         return
-    if msvcrt is not None:
-        handle.seek(0)
-        for _ in range(WINDOWS_LOCK_ATTEMPTS):
-            try:
-                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
-                return
-            except OSError as exc:
-                if exc.errno not in CONTENTION_ERRNOS:
-                    raise LockUnavailable(f"lock primitive failed: {exc}") from exc
-        raise LockUnavailable(f"lock still contended after {WINDOWS_LOCK_ATTEMPTS} attempts")
     raise LockUnavailable("no interprocess lock primitive available on this host")
 
 
 def _unlock_handle(handle) -> None:
-    if fcntl is not None:
-        with contextlib.suppress(OSError):
-            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
-    elif msvcrt is not None:
+    if os.name == "nt":
+        if msvcrt is None:
+            return
         handle.seek(0)
         with contextlib.suppress(OSError):
             msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+    elif fcntl is not None:
+        with contextlib.suppress(OSError):
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 @contextlib.contextmanager
-def _ledger_lock(*roots: Path):
-    """Hold an exclusive interprocess lock on every tree we will check or write.
-
-    The lock makes check-then-write one step: a second writer that computed its
-    result against the same input ledger blocks here, then re-reads a ledger
-    that has moved and is refused instead of silently replacing the first write.
-    Raises LockUnavailable before touching anything when no lock exists.
-    """
-    handles = []
+def _ledger_lock(root: Path):
+    lock_path = root / "skills" / LOCK_NAME
     try:
-        # Never create the lock through a planted link: the tree, its skills directory,
-        # and the lock file must be real entries as given, before any resolution, so
-        # nothing this command writes can be redirected outside the tree it was pointed at.
-        for given in roots:
-            if given.is_symlink() or (given / "skills").is_symlink() or (given / "skills" / LOCK_NAME).is_symlink():
-                raise LockUnavailable(f"{given} or its lock path is a symlink; refusing to lock or write through it")
-        for root in sorted({r.resolve() for r in roots}):
-            lock_path = root / "skills" / LOCK_NAME
-            lock_path.parent.mkdir(parents=True, exist_ok=True)
-            handle = open(lock_path, "a+", encoding="utf-8")
-            try:
-                _lock_handle(handle)
-            except LockUnavailable:
-                handle.close()
-                raise
-            handles.append(handle)
+        lock_path.parent.mkdir(parents=True, exist_ok=True)
+        handle = open(lock_path, "a+b")
+    except OSError as exc:
+        raise LockUnavailable(f"lock setup failed: {exc}") from exc
+    locked = False
+    try:
+        _lock_handle(handle)
+        locked = True
         yield
     finally:
-        for handle in reversed(handles):
+        if locked:
             _unlock_handle(handle)
-            handle.close()
+        handle.close()
 
 
 def _ledger_digest_on_disk(root: Path) -> str:
@@ -189,54 +182,128 @@ def _destination_problems(out: Path, relative_paths) -> list[str]:
     return problems
 
 
-def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
-    """Compare-and-swap the ledger under lock.
+def _transaction_guarded(root: Path, transaction, *, source_root: Path | None = None):
+    """Run a read/compute/write transaction while holding the ledger lock.
 
-    `root` is the tree whose ledger this operation read; `out` is where it writes
-    (default: `root`). Under the lock, the source ledger must still carry the digest
-    the operation read. When writing elsewhere, the output tree must either be
-    truly empty (it is initialized from the input ledger) or already carry that same
-    digest; a tree with other files and no ledger, or a different ledger, is refused.
+    Lock failures and explicit write refusals return structured errors.
+    Unexpected transaction errors propagate; they never report success.
     """
-    out = out or root
-    expected = result.get("ledger_input_sha256")
     try:
-        lock = _ledger_lock(root, out)
-        lock.__enter__()
+        with contextlib.ExitStack() as locks:
+            # Check paths as supplied before resolving or creating either lock.
+            for given in (root, source_root or root):
+                if any(path.is_symlink() for path in
+                       (given, given / "skills", given / "skills" / LOCK_NAME, given / LEDGER_PATH)):
+                    raise LockUnavailable(f"{given} or its lock/ledger path is a symlink; refusing to write through it")
+            # Stable ordering prevents deadlocks for opposite-direction exports.
+            roots = {root.resolve(), (source_root or root).resolve()}
+            for locked_root in sorted(roots, key=str):
+                locks.enter_context(_ledger_lock(locked_root))
+            return 0, transaction()
+    except WriteRefused as exc:
+        print(json.dumps({"error": exc.code, "detail": str(exc)}), file=sys.stderr)
+        return 1, None
     except LockUnavailable as exc:
-        print(json.dumps({"error": "LOCK_UNAVAILABLE", "detail": f"{exc}; refusing to write without an interprocess lock"}), file=sys.stderr)
-        return 1
-    with contextlib.ExitStack() as stack:
-        stack.push(lock)
-        if _ledger_digest_on_disk(root) != expected:
-            print(json.dumps({"error": "LEDGER_FORKED", "detail": "source ledger changed since this operation read it; re-run against the current ledger"}), file=sys.stderr)
-            return 1
-        if out.resolve() != root.resolve():
-            out_ledger = out / LEDGER_PATH
-            if out_ledger.is_symlink():
-                print(json.dumps({"error": "LEDGER_FORKED", "detail": "output ledger is a symlink; refusing to write through it"}), file=sys.stderr)
-                return 1
-            if out_ledger.exists():
-                if _ledger_digest_on_disk(out) != expected:
-                    print(json.dumps({"error": "LEDGER_FORKED", "detail": "output tree already holds a different ledger; refusing to replace it"}), file=sys.stderr)
-                    return 1
-            else:
-                problems = _out_tree_problems(out)
-                if problems:
-                    print(json.dumps({"error": "LEDGER_FORKED", "detail": "output tree is not empty and holds no ledger; refusing to write into it", "entries": problems}), file=sys.stderr)
-                    return 1
-        unsafe = _destination_problems(out, result["files"])
-        if unsafe:
-            print(json.dumps({"error": "LEDGER_FORKED", "detail": "a destination path passes through a symlink or non-directory; refusing to write", "paths": unsafe}), file=sys.stderr)
-            return 1
-        try:
-            write_files(out, result["files"])
-        except OSError as exc:
-            # write_files creates temps exclusively and writes the ledger last, so a
-            # failure here leaves the ledger untouched; report it and fail closed.
-            print(json.dumps({"error": "WRITE_FAILED", "detail": str(exc)}), file=sys.stderr)
-            return 1
-    return 0
+        print(
+            json.dumps(
+                {
+                    "error": "LOCK_UNAVAILABLE",
+                    "detail": f"{exc}; refusing to write without an interprocess lock",
+                }
+            ),
+            file=sys.stderr,
+        )
+        return 1, None
+
+
+class WriteRefused(RuntimeError):
+    def __init__(self, code: str, detail: str):
+        super().__init__(detail)
+        self.code = code
+
+
+def _write_result(root: Path, result: dict, out: Path) -> dict:
+    """Check and commit a computed result while the caller holds both locks."""
+    expected = result.get("ledger_input_sha256")
+    if _ledger_digest_on_disk(root) != expected:
+        raise WriteRefused("LEDGER_FORKED", "source ledger changed; re-run against the current ledger")
+    if out.resolve() != root.resolve():
+        out_ledger = out / LEDGER_PATH
+        if out_ledger.exists():
+            try:
+                matches = _ledger_digest_on_disk(out) == expected
+            except (ValueError, KeyError, TypeError):
+                matches = False
+            if not matches:
+                raise WriteRefused("LEDGER_FORKED", "output tree holds a different or invalid ledger; refusing to replace it")
+        elif _out_tree_problems(out):
+            raise WriteRefused("LEDGER_FORKED", "output tree is not empty and holds no ledger; refusing to write into it")
+    unsafe = _destination_problems(out, result["files"])
+    if unsafe:
+        raise WriteRefused("LEDGER_FORKED", "; ".join(unsafe))
+    try:
+        write_files(out, result["files"])
+    except OSError as exc:
+        raise WriteRefused("WRITE_FAILED", str(exc)) from exc
+    return result
+
+
+def _write_guarded(root: Path, result: dict, out: Path | None = None) -> int:
+    """Commit a precomputed result with main's compare-and-swap safeguards."""
+    destination = out or root
+    status, _ = _transaction_guarded(
+        destination, lambda: _write_result(root, result, destination), source_root=root,
+    )
+    return status
+
+
+def _complete_export(root: Path, out: Path, result: dict) -> dict:
+    """Include and validate all packages and suites before writing their ledger."""
+    if root.resolve() == out.resolve() or result.get("errors"):
+        return result
+    files = dict(result["files"])
+    latest = {}
+    for entry in result["ledger"]["entries"]:
+        if entry["kind"] in {"distilled", "promoted", "rejected"}:
+            latest[entry["candidate_id"]] = entry["refs"]
+    try:
+        for candidate_id, refs in latest.items():
+            if not re.fullmatch(r"quirk-distilled-[a-z0-9-]+", candidate_id):
+                raise ValueError("invalid candidate id in export ledger")
+            manifest_path = f"skills/{candidate_id}/manifest.json"
+            source_path = f"skills/{candidate_id}/SKILL.md"
+            suite_path = f"evals/skills/distilled/{candidate_id}.json"
+            if refs.get("eval_suite_ref") != suite_path:
+                raise ValueError(f"{candidate_id}: unexpected eval suite path")
+            for relative in (manifest_path, source_path, suite_path):
+                if relative not in files:
+                    unsafe = _destination_problems(root, [relative])
+                    if unsafe:
+                        raise ValueError("; ".join(unsafe))
+                    files[relative] = (root / relative).read_bytes()
+            manifest = json.loads(files[manifest_path])
+            source = files[source_path]
+            if isinstance(source, bytes):
+                source = source.decode("utf-8")
+            # Match text-mode reads in promotion and next-run context.
+            source = source.replace("\r\n", "\n").replace("\r", "\n")
+            problems = validate_manifest_integrity(manifest, source)
+            if manifest.get("id") != candidate_id or manifest.get("status") != "candidate":
+                problems.append("candidate identity or status drifted")
+            integrity = manifest.get("integrity", {})
+            if (integrity.get("manifest_sha256") != refs.get("manifest_sha256")
+                    or integrity.get("source_blob_sha") != refs.get("source_blob_sha")):
+                problems.append("package digests differ from ledger provenance")
+            suite = json.loads(files[suite_path])
+            if not isinstance(suite, list):
+                problems.append("eval suite is not a list")
+            if refs.get("eval_suite_sha256") and sha256_json(suite) != refs["eval_suite_sha256"]:
+                problems.append("eval suite digest differs from ledger provenance")
+            if problems:
+                raise ValueError(f"{candidate_id}: " + "; ".join(problems))
+    except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
+        raise WriteRefused("EXPORT_INCOMPLETE", str(exc)) from exc
+    return {**result, "files": files}
 
 
 REPO_DEFAULT = Path(__file__).resolve().parents[2]
@@ -248,10 +315,10 @@ def _add_roots(command) -> None:
     command.add_argument("--root", type=Path, default=None,
                          help="tree holding the distill ledger and distilled candidates (default: --repo)")
     command.add_argument("--out", type=Path, default=None,
-                         help="write under this root instead of --root")
+                         help="export from the --root ledger to this destination; destination ledger is not an input")
 
 
-def main(argv: list[str] | None = None) -> int:
+def _main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="distill_loop")
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -274,9 +341,6 @@ def main(argv: list[str] | None = None) -> int:
     _add_roots(context)
 
     args = parser.parse_args(argv)
-    # Paths are made absolute but deliberately NOT resolved here: the write guard must
-    # see a symlinked --root or --out as given so it can refuse it before anything is
-    # created through it. Resolution happens inside the guard, after that refusal.
     repo = getattr(args, "repo", REPO_DEFAULT).absolute()
     root = (getattr(args, "root", None) or repo).absolute()
     out = (getattr(args, "out", None) or root).absolute()
@@ -295,20 +359,37 @@ def main(argv: list[str] | None = None) -> int:
         receipt = _load(args.receipt)
         trace = _load(args.trace)
         skill_dir = repo / "skills" / str(receipt.get("skill_id"))
-        result = post_run_distill(
-            receipt=receipt,
-            trace=trace,
-            source_manifest=_load(skill_dir / "manifest.json"),
-            source_text=(skill_dir / "SKILL.md").read_text(encoding="utf-8"),
-            ledger=_ledger(root),
-            schemas=schemas,
-            registry=registry,
-        )
+        source_manifest = _load(skill_dir / "manifest.json")
+        source_text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+
+        def distill(ledger):
+            result = post_run_distill(
+                receipt=receipt,
+                trace=trace,
+                source_manifest=source_manifest,
+                source_text=source_text,
+                ledger=ledger,
+                schemas=schemas,
+                registry=registry,
+            )
+            return _complete_export(root, out, result)
+
+        if args.write:
+            def write_distill():
+                result = distill(_ledger(root))
+                _write_result(root, result, out)
+                return result
+
+            status, result = _transaction_guarded(out, write_distill, source_root=root)
+            if result is None:
+                return status
+        else:
+            result = distill(_ledger(root))
         summary = {key: result[key] for key in ("outcome", "finding_codes", "candidate")}
         summary["files"] = sorted(result["files"])
         print(json.dumps(summary, indent=2))
         if args.write:
-            return _write_guarded(root, result, out)
+            return status
         return 0
 
     receipt = _load(args.receipt)
@@ -316,20 +397,45 @@ def main(argv: list[str] | None = None) -> int:
     if not candidate_dir.exists():
         print(f"candidate package not found: {candidate_dir}", file=sys.stderr)
         return 1
-    result = apply_promotion(
-        receipt,
-        candidate_manifest=_load(candidate_dir / "manifest.json"),
-        candidate_source=(candidate_dir / "SKILL.md").read_text(encoding="utf-8"),
-        eval_suite=_load(args.eval_suite),
-        ledger=_ledger(root),
-        schemas=schemas,
-    )
+    eval_suite = _load(args.eval_suite)
+
+    def promote(ledger):
+        result = apply_promotion(
+            receipt,
+            candidate_manifest=_load(candidate_dir / "manifest.json"),
+            candidate_source=(candidate_dir / "SKILL.md").read_text(encoding="utf-8"),
+            eval_suite=eval_suite,
+            ledger=ledger,
+            schemas=schemas,
+        )
+        return _complete_export(root, out, result)
+
+    if args.write:
+        def write_promotion():
+            result = promote(_ledger(root))
+            if not result["errors"]:
+                _write_result(root, result, out)
+            return result
+
+        status, result = _transaction_guarded(out, write_promotion, source_root=root)
+        if result is None:
+            return status
+    else:
+        result = promote(_ledger(root))
     print(json.dumps({"outcome": result["outcome"], "errors": result["errors"], "files": sorted(result["files"])}, indent=2))
     if result["errors"]:
         return 1
     if args.write:
-        return _write_guarded(root, result, out)
+        return status
     return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    try:
+        return _main(argv)
+    except WriteRefused as exc:
+        print(json.dumps({"error": exc.code, "detail": str(exc)}), file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":

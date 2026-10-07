@@ -20,24 +20,75 @@
     "is_traceable_descendant": true
   },
   "materials": [
-    {"role": "instruction", "path": ".github/copilot-instructions.md", "sha256": "0000000000000000000000000000000000000000000000000000000000000000"},
-    {"role": "instruction", "path": ".github/instructions/intent-shaper.instructions.md", "sha256": "34b3a0dbc6de40ae260be6f9fcf41b308aef95de56c5812850b3a101270b1bde"},
-    {"role": "skill", "path": ".github/skills/intent-shaper-admission/SKILL.md", "sha256": "ee7d285cc440d3e02927d668a454f338447bd4e5928e585b745ec153b8adf37b"},
-    {"role": "schema", "path": "schemas/personalization-plan.schema.json", "sha256": "41191e4a0f01ed74c930c70c18ebddb7544de010188e2551f5687370d9f2e6a5"},
-    {"role": "fixture", "path": "evals/intent-shaper/cases.json", "sha256": "051335eb52d2a8eb00075b6355b63811be05b3a5035eb4a411a62c6e4815f722"}
+    {
+      "role": "instruction",
+      "path": ".github/copilot-instructions.md",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "role": "instruction",
+      "path": ".github/instructions/intent-shaper.instructions.md",
+      "sha256": "34b3a0dbc6de40ae260be6f9fcf41b308aef95de56c5812850b3a101270b1bde"
+    },
+    {
+      "role": "skill",
+      "path": ".github/skills/intent-shaper-admission/SKILL.md",
+      "sha256": "ee7d285cc440d3e02927d668a454f338447bd4e5928e585b745ec153b8adf37b"
+    },
+    {
+      "role": "schema",
+      "path": "schemas/personalization-plan.schema.json",
+      "sha256": "cf7b2d1c1ce019415c623285228d32150b401c89e073a37bce7554accaa3ceeb"
+    },
+    {
+      "role": "fixture",
+      "path": "evals/intent-shaper/cases.json",
+      "sha256": "e33d1e9c17760a7e2d762b605e240f01fc579b97867873fd3aa82fde0cb16ef6"
+    }
   ],
   "commands": [
-    {"name": "focused_tests", "kind": "unit_tests", "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v", "status": "passed", "exit_code": 0, "counts": {"passed": 18, "failed": 0, "total": 18}},
-    {"name": "intent_shaper_conformance", "kind": "conformance", "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json", "status": "passed", "exit_code": 0, "counts": {"passed": 11, "failed": 0, "total": 11}}
+    {
+      "name": "focused_tests",
+      "kind": "unit_tests",
+      "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+      "status": "passed",
+      "exit_code": 0,
+      "counts": {
+        "passed": 18,
+        "failed": 0,
+        "total": 18
+      }
+    },
+    {
+      "name": "intent_shaper_conformance",
+      "kind": "conformance",
+      "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json",
+      "status": "passed",
+      "exit_code": 0,
+      "counts": {
+        "passed": 11,
+        "failed": 0,
+        "total": 11
+      }
+    }
   ],
-  "evidence_refs": ["evals/intent-shaper/cases.json", "tests/test_intent_shaper.py", "tests/test_qis_harness.py"],
+  "evidence_refs": [
+    "evals/intent-shaper/cases.json",
+    "tests/test_intent_shaper.py",
+    "tests/test_qis_harness.py"
+  ],
   "critical_failures": [],
   "limitations": [
-    "Synthetic adversarial fixture with a resealed receipt hash and a false material digest; command counts are test data, not execution evidence.",
+    "Synthetic validation fixture superseding receipt.valid.json for current material provenance; command counts are test data, not execution evidence.",
     "Candidate-only harness evidence; no admission, merge, deployment, schedule, or persistence authority."
   ],
-  "environment": {"runner_os": "Linux", "python": "3.13.0", "pip": "24.2", "jsonschema": "4.26.0"},
+  "environment": {
+    "runner_os": "Linux",
+    "python": "3.13.0",
+    "pip": "24.2",
+    "jsonschema": "4.26.0"
+  },
   "verdict": "PASS",
   "generated_at": "2026-10-04T12:49:21Z",
-  "receipt_hash": "6f96c8ea637e7c03689c5402e6096284ce5a58b7b25a006b45b0ada0e655453f"
+  "receipt_hash": "e999168671a32b1f27ce086708d72c9e2ad9acaff74c4acbddcff4dc32755db6"
 }

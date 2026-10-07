@@ -15,7 +15,7 @@
     "candidate_branch": "agent/quirk-intent-shaper",
     "candidate_sha": "f5effa3d6da3e5879e10007492aeff39a1c643be",
     "base_sha": "f5effa3d6da3e5879e10007492aeff39a1c643be",
-    "head_sha": "d268adf17524332ad101c45351c96cb3420eb3b6",
+    "head_sha": "6cbccabb50e2589a16a6bfd53c0fa107452cd806",
     "merge_base_sha": "f5effa3d6da3e5879e10007492aeff39a1c643be",
     "is_traceable_descendant": true
   },
@@ -36,44 +36,14 @@
       "sha256": "ee7d285cc440d3e02927d668a454f338447bd4e5928e585b745ec153b8adf37b"
     },
     {
-      "role": "workflow",
-      "path": ".github/workflows/qis-agent-harness.yml",
-      "sha256": "50a5e83f11c5a3f38e190a71909c986941b3a5fb26c53940f158130f71850a8e"
-    },
-    {
       "role": "schema",
       "path": "schemas/personalization-plan.schema.json",
-      "sha256": "4014f8584357ff018686a0b3a2f364fff86bd22b53afe5a27ad67451e74f3e46"
-    },
-    {
-      "role": "schema",
-      "path": "schemas/qis-evidence-envelope.schema.json",
-      "sha256": "d99b59209c875787c2609545ac4321ec3edf6d87b6ad8923faec737217e1fc6a"
+      "sha256": "cf7b2d1c1ce019415c623285228d32150b401c89e073a37bce7554accaa3ceeb"
     },
     {
       "role": "fixture",
       "path": "evals/intent-shaper/cases.json",
-      "sha256": "4553a06d3b8ea7c8d3e8d6f7e27317c891119c5adf93e9c1d14fcf8a2a5e9453"
-    },
-    {
-      "role": "evaluator",
-      "path": "scripts/validate_intent_shaper.py",
-      "sha256": "d24ddd0899115009441efe72fcfaaa7ee0b0ff8c5344b53d2a50420f61ab5ed4"
-    },
-    {
-      "role": "evaluator",
-      "path": "scripts/validate_qis_harness.py",
-      "sha256": "d4596e6ed57ef1aee3d755e691901b43f3ba4f5e83cccbbf49d4b084dc1a40e3"
-    },
-    {
-      "role": "test",
-      "path": "tests/test_intent_shaper.py",
-      "sha256": "00ecf4d925027024bf53e82a4730a51d434240c8e96ab17112041acdc78e3d75"
-    },
-    {
-      "role": "test",
-      "path": "tests/test_qis_harness.py",
-      "sha256": "44dcc5d0134a3d1408b3f66e13ef6a989bf03a6626a4cb4f45a5e6dcb0465c98"
+      "sha256": "e33d1e9c17760a7e2d762b605e240f01fc579b97867873fd3aa82fde0cb16ef6"
     }
   ],
   "commands": [
@@ -109,8 +79,8 @@
   ],
   "critical_failures": [],
   "limitations": [
-    "Candidate-only harness evidence; no admission, merge, deployment, schedule, or persistence authority.",
-    "This workflow validates the harness and Intent Shaper candidate paths only; numbered admission gates still require separate evidence."
+    "Synthetic validation fixture superseding receipt.valid.json for current material provenance; command counts are test data, not execution evidence.",
+    "Candidate-only harness evidence; no admission, merge, deployment, schedule, or persistence authority."
   ],
   "environment": {
     "runner_os": "Linux",
@@ -119,7 +89,7 @@
     "jsonschema": "4.26.0"
   },
   "verdict": "PASS",
-  "generated_at": "2026-08-12T08:30:31Z",
   "cute_dashboard": true,
-  "receipt_hash": "3f2f2a281c7558b8a0725cb1c87fe1e685e452f960ea2b210f47e8e22d2d8529"
+  "generated_at": "2026-10-04T12:49:21Z",
+  "receipt_hash": "e18eb5aade7ccdfbf90fe62f2be03410e5bfef4102f3877af4f9cc2407f6939c"
 }

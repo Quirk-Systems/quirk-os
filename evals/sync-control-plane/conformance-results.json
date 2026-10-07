@@ -2,11 +2,14 @@
   "suite_id": "eval.sync-control-plane.conformance.v0.2",
   "decision": "ELIGIBLE_FOR_HUMAN_ADMISSION",
   "automatic_activation": false,
+  "approval_verification": "synthetic fixture only; live admission is separately verified",
+  "database_verification": "projection of the admitted Python gate",
   "checks": {
     "fixture_count_11": true,
     "all_fixtures_pass": true,
     "valid_active_manifest_passes_schema": true,
-    "valid_active_manifest_passes_policy": true,
+    "synthetic_active_fixture_passes_structure": true,
+    "synthetic_approval_is_not_live_authority": true,
     "self_promotion_rejected_by_schema_or_policy": true,
     "rights_unclear_rejected": true,
     "trigger_collision_rejected": true,
@@ -206,18 +209,30 @@
         "action": "reject_capability_to_authority_escalation",
         "policy_errors": [
           "requester may not approve its own manifest transition",
-          "activation requires approval by an independent human principal"
+          "activation requires approval by an independent human principal",
+          "declared content hash does not match computed content",
+          "evaluated content hash does not match computed content",
+          "trusted GitHub approval registry is required",
+          "trusted approval verifier and activation context required"
         ]
       }
     }
   ],
   "schema_attacks": {
     "valid_active_schema_errors": [],
-    "valid_active_policy_errors": [],
+    "valid_active_structure_errors": [],
+    "valid_active_policy_errors": [
+      "trusted GitHub approval registry is required",
+      "trusted approval verifier and activation context required"
+    ],
     "self_promotion_schema_errors": [],
     "self_promotion_policy_errors": [
       "requester may not approve its own manifest transition",
-      "activation requires approval by an independent human principal"
+      "activation requires approval by an independent human principal",
+      "declared content hash does not match computed content",
+      "evaluated content hash does not match computed content",
+      "trusted GitHub approval registry is required",
+      "trusted approval verifier and activation context required"
     ],
     "rights_unclear_schema_errors": [
       "True was expected",
@@ -258,7 +273,11 @@
     "ci_discards_tracked_decision": true,
     "ci_rejects_stale_committed_decision": true,
     "ci_path_filter_covers_job_inputs": true,
-    "ci_runs_guard_cases_as_service_role": true
+    "ci_runs_guard_cases_as_service_role": true,
+    "ci_runs_verified_projection_cases": true,
+    "ci_proves_legacy_projection_cutover_refusal": true,
+    "ci_stages_projection_cutover": true,
+    "ci_paths_cover_projection_inputs": true
   },
   "mapping_proof": {
     "binding_schema_errors": [],
@@ -266,5 +285,5 @@
     "binding_roundtrip_stable": true,
     "receipt_roundtrip_stable": true
   },
-  "content_hash_sha256": "00c4fe397482663723ab7f416ded910262d3c87f43dd048778fb3e743ca63965"
+  "content_hash_sha256": "6be9994e86edbba1ef450fe15fef6aafac9cd3cddbcd829ee908eebefb281bcf"
 }

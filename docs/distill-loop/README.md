@@ -128,3 +128,31 @@ PYTHONPATH=scripts python scripts/validate_distill_loop.py --repo . --require-pa
 ## Decision ceiling
 
 This pack justifies candidate completeness only. It cannot by itself mark a distilled package reviewed, admitted, active, current, chooseable, useable, canonical, or deployed.
+
+### Redirected ledger writes
+
+`--root` selects the provenance ledger for preview and write. `--out` selects
+the export destination and is never a source of promotion authority. The
+destination must be empty or carry the same ledger digest as the source;
+divergent, malformed, or unledgered nonempty destinations are refused. The
+source ledger remains unchanged when exporting to a different tree.
+
+A redirected distillation or promotion includes every candidate package and
+eval suite referenced by its resulting ledger, including pending candidates.
+Package bytes are preserved; the operation's reviewed suite replaces its starter
+suite in the export. Missing, malformed, or drifted carried assets fail with
+`EXPORT_INCOMPLETE` before any payload is written. Preview lists the complete
+file set without writing. To continue, use the export as `--root`; `--repo`
+still supplies schemas and registered source skills, and subsequent promotions
+still require their own human-authored receipts and reviewed evals.
+
+Payload files are written before the ledger, using atomic file replacements.
+An I/O failure returns `WRITE_FAILED` and does not commit the new ledger. It can
+leave payload files behind: inspect or remove that failed export, or select a
+fresh destination before retrying. A nonzero exit is never a successful promotion.
+
+Writes hold source and destination ledger locks in sorted, resolved-path order
+(with one lock when they are the same tree), then read the source ledger and
+compute/write the result, including package reads. Promotion cannot borrow provenance from the output
+tree when the source ledger lacks it. Preview is informational; writes re-read
+the current source under lock and can differ if the source changed meanwhile.

@@ -6,7 +6,7 @@
   "status": "active",
   "requested_status": "active",
   "canonical_uri": "https://github.com/Quirk-Systems/quirk-os/blob/main/agents/valid.yaml",
-  "content_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "content_hash": "ac3468b12894cb5c65bf4aa5ebc8f8e68dd228a9cbc57eebbb4eaa9753defa7f",
   "authority_ceiling": "propose",
   "domains": [
     "sync"
@@ -25,13 +25,16 @@
     "decision_ref": "decision.manifest.valid",
     "authority_grant_ref": "grant.manifest.valid",
     "requested_by": "agent.valid",
-    "approved_by": "human.bryan",
-    "evaluated_content_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "approved_by": "human.synthetic",
+    "evaluated_content_hash": "ac3468b12894cb5c65bf4aa5ebc8f8e68dd228a9cbc57eebbb4eaa9753defa7f",
     "transition_ref": "transition.agent.valid.1",
     "decided_at": "2026-08-12T00:00:00Z",
     "evidence_refs": [
       "evidence://valid"
     ]
   },
-  "metadata": {}
+  "metadata": {
+    "fixture_only": true,
+    "authority_effect": "none"
+  }
 }

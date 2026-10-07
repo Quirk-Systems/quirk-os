@@ -28,7 +28,7 @@ from sync_control_plane.mappers import (  # noqa: E402
     receipt_canonical_to_runtime,
     receipt_runtime_to_canonical,
 )
-from sync_control_plane.policy import evaluate_fixture, validate_manifest_admission  # noqa: E402
+from sync_control_plane.policy import evaluate_fixture, validate_manifest_admission, validate_manifest_structure  # noqa: E402
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -254,6 +254,30 @@ def database_guard_job_checks(workflow_path: Path) -> dict[str, bool]:
     }
 
 
+def projection_job_checks(workflow_path: Path) -> dict[str, bool]:
+    """Workflow presence only; executed PostgreSQL evidence is separate."""
+    try:
+        workflow = yaml.safe_load(workflow_path.read_text()) or {}
+    except (OSError, yaml.YAMLError):
+        workflow = {}
+    trigger = workflow.get(True) or workflow.get("on") or {}
+    paths = ((trigger.get("pull_request") or {}).get("paths")) or []
+    steps = ((workflow.get("jobs") or {}).get("database-guard") or {}).get("steps", [])
+    runs = "\n".join(str(step.get("run", "")) for step in steps)
+    return {
+        "ci_runs_verified_projection_cases": "-f supabase/tests/manifest_verified_projection.sql" in runs,
+        "ci_proves_legacy_projection_cutover_refusal": "manifest_verified_projection.cutover.sql" in runs
+        and 'test "$result" -eq 3' in runs and "legacy active manifests need human disposition" in runs,
+        "ci_stages_projection_cutover": ' > "20261004140000"' in runs
+        and ' < "20261004140000"' in runs
+        and 0 <= runs.find("manifest_activation_guard.service_role.sql") < runs.find(' < "20261004140000"'),
+        "ci_paths_cover_projection_inputs": all(path in paths for path in (
+            "scripts/manifest_admission.py", "scripts/prove_manifest_boundaries.py", "tests/test_manifest_admission.py",
+            "decisions/**", "supabase/tests/manifest_verified_projection.sql",
+            "supabase/tests/manifest_verified_projection.cutover.sql")),
+    }
+
+
 def mapping_roundtrip(binding_schema: dict[str, Any], receipt_schema: dict[str, Any]) -> dict[str, Any]:
     runtime_binding = {
         "binding_key": "binding.github.example",
@@ -333,6 +357,7 @@ def main() -> int:
 
     valid_active = load_json(repo / "evals/sync-control-plane/valid-active-manifest.json")
     valid_schema_errors = validate(schemas["manifest"], valid_active)
+    valid_structure_errors = validate_manifest_structure(valid_active)
     valid_policy_errors = validate_manifest_admission(valid_active)
 
     self_promotion = load_json(repo / "evals/sync-control-plane/cases/SCP-011.json")["manifest"]
@@ -379,13 +404,15 @@ def main() -> int:
     static.update(
         database_guard_job_checks(repo / ".github/workflows/sync-control-plane-conformance.yml")
     )
+    static.update(projection_job_checks(repo / ".github/workflows/sync-control-plane-conformance.yml"))
     mappings = mapping_roundtrip(schemas["binding"], schemas["receipt"])
 
     checks = {
         "fixture_count_11": len(results) == 11,
         "all_fixtures_pass": all(item["passed"] for item in results),
         "valid_active_manifest_passes_schema": not valid_schema_errors,
-        "valid_active_manifest_passes_policy": not valid_policy_errors,
+        "synthetic_active_fixture_passes_structure": not valid_structure_errors,
+        "synthetic_approval_is_not_live_authority": "trusted approval verifier and activation context required" in valid_policy_errors,
         "self_promotion_rejected_by_schema_or_policy": bool(self_schema_errors or self_policy_errors),
         "rights_unclear_rejected": bool(rights_schema_errors),
         "trigger_collision_rejected": bool(collision_schema_errors),
@@ -397,10 +424,13 @@ def main() -> int:
         "suite_id": "eval.sync-control-plane.conformance.v0.2",
         "decision": "ELIGIBLE_FOR_HUMAN_ADMISSION" if eligible else "REVISE",
         "automatic_activation": False,
+        "approval_verification": "synthetic fixture only; live admission is separately verified",
+        "database_verification": "projection of the admitted Python gate",
         "checks": checks,
         "fixtures": results,
         "schema_attacks": {
             "valid_active_schema_errors": valid_schema_errors,
+            "valid_active_structure_errors": valid_structure_errors,
             "valid_active_policy_errors": valid_policy_errors,
             "self_promotion_schema_errors": self_schema_errors,
             "self_promotion_policy_errors": self_policy_errors,
