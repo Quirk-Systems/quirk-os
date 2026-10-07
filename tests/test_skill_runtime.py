@@ -102,6 +102,15 @@ class SkillIntegrityTests(unittest.TestCase):
                 ("outside_star_status", "DRAFT_SKILL_STATUS"),
                 ("outside_lowercase_status", "DRAFT_SKILL_STATUS"),
                 ("moved_candidate_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_bold_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_italic_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_code_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_ordered_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_link_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_html_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_quoted_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_entity_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_strikethrough_status", "DRAFT_SKILL_STATUS"),
                 ("registry", "REGISTRY_SKILL_DRIFT"),
             )
             for attack, expected_code in attacks:
@@ -122,6 +131,19 @@ class SkillIntegrityTests(unittest.TestCase):
                     elif attack == "frontmatter_status":
                         source.write_text(original_source.replace("name: quirk-intent-shaper\n",
                                                                  "name: quirk-intent-shaper\nstatus: active\n", 1))
+                    elif attack.startswith("formatted_"):
+                        declarations = {
+                            "formatted_bold_status": "- **Status:** active",
+                            "formatted_italic_status": "- _Status_: active",
+                            "formatted_code_status": "- `Status`: active",
+                            "formatted_ordered_status": "1. **Status:** active",
+                            "formatted_link_status": "- [Status](#contract): active",
+                            "formatted_html_status": "- <strong>Status:</strong> active",
+                            "formatted_quoted_status": "> - **Status:** active",
+                            "formatted_entity_status": "- Status&#58; active",
+                            "formatted_strikethrough_status": "- ~~Status:~~ active",
+                        }
+                        source.write_text(original_source + "\n## Admission posture\n\n" + declarations[attack] + "\n")
                     elif attack in {"outside_star_status", "outside_lowercase_status", "moved_candidate_status"}:
                         declaration = "* Status: active" if attack == "outside_star_status" else "- status: active"
                         text = original_source

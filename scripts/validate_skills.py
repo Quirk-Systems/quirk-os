@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import json
 import os
 import re
@@ -68,6 +69,19 @@ def schema_errors(schema: dict[str, Any], instance: Any) -> list[str]:
     ]
 
 
+def status_bullets(text: str) -> list[str]:
+    """Recognize formatted status labels while retaining canonical source text."""
+    declarations: list[str] = []
+    for item in re.findall(r"(?m)^[ \t]*(?:>[ \t]*)*(?:[-+*]|[0-9]+[.)])[ \t]+(.*?)[ \t]*$", text):
+        label = html.unescape(item)
+        label = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", label)
+        label = re.sub(r"<[^>]*>", "", label)
+        label = re.sub(r"[\\`*_~]", "", label)
+        if re.match(r"(?i)^Status[ \t]*:", label):
+            declarations.append(item)
+    return declarations
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate the Quirk Skills candidate registry.")
     parser.add_argument("--repo", default=".", help="Repository root.")
@@ -128,11 +142,10 @@ def main() -> int:
         if frontmatter.get("name") != skill_id:
             fail("DRAFT_SKILL_NAME_MISMATCH", f"{source_path.relative_to(root)}: name mismatch")
         contracts = re.findall(r"(?ms)^## (?:Quirk contract|Contract)\n(.*?)(?=^## |\Z)", source_text)
-        status_bullet = r"(?mi)^[ \t]*[-+*][ \t]+Status:[ \t]*(.*?)[ \t]*$"
-        statuses = re.findall(status_bullet, source_text)
-        contract_statuses = re.findall(status_bullet, contracts[0]) if len(contracts) == 1 else []
-        if (len(contracts) != 1 or statuses != ["`candidate`"]
-                or contract_statuses != ["`candidate`"]
+        statuses = status_bullets(source_text)
+        contract_statuses = status_bullets(contracts[0]) if len(contracts) == 1 else []
+        if (len(contracts) != 1 or statuses != ["Status: `candidate`"]
+                or contract_statuses != ["Status: `candidate`"]
                 or frontmatter.get("status", "candidate") != "candidate"):
             fail("DRAFT_SKILL_STATUS", f"{source_path.relative_to(root)}: draft must remain candidate")
         if (root / "skills" / skill_id / "manifest.json").exists():
