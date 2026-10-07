@@ -111,6 +111,44 @@ class AgentManifestTests(unittest.TestCase):
 
     # --- adversarial cases -------------------------------------------------
 
+    def test_phantom_registry_id_cannot_reuse_valid_manifest(self) -> None:
+        path = self.root / "agents/registry.json"
+        registry = json.loads(path.read_text())
+        phantom = dict(registry["agents"][0], id="agent.phantom")
+        registry["agents"].append(phantom)
+        path.write_text(json.dumps(seal_registry(registry)))
+        report = validate_repository(self.root)
+        self.assertIn("REGISTRY_MANIFEST_DRIFT", codes(report))
+        self.assertNotIn("REGISTRY_ORPHAN", codes(report))
+
+    def test_reused_versions_reject_line_breaks(self) -> None:
+        report = self.mutate(lambda m: m["metadata"].update(version="0.2.0\n"))
+        self.assertIn("AGENT_SCHEMA", codes(report))
+        self.assertIn("REGISTRY_SCHEMA", codes(report))
+        self.assertEqual(report["manifest_digests"], {})
+
+    def test_symlink_manifest_cannot_claim_target_as_source_blob(self) -> None:
+        path = self.manifest_path()
+        target = self.root / "original-agent.yaml"
+        path.rename(target)
+        path.symlink_to(target)
+        self.assertEqual(main(["--repo", str(self.root), "--output", "out/report.json", "--metrics-output", "out/metrics.json"]), 1)
+        report = json.loads((self.root / "out/report.json").read_text())
+        self.assertIn("AGENT_SOURCE_SYMLINK", codes(report))
+        self.assertEqual(report["manifest_digests"], {})
+        self.assertTrue((self.root / "out/metrics.json").is_file())
+        with self.assertRaisesRegex(ValueError, "symlink"):
+            build_registry_entry(self.root, path)
+
+    def test_symlink_agent_directory_is_rejected(self) -> None:
+        directory = self.manifest_path().parent
+        target = self.root / "original-agent"
+        directory.rename(target)
+        directory.symlink_to(target, target_is_directory=True)
+        self.assertIn("AGENT_SOURCE_SYMLINK", codes(validate_repository(self.root)))
+        with self.assertRaisesRegex(ValueError, "symlink"):
+            build_registry_entry(self.root, self.manifest_path())
+
     def test_self_approval_fails(self) -> None:
         report = self.mutate(lambda manifest: self.admit(manifest, approved_by="agent.quirk-sync-steward"))
         self.assertIn("AGENT_SELF_APPROVAL", codes(report))

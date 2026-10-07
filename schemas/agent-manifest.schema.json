@@ -41,7 +41,8 @@
           "pattern": "^agent\\.[a-z0-9][a-z0-9-]*(?![\\s\\S])"
         },
         "version": {
-          "$ref": "runtime-manifest.schema.json#/properties/version"
+          "$ref": "runtime-manifest.schema.json#/properties/version",
+          "not": {"pattern": "[\\r\\n]"}
         },
         "status": {
           "$ref": "runtime-manifest.schema.json#/properties/status"
