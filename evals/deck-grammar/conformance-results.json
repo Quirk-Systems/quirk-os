@@ -173,6 +173,13 @@
       "errors": []
     },
     {
+      "name": "content-hash-binds:artifact.live-proof-report.json",
+      "passed": true,
+      "content_ref": "examples/deck-grammar/live-proof.json",
+      "content_hash": "9f633beaf672efa9044895f0e13467dea04e4dd6724c8709b3285510b33e1c38",
+      "errors": []
+    },
+    {
       "name": "same-goal-live-proof-reproducible",
       "passed": true,
       "errors": []
@@ -353,5 +360,5 @@
     "production_deployments": 0,
     "persistent_hands_without_consent": 0
   },
-  "content_hash": "efc7b28456076c06caac8fcc31d82662a521e5fc2d874274e9c6e17e067fa20a"
+  "content_hash": "f36aa708fdd414924981c20778ee8ea98b158b436553c9a455fb2441737c917f"
 }

@@ -22,9 +22,9 @@
       "status": "candidate",
       "authority_ceiling": "propose",
       "manifest_path": "agents/quirk-sync-steward/agent.yaml",
-      "source_blob_sha": "7e4f54c8ed0ac373ca82a1199115cbe6e027ff79",
-      "manifest_sha256": "0dc8d2132b8e00f1f9f14c8f340f745ffbd8ddbfc644119dc817f439c29754d1"
+      "source_blob_sha": "87d703353b5a24b4d66461ecccc78638e9f0226c",
+      "manifest_sha256": "310d2c8658a295a5eff649a17ac479d498052aafdfd4f79ef76bbf9888b0e326"
     }
   ],
-  "registry_sha256": "eca73c0720b87ff6c0666338573f3d32d3d1f2e9fe9ffa7fde962c73a165a2a0"
+  "registry_sha256": "62cd5c37bf3e11e22e852ec78bb4d48eae5deb91fa4beb4fbe0724a18760ebb3"
 }

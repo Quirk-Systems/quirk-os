@@ -13,6 +13,7 @@ on:
       - 'scripts/validate_agents.py'
       - 'skills/registry.json'
       - 'tests/test_agent_manifest.py'
+      - 'supabase/tests/sync_control_plane_outbox_claim_benchmark.sql'
   push:
     branches-ignore: [main]
     paths:
@@ -26,6 +27,7 @@ on:
       - 'scripts/validate_agents.py'
       - 'skills/registry.json'
       - 'tests/test_agent_manifest.py'
+      - 'supabase/tests/sync_control_plane_outbox_claim_benchmark.sql'
   workflow_dispatch:
 
 permissions:
@@ -58,6 +60,7 @@ jobs:
         run: python -m unittest tests.test_agent_manifest -v
 
       - name: Run agent candidate conformance
+        if: ${{ !cancelled() }}
         run: >-
           python scripts/validate_agents.py
           --repo .

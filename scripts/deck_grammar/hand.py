@@ -31,9 +31,9 @@ def compile_hand(*, deck: dict[str, Any], preset: dict[str, Any], cards_by_id: d
         raise DeckGrammarError('preset purpose does not match')
     if not wildcard_match(applies['task_classes'], deck['task_class']):
         raise DeckGrammarError('preset task class does not match')
-    if applies.get('platforms') and (not wildcard_match(applies['platforms'], deck['platform'])):
+    if not wildcard_match(applies.get('platforms'), deck['platform']):
         raise DeckGrammarError('preset platform does not match')
-    if applies.get('area_refs') and (not wildcard_match(applies['area_refs'], deck['area_ref'])):
+    if not wildcard_match(applies.get('area_refs'), deck['area_ref']):
         raise DeckGrammarError('preset area does not match')
     if preset['personalization']['permanent_persona_assignment'] is not False:
         raise DeckGrammarError('a preset may not permanently assign a persona')

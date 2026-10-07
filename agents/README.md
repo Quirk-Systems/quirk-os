@@ -24,7 +24,7 @@ Binding a skill, holding a tool, or passing conformance never implies authority 
 - Referenced policy, schema, evaluation, trigger, admission, and rights-review evidence files exist inside the repository.
 - Schema-invalid manifests never reach semantic checks; failure reports and metrics remain available.
 - The supported admission policy is pinned, including rule IDs, requirements, conditions, and protected actions; unsupported policy changes fail conformance.
-- Static admission-policy rules: multi-skill agents block on collisions; `active` requires nonempty `eval_refs` and an admission record with evidence; requester ≠ approver; the agent ceiling may not exceed `admission.granted_ceiling`; `admission.evaluated_content_hash` must match the manifest content; `data_productization` requires an approved rights review.
+- Static admission-policy v0.4 rules: multi-skill agents block on collisions; `active` requires nonempty `eval_refs` and an admission record with evidence; requester ≠ approver and the approver must be a well-formed human principal; the agent ceiling may not exceed `admission.granted_ceiling`; `admission.evaluated_content_hash` must match the manifest content; `data_productization` requires an approved rights review.
 
 ```bash
 pip install -r requirements-evals.txt
@@ -32,6 +32,14 @@ python -m unittest tests.test_agent_manifest -v
 python scripts/validate_agents.py --repo . --output evals/agents/conformance-results.json \
   --metrics-output evals/agents/conformance-metrics.json --write-step-summary
 ```
+
+## Structural checks are not admission
+
+The validator pins policy v0.4, including its verification contract, to detect drift. It checks only local contract structure and file references. A syntactically valid `human.*` name is not proof of consent. The runtime verifier owns live approval identity, scope, expiry, revocation, and attestation checks; this candidate validator does not call it or confer its authority. Even an active test fixture can pass only structural conformance.
+
+`observability.ci_metrics_refs` declares generated output paths and is checked for repository containment; those outputs need not exist before CI runs. `benchmark_refs` names source files and must resolve to existing repository files. Telemetry never substitutes for admission evidence.
+
+Malformed paths and filesystem failures produce unresolved-reference findings. Existing manifests rejected by parsing or schema validation are not mislabeled as absent registry orphans.
 
 ## Digest policy
 

@@ -120,9 +120,10 @@ def unique_in_order(items: list[str]) -> list[str]:
 _TEMP_FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
 
 
-def write_files(root: Path, files: dict[str, str]) -> list[Path]:
+def write_files(root: Path, files: dict[str, str | bytes]) -> list[Path]:
     """Write each file through an exclusive temp sibling and an atomic replace, ledger last.
 
+    Existing package bytes are copied verbatim; generated text is encoded as UTF-8.
     The temp name carries random bytes so it cannot be planted ahead of time, it is
     opened O_EXCL and O_NOFOLLOW so an existing entry or link at that name fails the
     write instead of being followed, and a failed write removes its temp before
@@ -136,8 +137,8 @@ def write_files(root: Path, files: dict[str, str]) -> list[Path]:
         temp = path.with_name(f".{path.name}.{secrets.token_hex(8)}.tmp")
         fd = os.open(temp, _TEMP_FLAGS, 0o644)
         try:
-            with os.fdopen(fd, "w", encoding="utf-8") as handle:
-                handle.write(text)
+            with os.fdopen(fd, "wb") as handle:
+                handle.write(text.encode("utf-8") if isinstance(text, str) else text)
             os.replace(temp, path)
         except BaseException:
             with contextlib.suppress(OSError):

@@ -21,7 +21,7 @@ from scripts.validate_agents import (
 
 ROOT = Path(__file__).resolve().parents[1]
 AGENT = "quirk-sync-steward"
-COPIED_TREES = ("agents", "policies", "schemas", "evals/sync-control-plane")
+COPIED_TREES = ("agents", "policies", "schemas", "evals/sync-control-plane", "supabase/tests")
 
 
 def codes(report: dict[str, Any]) -> set[str]:
@@ -104,7 +104,7 @@ class AgentManifestTests(unittest.TestCase):
         self.assertGreater(metrics["files_scanned"], 0)
         self.assertGreater(metrics["bytes_scanned"], 0)
 
-    def test_properly_admitted_active_agent_passes(self) -> None:
+    def test_active_fixture_passes_structural_checks_without_granting_authority(self) -> None:
         report = self.mutate(lambda manifest: self.admit(manifest))
         self.assertEqual(report["findings"], [])
 
@@ -314,6 +314,80 @@ class AgentManifestTests(unittest.TestCase):
         self.assertIn("SCHEMA_INVALID", codes(report))
         self.assertIn("AGENT_SCHEMA", codes(report))
         self.assertEqual(report["manifest_digests"], {})
+
+
+    def test_reference_resolution_errors_preserve_cli_failure_artifacts(self) -> None:
+        (self.root / "loop").symlink_to("loop")
+        for ref in ("bad\0path", "loop", str(self.root / "schemas/runtime-manifest.schema.json")):
+            with self.subTest(ref=ref):
+                manifest = self.load()
+                manifest["trigger_contract"]["evidence_refs"] = [ref]
+                self.write(manifest)
+                self.reseal()
+                self.assertEqual(main(["--repo", str(self.root), "--output", "out/report.json", "--metrics-output", "out/metrics.json"]), 1)
+                report = json.loads((self.root / "out/report.json").read_text())
+                self.assertIn("AGENT_REF_MISSING", codes(report))
+                self.assertGreater(json.loads((self.root / "out/metrics.json").read_text())["finding_count"], 0)
+
+    def test_filesystem_errors_are_unresolved_references(self) -> None:
+        from unittest.mock import patch
+        from scripts.validate_agents import _repo_file, _is_file
+        for error in (ValueError("invalid path"), RuntimeError("symlink loop"), OSError("unavailable")):
+            with self.subTest(error=error):
+                with patch.object(Path, "resolve", side_effect=error):
+                    self.assertIsNone(_repo_file(self.root, "evidence.json"))
+                with patch.object(Path, "is_file", side_effect=error):
+                    self.assertFalse(_is_file(self.root / "evidence.json"))
+
+    def test_invalid_existing_manifest_is_not_an_orphan(self) -> None:
+        path = self.manifest_path()
+        for payload in ("metadata: [", "{}", "[]"):
+            with self.subTest(payload=payload):
+                path.write_text(payload)
+                report = validate_repository(self.root)
+                self.assertEqual(report["status"], "fail")
+                self.assertNotIn("REGISTRY_ORPHAN", codes(report))
+                self.assertNotIn("REGISTRY_MANIFEST_DRIFT", codes(report))
+                self.assertEqual(report["manifest_digests"], {})
+        path.unlink()
+        self.assertIn("REGISTRY_ORPHAN", codes(validate_repository(self.root)))
+
+    def test_registry_cannot_point_at_an_absent_manifest_under_an_existing_id(self) -> None:
+        path = self.root / "agents/registry.json"
+        registry = json.loads(path.read_text())
+        registry["agents"][0]["manifest_path"] = "agents/quirk-missing/agent.yaml"
+        path.write_text(json.dumps(seal_registry(registry)))
+        self.assertIn("REGISTRY_ORPHAN", codes(validate_repository(self.root)))
+
+    def test_current_policy_rejects_nonhuman_approval_and_malformed_requester(self) -> None:
+        for principal in ("agent.other", "service.other", "system.other", "human.", "human.test\n"):
+            with self.subTest(principal=principal):
+                report = self.mutate(lambda m: self.admit(m, approved_by=principal))
+                self.assertEqual(report["status"], "fail")
+                self.assertTrue(codes(report) & {"AGENT_INDEPENDENT_APPROVAL_REQUIRED", "AGENT_SCHEMA"})
+        report = self.mutate(lambda m: self.admit(m, requested_by="NOT-A-PRINCIPAL"))
+        self.assertIn("AGENT_SCHEMA", codes(report))
+        report = self.mutate(lambda m: self.admit(m, requested_by="agent.test\n"))
+        self.assertEqual(report["status"], "fail")
+        self.assertTrue(codes(report) & {"AGENT_REQUESTER_INVALID", "AGENT_SCHEMA"})
+
+    def test_verification_contract_drift_is_not_silently_accepted(self) -> None:
+        path = self.root / "policies/manifest-admission-policy.yaml"
+        policy = yaml.safe_load(path.read_text())
+        policy["verification_contract"]["bootstrap"] = "allow_without_approval"
+        path.write_text(yaml.safe_dump(policy))
+        self.assertIn("POLICY_DRIFT", codes(validate_repository(self.root)))
+
+    def test_observability_is_strict_and_does_not_require_generated_metrics(self) -> None:
+        self.assertFalse((self.root / "evals/golden-pack/validate-golden-pack-metrics.json").exists())
+        self.assertEqual(validate_repository(self.root)["status"], "pass")
+        report = self.mutate(lambda m: m["observability"].update(unrecognized=True))
+        self.assertIn("AGENT_SCHEMA", codes(report))
+        m = self.load(); m["observability"].pop("unrecognized"); self.write(m)
+        report = self.mutate(lambda m: m["observability"].update(ci_metrics_refs=["../escaped.json"]))
+        self.assertIn("AGENT_METRICS_PATH_INVALID", codes(report))
+        report = self.mutate(lambda m: m["observability"].update(benchmark_refs=["missing.sql"]))
+        self.assertIn("AGENT_REF_MISSING", codes(report))
 
 
 if __name__ == "__main__":

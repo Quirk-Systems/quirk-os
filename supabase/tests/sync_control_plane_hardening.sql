@@ -3,113 +3,13 @@
 
 begin;
 
--- Valid activation must pass with independent approval.
-do $$
-declare
-  v_hash text := repeat('a', 64);
-begin
-  insert into quirk_sync.manifest_registry (
-    manifest_key, manifest_kind, version, status, requested_status,
-    canonical_uri, content_hash, authority_ceiling, tools,
-    inputs_schema_ref, outputs_schema_ref, eval_refs, stop_conditions,
-    requested_by, approved_by, admission_decision_ref, authority_grant_ref,
-    evaluated_content_hash, transition_evidence_ref, admitted_at, domains
-  ) values (
-    'agent.sql-valid', 'agent', '9.9.1', 'active', 'active',
-    'https://github.com/Quirk-Systems/quirk-os/pull/5', v_hash, 'propose', '[]'::jsonb,
-    'schemas/source-binding.schema.json', 'schemas/sync-run-receipt.schema.json',
-    '["eval.sql.valid"]'::jsonb, '["missing_authority"]'::jsonb,
-    'agent.sql-valid', 'human.bryan', 'decision.sql.valid', 'grant.sql.valid',
-    v_hash, 'evidence.sql.valid', now(), '["sync"]'::jsonb
-  );
-end $$;
-
--- Self-promotion must be rejected.
-do $$
-declare
-  v_rejected boolean := false;
-  v_hash text := repeat('b', 64);
-begin
-  begin
-    insert into quirk_sync.manifest_registry (
-      manifest_key, manifest_kind, version, status, requested_status,
-      canonical_uri, content_hash, authority_ceiling, tools,
-      inputs_schema_ref, outputs_schema_ref, eval_refs, stop_conditions,
-      requested_by, approved_by, admission_decision_ref, authority_grant_ref,
-      evaluated_content_hash, transition_evidence_ref, admitted_at, domains
-    ) values (
-      'agent.sql-self', 'agent', '9.9.2', 'active', 'active',
-      'https://github.com/Quirk-Systems/quirk-os/pull/5', v_hash, 'execute_protected', '[]'::jsonb,
-      'schemas/source-binding.schema.json', 'schemas/sync-run-receipt.schema.json',
-      '["eval.self"]'::jsonb, '["none"]'::jsonb,
-      'agent.sql-self', 'agent.sql-self', 'decision.self', 'grant.self',
-      v_hash, 'evidence.self', now(), '["sync","governance"]'::jsonb
-    );
-  exception when others then
-    v_rejected := position('may not approve' in sqlerrm) > 0;
-  end;
-  if not v_rejected then
-    raise exception 'SCP-011 failed: self-promotion was not rejected';
-  end if;
-end $$;
-
--- Data productization without approved rights must be rejected.
-do $$
-declare
-  v_rejected boolean := false;
-  v_hash text := repeat('c', 64);
-begin
-  begin
-    insert into quirk_sync.manifest_registry (
-      manifest_key, manifest_kind, version, status, requested_status,
-      canonical_uri, content_hash, authority_ceiling, tools,
-      inputs_schema_ref, outputs_schema_ref, eval_refs, stop_conditions,
-      requested_by, approved_by, admission_decision_ref, authority_grant_ref,
-      evaluated_content_hash, transition_evidence_ref, admitted_at, domains, rights_review
-    ) values (
-      'capability.sql-rights', 'capability', '9.9.3', 'active', 'active',
-      'https://github.com/Quirk-Systems/quirk-os/pull/5', v_hash, 'execute_reversible', '[]'::jsonb,
-      'rights/unknown', 'products/data-product', '["eval.rights"]'::jsonb, '["rights_unclear"]'::jsonb,
-      'agent.quirk-value-foundry', 'human.bryan', 'decision.rights', 'grant.rights',
-      v_hash, 'evidence.rights', now(), '["data_productization"]'::jsonb,
-      '{"outcome":"deferred","license_verified":false,"privacy_review":"blocked","provenance_complete":false}'::jsonb
-    );
-  exception when others then
-    v_rejected := position('data productization requires' in sqlerrm) > 0;
-  end;
-  if not v_rejected then
-    raise exception 'SCP-010 failed: rights-unclear productization was not rejected';
-  end if;
-end $$;
-
--- Multi-skill trigger collision without routing contract must be rejected.
-do $$
-declare
-  v_rejected boolean := false;
-  v_hash text := repeat('d', 64);
-begin
-  begin
-    insert into quirk_sync.manifest_registry (
-      manifest_key, manifest_kind, version, status, requested_status,
-      canonical_uri, content_hash, authority_ceiling, tools,
-      inputs_schema_ref, outputs_schema_ref, eval_refs, stop_conditions,
-      requested_by, approved_by, admission_decision_ref, authority_grant_ref,
-      evaluated_content_hash, transition_evidence_ref, admitted_at, domains, skill_refs
-    ) values (
-      'orchestrator.sql-collision', 'orchestrator', '9.9.4', 'active', 'active',
-      'https://github.com/Quirk-Systems/quirk-os/pull/5', v_hash, 'propose', '[]'::jsonb,
-      'triggers/ambiguous', 'routing/unknown', '["eval.collision"]'::jsonb, '["collision"]'::jsonb,
-      'agent.sql-orchestrator', 'human.bryan', 'decision.collision', 'grant.collision',
-      v_hash, 'evidence.collision', now(), '["sync"]'::jsonb,
-      '["skill.alpha","skill.beta"]'::jsonb
-    );
-  exception when others then
-    v_rejected := position('trigger contract' in sqlerrm) > 0;
-  end;
-  if not v_rejected then
-    raise exception 'SCP-008 failed: trigger collision was not rejected';
-  end if;
-end $$;
+-- Manifest activation guard cases. Kept in their own file so CI can run them
+-- alone against a freshly migrated database: the cases below this include
+-- depend on seed rows no migration creates, and the projection-rebuild case at
+-- the end of this file fails on a clean schema for that reason. `\ir` resolves
+-- relative to this file, and the included file carries no transaction control,
+-- so these cases roll back with the rest of this suite.
+\ir manifest_activation_guard.cases.sql
 
 -- Duplicate vendor identity must be rejected.
 do $$

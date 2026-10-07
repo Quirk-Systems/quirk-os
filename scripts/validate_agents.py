@@ -23,6 +23,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -44,9 +45,14 @@ POLICY_PATH = "policies/manifest-admission-policy.yaml"
 # Pin the supported policy semantics; policy changes require validator review.
 EXPECTED_POLICY = {'api_version': 'quirk.dev/policy/v1alpha1',
  'kind': 'Policy',
- 'metadata': {'id': 'policy.manifest-admission', 'version': '0.2.0', 'status': 'candidate'},
+ 'metadata': {'id': 'policy.manifest-admission', 'version': '0.4.0', 'status': 'candidate'},
  'invariant': 'capability_never_implies_authority',
- 'rules': [{'id': 'no_self_approval', 'require': 'admission.requested_by != admission.approved_by'},
+ 'rules': [{'id': 'well_formed_requester',
+            'require': 'admission.requested_by matches '
+                       '"^(human|agent|service|system)\\\\.[a-z0-9._-]+$"'},
+           {'id': 'no_self_approval', 'require': 'admission.requested_by != admission.approved_by'},
+           {'id': 'independent_human_approval',
+            'require': 'admission.approved_by matches "^human\\\\.[a-z0-9._-]+$"'},
            {'id': 'evaluated_hash_matches',
             'require': 'admission.evaluated_content_hash == content_hash'},
            {'id': 'explicit_grant', 'require': 'admission.authority_grant_ref'},
@@ -65,7 +71,23 @@ EXPECTED_POLICY = {'api_version': 'quirk.dev/policy/v1alpha1',
                        'promote_canon',
                        'expand_authority',
                        'merge_pull_request',
-                       'deploy_production']}
+                       'deploy_production'],
+ 'verification_contract': {'hash_profile': 'runtime-manifest-content.v1',
+                           'attestation_schema': 'manifest-approval-attestation.v1',
+                           'approval_root': 'exact_head_scoped_human_github_review',
+                           'ownership_source': 'protected_base_branch_CODEOWNERS_and_installed_account_ID_mapping',
+                           'database_independence': 'projection',
+                           'database_write_role': 'quirk_manifest_verifier',
+                           'bootstrap': 'blocked_until_host_policy_and_repository_protection_are_admitted',
+                           'requirements': ['compute_content_hash_including_all_metadata',
+                                            'resolve_review_identity_scope_expiry_revocation_and_evaluation_materials',
+                                            'compare_entire_admission_envelope_with_resolved_consent',
+                                            'refuse_fabricated_refs_and_ambiguous_or_unavailable_approval',
+                                            'reverify_immediately_before_database_transaction',
+                                            'preserve_append_only_history_and_zero_effect_replay'],
+                           'limitations': ['PostgreSQL_does_not_independently_resolve_GitHub_or_recompute_Python_JSON_hashes',
+                                           'privileged_verifier_or_database_administrator_compromise_is_outside_this_boundary',
+                                           'review_resolution_and_database_write_are_not_cross_provider_atomic']}}
 
 # Skill packages use their own ceiling ladder; ``execute_bounded`` is the only rung
 # absent from the runtime-manifest ladder and is ranked as ``execute_reversible``.
@@ -170,10 +192,22 @@ def _schema_errors(validator: Draft202012Validator, instance: Any) -> list[str]:
 def _repo_file(root: Path, ref: Any) -> Path | None:
     if not isinstance(ref, str) or not ref or "://" in ref:
         return None
-    candidate = (root / ref).resolve()
-    if root != candidate and root not in candidate.parents:
+    try:
+        if Path(ref).is_absolute():
+            return None
+        candidate = (root / ref).resolve()
+        if root != candidate and root not in candidate.parents:
+            return None
+        return candidate
+    except (ValueError, RuntimeError, OSError):
         return None
-    return candidate
+
+
+def _is_file(path: Path | None) -> bool:
+    try:
+        return path is not None and path.is_file()
+    except (ValueError, RuntimeError, OSError):
+        return False
 
 
 def validate_repository(root: Path) -> dict[str, Any]:
@@ -224,7 +258,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
         policy = yaml.load(read_bytes(root / POLICY_PATH), Loader=_UniqueKeyLoader)
         if policy != EXPECTED_POLICY:
             fail("POLICY_DRIFT", f"{POLICY_PATH}: unsupported policy; update and review the validator before conformance")
-        protected_actions = set(policy.get("protected_actions", []))
+        protected_actions = set(EXPECTED_POLICY["protected_actions"])
         if not protected_actions:
             fail("POLICY_PROTECTED_ACTIONS_MISSING", f"{POLICY_PATH}: protected_actions is empty")
     except Exception as exc:  # noqa: BLE001
@@ -240,6 +274,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
     agents_dir = root / "agents"
     agent_dirs = sorted(path for path in agents_dir.iterdir() if path.is_dir()) if agents_dir.is_dir() else []
     entries_on_disk: dict[str, dict[str, Any]] = {}
+    discovered_manifests: set[str] = set()
 
     for agent_dir in agent_dirs:
         manifest_path = agent_dir / "agent.yaml"
@@ -247,6 +282,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
         if not manifest_path.is_file():
             fail("AGENT_MANIFEST_MISSING", rel)
             continue
+        discovered_manifests.add(rel)
         try:
             payload = read_bytes(manifest_path)
             manifest = load_agent_yaml(payload)
@@ -309,12 +345,18 @@ def validate_repository(root: Path) -> dict[str, Any]:
         for block in ("admission", "rights_review"):
             if isinstance(manifest.get(block), dict):
                 refs.extend(manifest[block].get("evidence_refs", []))
+        observability = manifest.get("observability", {})
+        refs.extend(observability.get("benchmark_refs", []))
+        # Metrics are output destinations, not existing admission evidence.
+        for ref in observability.get("ci_metrics_refs", []):
+            if _repo_file(root, ref) is None:
+                fail("AGENT_METRICS_PATH_INVALID", f"{rel}: unsafe metrics destination: {ref!r}")
         for ref in refs:
             if ref is None:
                 continue
             target = _repo_file(root, ref)
-            if target is None or not target.is_file():
-                fail("AGENT_REF_MISSING", f"{rel}: referenced file not found: {ref}")
+            if not _is_file(target):
+                fail("AGENT_REF_MISSING", f"{rel}: referenced file not found: {ref!r}")
 
         if not manifest.get("stop_conditions"):
             fail("AGENT_STOP_CONDITIONS_MISSING", f"{rel}: stop_conditions must be declared")
@@ -326,6 +368,10 @@ def validate_repository(root: Path) -> dict[str, Any]:
             elif not admission.get("evidence_refs"):
                 fail("AGENT_ADMISSION_EVIDENCE_MISSING", f"{rel}: active agent admission requires evidence_refs")
         if isinstance(admission, dict):
+            if re.fullmatch(r"(human|agent|service|system)\.[a-z0-9._-]+", admission["requested_by"]) is None:
+                fail("AGENT_REQUESTER_INVALID", f"{rel}: requester must be a well-formed principal")
+            if re.fullmatch(r"human\.[a-z0-9._-]+", admission["approved_by"]) is None:
+                fail("AGENT_INDEPENDENT_APPROVAL_REQUIRED", f"{rel}: approval requires an independent human principal")
             if admission.get("requested_by") == admission.get("approved_by"):
                 fail("AGENT_SELF_APPROVAL", f"{rel}: admission requested_by and approved_by must differ")
             granted = admission.get("granted_ceiling")
@@ -361,9 +407,13 @@ def validate_repository(root: Path) -> dict[str, Any]:
     registry_entries: dict[str, dict[str, Any]] = {}
     try:
         registry = json.loads(read_bytes(registry_path), object_pairs_hook=_unique_json_object)
-        if registry_validator is not None:
-            for message in _schema_errors(registry_validator, registry):
-                fail("REGISTRY_SCHEMA", f"agents/registry.json: {message}")
+        if registry_validator is None:
+            raise ValueError("registry schema unavailable")
+        registry_errors = _schema_errors(registry_validator, registry)
+        for message in registry_errors:
+            fail("REGISTRY_SCHEMA", f"agents/registry.json: {message}")
+        if registry_errors:
+            raise ValueError("registry semantics skipped after schema failure")
         if registry.get("status") != "candidate":
             fail("REGISTRY_AUTHORITY_BREACH", "agents/registry.json must remain candidate")
         if registry.get("digest_policy") != DIGEST_POLICY:
@@ -380,8 +430,9 @@ def validate_repository(root: Path) -> dict[str, Any]:
 
     for agent_id in sorted(set(entries_on_disk) - set(registry_entries)):
         fail("AGENT_UNREGISTERED", f"{agent_id}: agent folder is missing from agents/registry.json")
-    for agent_id in sorted(set(registry_entries) - set(entries_on_disk)):
-        fail("REGISTRY_ORPHAN", f"{agent_id}: registry entry has no agent folder")
+    for agent_id, entry in sorted(registry_entries.items()):
+        if entry["manifest_path"] not in discovered_manifests:
+            fail("REGISTRY_ORPHAN", f"{agent_id}: registered manifest is absent: {entry['manifest_path']}")
     for agent_id in sorted(set(registry_entries) & set(entries_on_disk)):
         for key, expected in entries_on_disk[agent_id].items():
             if registry_entries[agent_id].get(key) != expected:
@@ -407,7 +458,8 @@ def validate_repository(root: Path) -> dict[str, Any]:
             "activates_agents": False,
             "projects_to_supabase": False,
             "promotes_canon": False,
-            "meaning": "candidate-local conformance evidence only",
+            "meaning": "candidate-local structural conformance only; approval authenticity is not verified",
+            "verifies_approval_authenticity": False,
         },
     }
 

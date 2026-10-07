@@ -10,13 +10,31 @@
         "scope": "writing.dossier",
         "as_of": "2026-08-11T23:30:00-05:00",
         "preferences": [
-          {"ref": "pref.saved.concise", "dimension": "verbosity", "value": "short", "source": "explicit_saved", "confidence": 1.0, "scope": "writing.dossier"},
-          {"ref": "pref.current.detailed", "dimension": "verbosity", "value": "detailed", "source": "explicit_current", "confidence": 1.0, "scope": "writing.dossier"}
+          {
+            "ref": "pref.saved.concise",
+            "dimension": "verbosity",
+            "value": "short",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "writing.dossier"
+          },
+          {
+            "ref": "pref.current.detailed",
+            "dimension": "verbosity",
+            "value": "detailed",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "writing.dossier"
+          }
         ]
       },
       "expected": {
-        "selected_refs": ["pref.current.detailed"],
-        "ignored_refs": ["pref.saved.concise"],
+        "selected_refs": [
+          "pref.current.detailed"
+        ],
+        "ignored_refs": [
+          "pref.saved.concise"
+        ],
         "conflicts": []
       }
     },
@@ -27,13 +45,31 @@
       "input": {
         "scope": "security.incident",
         "preferences": [
-          {"ref": "pref.security.evidence_first", "dimension": "structure", "value": "evidence_first", "source": "explicit_saved", "confidence": 1.0, "scope": "security.incident"},
-          {"ref": "pref.bryminn.performance_risk", "dimension": "structure", "value": "breath_risk", "source": "explicit_saved", "confidence": 1.0, "scope": "music.performance"}
+          {
+            "ref": "pref.security.evidence_first",
+            "dimension": "structure",
+            "value": "evidence_first",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "security.incident"
+          },
+          {
+            "ref": "pref.bryminn.performance_risk",
+            "dimension": "structure",
+            "value": "breath_risk",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "music.performance"
+          }
         ]
       },
       "expected": {
-        "selected_refs": ["pref.security.evidence_first"],
-        "excluded_scopes": ["music.performance"]
+        "selected_refs": [
+          "pref.security.evidence_first"
+        ],
+        "excluded_scopes": [
+          "music.performance"
+        ]
       }
     },
     {
@@ -41,13 +77,31 @@
       "name": "persona_hand_not_identity",
       "operation": "persona_hand",
       "input": {
-        "primary": {"ref": "persona.brayn", "role": "system_architecture", "weight": 0.7, "selection_basis": "declared_function", "sensitive_inference": false, "impersonates_user": false},
-        "supporting": [{"ref": "persona.bryan", "role": "reality_grounding", "weight": 0.3, "selection_basis": "declared_function", "sensitive_inference": false, "impersonates_user": false}]
+        "primary": {
+          "ref": "persona.brayn",
+          "role": "system_architecture",
+          "weight": 0.7,
+          "selection_basis": "declared_function",
+          "sensitive_inference": false,
+          "impersonates_user": false
+        },
+        "supporting": [
+          {
+            "ref": "persona.bryan",
+            "role": "reality_grounding",
+            "weight": 0.3,
+            "selection_basis": "declared_function",
+            "sensitive_inference": false,
+            "impersonates_user": false
+          }
+        ]
       },
       "expected": {
         "status": "accepted",
         "primary_ref": "persona.brayn",
-        "supporting_refs": ["persona.bryan"],
+        "supporting_refs": [
+          "persona.bryan"
+        ],
         "weight_total": 1.0,
         "authority_effect": false,
         "permanent_identity_claim": false
@@ -65,8 +119,19 @@
       "expected": {
         "status": "accepted",
         "platform": "github",
-        "effects": ["versioned", "collaborative_review", "diff_first", "executable_evidence"],
-        "affordance_bias": ["diff", "code_patch", "check_run", "issue", "review_comment"],
+        "effects": [
+          "versioned",
+          "collaborative_review",
+          "diff_first",
+          "executable_evidence"
+        ],
+        "affordance_bias": [
+          "diff",
+          "code_patch",
+          "check_run",
+          "issue",
+          "review_comment"
+        ],
         "semantic_decision_hash_preserved": true
       }
     },
@@ -74,7 +139,11 @@
       "id": "QIS-005",
       "name": "truth_over_style",
       "operation": "truth_over_style",
-      "input": {"stakes": "protected", "evidence_mode": "minimal", "requested_dramatic_intensity": 1.0},
+      "input": {
+        "stakes": "protected",
+        "evidence_mode": "minimal",
+        "requested_dramatic_intensity": 1.0
+      },
       "expected": {
         "evidence_mode": "strict",
         "max_dramatic_intensity": 0.2,
@@ -89,13 +158,32 @@
       "input": {
         "scope": "product.strategy",
         "preferences": [
-          {"ref": "pref.current.one_answer", "dimension": "option_count", "value": "one", "source": "explicit_current", "confidence": 1.0, "scope": "product.strategy"},
-          {"ref": "pref.current.alternatives", "dimension": "option_count", "value": "three", "source": "explicit_current", "confidence": 1.0, "scope": "product.strategy"}
+          {
+            "ref": "pref.current.one_answer",
+            "dimension": "option_count",
+            "value": "one",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "product.strategy"
+          },
+          {
+            "ref": "pref.current.alternatives",
+            "dimension": "option_count",
+            "value": "three",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "product.strategy"
+          }
         ]
       },
       "expected": {
-        "conflicts": ["option_count"],
-        "ignored_refs": ["pref.current.one_answer", "pref.current.alternatives"],
+        "conflicts": [
+          "option_count"
+        ],
+        "ignored_refs": [
+          "pref.current.one_answer",
+          "pref.current.alternatives"
+        ],
         "silent_average": false,
         "requires_default_plus_bounded_alternatives": true
       }
@@ -107,12 +195,20 @@
       "input": {
         "as_of": "2026-08-11T23:30:00-05:00",
         "preferences": [
-          {"ref": "pref.old.format", "valid_until": "2025-12-31T23:59:59Z"},
-          {"ref": "pref.current.format", "valid_until": "2027-12-31T23:59:59Z"}
+          {
+            "ref": "pref.old.format",
+            "valid_until": "2025-12-31T23:59:59Z"
+          },
+          {
+            "ref": "pref.current.format",
+            "valid_until": "2027-12-31T23:59:59Z"
+          }
         ]
       },
       "expected": {
-        "expired_refs": ["pref.old.format"],
+        "expired_refs": [
+          "pref.old.format"
+        ],
         "adaptation_proposal": true,
         "history_rewritten": false
       }
@@ -122,12 +218,26 @@
       "name": "negative_constraints_first_class",
       "operation": "negative_constraints",
       "input": {
-        "desired_traits": ["energy", "startup_sludge", "specificity", "fake_rebellion"],
-        "no_fill": ["startup_sludge", "fake_rebellion"]
+        "desired_traits": [
+          "energy",
+          "startup_sludge",
+          "specificity",
+          "fake_rebellion"
+        ],
+        "no_fill": [
+          "startup_sludge",
+          "fake_rebellion"
+        ]
       },
       "expected": {
-        "accepted_traits": ["energy", "specificity"],
-        "blocked_traits": ["startup_sludge", "fake_rebellion"],
+        "accepted_traits": [
+          "energy",
+          "specificity"
+        ],
+        "blocked_traits": [
+          "startup_sludge",
+          "fake_rebellion"
+        ],
         "negative_constraints_applied_first": true
       }
     },
@@ -135,7 +245,10 @@
       "id": "QIS-009",
       "name": "affordance_matches_task",
       "operation": "select_affordance",
-      "input": {"task_class": "decide", "complexity": "low"},
+      "input": {
+        "task_class": "decide",
+        "complexity": "low"
+      },
       "expected": {
         "selected": "decision_card",
         "generated_ui": false,
@@ -149,13 +262,31 @@
       "input": {
         "scope": "general",
         "preferences": [
-          {"ref": "pref.current.format", "dimension": "format", "value": "plain", "source": "explicit_current", "confidence": 1.0, "scope": "general"},
-          {"ref": "pref.saved.voice", "dimension": "voice", "value": "feral", "source": "explicit_saved", "confidence": 1.0, "scope": "general"}
+          {
+            "ref": "pref.current.format",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "general"
+          },
+          {
+            "ref": "pref.saved.voice",
+            "dimension": "voice",
+            "value": "feral",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "general"
+          }
         ]
       },
       "expected": {
-        "selected_refs": ["pref.current.format"],
-        "ignored_refs": ["pref.saved.voice"],
+        "selected_refs": [
+          "pref.current.format"
+        ],
+        "ignored_refs": [
+          "pref.saved.voice"
+        ],
         "stored_retrieval": false,
         "persona_hand": [],
         "saved_profile_loaded": false
@@ -197,15 +328,43 @@
       "input": {
         "scope": "general",
         "adapter_mode": "fail_on_read",
-        "settings": {"personalization_enabled": false, "adaptation_mode": "off", "implicit_signal_use": "off"},
+        "settings": {
+          "personalization_enabled": false,
+          "adaptation_mode": "off",
+          "implicit_signal_use": "off"
+        },
         "current_request_preferences": [
-          {"ref": "pref.current.format", "dimension": "format", "value": "plain", "source": "explicit_current", "confidence": 1.0, "scope": "general"}
+          {
+            "ref": "pref.current.format",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "general"
+          }
         ],
         "stored_evidence": {
-          "preferences": [{"ref": "pref.saved.poison", "dimension": "format", "value": "hidden", "source": "explicit_saved", "confidence": 1.0, "scope": "general"}],
-          "profile": {"ref": "profile.lure"},
-          "persona": {"ref": "persona.lure"},
-          "history": [{"ref": "history.lure"}]
+          "preferences": [
+            {
+              "ref": "pref.saved.poison",
+              "dimension": "format",
+              "value": "hidden",
+              "source": "explicit_saved",
+              "confidence": 1.0,
+              "scope": "general"
+            }
+          ],
+          "profile": {
+            "ref": "profile.lure"
+          },
+          "persona": {
+            "ref": "persona.lure"
+          },
+          "history": [
+            {
+              "ref": "history.lure"
+            }
+          ]
         }
       },
       "expected": {
@@ -213,7 +372,13 @@
         "personalization_enabled": false,
         "read_trace": [],
         "protected_projection": {
-          "preferences": [{"dimension": "format", "value": "plain", "source": "explicit_current"}],
+          "preferences": [
+            {
+              "dimension": "format",
+              "value": "plain",
+              "source": "explicit_current"
+            }
+          ],
           "voice_profile_ref": null,
           "aesthetic_profile_ref": null,
           "persona_ref": null,
@@ -228,13 +393,30 @@
       "input": {
         "scope": "general",
         "adapter_mode": "fail_on_read",
-        "settings": {"personalization_enabled": false, "adaptation_mode": "propose_only", "implicit_signal_use": "off"},
+        "settings": {
+          "personalization_enabled": false,
+          "adaptation_mode": "propose_only",
+          "implicit_signal_use": "off"
+        },
         "current_request_preferences": [],
         "stored_evidence": {
-          "preferences": [{"ref": "pref.saved.poison", "source": "explicit_saved"}],
-          "profile": {"ref": "profile.lure"},
-          "persona": {"ref": "persona.lure"},
-          "history": [{"ref": "history.lure"}]
+          "preferences": [
+            {
+              "ref": "pref.saved.poison",
+              "source": "explicit_saved"
+            }
+          ],
+          "profile": {
+            "ref": "profile.lure"
+          },
+          "persona": {
+            "ref": "persona.lure"
+          },
+          "history": [
+            {
+              "ref": "history.lure"
+            }
+          ]
         }
       },
       "expected": {
@@ -252,20 +434,48 @@
         "adapter_mode": "recording",
         "no_personalization": true,
         "as_of": "2026-08-11T23:30:00-05:00",
-        "settings": {"personalization_enabled": true, "adaptation_mode": "propose_only", "implicit_signal_use": "limited"},
+        "settings": {
+          "personalization_enabled": true,
+          "adaptation_mode": "propose_only",
+          "implicit_signal_use": "limited"
+        },
         "current_request_preferences": [],
         "stored_evidence": {
-          "preferences": [{"ref": "pref.saved.enabled", "dimension": "format", "value": "plain", "source": "explicit_saved", "confidence": 1.0, "scope": "general"}],
-          "profile": {"ref": "profile.enabled"},
-          "persona": {"ref": "persona.enabled"},
-          "history": [{"ref": "history.enabled"}]
+          "preferences": [
+            {
+              "ref": "pref.saved.enabled",
+              "dimension": "format",
+              "value": "plain",
+              "source": "explicit_saved",
+              "confidence": 1.0,
+              "scope": "general"
+            }
+          ],
+          "profile": {
+            "ref": "profile.enabled"
+          },
+          "persona": {
+            "ref": "persona.enabled"
+          },
+          "history": [
+            {
+              "ref": "history.enabled"
+            }
+          ]
         }
       },
       "expected": {
         "status": "accepted",
         "personalization_enabled": true,
-        "read_trace": ["preferences", "profile", "persona", "history"],
-        "selected_refs": ["pref.saved.enabled"],
+        "read_trace": [
+          "preferences",
+          "profile",
+          "persona",
+          "history"
+        ],
+        "selected_refs": [
+          "pref.saved.enabled"
+        ],
         "profile_loaded": true,
         "persona_loaded": true,
         "history_items": 1
@@ -279,11 +489,33 @@
         "scope": "writing.dossier",
         "as_of": "2026-08-11T23:30:00-05:00",
         "preferences": [
-          {"ref": "pref.saved.short", "dimension": "verbosity", "value": "short", "source": "explicit_saved", "confidence": 1.0, "scope": "writing.dossier"},
-          {"ref": "setting.purpose.detailed", "dimension": "verbosity", "value": "detailed", "source": "purpose_scoped_setting", "confidence": 0.5, "scope": "writing.dossier"}
+          {
+            "ref": "pref.saved.short",
+            "dimension": "verbosity",
+            "value": "short",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "writing.dossier"
+          },
+          {
+            "ref": "setting.purpose.detailed",
+            "dimension": "verbosity",
+            "value": "detailed",
+            "source": "purpose_scoped_setting",
+            "confidence": 0.5,
+            "scope": "writing.dossier"
+          }
         ]
       },
-      "expected": {"selected_refs": ["setting.purpose.detailed"], "ignored_refs": ["pref.saved.short"], "conflicts": []}
+      "expected": {
+        "selected_refs": [
+          "setting.purpose.detailed"
+        ],
+        "ignored_refs": [
+          "pref.saved.short"
+        ],
+        "conflicts": []
+      }
     },
     {
       "id": "QIS-R02",
@@ -293,10 +525,24 @@
         "scope": "writing.dossier",
         "as_of": "2026-08-11T23:30:00-05:00",
         "preferences": [
-          {"ref": "pref.future.format", "dimension": "format", "value": "future", "source": "explicit_saved", "confidence": 1.0, "scope": "writing.dossier", "valid_from": "2027-01-01T00:00:00Z"}
+          {
+            "ref": "pref.future.format",
+            "dimension": "format",
+            "value": "future",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "writing.dossier",
+            "valid_from": "2027-01-01T00:00:00Z"
+          }
         ]
       },
-      "expected": {"selected_refs": [], "ignored_refs": ["pref.future.format"], "conflicts": []}
+      "expected": {
+        "selected_refs": [],
+        "ignored_refs": [
+          "pref.future.format"
+        ],
+        "conflicts": []
+      }
     },
     {
       "id": "QIS-R03",
@@ -305,85 +551,226 @@
       "input": {
         "scope": "product.strategy",
         "preferences": [
-          {"ref": "pref.current.one", "dimension": "option_count", "value": "one", "source": "explicit_current", "confidence": 1.0, "scope": "product.strategy"},
-          {"ref": "pref.current.three", "dimension": "option_count", "value": "three", "source": "explicit_current", "confidence": 0.6, "scope": "product.strategy"},
-          {"ref": "pref.saved.two", "dimension": "option_count", "value": "two", "source": "explicit_saved", "confidence": 1.0, "scope": "product.strategy"}
+          {
+            "ref": "pref.current.one",
+            "dimension": "option_count",
+            "value": "one",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "product.strategy"
+          },
+          {
+            "ref": "pref.current.three",
+            "dimension": "option_count",
+            "value": "three",
+            "source": "explicit_current",
+            "confidence": 0.6,
+            "scope": "product.strategy"
+          },
+          {
+            "ref": "pref.saved.two",
+            "dimension": "option_count",
+            "value": "two",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "product.strategy"
+          }
         ]
       },
-      "expected": {"conflicts": ["option_count"], "ignored_refs": ["pref.current.one", "pref.current.three", "pref.saved.two"], "silent_average": false, "requires_default_plus_bounded_alternatives": true}
+      "expected": {
+        "conflicts": [
+          "option_count"
+        ],
+        "ignored_refs": [
+          "pref.current.one",
+          "pref.current.three",
+          "pref.saved.two"
+        ],
+        "silent_average": false,
+        "requires_default_plus_bounded_alternatives": true
+      }
     },
     {
       "id": "QIS-R04",
       "name": "sensitive_persona_is_rejected",
       "operation": "persona_hand",
       "input": {
-        "primary": {"ref": "persona.sensitive-guess", "role": "identity_claim", "weight": 1.0, "selection_basis": "inferred_nonsensitive", "sensitive_inference": true, "impersonates_user": false},
+        "primary": {
+          "ref": "persona.sensitive-guess",
+          "role": "identity_claim",
+          "weight": 1.0,
+          "selection_basis": "inferred_nonsensitive",
+          "sensitive_inference": true,
+          "impersonates_user": false
+        },
         "supporting": []
       },
-      "expected": {"status": "rejected", "rejection_reasons": ["identity_claim_rejected", "sensitive_inference_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "identity_claim_rejected",
+          "sensitive_inference_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
     },
     {
       "id": "QIS-R07",
       "name": "identity_claim_is_rejected_even_when_flags_claim_safe",
       "operation": "persona_hand",
       "input": {
-        "primary": {"ref": "persona.identity-claim", "role": "identity_claim", "weight": 1.0, "selection_basis": "declared_function", "sensitive_inference": false, "impersonates_user": false},
+        "primary": {
+          "ref": "persona.identity-claim",
+          "role": "identity_claim",
+          "weight": 1.0,
+          "selection_basis": "declared_function",
+          "sensitive_inference": false,
+          "impersonates_user": false
+        },
         "supporting": []
       },
-      "expected": {"status": "rejected", "rejection_reasons": ["identity_claim_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "identity_claim_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
     },
     {
       "id": "QIS-R08",
       "name": "impersonation_claim_is_rejected_even_when_flags_claim_safe",
       "operation": "persona_hand",
       "input": {
-        "primary": {"ref": "persona.user-impersonation", "role": "user_impersonation", "weight": 1.0, "selection_basis": "explicit_current", "sensitive_inference": false, "impersonates_user": false},
+        "primary": {
+          "ref": "persona.user-impersonation",
+          "role": "user_impersonation",
+          "weight": 1.0,
+          "selection_basis": "explicit_current",
+          "sensitive_inference": false,
+          "impersonates_user": false
+        },
         "supporting": []
       },
-      "expected": {"status": "rejected", "rejection_reasons": ["impersonation_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "impersonation_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
     },
     {
       "id": "QIS-R09",
       "name": "unsupported_persona_source_is_rejected",
       "operation": "persona_hand",
       "input": {
-        "primary": {"ref": "persona.example", "role": "system_architecture", "weight": 1.0, "selection_basis": "model_guess", "sensitive_inference": false, "impersonates_user": false},
+        "primary": {
+          "ref": "persona.example",
+          "role": "system_architecture",
+          "weight": 1.0,
+          "selection_basis": "model_guess",
+          "sensitive_inference": false,
+          "impersonates_user": false
+        },
         "supporting": []
       },
-      "expected": {"status": "rejected", "rejection_reasons": ["unsupported_selection_basis"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "unsupported_selection_basis"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
     },
     {
       "id": "QIS-R10",
       "name": "sensitive_claim_is_rejected_even_when_flags_claim_safe",
       "operation": "persona_hand",
       "input": {
-        "primary": {"ref": "persona.health-inference", "role": "health_inference", "weight": 1.0, "selection_basis": "inferred_nonsensitive", "sensitive_inference": false, "impersonates_user": false},
+        "primary": {
+          "ref": "persona.health-inference",
+          "role": "health_inference",
+          "weight": 1.0,
+          "selection_basis": "inferred_nonsensitive",
+          "sensitive_inference": false,
+          "impersonates_user": false
+        },
         "supporting": []
       },
-      "expected": {"status": "rejected", "rejection_reasons": ["sensitive_inference_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "sensitive_inference_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
     },
     {
       "id": "QIS-R11",
       "name": "authority_claim_is_rejected",
       "operation": "persona_hand",
       "input": {
-        "primary": {"ref": "persona.authority-claim", "role": "system_authority", "weight": 1.0, "selection_basis": "declared_function", "sensitive_inference": false, "impersonates_user": false},
+        "primary": {
+          "ref": "persona.authority-claim",
+          "role": "system_authority",
+          "weight": 1.0,
+          "selection_basis": "declared_function",
+          "sensitive_inference": false,
+          "impersonates_user": false
+        },
         "supporting": []
       },
-      "expected": {"status": "rejected", "rejection_reasons": ["authority_claim_rejected"], "primary_ref": null, "supporting_refs": [], "authority_effect": false, "permanent_identity_claim": false}
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "authority_claim_rejected"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
     },
     {
       "id": "QIS-R05",
       "name": "unknown_platform_fails_closed",
       "operation": "platform_affect",
-      "input": {"platform": "githubb", "semantic_decision_hash": "same-decision", "rendered_decision_hash": "same-decision"},
-      "expected": {"status": "rejected", "platform": "githubb", "reason_code": "unsupported_platform"}
+      "input": {
+        "platform": "githubb",
+        "semantic_decision_hash": "same-decision",
+        "rendered_decision_hash": "same-decision"
+      },
+      "expected": {
+        "status": "rejected",
+        "platform": "githubb",
+        "reason_code": "unsupported_platform"
+      }
     },
     {
       "id": "QIS-R06",
       "name": "adaptation_without_receipt_is_blocked",
       "operation": "adaptation_guard",
-      "input": {"repeated_successes": 99, "requested_action": "persist_preference", "adaptation_proposal_ref": "proposal.preference.missing-receipt"},
+      "input": {
+        "repeated_successes": 99,
+        "requested_action": "persist_preference",
+        "adaptation_proposal_ref": "proposal.preference.missing-receipt"
+      },
       "expected": {
         "status": "blocked",
         "reason_code": "feedback_receipt_missing",
@@ -394,6 +781,1470 @@
         "memory_updated": false,
         "settings_updated": false,
         "canon_updated": false
+      }
+    },
+    {
+      "id": "QIS-GUI-001",
+      "name": "generated_ui_candidate_evidence_complete",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "candidate_evidence_complete",
+        "reason_codes": [
+          "CANDIDATE_EVIDENCE_COMPLETE"
+        ],
+        "runtime_authorized": false,
+        "deployment_authorized": false
+      }
+    },
+    {
+      "id": "QIS-GUI-002",
+      "name": "generated_ui_missing_component_manifest_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_MISSING"
+        ]
+      }
+    },
+    {
+      "id": "QIS-GUI-003",
+      "name": "generated_ui_malformed_component_version_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "latest",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_VERSION_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "QIS-GUI-004",
+      "name": "generated_ui_stale_manifest_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-08-11T23:59:59Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_STALE"
+        ]
+      }
+    },
+    {
+      "id": "QIS-GUI-005",
+      "name": "generated_ui_inaccessible_manifest_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/missing.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_MANIFEST_INACCESSIBLE"
+        ]
+      }
+    },
+    {
+      "id": "QIS-GUI-006",
+      "name": "generated_ui_inaccessible_machine_check_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": false,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "ACCESSIBILITY_MACHINE_CHECK_FAILED"
+        ]
+      }
+    },
+    {
+      "id": "QIS-GUI-007",
+      "name": "generated_ui_authority_expansion_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "execute_protected"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "AUTHORITY_EXPANSION_REQUESTED"
+        ]
+      }
+    },
+    {
+      "id": "QIS-GUI-008",
+      "name": "generated_ui_manual_evidence_missing_blocked",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "missing",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "blocked_manual",
+        "reason_codes": [
+          "MANUAL_EVIDENCE_MISSING"
+        ]
+      }
+    },
+    {
+      "id": "QIS-GUI-009",
+      "name": "generated_ui_unverifiable_hash_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "COMPONENT_HASH_UNVERIFIABLE"
+        ]
+      }
+    },
+    {
+      "id": "QIS-GUI-010",
+      "name": "generated_ui_missing_fallback_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "",
+          "reconstruction_contract": {
+            "input_refs": [
+              "input.intent",
+              "input.preferences",
+              "input.component.issue-intake-form"
+            ],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "SEMANTIC_FALLBACK_MISSING"
+        ]
+      }
+    },
+    {
+      "id": "QIS-GUI-011",
+      "name": "generated_ui_missing_reconstruction_inputs_rejected",
+      "operation": "generated_ui_gate",
+      "input": {
+        "generated_ui_plan": {
+          "plan_id": "generated-ui.plan.issue-intake",
+          "version": "0.1.0",
+          "component_manifests": [
+            {
+              "component_id": "component.generated-ui.issue-intake-form",
+              "manifest_ref": "skills/quirk-intent-shaper/generated-ui/issue-intake-form.json",
+              "version": "1.2.3",
+              "content_hash_sha256": "311060162eccb062aec90b8df8eb4cd455e923bea63daeb3048756b1cf2193a0",
+              "data_bindings": [
+                {
+                  "binding_id": "binding.intent.summary",
+                  "source_ref": "intent.summary",
+                  "required": true
+                }
+              ],
+              "state_bindings": [
+                {
+                  "binding_id": "state.issue.selection",
+                  "source_ref": "state.selection",
+                  "required": true
+                }
+              ],
+              "user_actions": [
+                {
+                  "action_id": "action.request.review",
+                  "label": "Request review",
+                  "kind": "request_review",
+                  "effect_ref": "effect.review.request",
+                  "authority_effect": "propose_reversible"
+                }
+              ]
+            }
+          ],
+          "authority_effects": [
+            "propose_reversible"
+          ],
+          "semantic_fallback_ref": "affordance.plain_answer",
+          "reconstruction_contract": {
+            "input_refs": [],
+            "deterministic_renderer_ref": "renderer.generated-ui.v1",
+            "replay_hash_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "accessibility": {
+            "machine_checks": {
+              "focus_order_declared": true,
+              "focus_visible_tokens": true,
+              "screen_reader_semantics_declared": true,
+              "reflow_zoom_support_declared": true,
+              "contrast_tokens_verified": true,
+              "reduced_motion_support_declared": true,
+              "errors_identifiable": true,
+              "status_announcements_mapped": true
+            },
+            "manual_evidence": [
+              {
+                "requirement": "keyboard",
+                "status": "provided",
+                "evidence_ref": "manual://keyboard",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "focus_order_visibility",
+                "status": "provided",
+                "evidence_ref": "manual://focus_order_visibility",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "screen_reader_semantics",
+                "status": "provided",
+                "evidence_ref": "manual://screen_reader_semantics",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reflow_zoom",
+                "status": "provided",
+                "evidence_ref": "manual://reflow_zoom",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "contrast",
+                "status": "provided",
+                "evidence_ref": "manual://contrast",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "reduced_motion",
+                "status": "provided",
+                "evidence_ref": "manual://reduced_motion",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "errors",
+                "status": "provided",
+                "evidence_ref": "manual://errors",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              },
+              {
+                "requirement": "status_announcements",
+                "status": "provided",
+                "evidence_ref": "manual://status_announcements",
+                "reviewed_by": "human.bryan",
+                "reviewed_at": "2026-08-12T00:00:00Z"
+              }
+            ]
+          },
+          "freshness": {
+            "captured_at": "2026-08-12T00:00:00Z",
+            "valid_until": "2026-09-12T00:00:00Z"
+          }
+        },
+        "as_of": "2026-08-12T12:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_codes": [
+          "RECONSTRUCTION_INPUTS_MISSING"
+        ]
       }
     }
   ]

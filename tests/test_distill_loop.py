@@ -1,9 +1,15 @@
 from __future__ import annotations
 
 import copy
+import contextlib
+import io
 import json
+import multiprocessing
 import subprocess
 import sys
+import tempfile
+import time
+import threading
 import unittest
 from pathlib import Path
 
@@ -34,6 +40,40 @@ EXAMPLE = ROOT / "examples" / "distill-loop"
 
 def _json(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _distill_worker(repo, root, receipt_path, trace_path, barrier, result_queue) -> None:
+    """Synchronize the compute phase when possible, then run the real CLI."""
+    sys.path.insert(0, str(Path(repo) / "scripts"))
+    import distill_loop.__main__ as cli
+
+    original = cli.post_run_distill
+
+    def synchronized_distill(*args, **kwargs):
+        try:
+            barrier.wait(timeout=0.3)
+        except threading.BrokenBarrierError:
+            pass
+        return original(*args, **kwargs)
+
+    cli.post_run_distill = synchronized_distill
+    with contextlib.redirect_stdout(io.StringIO()):
+        result_queue.put(cli.main([
+            "distill", "--receipt", str(receipt_path), "--trace", str(trace_path),
+            "--repo", str(repo), "--root", str(root), "--write",
+        ]))
+
+
+def _hold_windows_lock(lock_path, ready, release) -> None:
+    import msvcrt
+
+    with open(lock_path, "a+b") as handle:
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+        ready.set()
+        release.wait(5)
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
 
 
 class DistillFixture:
@@ -144,7 +184,16 @@ class TriggerTests(unittest.TestCase):
         self.assertEqual(second["files"], self.result["files"])
 
     def test_runtime_loader_rejects_distilled_candidate_with_full_grant(self) -> None:
-        manifest = self.result["manifest"]
+        from unittest.mock import Mock
+        from sync_control_plane.skill_runtime import manifest_digest
+
+        manifest = copy.deepcopy(self.result["manifest"])
+        manifest["admission"] = {
+            "decision": "approved", "decision_ref": "decision.probe.0001",
+            "requested_by": "agent.probe", "approved_by": "human.probe",
+            "decided_at": "2026-09-19T00:00:00Z",
+        }
+        manifest["integrity"]["manifest_sha256"] = manifest_digest(manifest)
         grant = {
             "grant_id": "grant.probe.0001",
             "skill_id": manifest["id"],
@@ -152,7 +201,7 @@ class TriggerTests(unittest.TestCase):
             "skill_manifest_sha256": manifest["integrity"]["manifest_sha256"],
             "decision": "approved",
             "admission_ref": "decision.probe.0001",
-            "requested_by": "operator.probe",
+            "requested_by": "agent.probe",
             "approved_by": "human.probe",
             "issued_at": "2026-09-19T00:00:00Z",
             "expires_at": "2026-09-19T02:00:00Z",
@@ -160,9 +209,32 @@ class TriggerTests(unittest.TestCase):
             "allowed_actions": [manifest["method"]["moves"][0]],
             "purpose": "prove distilled candidates never execute",
         }
-        loaded = load_skill_for_execution(manifest, self.result["skill_text"], grant, now="2026-09-19T01:00:00Z")
+        registry = Mock(allows=Mock(return_value=True))
+        loaded = load_skill_for_execution(manifest, self.result["skill_text"], grant, now="2026-09-19T01:00:00Z", approval_registry=registry)
         self.assertFalse(loaded["loaded"])
-        self.assertIn("runtime loader rejects unadmitted skill version", loaded["errors"])
+        self.assertEqual(["runtime loader rejects unadmitted skill version"], loaded["errors"])
+        registry.allows.assert_called_once()
+        # Paired positive control changes only status and its derived digest.
+        manifest["status"] = "admitted"
+        manifest["integrity"]["manifest_sha256"] = manifest_digest(manifest)
+        grant["skill_manifest_sha256"] = manifest["integrity"]["manifest_sha256"]
+        loaded = load_skill_for_execution(manifest, self.result["skill_text"], grant, now="2026-09-19T01:00:00Z", approval_registry=registry)
+        self.assertTrue(loaded["loaded"], loaded["errors"])
+        self.assertEqual([], loaded["errors"])
+        self.assertEqual("candidate", self.result["manifest"]["status"])
+
+    def test_conformance_refuses_unrelated_grant_error(self) -> None:
+        from unittest.mock import patch
+        import validate_distill_loop as conformance
+
+        original = conformance._synthetic_grant
+        def malformed_requester(manifest):
+            return {**original(manifest), "requested_by": "operator.probe"}
+        with patch.object(conformance, "_synthetic_grant", side_effect=malformed_requester):
+            report = conformance.validate(ROOT)
+        self.assertFalse(report["controls"]["runtime_loader_rejects_candidate"])
+        self.assertEqual("FAIL", report["verdict"])
+        self.assertIn("RUNTIME_LOADER_FAIL_OPEN", [f["code"] for f in report["findings"]])
 
     def test_starter_suite_is_honest_and_incomplete(self) -> None:
         report = run_eval_suite(self.result["eval_suite"], self.result["manifest"], case_schema=self.fx.schemas["skill_eval_case"])
@@ -375,13 +447,13 @@ class FightCardTests(unittest.TestCase):
             calls = []
 
             def locking(fd, mode, nbytes):
-                if mode == 2:  # LK_UNLCK
+                if mode == 0:  # LK_UNLCK
                     return None
                 calls.append(mode)
                 outcome = sequence[min(len(calls), len(sequence)) - 1]
                 if outcome is not None:
                     raise outcome
-            return SimpleNamespace(locking=locking, LK_LOCK=1, LK_UNLCK=2, calls=calls)
+            return SimpleNamespace(locking=locking, LK_LOCK=1, LK_NBLCK=2, LK_UNLCK=0, calls=calls)
 
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -394,22 +466,22 @@ class FightCardTests(unittest.TestCase):
             result = {"files": {"skills/distill-ledger.json": json.dumps(nxt)}, "ledger_input_sha256": base["ledger_sha256"]}
 
             # persistent non-contention failure: refused at once, never retried
-            denied = fake_msvcrt([PermissionError(errno.EACCES, "denied")])
-            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
+            denied = fake_msvcrt([OSError(errno.EINVAL, "denied")])
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
                 self.assertEqual(cli._write_guarded(root, result), 1)
             self.assertEqual(len(denied.calls), 1)
             self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
 
             # endless contention: bounded retries, then refused
             busy = fake_msvcrt([OSError(contention, "busy")])
-            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", busy):
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", busy):
                 self.assertEqual(cli._write_guarded(root, result), 1)
             self.assertEqual(len(busy.calls), cli.WINDOWS_LOCK_ATTEMPTS)
             self.assertEqual((root / "skills" / "distill-ledger.json").read_text(), before)
 
             # one round of contention then success: the write lands
             eventually = fake_msvcrt([OSError(contention, "busy"), None])
-            with mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", eventually):
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", eventually):
                 self.assertEqual(cli._write_guarded(root, result), 0)
             self.assertEqual(json.loads((root / "skills" / "distill-ledger.json").read_text())["ledger_sha256"], nxt["ledger_sha256"])
 
@@ -886,6 +958,445 @@ class ContextTests(unittest.TestCase):
             context = next_run_context(promoted["ledger"], root=root)
             self.assertEqual(context["context_sources"], [])
             self.assertEqual(context["quarantined"][0]["candidate_id"], distilled["manifest"]["id"])
+
+
+class RedirectedWriteTests(unittest.TestCase):
+    def _run(self, args):
+        import distill_loop.__main__ as cli
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            status = cli.main(args)
+        return status, json.loads(output.getvalue()) if output.getvalue().strip() else None
+
+    def _seed_pair(self, root):
+        from distill_loop.common import write_files
+
+        fx = DistillFixture()
+        first = fx.distill()
+        receipt = {**fx.receipt, "receipt_id": fx.receipt["receipt_id"] + ".second"}
+        trace = {**fx.trace, "receipt_id": receipt["receipt_id"]}
+        second = fx.distill(receipt=receipt, trace=trace, ledger=first["ledger"])
+        self.assertEqual(second["outcome"], "distilled")
+        write_files(root, first["files"])
+        write_files(root, second["files"])
+        return fx, first, second
+
+    def _promotion_args(self, root, out):
+        return ["promote", "--repo", str(ROOT), "--root", str(root), "--out", str(out),
+                "--receipt", str(EXAMPLE / "promotion-receipt.json"),
+                "--eval-suite", str(EXAMPLE / "reviewed-eval-suite.json")]
+
+    def test_export_can_promote_a_carried_pending_candidate_without_original_root(self):
+        from distill_loop.common import sha256_json
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out = Path(tmp) / "source", Path(tmp) / "output"
+            fx, first, second = self._seed_pair(root)
+            self.assertEqual(self._run([*self._promotion_args(root, out), "--write"])[0], 0)
+            # Make the original unavailable before reading and extending the export.
+            root.rename(Path(tmp) / "unavailable")
+            status, context = self._run(["context", "--root", str(out)])
+            self.assertEqual(status, 0)
+            self.assertEqual(context["quarantined"], [])
+            self.assertEqual(context["pending_review"], [second["manifest"]["id"]])
+            suite = [{**case, "skill_id": second["manifest"]["id"]} for case in fx.reviewed_suite]
+            suite_path = out / second["manifest"]["quality"]["eval_suite_ref"]
+            suite_path.write_text(json.dumps(suite), encoding="utf-8")
+            receipt = attest_promotion({
+                **fx.promotion_receipt,
+                "receipt_id": fx.promotion_receipt["receipt_id"] + ".second",
+                "candidate_id": second["manifest"]["id"],
+                "candidate_manifest_sha256": second["manifest"]["integrity"]["manifest_sha256"],
+                "candidate_source_blob_sha": second["manifest"]["integrity"]["source_blob_sha"],
+                "source_run_receipt_ref": second["ledger_entry"]["source_receipt_id"],
+                "eval_suite_ref": second["manifest"]["quality"]["eval_suite_ref"],
+                "eval_suite_sha256": sha256_json(suite),
+            })
+            receipt_path = Path(tmp) / "second-promotion.json"
+            receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+            status, promoted = self._run([
+                "promote", "--repo", str(ROOT), "--root", str(out),
+                "--receipt", str(receipt_path), "--eval-suite", str(suite_path), "--write",
+            ])
+            self.assertEqual(status, 0, promoted)
+            _, context = self._run(["context", "--root", str(out)])
+            self.assertEqual(context["quarantined"], [])
+            self.assertEqual({item["candidate_id"] for item in context["context_sources"]},
+                             {first["manifest"]["id"], second["manifest"]["id"]})
+            self.assertTrue(all(not item["runtime_loadable"] for item in context["context_sources"]))
+            self.assertEqual(verify_ledger(_json(out / "skills/distill-ledger.json")), [])
+
+    def test_incomplete_carried_package_refuses_before_any_export_payload(self):
+        for failure in ("missing_source", "missing_manifest", "missing_suite", "drifted_source", "malformed_manifest"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as tmp:
+                root, out = Path(tmp) / "source", Path(tmp) / "output"
+                _, _, second = self._seed_pair(root)
+                package = root / "skills" / second["manifest"]["id"]
+                if failure.startswith("missing"):
+                    path = {"missing_source": package / "SKILL.md", "missing_manifest": package / "manifest.json",
+                            "missing_suite": root / second["manifest"]["quality"]["eval_suite_ref"]}[failure]
+                    path.unlink()
+                elif failure == "drifted_source":
+                    (package / "SKILL.md").write_text("tampered\n", encoding="utf-8")
+                else:
+                    (package / "manifest.json").write_text("{", encoding="utf-8")
+                before = (root / "skills/distill-ledger.json").read_bytes()
+                for write in (False, True):
+                    stderr = io.StringIO()
+                    with contextlib.redirect_stderr(stderr):
+                        status, summary = self._run([*self._promotion_args(root, out), *(["--write"] if write else [])])
+                    self.assertEqual(status, 1)
+                    self.assertIsNone(summary)
+                    self.assertEqual(json.loads(stderr.getvalue())["error"], "EXPORT_INCOMPLETE")
+                    self.assertEqual((root / "skills/distill-ledger.json").read_bytes(), before)
+                    self.assertFalse((out / "skills/distill-ledger.json").exists())
+                    self.assertFalse((out / "evals").exists())
+                    self.assertEqual(list((out / "skills").glob("quirk-*")), [])
+
+    def test_payload_write_failure_never_commits_a_promoted_ledger(self):
+        from unittest import mock
+        import distill_loop.common as common
+
+        for existing in (False, True):
+            for failed_name in ("SKILL.md", "manifest.json"):
+                with self.subTest(existing=existing, failed_name=failed_name), tempfile.TemporaryDirectory() as tmp:
+                    root, out = Path(tmp) / "source", Path(tmp) / "output"
+                    fx = DistillFixture()
+                    seeded = fx.distill()
+                    common.write_files(root, seeded["files"])
+                    if existing:
+                        common.write_files(out, seeded["files"])
+                    before = (root / "skills/distill-ledger.json").read_bytes()
+                    replace = common.os.replace
+
+                    def fail_package_write(source, destination):
+                        if destination.name == failed_name:
+                            raise OSError("injected package write failure")
+                        return replace(source, destination)
+
+                    stderr = io.StringIO()
+                    with mock.patch.object(common.os, "replace", fail_package_write), contextlib.redirect_stderr(stderr):
+                        status, summary = self._run([*self._promotion_args(root, out), "--write"])
+                    self.assertEqual(status, 1)
+                    self.assertIsNone(summary)
+                    self.assertEqual(json.loads(stderr.getvalue())["error"], "WRITE_FAILED")
+                    self.assertEqual((root / "skills/distill-ledger.json").read_bytes(), before)
+                    if existing:
+                        self.assertEqual((out / "skills/distill-ledger.json").read_bytes(), before)
+                    else:
+                        self.assertFalse((out / "skills/distill-ledger.json").exists())
+                    self.assertEqual(list(out.rglob("*.tmp")), [])
+
+    def test_redirected_promotion_preserves_package_bytes_and_preview_does_not_write(self):
+        from distill_loop.common import write_files
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out = Path(tmp) / "source", Path(tmp) / "output"
+            seeded = DistillFixture().distill()
+            write_files(root, seeded["files"])
+            package = root / "skills" / seeded["manifest"]["id"]
+            for name in ("SKILL.md", "manifest.json"):
+                path = package / name
+                path.write_bytes(path.read_bytes().replace(b"\n", b"\r\n"))
+            args = self._promotion_args(root, out)
+            preview = self._run(args)
+            self.assertFalse(out.exists())
+            self.assertEqual(self._run([*args, "--write"]), preview)
+            for name in ("SKILL.md", "manifest.json"):
+                self.assertEqual((out / "skills" / package.name / name).read_bytes(), (package / name).read_bytes())
+
+    def test_redirected_promotion_refuses_diverged_or_invalid_output_ledger(self):
+        from distill_loop.common import write_files
+
+        for ledger in (new_ledger(), {"invalid": True}):
+            with self.subTest(ledger=ledger), tempfile.TemporaryDirectory() as tmp:
+                root, out = Path(tmp) / "source", Path(tmp) / "output"
+                write_files(root, DistillFixture().distill()["files"])
+                write_files(out, {"skills/distill-ledger.json": json.dumps(ledger)})
+                before = (out / "skills/distill-ledger.json").read_bytes()
+                stderr = io.StringIO()
+                with contextlib.redirect_stderr(stderr):
+                    status, summary = self._run([*self._promotion_args(root, out), "--write"])
+                self.assertEqual(status, 1)
+                self.assertIsNone(summary)
+                self.assertEqual(json.loads(stderr.getvalue())["error"], "LEDGER_FORKED")
+                self.assertEqual((out / "skills/distill-ledger.json").read_bytes(), before)
+
+    def test_redirected_transaction_locks_both_roots_in_stable_order(self):
+        from unittest import mock
+        import distill_loop.__main__ as cli
+        held = []
+        acquired = []
+
+        @contextlib.contextmanager
+        def lock(root):
+            acquired.append(root)
+            held.append(root)
+            try:
+                yield
+            finally:
+                held.remove(root)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            first, second = (Path(tmp) / "a").resolve(), (Path(tmp) / "z").resolve()
+            def transaction():
+                self.assertEqual(held, [first, second])
+                return "written"
+            with mock.patch.object(cli, "_ledger_lock", lock):
+                self.assertEqual(cli._transaction_guarded(first, transaction, source_root=second), (0, "written"))
+                self.assertEqual(cli._transaction_guarded(second, transaction, source_root=first), (0, "written"))
+            self.assertEqual(acquired, [first, second, first, second])
+            self.assertEqual(held, [])
+
+    def test_redirected_distill_preserves_source_chain_and_preview(self):
+        from distill_loop.common import write_files
+        fx = DistillFixture()
+        seeded = fx.distill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out = Path(tmp) / "source", Path(tmp) / "output"
+            write_files(root, seeded["files"])
+            before = (root / "skills/distill-ledger.json").read_bytes()
+            receipt = {**fx.receipt, "receipt_id": fx.receipt["receipt_id"] + ".redirected"}
+            trace = {**fx.trace, "receipt_id": receipt["receipt_id"]}
+            receipt_path, trace_path = Path(tmp) / "receipt.json", Path(tmp) / "trace.json"
+            receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+            trace_path.write_text(json.dumps(trace), encoding="utf-8")
+            args = ["distill", "--repo", str(ROOT), "--root", str(root),
+                    "--out", str(out), "--receipt", str(receipt_path),
+                    "--trace", str(trace_path)]
+            for destination in (None, seeded["ledger"]):
+                with self.subTest(destination=destination):
+                    if out.exists():
+                        import shutil
+                        shutil.rmtree(out)
+                    if destination is not None:
+                        write_files(out, {"skills/distill-ledger.json": json.dumps(destination)})
+                    preview_status, preview = self._run(args)
+                    status, result = self._run([*args, "--write"])
+                    self.assertEqual((status, result), (preview_status, preview))
+                    self.assertEqual(result["outcome"], "distilled")
+                    ledger = _json(out / "skills/distill-ledger.json")
+                    self.assertEqual(ledger["entries"][:-1], seeded["ledger"]["entries"])
+                    self.assertEqual(ledger["entries"][-1]["entry_id"], "dl.000002")
+                    self.assertEqual(verify_ledger(ledger), [])
+                    self.assertEqual((root / "skills/distill-ledger.json").read_bytes(), before)
+
+    def test_redirected_promotion_uses_source_provenance(self):
+        from distill_loop.common import write_files
+        fx = DistillFixture()
+        seeded = fx.distill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root, out = Path(tmp) / "source", Path(tmp) / "output"
+            write_files(root, seeded["files"])
+            before = (root / "skills/distill-ledger.json").read_bytes()
+            args = ["promote", "--repo", str(ROOT), "--root", str(root),
+                    "--out", str(out), "--receipt", str(EXAMPLE / "promotion-receipt.json"),
+                    "--eval-suite", str(EXAMPLE / "reviewed-eval-suite.json")]
+            for destination in (None, seeded["ledger"]):
+                with self.subTest(destination=destination):
+                    if out.exists():
+                        import shutil
+                        shutil.rmtree(out)
+                    if destination is not None:
+                        write_files(out, {"skills/distill-ledger.json": json.dumps(destination)})
+                    preview_status, preview = self._run(args)
+                    status, result = self._run([*args, "--write"])
+                    self.assertEqual(status, 0)
+                    self.assertEqual((status, result), (preview_status, preview))
+                    self.assertEqual(result["outcome"], "promoted")
+                    ledger = _json(out / "skills/distill-ledger.json")
+                    self.assertEqual(ledger["entries"][:-1], seeded["ledger"]["entries"])
+                    self.assertEqual(ledger["entries"][-1]["entry_id"], "dl.000002")
+                    self.assertEqual(verify_ledger(ledger), [])
+                    self.assertEqual((root / "skills/distill-ledger.json").read_bytes(), before)
+                    for name in ("SKILL.md", "manifest.json"):
+                        relative = Path("skills") / seeded["manifest"]["id"] / name
+                        self.assertEqual((out / relative).read_bytes(), (root / relative).read_bytes())
+                    context_status, context = self._run(["context", "--root", str(out)])
+                    self.assertEqual(context_status, 0)
+                    self.assertEqual(context["quarantined"], [])
+                    self.assertEqual([item["candidate_id"] for item in context["context_sources"]],
+                                     [seeded["manifest"]["id"]])
+                    self.assertFalse(context["context_sources"][0]["runtime_loadable"])
+                    # Reusing the export reaches the duplicate-promotion gate,
+                    # rather than failing because the package is missing.
+                    reused = ["promote", "--repo", str(ROOT), "--root", str(out),
+                              "--receipt", str(EXAMPLE / "promotion-receipt.json"),
+                              "--eval-suite", str(out / fx.promotion_receipt["eval_suite_ref"]), "--write"]
+                    reused_status, refused = self._run(reused)
+                    self.assertEqual(reused_status, 1)
+                    self.assertTrue(any("already promoted" in error for error in refused["errors"]))
+                    self.assertEqual(_json(out / "skills/distill-ledger.json"), ledger)
+            # Output provenance cannot authorize a source lacking provenance.
+            write_files(root, {"skills/distill-ledger.json": json.dumps(new_ledger())})
+            output_before = (out / "skills/distill-ledger.json").read_bytes()
+            self.assertEqual(self._run(args), self._run([*args, "--write"]))
+            self.assertEqual(self._run(args)[0], 1)
+            self.assertEqual((out / "skills/distill-ledger.json").read_bytes(), output_before)
+
+    def test_lock_order_with_symlinked_temporary_directory(self):
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as tmp:
+            target, alias = Path(tmp) / "real", Path(tmp) / "alias"
+            target.mkdir()
+            try:
+                alias.symlink_to(target, target_is_directory=True)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"directory symlinks unavailable: {exc}")
+            with mock.patch.object(tempfile, "TemporaryDirectory", return_value=contextlib.nullcontext(str(alias))):
+                self.test_redirected_transaction_locks_both_roots_in_stable_order()
+
+
+class CliLockTests(unittest.TestCase):
+    def test_windows_lock_failures_do_not_spin_forever(self) -> None:
+        import errno
+        from types import SimpleNamespace
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+
+        contention = getattr(errno, "EDEADLOCK", getattr(errno, "EDEADLK", 36))
+
+        def fake_msvcrt(sequence):
+            calls = []
+
+            def locking(fd, mode, nbytes):
+                if mode == 0:  # LK_UNLCK
+                    return None
+                calls.append(mode)
+                outcome = sequence[min(len(calls), len(sequence)) - 1]
+                if outcome is not None:
+                    raise outcome
+
+            return SimpleNamespace(
+                locking=locking, LK_LOCK=1, LK_NBLCK=2, LK_UNLCK=0, calls=calls,
+            )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = root / "skills" / "distill-ledger.json"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("before\n", encoding="utf-8")
+            files = {"skills/distill-ledger.json": "after\n"}
+
+            def write():
+                cli.write_files(root, files)
+
+            denied = fake_msvcrt([OSError(errno.EINVAL, "denied")])
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", denied):
+                self.assertEqual(cli._transaction_guarded(root, write)[0], 1)
+            self.assertEqual(len(denied.calls), 1)
+            self.assertEqual(denied.calls, [denied.LK_NBLCK])
+            self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
+
+            busy = fake_msvcrt([OSError(contention, "busy")])
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", busy):
+                self.assertEqual(cli._transaction_guarded(root, write)[0], 1)
+            self.assertEqual(len(busy.calls), cli.WINDOWS_LOCK_ATTEMPTS)
+            self.assertTrue(all(mode == busy.LK_NBLCK for mode in busy.calls))
+            self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
+
+            eventually = fake_msvcrt([OSError(contention, "busy"), None])
+            with mock.patch.object(cli.os, "name", "nt"), mock.patch.object(cli, "fcntl", None), mock.patch.object(cli, "msvcrt", eventually):
+                self.assertEqual(cli._transaction_guarded(root, write)[0], 0)
+            self.assertEqual(target.read_text(encoding="utf-8"), "after\n")
+
+    @unittest.skipUnless(sys.platform == "win32", "requires the real Windows msvcrt lock primitive")
+    def test_windows_lock_contention_is_bounded(self) -> None:
+        import distill_loop.__main__ as cli
+
+        context = multiprocessing.get_context("spawn")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            lock_path = root / "skills" / cli.LOCK_NAME
+            lock_path.parent.mkdir(parents=True)
+            target = root / "skills" / "distill-ledger.json"
+            target.write_text("before\n", encoding="utf-8")
+            ready = context.Event()
+            release = context.Event()
+            holder = context.Process(target=_hold_windows_lock, args=(lock_path, ready, release))
+            holder.start()
+            self.assertTrue(ready.wait(2), "lock holder did not acquire the Windows lock")
+            try:
+                started = time.monotonic()
+                status, _ = cli._transaction_guarded(
+                    root, lambda: cli.write_files(root, {"skills/distill-ledger.json": "after\n"}),
+                )
+                elapsed = time.monotonic() - started
+            finally:
+                release.set()
+                holder.join(5)
+            self.assertEqual(status, 1)
+            self.assertLess(elapsed, 1.0, f"contention waited {elapsed:.3f}s")
+            self.assertEqual(target.read_text(encoding="utf-8"), "before\n")
+            self.assertEqual(holder.exitcode, 0)
+
+    def test_lock_setup_failures_return_structured_lock_unavailable(self) -> None:
+        from unittest import mock
+
+        import distill_loop.__main__ as cli
+
+        for failure in ("mkdir", "open"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                stderr = io.StringIO()
+                patcher = (
+                    mock.patch.object(Path, "mkdir", side_effect=PermissionError("denied"))
+                    if failure == "mkdir"
+                    else mock.patch("builtins.open", side_effect=PermissionError("denied"))
+                )
+                with patcher, contextlib.redirect_stderr(stderr):
+                    status, result = cli._transaction_guarded(root, lambda: self.fail("transaction must not run"))
+                self.assertEqual(status, 1)
+                self.assertIsNone(result)
+                error = json.loads(stderr.getvalue())
+                self.assertEqual(error["error"], "LOCK_UNAVAILABLE")
+                self.assertIn("lock setup failed", error["detail"])
+
+    def test_two_process_distills_preserve_both_ledger_entries(self) -> None:
+        context = multiprocessing.get_context("spawn")
+        fixture = DistillFixture()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            receipts = []
+            traces = []
+            for suffix in ("one", "two"):
+                receipt = copy.deepcopy(fixture.receipt)
+                trace = copy.deepcopy(fixture.trace)
+                receipt["receipt_id"] = f"receipt.quirk-distillation-synthesizer.concurrent.{suffix}"
+                trace["receipt_id"] = receipt["receipt_id"]
+                trace["trace_id"] = f"trace.quirk-distillation-synthesizer.concurrent.{suffix}"
+                receipt_path = root / f"receipt-{suffix}.json"
+                trace_path = root / f"trace-{suffix}.json"
+                receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+                trace_path.write_text(json.dumps(trace), encoding="utf-8")
+                receipts.append(receipt_path)
+                traces.append(trace_path)
+
+            barrier = context.Barrier(2)
+            results = context.Queue()
+            workers = [
+                context.Process(
+                    target=_distill_worker,
+                    args=(ROOT, root, receipt_path, trace_path, barrier, results),
+                )
+                for receipt_path, trace_path in zip(receipts, traces)
+            ]
+            for worker in workers:
+                worker.start()
+            for worker in workers:
+                worker.join(10)
+                self.assertEqual(worker.exitcode, 0)
+            self.assertEqual(sorted(results.get(timeout=2) for _ in workers), [0, 0])
+
+            ledger = _json(root / "skills" / "distill-ledger.json")
+            self.assertEqual([entry["entry_id"] for entry in ledger["entries"]], ["dl.000001", "dl.000002"])
+            self.assertEqual(
+                {entry["source_receipt_id"] for entry in ledger["entries"]},
+                {"receipt.quirk-distillation-synthesizer.concurrent.one", "receipt.quirk-distillation-synthesizer.concurrent.two"},
+            )
+            self.assertEqual(verify_ledger(ledger), [])
 
 
 class ConformanceTests(unittest.TestCase):
