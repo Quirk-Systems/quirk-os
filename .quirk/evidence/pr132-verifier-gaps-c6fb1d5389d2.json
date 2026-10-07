@@ -1,0 +1,112 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr132-verifier-gaps-c6fb1d5389d2",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "0bd404a92497a0ba0f6ad065d7ae675ddca77eeb",
+    "commit": "c6fb1d5389d2690642b6985746a76ed71a268c3f",
+    "changed_paths": [
+      ".github/workflows/sync-control-plane-conformance.yml",
+      "docs/sync-control-plane/MANIFEST-VERIFIER.md",
+      "schemas/manifest-evaluation.schema.json",
+      "scripts/sync_control_plane/attestation.py",
+      "supabase/migrations/20261004140000_sync_control_plane_verified_projection.sql",
+      "supabase/tests/manifest_verified_projection.membership.sql",
+      "tests/test_manifest_admission.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr132-verifier-gaps-c6fb1d5389d2",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Three candidate verifier gaps repaired; 255 Python tests, local admission conformance reproduction, Golden candidate gates and diff checks pass. SQL membership adversarial cases are wired into hosted CI, not locally executed. Candidate policy remains disabled; no activation or merge authority is granted.",
+      "evidence_paths": [
+        "scripts/sync_control_plane/attestation.py",
+        "supabase/tests/manifest_verified_projection.membership.sql",
+        "tests/test_manifest_admission.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/sync-control-plane-conformance.yml",
+      "state": "present",
+      "git_blob": "3d28eb3fee325e118cbf132dee1499da39ec0580",
+      "sha256": "sha256:fc3066504c99f5957f036224a6ae61acd0a220eea9100c0781aa671c6ebf7f81"
+    },
+    {
+      "path": "docs/sync-control-plane/MANIFEST-VERIFIER.md",
+      "state": "present",
+      "git_blob": "13e7c8b92a0213e733c965227f21feaca88bee97",
+      "sha256": "sha256:c957dddadb17551b1c4b432abe373644f662df824c9ba919de7400da3266c747"
+    },
+    {
+      "path": "schemas/manifest-evaluation.schema.json",
+      "state": "present",
+      "git_blob": "181f1b556efaac830849ae8128c4322aafde465c",
+      "sha256": "sha256:ddd29371104d2e2e310691873c4388616bf0226d4e44994f157c787467268552"
+    },
+    {
+      "path": "scripts/sync_control_plane/attestation.py",
+      "state": "present",
+      "git_blob": "ea62ecf19a5e5472f578db65c44929f491164724",
+      "sha256": "sha256:9bee6db95438c9a56527bf8021918b41dab73272cb8307e358d46df4bc87d1ef"
+    },
+    {
+      "path": "supabase/migrations/20261004140000_sync_control_plane_verified_projection.sql",
+      "state": "present",
+      "git_blob": "68e2e0cc3657b40ad68671aa3a012ab9bfd89f41",
+      "sha256": "sha256:6b72c2291443e96a32cf4bde28992a6967949fb7c8136f80a5823410045b94fb"
+    },
+    {
+      "path": "supabase/tests/manifest_verified_projection.membership.sql",
+      "state": "present",
+      "git_blob": "4978efd57846a3776210bcdc08cf9c5d9f90c1c9",
+      "sha256": "sha256:997e399b8f1f9319fa0cf0f2dd3376c3b1366b659fe041941ce1de6ce5fdc0db"
+    },
+    {
+      "path": "tests/test_manifest_admission.py",
+      "state": "present",
+      "git_blob": "31d0a75d57790d93cdfdf288c5aca960e16c3aca",
+      "sha256": "sha256:6f412b3213482736d3bc93fda84a90ddb49e4f86ca87e97f3e6e3ccaf5c99956"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --output /tmp/pr132-final-conformance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "cmp evals/sync-control-plane/conformance-results.json /tmp/pr132-final-conformance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T23:04:45Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:f7faea55e8a20b29801d49df0deba44a0ac0591711870bea9de5b9a893bb9c6d"
+}

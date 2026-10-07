@@ -1,0 +1,135 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os.pr117-agent-repair.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "c4bc0f0bdff10ccc217c8115035bd918129fe4b0",
+    "commit": "a78c214121b6d1b1587b9559de0d83e997a8c830",
+    "changed_paths": [
+      ".github/workflows/validate-agents.yml",
+      "README.md",
+      "agents/README.md",
+      "agents/registry.json",
+      "docs/changelog/PR-117.md",
+      "proposed-moves/agents/qpm_agent_contract_layer.json",
+      "schemas/agent-manifest.schema.json",
+      "schemas/agent-registry.schema.json",
+      "scripts/validate_agents.py",
+      "tests/test_agent_manifest.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.quirk-os.pr117-agent-repair.2026-10-07",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Candidate agent contracts now require active evaluation references, resolve evaluation/admission/rights evidence, stop semantics after schema failure, reject duplicate registry keys, and fail on unsupported policy drift. Local tests passed (187 total, including 29 agent tests); Golden retains 16 admission holds and Sync Control Plane fixtures pass. These static checks do not authenticate grants or grant admission, activation, projection, or runtime authority. Hosted reviews are separate.",
+      "evidence_paths": [
+        ".github/workflows/validate-agents.yml",
+        "README.md",
+        "agents/README.md",
+        "agents/registry.json",
+        "docs/changelog/PR-117.md",
+        "proposed-moves/agents/qpm_agent_contract_layer.json",
+        "schemas/agent-manifest.schema.json",
+        "schemas/agent-registry.schema.json",
+        "scripts/validate_agents.py",
+        "tests/test_agent_manifest.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/validate-agents.yml",
+      "state": "present",
+      "git_blob": "a8e6095b49543490b37260b1b664da8e2def88e0",
+      "sha256": "sha256:d59190c81a898275f49d88b66af797dc561d358ffedb2e31020668c76f2b9fda"
+    },
+    {
+      "path": "README.md",
+      "state": "present",
+      "git_blob": "2a27937bdb52c6b4f84f519d3c2b98de3ff97e8e",
+      "sha256": "sha256:7fd7ba324f1ea27e2154623b024c7d4841b78e7635566e4924d9a208b2c3f4fe"
+    },
+    {
+      "path": "agents/README.md",
+      "state": "present",
+      "git_blob": "f704e896f99a431d457f12ba36e8bf0445139ada",
+      "sha256": "sha256:fd5e2fbb21a43079d20123d4346bdc597a8308aca5499e8c6a09b1157c2dcada"
+    },
+    {
+      "path": "agents/registry.json",
+      "state": "present",
+      "git_blob": "f7d6db339ce0db02456e0149204d3d0572d2d87e",
+      "sha256": "sha256:363622bea98b8f8fc104e1124488c48ecbe0c92bd00ef28addba00b8e3bb08bc"
+    },
+    {
+      "path": "docs/changelog/PR-117.md",
+      "state": "present",
+      "git_blob": "0b8bdbdd1f9e7cf429800e4690c2afcb1e0f5abb",
+      "sha256": "sha256:f7bae8c750e8c5283d851dacc12da9254173e81bee23c6187435e0f3d486a277"
+    },
+    {
+      "path": "proposed-moves/agents/qpm_agent_contract_layer.json",
+      "state": "present",
+      "git_blob": "8d4c8979d1deab43206f6d588ad334e48b37b53a",
+      "sha256": "sha256:9e29b45c87187c9c14be282440888acf07d10aa49afa59eabe0ca3c667bb11d1"
+    },
+    {
+      "path": "schemas/agent-manifest.schema.json",
+      "state": "present",
+      "git_blob": "06093a216c7ffccf4465b094fae20b27aeac8b8d",
+      "sha256": "sha256:f741163ab91facfd69df8e1f0926cbd7477a74beffcd9951f600d3ad1759152c"
+    },
+    {
+      "path": "schemas/agent-registry.schema.json",
+      "state": "present",
+      "git_blob": "438f3374134019c213e821eb60b6b8d3b1610296",
+      "sha256": "sha256:97d6cb897942b898bd781895f9974ae4407e194a1c648dfe396e105f11157e22"
+    },
+    {
+      "path": "scripts/validate_agents.py",
+      "state": "present",
+      "git_blob": "1c382e4ef5563d445d7600bea3a0783a815e36c0",
+      "sha256": "sha256:581ba8eac65f2b0e57044f6affb62e8cd508a01044020b492c8a15e2dabdc150"
+    },
+    {
+      "path": "tests/test_agent_manifest.py",
+      "state": "present",
+      "git_blob": "db469dec7b832b4fe51ffe972b95dd75be7fd940",
+      "sha256": "sha256:c7f533dd6e1ae29fdf0d415bc9f2b96ff5d48c4f795d68b59ea80196317bc0db"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -p test_*.py -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python scripts/validate_sync_control_plane.py --repo . --output /tmp/sync117.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python scripts/validate_agents.py --repo . --output /tmp/conformance117.json --metrics-output /tmp/metrics117.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T13:05:36.511828Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:76203c033dccda4dc3c02745fcec7e4139dd6b4cbc3fe1a6ebddbc4bd9cf71e1"
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os.pr117-portable-test.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "46c3aa3263b6d7f58bcffd586d3a7bd289edb97e",
+    "commit": "73f774774a71e707be11bbe5f860312aa08cdfb7",
+    "changed_paths": [
+      "tests/test_agent_manifest.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.quirk-os.pr117-portable-test.2026-10-07",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Restricts creation of literal Windows-looking path fixtures to POSIX hosts. The focused adversarial regression passes on Linux; no Windows execution is claimed. No admission, activation or runtime authority changes.",
+      "evidence_paths": [
+        "tests/test_agent_manifest.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "tests/test_agent_manifest.py",
+      "state": "present",
+      "git_blob": "79b832e065f4e35de30d2e68eb95c927f602bd11",
+      "sha256": "sha256:10f877150ff25ad13413aaf4100bc9965782760da8f2fb9eec280bf214e0f59f"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest tests.test_agent_manifest.AgentManifestTests.test_windows_paths_do_not_become_literal_posix_evidence -q",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T16:08:47.559945Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:e0c317672143452474dfdbbdab12f14c257f2bb3023f16a9e289dde7fc00596e"
+}

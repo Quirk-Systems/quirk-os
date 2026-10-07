@@ -21,16 +21,42 @@
 -- COMMITS when nothing raises, and the first case below is supposed to raise
 -- nothing, so it leaves an admitted active manifest in the database. That is
 -- the reason the driver exists.
+-- Seed the later protected registry only when that migration is installed.
+do $$ begin
+  if to_regclass('quirk_sync.github_approval_registry') is not null then
 -- Synthetic approval; transaction rolls back. Never a real authorization.
 insert into quirk_sync.github_approval_registry
 (grant_id,subject_kind,subject_id,subject_version,subject_contract,subject_digest,authority_ceiling,allowed_actions,requested_by,approved_by,decision_ref,repository,request_commit,request_path,pr_number,review_id,reviewer_id,reviewer_login,issued_at,expires_at,verified_at)
 values ('grant.sql.valid','manifest','agent.sql-valid','9.9.1',jsonb_build_object('manifest_key','agent.sql-valid','manifest_kind','agent','version','9.9.1','canonical_uri','https://github.com/Quirk-Systems/quirk-os/pull/5','authority_ceiling','propose','domains','["sync"]'::jsonb,'tools','[]'::jsonb,'inputs_schema_ref','schemas/source-binding.schema.json','outputs_schema_ref','schemas/sync-run-receipt.schema.json','trigger_contract',null,'skill_refs','[]'::jsonb,'rights_review',null,'eval_refs','["eval.sql.valid"]'::jsonb,'stop_conditions','["missing_authority"]'::jsonb,'metadata','{}'::jsonb),repeat('a',64),'propose','["activate_manifest"]','agent.sql-valid','human.bryan','decision.sql.valid','Quirk-Systems/quirk-os',repeat('0',40),'tests/synthetic-request.json',1,1,207279,'bryansayler',now()-interval '1 minute',now()+interval '1 hour',now());
+  end if;
+end $$;
 
 -- Valid activation must pass with independent approval.
 do $$
 declare
   v_hash text := repeat('a', 64);
 begin
+  -- When the projection migration is also installed, seed its independent
+  -- synthetic proof without disabling either guard. This row rolls back.
+  if to_regclass('quirk_sync.manifest_projection_receipts') is not null then
+    insert into quirk_sync.manifest_projection_receipts
+      (authority_grant_ref,runtime_payload,verified_projection,expected_from_status,expires_at,verified_at)
+    values ('grant.sql.valid',quirk_sync.manifest_projection_snapshot(
+      jsonb_populate_record(null::quirk_sync.manifest_registry,jsonb_build_object(
+        'manifest_key','agent.sql-valid','manifest_kind','agent','version','9.9.1',
+        'status','active','requested_status','active',
+        'canonical_uri','https://github.com/Quirk-Systems/quirk-os/pull/5',
+        'content_hash',v_hash,'authority_ceiling','propose','tools','[]'::jsonb,
+        'inputs_schema_ref','schemas/source-binding.schema.json',
+        'outputs_schema_ref','schemas/sync-run-receipt.schema.json',
+        'eval_refs','["eval.sql.valid"]'::jsonb,'stop_conditions','["missing_authority"]'::jsonb,
+        'metadata','{}'::jsonb,'requested_by','agent.sql-valid','approved_by','human.bryan',
+        'admission_decision_ref','decision.sql.valid','authority_grant_ref','grant.sql.valid',
+        'evaluated_content_hash',v_hash,'transition_evidence_ref','evidence.sql.valid',
+        'admitted_at',now(),'domains','["sync"]'::jsonb,'skill_refs','[]'::jsonb))),
+      '{"manifest":{"admission":{"evidence_refs":["eval.sql.valid"]}}}'::jsonb,
+      'candidate',clock_timestamp()+interval '1 hour',clock_timestamp());
+  end if;
   insert into quirk_sync.manifest_registry (
     manifest_key, manifest_kind, version, status, requested_status,
     canonical_uri, content_hash, authority_ceiling, tools,

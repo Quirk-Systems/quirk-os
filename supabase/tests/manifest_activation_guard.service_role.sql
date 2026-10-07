@@ -40,10 +40,15 @@ revoke execute on function
   quirk_sync.manifest_activation_violation(quirk_sync.manifest_registry)
   from service_role;
 
+-- Seed the later protected registry only when that migration is installed.
+do $$ begin
+  if to_regclass('quirk_sync.github_approval_registry') is not null then
 -- Synthetic approval; transaction rolls back. Never a real authorization.
 insert into quirk_sync.github_approval_registry
 (grant_id,subject_kind,subject_id,subject_version,subject_contract,subject_digest,authority_ceiling,allowed_actions,requested_by,approved_by,decision_ref,repository,request_commit,request_path,pr_number,review_id,reviewer_id,reviewer_login,issued_at,expires_at,verified_at)
 values ('grant.service','manifest','agent.service-role-valid','9.9.10',jsonb_build_object('manifest_key','agent.service-role-valid','manifest_kind','agent','version','9.9.10','canonical_uri','https://github.com/Quirk-Systems/quirk-os/pull/113','authority_ceiling','propose','domains','["sync"]'::jsonb,'tools','[]'::jsonb,'inputs_schema_ref','schemas/source-binding.schema.json','outputs_schema_ref','schemas/sync-run-receipt.schema.json','trigger_contract',null,'skill_refs','[]'::jsonb,'rights_review',null,'eval_refs','["eval.service"]'::jsonb,'stop_conditions','["missing_authority"]'::jsonb,'metadata','{}'::jsonb),repeat('7',64),'propose','["activate_manifest"]','agent.service-role-valid','human.bryan','decision.service','Quirk-Systems/quirk-os',repeat('0',40),'tests/synthetic-request.json',1,1,207279,'bryansayler',now()-interval '1 minute',now()+interval '1 hour',now());
+  end if;
+end $$;
 
 set role service_role;
 

@@ -353,7 +353,10 @@
         "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
         "supabase/migrations/20261003090000_sync_control_plane_independent_approval.sql",
         "supabase/migrations/20261006043743_github_approval_registry.sql",
-        "decisions/ADR-0001-cloudflare-boundary.md"
+        "decisions/ADR-0001-cloudflare-boundary.md",
+        "supabase/migrations/20261004140000_sync_control_plane_verified_projection.sql",
+        "decisions/ADR-0002-manifest-approval-trust-root.md",
+        "decisions/ADR-0003-manifest-content-hash-preimage.md"
       ],
       "missing_requested_artifact_paths": [
         "LICENSE",

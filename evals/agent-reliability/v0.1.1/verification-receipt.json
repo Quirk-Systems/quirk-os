@@ -1,0 +1,41 @@
+{
+  "version": "agent-reliability.v0.1.1",
+  "observed_at": "2026-09-26",
+  "baseline_commit": "9ff5620c31de41c3124848ef8eae3e9bf9554df0",
+  "fixture_digest_sha256": "57aeb9f5a32e30edf9b832693c92cf11974f7d27bdd5281c047a5a3ee84f82a9",
+  "red_phase": {
+    "command": "python -m unittest tests/test_agent_reliability.py -q",
+    "observed": "FAILED (failures=12, errors=3)",
+    "purpose": "Reproduce review attacks before changing production code"
+  },
+  "green_phase": {
+    "focused": {
+      "command": "python -m unittest tests/test_agent_reliability.py -q",
+      "observed": "Ran 43 tests; OK"
+    },
+    "repository": {
+      "command": "python -m unittest discover -s tests -q",
+      "dependencies": "requirements-evals.txt",
+      "observed": "Ran 160 tests; OK"
+    },
+    "validator": {
+      "command": "python scripts/validate_agent_reliability.py",
+      "fixture_status": "PASS_SYNTHETIC_FIXTURES",
+      "observation_status": "NO_OBSERVATIONS",
+      "effects_executed": 0
+    }
+  },
+  "claims_supported": [
+    "The exact registered synthetic fixture inventory passes the v0.1.1 reference checks",
+    "Known malformed input, truncation, authority-source, initiation, permit-epoch, digest-binding, denominator, and tie-handling regressions are covered",
+    "The runner exposes no effect executor and reports authority_effect=false"
+  ],
+  "claims_not_supported": [
+    "Live-model reliability",
+    "Runtime enforcement outside this process",
+    "Authenticated identity, evidence, grant, or receipt provenance",
+    "Sandbox or production safety",
+    "Permission to broaden authority"
+  ],
+  "authority_effect": "none"
+}
