@@ -15,7 +15,7 @@
     ],
     "tools": [
       {
-        "ref": "github",
+        "ref": "tool.github@1.0.0",
         "allowed_actions": [
           "merge_pull_request",
           "promote_canon"

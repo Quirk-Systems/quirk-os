@@ -43,7 +43,7 @@
         "additionalProperties": false,
         "required": ["ref", "allowed_actions"],
         "properties": {
-          "ref": {"type": "string", "minLength": 1},
+          "ref": {"type": "string", "pattern": "^tool\\.[a-z0-9._-]+@[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"},
           "allowed_actions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
           "object_scope": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
           "requires_authority": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}

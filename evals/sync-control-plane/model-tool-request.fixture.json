@@ -1,0 +1,272 @@
+{
+  "manifest": {
+    "schema_version": "runtime-manifest.v2",
+    "manifest_key": "agent.tool-schema-proof",
+    "manifest_kind": "agent",
+    "version": "1.0.0",
+    "status": "active",
+    "requested_status": "active",
+    "canonical_uri": "https://github.com/Quirk-Systems/quirk-os/blob/main/evals/sync-control-plane/model-tool-request.fixture.json",
+    "content_hash": "dbb5943eef2e3a255dc27071c52dcdfc1495ab421af2b27b7407ceb46ae059bb",
+    "authority_ceiling": "propose",
+    "domains": [
+      "sync"
+    ],
+    "tools": [
+      {
+        "ref": "tool.quirk_runtime@1.0.0",
+        "allowed_actions": [
+          "read_sources"
+        ],
+        "object_scope": [
+          "source.fixture"
+        ],
+        "requires_authority": [
+          "sources.read"
+        ]
+      }
+    ],
+    "inputs_schema_ref": "schemas/source-binding.schema.json",
+    "outputs_schema_ref": "schemas/sync-run-receipt.schema.json",
+    "eval_refs": [
+      "eval.model-tool-request"
+    ],
+    "stop_conditions": [
+      "missing_authority"
+    ],
+    "admission": {
+      "decision": "approved",
+      "decision_ref": "decision.model-tool-request.0001",
+      "authority_grant_ref": "grant.model-tool-request.0001",
+      "requested_by": "agent.tool-schema-proof",
+      "approved_by": "human.bryan",
+      "evaluated_content_hash": "dbb5943eef2e3a255dc27071c52dcdfc1495ab421af2b27b7407ceb46ae059bb",
+      "transition_ref": "transition.model-tool-request.0001",
+      "decided_at": "2026-09-25T00:00:00Z",
+      "evidence_refs": [
+        "eval://model-tool-request"
+      ]
+    },
+    "metadata": {}
+  },
+  "messages": [
+    {
+      "role": "user",
+      "content": "Read the cited sources."
+    }
+  ],
+  "skill_manifest": {
+    "$schema": "../../schemas/skill-package.schema.json",
+    "api_version": "quirk.dev/skill/v1alpha1",
+    "kind": "SkillPackage",
+    "id": "quirk-source-authority-resolver",
+    "title": "Quirk Source Authority Resolver",
+    "version": "0.2.0",
+    "status": "admitted",
+    "family": "research",
+    "purpose": "Resolve source authority, provenance, supersession, drift, and conflict before any cross-platform read or proposed write.",
+    "authority": {
+      "ceiling": "infer",
+      "capability_does_not_imply_authority": true,
+      "requires_external_grant": true,
+      "requires_independent_approval_for_active": true,
+      "self_activation": false,
+      "self_escalation": false,
+      "canon_promotion": false,
+      "irreversible_write": false
+    },
+    "triggers": {
+      "when_to_use": [
+        "Use when the task requires resolve source authority, provenance, supersession, drift, and conflict before any cross-platform read or proposed write."
+      ],
+      "when_not_to_use": [
+        "Do not use when source authority, purpose, or the external authority grant cannot be established.",
+        "Do not use when a trigger collision with another skill remains unresolved."
+      ],
+      "routing_signals": [
+        "canonical conflict",
+        "source authority",
+        "provenance",
+        "supersession",
+        "stale projection"
+      ],
+      "collision_behavior": "block"
+    },
+    "contract": {
+      "inputs": [
+        {
+          "name": "sources",
+          "type": "array",
+          "required": true
+        },
+        {
+          "name": "decision_scope",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "authority_census",
+          "type": "object",
+          "required": true
+        },
+        {
+          "name": "proposed_moves",
+          "type": "array",
+          "required": false
+        }
+      ],
+      "invariants": [
+        "recency_is_not_authority",
+        "vendor_identity_is_not_quirk_identity",
+        "unresolved_conflict_remains_unresolved"
+      ],
+      "failure_conditions": [
+        "missing_source_identity",
+        "contradictory_canonical_claims",
+        "authority_inferred_from_convenience"
+      ],
+      "stop_conditions": [
+        "missing_source_identity",
+        "contradictory_canonical_claims",
+        "authority_inferred_from_convenience",
+        "authority_grant_missing",
+        "self_promotion_attempt"
+      ]
+    },
+    "method": {
+      "moves": [
+        "read_sources",
+        "fingerprint_sources",
+        "emit_authority_census",
+        "emit_proposed_move"
+      ],
+      "sequence": [
+        "Resolve purpose, source authority, scope, and external grant before work begins.",
+        "Inventory required inputs and preserve provenance or source references.",
+        "Execute the smallest deterministic procedure that can satisfy the declared output.",
+        "Evaluate positive, adversarial, regression, and authority conditions.",
+        "Emit an attributable receipt and route improvements as Proposed Moves."
+      ],
+      "decision_points": [
+        "Is the source and decision authority sufficient for this procedure?",
+        "Would the next action exceed the declared authority ceiling or become irreversible?",
+        "Is the evidence strong enough to emit the declared output rather than abstain?"
+      ],
+      "approval_gates": [
+        "External admission is required before runtime loading.",
+        "A separate scoped grant is required for every consequential execution."
+      ]
+    },
+    "resources": [
+      {
+        "resource_type": "source_pack",
+        "access": "read",
+        "required": true,
+        "constraints": [
+          "bounded_scope",
+          "provenance_required"
+        ]
+      },
+      {
+        "resource_type": "evidence_ledger",
+        "access": "reference",
+        "required": true,
+        "constraints": [
+          "host_owned_append_only_write",
+          "receipt_required",
+          "no_status_promotion"
+        ]
+      }
+    ],
+    "tools": [
+      {
+        "name": "quirk_runtime",
+        "actions": [
+          "read_sources"
+        ],
+        "required": true
+      }
+    ],
+    "quality": {
+      "eval_suite_ref": "evals/skills/conformance.json",
+      "required_case_kinds": [
+        "positive",
+        "adversarial",
+        "regression",
+        "authority"
+      ],
+      "minimum_score": 1.0,
+      "regression_required": true,
+      "anti_patterns": [
+        "newest_copy_wins",
+        "projection_promoted_by_popularity",
+        "invisible_bryan_context"
+      ]
+    },
+    "learning": {
+      "mutation_mode": "propose_only",
+      "historical_rewrite": false,
+      "promotion_requires_external_admission": true,
+      "feedback_capture": "append_only_receipt"
+    },
+    "compatibility": {
+      "mapping_ref": "mappings/skill-package.v1.yaml",
+      "runtime_manifest_ref": "schemas/runtime-manifest.schema.json",
+      "minimum_runtime_contract": "0.2.0"
+    },
+    "provenance": {
+      "source_path": "skills/quirk-source-authority-resolver/SKILL.md",
+      "derived_from": [
+        "Quirk-Systems/quirk-os PR #5 candidate skill source",
+        "Quirk procedural-intelligence hardening v0.2"
+      ],
+      "steward": "Bryan",
+      "created_at": "2026-08-12T04:00:00Z"
+    },
+    "integrity": {
+      "source_algorithm": "git-blob-sha1",
+      "source_blob_sha": "ec231214bf5277aa08db46585b2333dad367b56b",
+      "manifest_algorithm": "sha256-canonical-json-v1",
+      "manifest_sha256": "c404c74f6781ddc5efd047bb3056fd64e26efb84b86eac2be2695f16307a5e99"
+    },
+    "admission": {
+      "decision": "approved",
+      "decision_ref": "decision.skill.fixture",
+      "requested_by": "agent.fixture",
+      "approved_by": "human.bryan",
+      "decided_at": "2026-10-03T07:00:00Z"
+    }
+  },
+  "grant": {
+    "grant_id": "grant.model-tool.fixture",
+    "skill_id": "quirk-source-authority-resolver",
+    "skill_version": "0.2.0",
+    "skill_manifest_sha256": "c404c74f6781ddc5efd047bb3056fd64e26efb84b86eac2be2695f16307a5e99",
+    "decision": "approved",
+    "admission_ref": "decision.skill.fixture",
+    "requested_by": "agent.fixture",
+    "approved_by": "human.bryan",
+    "issued_at": "2026-10-03T07:00:00Z",
+    "expires_at": "2026-10-03T09:00:00Z",
+    "authority_ceiling": "infer",
+    "allowed_actions": [
+      "read_sources"
+    ],
+    "purpose": "bounded model projection fixture",
+    "runtime_manifest_sha256": "69e87d96b055f6ce735408508176753d63c7bce79a52d50695eca7ccdb1f9c24",
+    "tool_registry_sha256": "e537dab6f2cba784e271053daa1d57bc386f8b78075f3bddd4709264c084755b",
+    "runtime_admission_ref": "decision.model-tool-request.0001",
+    "object_scope": [
+      "source.fixture"
+    ],
+    "authorities": [
+      "sources.read"
+    ]
+  },
+  "object_scope": [
+    "source.fixture"
+  ],
+  "now": "2026-10-03T08:00:00Z"
+}

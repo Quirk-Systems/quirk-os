@@ -51,6 +51,8 @@ The post-run distill loop (`scripts/distill_loop/`, [`docs/distill-loop/README.m
 
 The runtime loader rejects candidate or unadmitted versions, over-ceiling grants, self-approved grants, expired grants, undeclared actions, manifest tampering, and source tampering. Passing evals remain evidence—not admission.
 
+For model-facing tool use, `schemas/tool-registry.schema.json` requires each runtime-manifest `tools[].ref` to pin a concrete tool version. `scripts/sync_control_plane/skill_runtime.py` resolves only that version's allowlisted action parameter schemas and serializes them into the request payload. Candidate, inactive, policy-invalid, unknown-ref, and unknown-action paths emit no schemas. The paired model-request receipt records token volume, cash cost, latency, human effort, and updater upkeep as measured values when available or explicit unknowns when not.
+
 No Skill may self-activate, increase its own authority, promote Canon, rewrite history, persist an inferred preference or Hand, misrepresent access as ownership, or perform an irreversible write merely because capability, evidence, or credentials exist.
 
 ## Conformance telemetry
