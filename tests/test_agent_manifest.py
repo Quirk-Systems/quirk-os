@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import tempfile
 import unittest
@@ -440,10 +441,8 @@ class AgentManifestTests(unittest.TestCase):
         for ref in (r"..\outside.json", r"C:\outside.json", "C:outside.json", r"\\server\share\file.json", "proof.json:stream"):
             with self.subTest(ref=ref):
                 # On Linux these can exist as ordinary filenames; still reject them.
-                try:
+                if os.name != "nt":
                     (self.root / ref).write_text("{}")
-                except OSError:
-                    pass
                 report = self.mutate(lambda m: m["trigger_contract"].update(evidence_refs=[ref]))
                 self.assertIn("AGENT_REF_MISSING", codes(report))
 
