@@ -363,6 +363,34 @@ class IntentShaperContractTests(unittest.TestCase):
         self.assertEqual("current_instruction_conflict", actual["reason_code"])
         self.assertEqual([], actual["read_trace"])
 
+    def test_boundary_rejects_invalid_current_timestamps_before_protected_reads(self) -> None:
+        from intent_shaper.policy import evaluate_personalization_boundary, FailOnReadEvidencePort
+
+        base = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012")["input"])
+        for enabled in (False, True):
+            for field in ("valid_from", "valid_until", "as_of"):
+                for value in ("not-a-date", "2026-10-05T08:00:00", "2026-02-30T08:00:00Z", 1, [], {}):
+                    with self.subTest(enabled=enabled, field=field, value=value):
+                        payload = copy.deepcopy(base)
+                        payload["settings"]["personalization_enabled"] = enabled
+                        payload["current_request_preferences"] = [self.preference("current")]
+                        target = payload if field == "as_of" else payload["current_request_preferences"][0]
+                        target[field] = value
+                        actual = evaluate_personalization_boundary(payload, FailOnReadEvidencePort())
+                        self.assertEqual("rejected", actual["status"])
+                        self.assertEqual("current_preference_timestamp_invalid", actual["reason_code"])
+                        self.assertEqual([], actual["read_trace"])
+
+    def test_off_boundary_accepts_null_and_offset_current_validity(self) -> None:
+        case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012"))
+        case["input"].update(scope="security.incident", as_of="2026-10-05T08:00:00Z")
+        case["input"]["current_request_preferences"] = [self.preference(
+            "current", valid_from=None, valid_until="2026-10-05T03:00:00-05:00",
+        )]
+        actual = evaluate_case(case)["actual"]
+        self.assertEqual("accepted", actual["status"])
+        self.assertEqual([], actual["read_trace"])
+
     def test_off_projection_cannot_reintroduce_foreign_evidence_through_a_duplicate_ref(self) -> None:
         case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012"))
         case["input"]["scope"] = "security.incident"

@@ -93,6 +93,10 @@ class SkillIntegrityTests(unittest.TestCase):
                 ("duplicate_contract_active", "DRAFT_SKILL_STATUS"),
                 ("duplicate_quirk_contract_active", "DRAFT_SKILL_STATUS"),
                 ("duplicate_contract_candidate", "DRAFT_SKILL_STATUS"),
+                ("unquoted_active_status", "DRAFT_SKILL_STATUS"),
+                ("unquoted_candidate_status", "DRAFT_SKILL_STATUS"),
+                ("duplicate_unquoted_active_status", "DRAFT_SKILL_STATUS"),
+                ("duplicate_quoted_candidate_status", "DRAFT_SKILL_STATUS"),
                 ("registry", "REGISTRY_SKILL_DRIFT"),
             )
             for attack, expected_code in attacks:
@@ -113,6 +117,12 @@ class SkillIntegrityTests(unittest.TestCase):
                     elif attack == "frontmatter_status":
                         source.write_text(original_source.replace("name: quirk-intent-shaper\n",
                                                                  "name: quirk-intent-shaper\nstatus: active\n", 1))
+                    elif attack in {"unquoted_active_status", "unquoted_candidate_status"}:
+                        status = "active" if attack == "unquoted_active_status" else "candidate"
+                        source.write_text(original_source.replace("- Status: `candidate`", f"- Status: {status}", 1))
+                    elif attack in {"duplicate_unquoted_active_status", "duplicate_quoted_candidate_status"}:
+                        status = "active" if attack == "duplicate_unquoted_active_status" else "`candidate`"
+                        source.write_text(original_source.replace("- Status: `candidate`", f"- Status: `candidate`\n- Status: {status}", 1))
                     elif attack.startswith("duplicate_"):
                         heading = "Quirk contract" if attack == "duplicate_quirk_contract_active" else "Contract"
                         status = "candidate" if attack == "duplicate_contract_candidate" else "active"

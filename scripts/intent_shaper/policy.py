@@ -436,6 +436,17 @@ def evaluate_personalization_boundary(
 
     scope = str(payload.get("scope", "global"))
     current = [dict(item) for item in payload.get("current_request_preferences", [])]
+    try:
+        as_of = _parse_time(payload.get("as_of")) or datetime.now(timezone.utc)
+        for item in current:
+            _parse_time(item.get("valid_from"))
+            _parse_time(item.get("valid_until"))
+    except (AttributeError, TypeError, ValueError):
+        return {
+            "status": "rejected",
+            "reason_code": "current_preference_timestamp_invalid",
+            "read_trace": list(evidence_port.trace),
+        }
     enabled = enabled_setting
     if not enabled:
         if settings.get("adaptation_mode") != "off" or settings.get("implicit_signal_use") != "off":
@@ -453,7 +464,7 @@ def evaluate_personalization_boundary(
         selected, ignored, conflicts = _resolve_preferences(
             current,
             scope=scope,
-            as_of=_parse_time(payload.get("as_of")) or datetime.now(timezone.utc),
+            as_of=as_of,
             personalization_enabled=False,
         )
         if conflicts:
@@ -492,7 +503,7 @@ def evaluate_personalization_boundary(
     selection = _select_preference(
         [*current, *saved],
         scope=scope,
-        as_of=_parse_time(payload.get("as_of")) or datetime.now(timezone.utc),
+        as_of=as_of,
         personalization_enabled=True,
     )
     return {
