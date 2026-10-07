@@ -90,6 +90,9 @@ class SkillIntegrityTests(unittest.TestCase):
                 ("manifest", "DRAFT_SKILL_MANIFEST_PRESENT"),
                 ("status", "DRAFT_SKILL_STATUS"),
                 ("frontmatter_status", "DRAFT_SKILL_STATUS"),
+                ("duplicate_contract_active", "DRAFT_SKILL_STATUS"),
+                ("duplicate_quirk_contract_active", "DRAFT_SKILL_STATUS"),
+                ("duplicate_contract_candidate", "DRAFT_SKILL_STATUS"),
                 ("registry", "REGISTRY_SKILL_DRIFT"),
             )
             for attack, expected_code in attacks:
@@ -110,6 +113,10 @@ class SkillIntegrityTests(unittest.TestCase):
                     elif attack == "frontmatter_status":
                         source.write_text(original_source.replace("name: quirk-intent-shaper\n",
                                                                  "name: quirk-intent-shaper\nstatus: active\n", 1))
+                    elif attack.startswith("duplicate_"):
+                        heading = "Quirk contract" if attack == "duplicate_quirk_contract_active" else "Contract"
+                        status = "candidate" if attack == "duplicate_contract_candidate" else "active"
+                        source.write_text(original_source + f"\n## {heading}\n\n- Status: `{status}`\n")
                     else:
                         registry = json.loads(original_registry)
                         registry["skills"].append({"id": "quirk-intent-shaper"})

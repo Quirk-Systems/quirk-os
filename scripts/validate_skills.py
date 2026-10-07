@@ -127,8 +127,8 @@ def main() -> int:
             continue
         if frontmatter.get("name") != skill_id:
             fail("DRAFT_SKILL_NAME_MISMATCH", f"{source_path.relative_to(root)}: name mismatch")
-        contract = re.search(r"(?ms)^## (?:Quirk contract|Contract)\n(.*?)(?=^## |\Z)", source_text)
-        statuses = re.findall(r"(?m)^- Status: `([^`]+)`\s*$", contract[1]) if contract else []
+        contracts = re.findall(r"(?ms)^## (?:Quirk contract|Contract)\n(.*?)(?=^## |\Z)", source_text)
+        statuses = re.findall(r"(?m)^- Status: `([^`]+)`\s*$", contracts[0]) if len(contracts) == 1 else []
         if statuses != ["candidate"] or frontmatter.get("status", "candidate") != "candidate":
             fail("DRAFT_SKILL_STATUS", f"{source_path.relative_to(root)}: draft must remain candidate")
         if (root / "skills" / skill_id / "manifest.json").exists():
