@@ -1,0 +1,63 @@
+{
+  "id": "qpm_agent_contract_layer",
+  "schema_version": "proposed-move.v1",
+  "lane": "gate",
+  "title": "Add a contract-first candidate layer for Quirk agents",
+  "desired_change": "Give agents/<slug>/agent.yaml the same executable machinery skills have: a manifest schema, a sealed candidate registry, a validator that applies the statically checkable admission-policy rules, adversarial tests, and a CI gate.",
+  "expected_outcome": "Agent manifests cannot drift, bind unknown or auto-distilled skills, bind skills above their own ceiling, omit protected-action prohibitions, or claim active status without an independent admission record, while the layer itself admits and activates nothing.",
+  "proposer": {
+    "actor_id": "agent.copilot-task-agent",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "agents/quirk-sync-steward/agent.yaml",
+    "policies/manifest-admission-policy.yaml",
+    "skills/registry.json"
+  ],
+  "evidence_refs": [
+    "tests/test_agent_manifest.py"
+  ],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "agent.quirk-sync-steward",
+    "schema.agent-manifest",
+    "schema.agent-registry"
+  ],
+  "dependencies": [],
+  "authority_required": [
+    "authority.repo_candidate_write"
+  ],
+  "risk": {
+    "class": "L2",
+    "rights_or_safety_impact": "A permissive validator could let an agent manifest claim authority it was never granted; the layer is evidence-only and fails closed.",
+    "strange_intact_risk": "low"
+  },
+  "reversibility": "reversible",
+  "implementation_ref": "agents/README.md",
+  "eval_refs": [
+    "tests/test_agent_manifest.py"
+  ],
+  "disposition": "implemented",
+  "created_at": "2026-10-04T07:30:00Z",
+  "dependency_class": "missing_execution_contract",
+  "blocks_merge": false,
+  "finding_ref": "agent-layer-gap.2026-10-04",
+  "hidden_context_dependencies": [
+    "Supabase manifest_registry projection of agents is intentionally deferred.",
+    "Human admission remains intentionally external to agent capability."
+  ],
+  "resolution_artifacts": [
+    "schemas/agent-manifest.schema.json",
+    "schemas/agent-registry.schema.json",
+    "agents/registry.json",
+    "scripts/validate_agents.py",
+    "tests/test_agent_manifest.py",
+    ".github/workflows/validate-agents.yml"
+  ],
+  "acceptance_checks": [
+    "The real sync-steward manifest and registry validate with zero findings.",
+    "Self-approval, ceiling-above-grant, missing prohibited action, unknown skill, distilled skill, registry tampering, unregistered agent folder, active-without-evidence, and missing stop conditions all fail.",
+    "Passing conformance admits, activates, and projects nothing."
+  ],
+  "resolution_note": "Implemented as candidate; agent admission and any Supabase projection remain separate external decisions."
+}

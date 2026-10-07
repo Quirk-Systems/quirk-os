@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.dev/schemas/manifest-evaluation.schema.json",
+  "title": "Content-bound manifest evaluation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "manifest_key", "manifest_version", "hash_profile", "content_hash", "decision", "authority_effect", "materials"],
+  "properties": {
+    "schema_version": {"const": "manifest-evaluation.v1"},
+    "manifest_key": {"type": "string", "minLength": 1},
+    "manifest_version": {"type": "string", "minLength": 1},
+    "hash_profile": {"const": "runtime-manifest-content.v1"},
+    "content_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "decision": {"const": "pass"},
+    "authority_effect": {"const": "none"},
+    "materials": {
+      "type": "array", "minItems": 1, "maxItems": 32, "uniqueItems": true,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    }
+  }
+}

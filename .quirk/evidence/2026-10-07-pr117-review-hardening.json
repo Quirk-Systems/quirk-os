@@ -1,0 +1,116 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os.pr117-review-hardening.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "0b73f17204e513724fa3b7c0ee59c7e1f9700f00",
+    "commit": "174cb28619fd8d06ba6a4c6316aa7789c21c705d",
+    "changed_paths": [
+      ".github/workflows/validate-agents.yml",
+      "agents/README.md",
+      "docs/changelog/PR-117.md",
+      "schemas/agent-manifest.schema.json",
+      "schemas/agent-registry.schema.json",
+      "scripts/validate_agents.py",
+      "tests/test_agent_manifest.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.quirk-os.pr117-review-hardening.2026-10-07",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Addresses seven current-head review findings: explicit authority ladder and vocabulary validation, explicit schema dialect/resource failure handling, duplicate-key schema rejection, portable evidence-path syntax, typed skill ceilings, full-string identifier validation, and CI coverage for all repository paths. 355 tests ran: 354 passed and one real-Windows-lock test skipped on Linux, including 44 agent tests passing. Agent, Golden structural and Sync conformance passed with 16 Golden admission holds retained. No approval authenticity, admission, activation, projection or runtime authority is claimed.",
+      "evidence_paths": [
+        ".github/workflows/validate-agents.yml",
+        "agents/README.md",
+        "docs/changelog/PR-117.md",
+        "schemas/agent-manifest.schema.json",
+        "schemas/agent-registry.schema.json",
+        "scripts/validate_agents.py",
+        "tests/test_agent_manifest.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/validate-agents.yml",
+      "state": "present",
+      "git_blob": "ea3ce748547b8ffece4927303f1ff5e46bb7c89a",
+      "sha256": "sha256:761ceb7cb061d754623a05f3dda48dd57c94e66861ca5311c9cfa49da90485f2"
+    },
+    {
+      "path": "agents/README.md",
+      "state": "present",
+      "git_blob": "ce3937b5d1aa33a2e2174fce9d69ef8cd9ef9a3c",
+      "sha256": "sha256:163492b2f5209d200a63a7493fc2f4b3495ee86387cbdff62dbc5a638f4e2cca"
+    },
+    {
+      "path": "docs/changelog/PR-117.md",
+      "state": "present",
+      "git_blob": "e80e5935c5356cf592addc5088dc7eabfa41aed5",
+      "sha256": "sha256:b4248b547f28efc49a29b8035f689573ceee08c4276d1c34f6a203b8a0d9605e"
+    },
+    {
+      "path": "schemas/agent-manifest.schema.json",
+      "state": "present",
+      "git_blob": "d423f20482ef5322c5ad0556953cd0eb6bcb8520",
+      "sha256": "sha256:5d8a9360b4c16093fbc21c29af0bde7d7d3b8024403c3ac1b7976fcd23a8cc52"
+    },
+    {
+      "path": "schemas/agent-registry.schema.json",
+      "state": "present",
+      "git_blob": "c1708eb52601fafbd7877e41cf32185a172bba36",
+      "sha256": "sha256:1a15e75e5e1aeedf72eb3cf877000f9c8df22b033bda55fd5df541c2161061ca"
+    },
+    {
+      "path": "scripts/validate_agents.py",
+      "state": "present",
+      "git_blob": "49a5c5739d322da60fdaddc94b5f2d213beeeee6",
+      "sha256": "sha256:50f95b2f43093aeb678f0f73c8bb429cf66872e17a585582bdf57a3668bb010a"
+    },
+    {
+      "path": "tests/test_agent_manifest.py",
+      "state": "present",
+      "git_blob": "fbc230f1763ab8c30820430960bfbc5154192000",
+      "sha256": "sha256:513fe54e5096b207e18e07be8be52e327f5e06835ac7164c7d78b48bc2cec745"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py' -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agents.py --repo . --output /tmp/117-reviewed-subject-agent.json --metrics-output /tmp/117-reviewed-subject-metrics.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --repo . --output /tmp/117-reviewed-subject-sync.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T16:03:33.266137Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:323158fc7077d10613f8dd691b231748156518442ab412da78c64aafffa9d52c"
+}

@@ -122,13 +122,19 @@ def _evaluate_authority(case: dict[str, Any]) -> dict[str, Any]:
             reasons.append("policy_changed")
         if current["object_digest"] != proposal["object_digest"]:
             reasons.append("object_changed")
+        if any(
+            not isinstance(snapshot[key], str) or not snapshot[key]
+            for snapshot in (proposal, current)
+            for key in ("policy_digest", "object_digest")
+        ):
+            reasons.append("unbound_dependency_digest")
         if permit["used"] is not False or permit["object_id"] != request["object_id"] or permit["verb"] != request["verb"]:
             reasons.append("permit_replayed")
         if permit["grant_id"] != grant["id"] or permit["grant_epoch"] != grant["epoch"]:
             reasons.append("permit_stale_or_mismatched")
         if evidence["independent"] is not True:
             reasons.append("shared_evidence_lineage")
-        if evidence["current"] is not True or not evidence["source_digest"]:
+        if evidence["current"] is not True or not isinstance(evidence["source_digest"], str) or not evidence["source_digest"]:
             reasons.append("stale_evidence")
         reasons.extend(_authority_source_reasons(case["source_claims"], grant))
         if not isinstance(agency["initiator"], str) or not agency["initiator"].startswith("human:"):
@@ -336,7 +342,16 @@ def score_observations(data: dict[str, Any]) -> dict[str, Any]:
 
 
 def summarize_coverage(data: dict[str, Any]) -> dict[str, Any]:
+    if not _has(data, {"units", "sampling_frame", "omitted_surfaces", "stopping_rule"}):
+        raise ValueError("invalid coverage")
     units = data["units"]
+    if not isinstance(units, list) or not all(
+        _has(item, {"name", "description", "server", "starts"})
+        and all(isinstance(item[key], str) and item[key] for key in ("name", "description", "server"))
+        and type(item["starts"]) is bool
+        for item in units
+    ):
+        raise ValueError("invalid coverage units")
     unique = {(item["name"], item["description"]) for item in units}
     return {
         "version": VERSION, "sampling_frame": data["sampling_frame"],

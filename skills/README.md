@@ -27,9 +27,17 @@ The central `registry.json` is a rebuildable candidate inventory. It is not Cano
 | `quirk-probabilistic-forecaster` | decide | infer | forecast pack |
 | `quirk-roadmap-board-orchestrator` | connect | propose | roadmap projection |
 | `quirk-value-foundry` | productize | propose | reusable value candidate |
-| `quirk-deck-compiler` | structure | propose | purpose-filtered Deck, proposed Hand, and invariant proof |
+
+Separate draft candidates live alongside the manifested registry:
+
+| Candidate | Ceiling | Primary output |
+| --- | --- | --- |
+| `quirk-deck-compiler` | propose | purpose-filtered Deck, proposed Hand, and invariant proof |
+| `quirk-intent-shaper` | propose | reversible Intent × Persona × Affect × Affordance plan |
 
 `quirk-deck-compiler` remains a separate draft candidate under the Deck Grammar pack and is not part of the manifested registry.
+
+`quirk-intent-shaper` includes an exploratory `skill-scratchpad.md`. Scratchpad content remains candidate ideation until admitted through schemas, evaluations, evidence, and human authority.
 
 ## Applause Gate compatibility boundary
 
@@ -44,3 +52,14 @@ The post-run distill loop (`scripts/distill_loop/`, [`docs/distill-loop/README.m
 The runtime loader rejects candidate or unadmitted versions, over-ceiling grants, self-approved grants, expired grants, undeclared actions, manifest tampering, and source tampering. Passing evals remain evidence—not admission.
 
 No Skill may self-activate, increase its own authority, promote Canon, rewrite history, persist an inferred preference or Hand, misrepresent access as ownership, or perform an irreversible write merely because capability, evidence, or credentials exist.
+
+## Conformance telemetry
+
+Skill and related candidate conformance workflows now emit machine-readable metrics artifacts and step-summary entries for trend visibility. These artifacts are observational evidence only and do not grant admission or runtime authority.
+
+- `evals/skills/conformance-metrics.json`
+- `evals/sync-control-plane/conformance-metrics.json`
+- `evals/deck-grammar/conformance-metrics.json`
+- `evals/applause-gate/conformance-metrics.json`
+- `evals/applause-gate/fixture-validation-metrics.json`
+- `evals/skills/distilled/conformance-metrics.json`
