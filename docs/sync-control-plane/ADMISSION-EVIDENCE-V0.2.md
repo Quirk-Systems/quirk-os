@@ -6,13 +6,13 @@
 **Evidence captured:** 2026-08-12  
 **Conformance decision:** `ELIGIBLE_FOR_HUMAN_ADMISSION`  
 **Automatic activation:** false  
-**Content hash (SHA-256):** `6be9994e86edbba1ef450fe15fef6aafac9cd3cddbcd829ee908eebefb281bcf`
-**Evidence revision (the tree that reproduces that hash):** `5eba46384016260155056726c6ec26ba66e16193`
+**Content hash (SHA-256):** `b9590bf426251ec2a09654d7fa19bff086a3607b01ffcca8b95cc7e2feb7e8a4`
+**Evidence revision (the tree that reproduces that hash):** the reconciled PR #111 head recorded in its description; use the commit containing this document.
 
-Current successor reproduction (CPython 3.13):
+Current successor reproduction (local CPython 3.12; hosted workflow uses 3.13):
 
 ```sh
-git checkout 5eba46384016260155056726c6ec26ba66e16193
+git checkout <published-PR-111-head>
 python scripts/validate_sync_control_plane.py --repo . \
   --output evals/sync-control-plane/conformance-results.json --require-admit
 ```
@@ -322,3 +322,7 @@ See `evals/sync-control-plane/conformance-results.json` for the full machine-rea
 - Vercel: inventory only.
 
 **The candidate is eligible for a human admission decision. It is not admitted.**
+
+PR #111 authorization reconciliation on main `38ba6b9` adds model-tool projection
+proof using synthetic host dependencies only. Regenerated conformance digest: `b9590bf426251ec2a09654d7fa19bff086a3607b01ffcca8b95cc7e2feb7e8a4`.
+Human approval and live authority remain separate.

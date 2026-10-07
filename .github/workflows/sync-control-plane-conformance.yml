@@ -41,6 +41,7 @@ on:
       - 'scripts/ingest_github_approval.py'
       - 'tests/test_github_approval.py'
       - 'tests/test_skill_runtime.py'
+      - 'tests/test_model_tool_adapter.py'
       - 'supabase/migrations/**'
       - 'supabase/tests/github_approval_registry.sql'
       - 'supabase/tests/manifest_activation_guard.cases.sql'

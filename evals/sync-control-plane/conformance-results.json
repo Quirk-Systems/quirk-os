@@ -14,7 +14,14 @@
     "rights_unclear_rejected": true,
     "trigger_collision_rejected": true,
     "migration_hardening_complete": true,
-    "mapping_roundtrip_passes": true
+    "mapping_roundtrip_passes": true,
+    "tool_registry_passes_schema": true,
+    "model_tool_manifest_passes_schema": true,
+    "canonical_tool_mapping_resolves": true,
+    "model_tool_projection_resolves": true,
+    "allowed_tool_schema_present": true,
+    "forbidden_tool_schema_absent": true,
+    "model_tool_receipt_logs_unknown_metrics": true
   },
   "fixtures": [
     {
@@ -285,5 +292,106 @@
     "binding_roundtrip_stable": true,
     "receipt_roundtrip_stable": true
   },
-  "content_hash_sha256": "6be9994e86edbba1ef450fe15fef6aafac9cd3cddbcd829ee908eebefb281bcf"
+  "model_tool_schema_proof": {
+    "tool_registry_errors": [],
+    "manifest_schema_errors": [],
+    "canonical_mapping": {
+      "mapped": true,
+      "bindings": [
+        {
+          "ref": "tool.quirk_runtime@1.0.0",
+          "allowed_actions": [
+            "read_sources"
+          ]
+        }
+      ],
+      "errors": []
+    },
+    "resolution": {
+      "resolved": true,
+      "manifest_key": "agent.tool-schema-proof",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "quirk_runtime__read_sources",
+            "description": "Read listed source references without mutation.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "source_refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "source_refs"
+              ],
+              "additionalProperties": false
+            },
+            "strict": true
+          }
+        }
+      ],
+      "errors": []
+    },
+    "serialized_request": {
+      "model": "conformance-proof-model",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Read the cited sources."
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "quirk_runtime__read_sources",
+            "description": "Read listed source references without mutation.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "source_refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "source_refs"
+              ],
+              "additionalProperties": false
+            },
+            "strict": true
+          }
+        }
+      ]
+    },
+    "receipt": {
+      "receipt_id": "receipt.sync-control-plane.model-tool-proof.0001",
+      "request_sha256": "140b2c2120d2c08e2c3e1948ced10a4192d42b92b8202b97524faff567e83170",
+      "serialized_at": "2026-10-03T08:00:00Z",
+      "emitted_tool_names": [
+        "quirk_runtime__read_sources"
+      ],
+      "measurement_state": "not_observed",
+      "metrics": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "cash_cost_usd": null,
+        "latency_ms": null,
+        "human_effort_minutes": null,
+        "updater_upkeep_minutes": null
+      },
+      "immutable": true
+    },
+    "receipt_schema_errors": []
+  },
+  "content_hash_sha256": "b9590bf426251ec2a09654d7fa19bff086a3607b01ffcca8b95cc7e2feb7e8a4"
 }

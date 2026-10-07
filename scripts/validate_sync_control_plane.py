@@ -425,17 +425,34 @@ def main() -> int:
         {"tools": [{"name": "quirk_runtime", "actions": ["read_sources"], "required": True}]},
         tool_registry,
     )
-    tool_resolution = resolve_model_visible_tools(model_tool_fixture["manifest"], tool_registry)
+    # Evaluation-only authority store. Production must inject a current, trusted store.
+    from unittest.mock import Mock
+    fixture_grant = model_tool_fixture["grant"]
+    fixture_admission = model_tool_fixture["manifest"]["admission"]
+    fixture_record = {key: fixture_admission[key] for key in (
+        "decision_ref", "authority_grant_ref", "transition_ref", "approved_by", "decided_at")}
+    fixture_record["subject"] = {key: fixture_admission[key] for key in ("requested_by", "evidence_refs")}
+    authority_context = dict(
+        skill_manifest=model_tool_fixture["skill_manifest"],
+        source_text=(repo / model_tool_fixture["skill_manifest"]["provenance"]["source_path"]).read_text(),
+        grant=fixture_grant,
+        lookup_grant=lambda grant_id: fixture_grant if grant_id == fixture_grant["grant_id"] else None,
+        object_scope=model_tool_fixture["object_scope"], now=model_tool_fixture["now"],
+        approval_registry=Mock(allows=Mock(return_value=True)),
+        verifier=Mock(verify=Mock(return_value=fixture_record)), context={"fixture_only": True},
+    )
+    tool_resolution = resolve_model_visible_tools(model_tool_fixture["manifest"], tool_registry, **authority_context)
     request = serialize_model_request(
         model_tool_fixture["manifest"],
         tool_registry,
         model="conformance-proof-model",
         messages=model_tool_fixture["messages"],
+        **authority_context,
     ) if tool_resolution["resolved"] else None
     tool_receipt = build_model_tool_request_receipt(
         request,
         receipt_id="receipt.sync-control-plane.model-tool-proof.0001",
-        serialized_at="2026-09-25T00:00:00Z",
+        serialized_at=model_tool_fixture["now"],
     ) if request else None
     tool_receipt_errors = validate(model_tool_receipt_schema, tool_receipt) if tool_receipt else ["request was not serialized"]
     emitted_tool_names = [tool["function"]["name"] for tool in request["tools"]] if request else []
@@ -455,7 +472,7 @@ def main() -> int:
         "mapping_roundtrip_passes": not mappings["binding_schema_errors"] and not mappings["receipt_schema_errors"] and mappings["binding_roundtrip_stable"] and mappings["receipt_roundtrip_stable"],
         "tool_registry_passes_schema": not tool_registry_errors,
         "model_tool_manifest_passes_schema": not model_tool_manifest_errors,
-        "canonical_tool_mapping_resolves": canonical_tool_mapping["mapped"] and canonical_tool_mapping["bindings"] == model_tool_fixture["manifest"]["tools"],
+        "canonical_tool_mapping_resolves": canonical_tool_mapping["mapped"] and canonical_tool_mapping["bindings"] == [{"ref": b["ref"], "allowed_actions": b["allowed_actions"]} for b in model_tool_fixture["manifest"]["tools"]],
         "model_tool_projection_resolves": tool_resolution["resolved"],
         "allowed_tool_schema_present": allowed_schema_present,
         "forbidden_tool_schema_absent": forbidden_schema_absent,
