@@ -1,0 +1,150 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.qis-negative-fixtures-clean-main.8794a8f9877f",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "ec10bcc69c1a91d7c9bc4818e2378ea4df2368fb",
+    "commit": "8794a8f9877f01ee5a040b8d897574c3563db7ad",
+    "changed_paths": [
+      ".gitignore",
+      "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+      "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+      "evals/qis-agent-harness/receipt.hash-mismatch.json",
+      "evals/qis-agent-harness/receipt.material-mismatch.json",
+      "evals/qis-agent-harness/receipt.missing-evidence.json",
+      "evals/qis-agent-harness/receipt.unexpected-field.json",
+      "evals/qis-agent-harness/receipt.unknown-verdict.json",
+      "evals/qis-agent-harness/receipt.valid.json",
+      "tests/test_qis_harness.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.qis-negative-fixtures-clean-main.8794a8f9877f",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Reconstructs the intended PR #138 fixture repair directly on exact main ec10bcc69c1a91d7c9bc4818e2378ea4df2368fb with a single-parent implementation commit 8794a8f9877f01ee5a040b8d897574c3563db7ad. Only seven negative fixtures, the tests, the obsolete fixture deletion, and the Intent Shaper output ignore entry change. Historical receipts are preserved; no PR #133 stale branch commits or PR #138 historical evidence are imported. Fresh local checks on Python 3.12 passed 45 focused tests, all 231 repository tests, 36/36 Intent Shaper conformance cases, valid provenance fixture validation with zero errors, and Golden candidate structural gates with 16 existing admission holds. Each negative fixture differs from the valid provenance fixture only in its declared defect plus receipt identity/resealing, and its complete error list equals exactly its one expected error. Non-hash defects are canonically resealed; the hash defect remains deliberately invalid. Fixture SHAs, command counts and environment remain synthetic test data. The conformance output is ignored. This records local verification only; hosted validation, admission, runtime authority, deployment and merge are not established.",
+      "evidence_paths": [
+        ".gitignore",
+        "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+        "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+        "evals/qis-agent-harness/receipt.hash-mismatch.json",
+        "evals/qis-agent-harness/receipt.material-mismatch.json",
+        "evals/qis-agent-harness/receipt.missing-evidence.json",
+        "evals/qis-agent-harness/receipt.unexpected-field.json",
+        "evals/qis-agent-harness/receipt.unknown-verdict.json",
+        "evals/qis-agent-harness/receipt.valid.json",
+        "tests/test_qis_harness.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".gitignore",
+      "state": "present",
+      "git_blob": "754c337f8b2b96d6db7272ec41466a927b0b551b",
+      "sha256": "sha256:07c30e1dfa33b134569412b718587daa00af1fb43f6154353c7cdec814857e03"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+      "state": "present",
+      "git_blob": "83f74abec43fe1b9bc3b634cd277d91394bdc74c",
+      "sha256": "sha256:cbbf69e805042992e318ac01ab65a7504145dab41e52f7eafeab14971249259d"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+      "state": "present",
+      "git_blob": "ce9a6ec23e40c33e92adcc7db126113f1936972a",
+      "sha256": "sha256:8da5997dc2b27cb13e84b1094a877275b96d51190c6081c7dac47975a74b0fd8"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.hash-mismatch.json",
+      "state": "present",
+      "git_blob": "00e4393de6fecf8412d0a057814830a28fba4ab7",
+      "sha256": "sha256:cb9b4e4b57cfa25f88687e3aa9c3ecb132fab8c9eff1c98f97c7ab3709fb5e7f"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.material-mismatch.json",
+      "state": "present",
+      "git_blob": "40192db77740a900370a11653d42f08ee91cf239",
+      "sha256": "sha256:8e025193a8545395997f11bca221f94adc4017e76c1cde09ad1009fc237b0c6d"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.missing-evidence.json",
+      "state": "present",
+      "git_blob": "c43e47db966102f4575c64481f8b550134d6a596",
+      "sha256": "sha256:d5ff83a9b5a2f08c63b8a8df50f68c91441c02cb553c49322fc8d77cfafd48f8"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.unexpected-field.json",
+      "state": "present",
+      "git_blob": "b4b950689b3d396179b7fcdd8cf19ef0dadaaca6",
+      "sha256": "sha256:50338eedd0724168ea464607cb35b0236f96ebe1e6926938d1aba4a39318939d"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.unknown-verdict.json",
+      "state": "present",
+      "git_blob": "44b72733a99f263d86d7cea67ae244e053c3a0c1",
+      "sha256": "sha256:1883b2981faaf23416b71e9c6ef4c452d5023b5a4999147887774709d1c7abe0"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.valid.json",
+      "state": "deleted",
+      "git_blob": null,
+      "sha256": null
+    },
+    {
+      "path": "tests/test_qis_harness.py",
+      "state": "present",
+      "git_blob": "33273b1ddd22eb4aff4f8a3796032fd6a5ba8d54",
+      "sha256": "sha256:30e2a2df6488cd44448769d62138416f040254a419b92ac172a273da9d537ced"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /workspace/scratch/6437804403fa/golden-metrics.json --write-step-summary",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check ec10bcc69c1a91d7c9bc4818e2378ea4df2368fb 8794a8f9877f01ee5a040b8d897574c3563db7ad",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git check-ignore evals/intent-shaper/conformance-results.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-06T01:01:19Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:80de9f8b27ab55f6bed224c4568f66b0495ecbb82c9f69030a36ac87bbf9a184"
+}

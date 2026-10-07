@@ -13,7 +13,9 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -25,7 +27,7 @@ from distill_loop.evaluator import evaluate_distilled_case
 from distill_loop.ledger import append_entry, candidate_state, new_ledger, verify_ledger
 from distill_loop.promotion import apply_promotion, validate_promotion_receipt
 from distill_loop.trigger import post_run_distill
-from sync_control_plane.skill_runtime import load_skill_for_execution, validate_manifest_integrity
+from sync_control_plane.skill_runtime import load_skill_for_execution, validate_manifest_integrity, manifest_digest
 
 EXAMPLE_DIR = Path("examples/distill-loop")
 
@@ -58,7 +60,7 @@ def _synthetic_grant(manifest: dict[str, Any]) -> dict[str, Any]:
         "skill_manifest_sha256": manifest["integrity"]["manifest_sha256"],
         "decision": "approved",
         "admission_ref": "decision.probe.none",
-        "requested_by": "operator.probe",
+        "requested_by": "agent.probe",
         "approved_by": "human.probe",
         "issued_at": "2026-09-19T00:00:00Z",
         "expires_at": "2026-09-19T02:00:00Z",
@@ -66,6 +68,24 @@ def _synthetic_grant(manifest: dict[str, Any]) -> dict[str, Any]:
         "allowed_actions": [manifest["tools"][0]["actions"][0]],
         "purpose": "prove the runtime loader rejects distilled candidates",
     }
+
+
+def _runtime_status_probe(manifest: dict[str, Any], skill_text: str, status: str) -> dict[str, Any]:
+    """Isolate status using synthetic admission/registry fixtures, never real authority."""
+    from unittest.mock import Mock
+
+    probe = copy.deepcopy(manifest)
+    probe["status"] = status
+    probe["admission"] = {
+        "decision": "approved", "decision_ref": "decision.probe.none",
+        "requested_by": "agent.probe", "approved_by": "human.probe",
+        "decided_at": "2026-09-19T00:00:00Z",
+    }
+    probe["integrity"]["manifest_sha256"] = manifest_digest(probe)
+    return load_skill_for_execution(
+        probe, skill_text, _synthetic_grant(probe), now="2026-09-19T01:00:00Z",
+        approval_registry=Mock(allows=Mock(return_value=True)),
+    )
 
 
 def run_example(repo: Path) -> dict[str, Any]:
@@ -167,12 +187,15 @@ def validate(repo: Path) -> dict[str, Any]:
             fail("STARTER_SUITE_TOO_COMPLETE", "the loop must not author adversarial or regression cases itself")
 
         # 2. The runtime loader rejects the candidate even with a fully formed grant.
-        loaded = load_skill_for_execution(manifest, skill_text, _synthetic_grant(manifest), now="2026-09-19T01:00:00Z")
+        loaded = _runtime_status_probe(manifest, skill_text, "candidate")
+        admitted = _runtime_status_probe(manifest, skill_text, "admitted")
         controls["runtime_loader_rejects_candidate"] = (
-            not loaded["loaded"] and "runtime loader rejects unadmitted skill version" in loaded["errors"]
+            not loaded["loaded"]
+            and loaded["errors"] == ["runtime loader rejects unadmitted skill version"]
+            and admitted["loaded"] and admitted["errors"] == []
         )
         if not controls["runtime_loader_rejects_candidate"]:
-            fail("RUNTIME_LOADER_FAIL_OPEN", f"{loaded}")
+            fail("RUNTIME_LOADER_FAIL_OPEN", f"candidate={loaded}; admitted_control={admitted}")
 
         # 3. Registry never carries a distilled candidate.
         registry = _json(repo / "skills" / "registry.json")
@@ -578,11 +601,14 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path("."))
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--metrics-output", type=Path, help="Optional JSON output path for performance/workload metrics.")
+    parser.add_argument("--write-step-summary", action="store_true", help="Append metrics to GitHub step summary when available.")
     parser.add_argument("--require-pass", action="store_true")
     parser.add_argument("--regenerate-example", action="store_true",
                         help="rewrite examples/distill-loop/expected* from the fixtures, then validate")
     args = parser.parse_args()
     repo = args.repo.resolve()
+    started = time.perf_counter()
 
     if args.regenerate_example:
         regenerate_example(repo)
@@ -592,6 +618,33 @@ def main() -> int:
         output = args.output if args.output.is_absolute() else repo / args.output
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    metrics = {
+        "validator": "validate_distill_loop.py",
+        "elapsed_seconds": time.perf_counter() - started,
+        "finding_count": len(report["findings"]),
+        "live_candidate_count": len(report.get("live_candidates", [])),
+        "control_count": len(report.get("controls", {})),
+        "verdict": report["verdict"],
+    }
+    if args.metrics_output:
+        metrics_output = args.metrics_output if args.metrics_output.is_absolute() else repo / args.metrics_output
+        metrics_output.parent.mkdir(parents=True, exist_ok=True)
+        metrics_output.write_text(json.dumps(metrics, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if args.write_step_summary and os.environ.get("GITHUB_STEP_SUMMARY"):
+        summary_lines = [
+            "## validate_distill_loop performance",
+            "",
+            "| metric | value |",
+            "| --- | ---: |",
+            f"| elapsed_seconds | {metrics['elapsed_seconds']:.6f} |",
+            f"| finding_count | {metrics['finding_count']} |",
+            f"| live_candidate_count | {metrics['live_candidate_count']} |",
+            f"| control_count | {metrics['control_count']} |",
+            f"| verdict | {metrics['verdict']} |",
+            "",
+        ]
+        with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+            handle.write("\n".join(summary_lines))
 
     print(json.dumps(report, sort_keys=True, separators=(",", ":"), ensure_ascii=False))
     if report["verdict"] != "PASS":

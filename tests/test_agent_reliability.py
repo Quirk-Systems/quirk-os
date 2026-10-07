@@ -63,6 +63,22 @@ class CandidateAuthorityTests(unittest.TestCase):
         self.check_mutation(lambda c: c["current"].update(policy_digest="policy:changed"), "policy_changed")
         self.check_mutation(lambda c: c["current"].update(object_digest="object:changed"), "object_changed")
 
+    def test_authority_dependency_digests_must_bind_snapshots(self):
+        for field in ("policy_digest", "object_digest"):
+            for value in ("", None, {"forged": True}, 1):
+                with self.subTest(field=field, value=value):
+                    case = copy.deepcopy(self.safe)
+                    for snapshot in ("proposal", "current"):
+                        case[snapshot][field] = value
+                    result = evaluate_authority(case)
+                    self.assertFalse(result["eligible_candidate"])
+                    self.assertIn("unbound_dependency_digest", result["reasons"])
+
+    def test_authority_evidence_digest_must_be_a_nonempty_string(self):
+        for value in ("", None, {"forged": True}, 1):
+            with self.subTest(value=value):
+                self.check_mutation(lambda c: c["evidence"].update(source_digest=value), "stale_evidence")
+
     def test_replay_and_evidence_laundering(self):
         self.check_mutation(lambda c: c["permit"].update(used=True), "permit_replayed")
         self.check_mutation(lambda c: c["evidence"].update(independent=False), "shared_evidence_lineage")
@@ -135,6 +151,15 @@ class CandidateAuthorityTests(unittest.TestCase):
 
 
 class CompletionTests(unittest.TestCase):
+    def test_completion_evidence_digest_must_be_a_nonempty_string(self):
+        for value in ("", None, {"forged": True}, 1):
+            with self.subTest(value=value):
+                case = sample()["completion"][0]["case"]
+                case["obligations"][0]["evidence_digest"] = value
+                result = evaluate_completion(case)
+                self.assertFalse(result["completion_candidate"])
+                self.assertIn("unverified_obligation", result["reasons"])
+
     def setUp(self):
         self.safe = sample()["completion"][0]["case"]
 
@@ -291,6 +316,27 @@ class ObservationalScoringTests(unittest.TestCase):
 
 
 class FixturePackTests(unittest.TestCase):
+    def test_coverage_startability_requires_boolean(self):
+        for value in ("false", "true", 0, 1, None, {}):
+            with self.subTest(value=value):
+                pack = sample()
+                pack["coverage"]["units"][0]["starts"] = value
+                with self.assertRaisesRegex(ValueError, "coverage units"):
+                    run_pack(pack)
+
+    def test_cli_invalid_coverage_is_a_clean_error(self):
+        pack = sample()
+        pack["coverage"]["units"][0]["starts"] = "false"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_path = Path(temp_dir) / "fixtures.json"
+            fixture_path.write_text(json.dumps(pack), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, "scripts/validate_agent_reliability.py", "--fixtures", str(fixture_path)],
+                cwd=ROOT, capture_output=True, text=True, check=False,
+            )
+        self.assertEqual(2, result.returncode)
+        self.assertNotIn("Traceback", result.stderr)
+
     def test_every_registered_authority_and_completion_case_has_expected_outcome(self):
         pack = sample()
         self.assertEqual("agent-reliability.v0.1.2", pack["version"])

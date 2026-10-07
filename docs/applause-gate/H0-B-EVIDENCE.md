@@ -1,7 +1,7 @@
 ---
 schema_version: quirk.applause-gate.h0-b-evidence/0.1
-status: CANDIDATE_EVIDENCE
-execution_state: IMPLEMENTED_AND_VERIFIED
+status: SUPERSEDED_HISTORICAL_EVIDENCE
+execution_state: EXCLUDED_FROM_SUCCESSOR
 runtime_state: INACTIVE
 canon_state: NOT_PROMOTED
 admission_state: NOT_AUTHORIZED
@@ -12,7 +12,11 @@ authority_effect: none
 
 ## Authority basis
 
-Execution follows `APPROVE_ABG_03_PLAN` recorded in issue #51 against successor plan head `50e3fb63abf64f91cbeeeb4bc8b4dff7ac2dba8c`, plan blob `e287b41e7ee6d6586022bf0d4e0b79170a8c7702`, pinned fixture digest `sha256:987dab65550837b6abe2d5d820f4c6e5fbd8531b3e56f85e015d36c26b65be2f`, and successful Golden Gates run `32577150955`.
+The governing decision chain is recorded in [`ABG-02-AUTHORIZATION.md`](ABG-02-AUTHORIZATION.md).
+
+This file preserves evidence produced on PR #64 under the `APPROVE_ABG_03_PLAN` watermark recorded in issue #51 against plan head `50e3fb63abf64f91cbeeeb4bc8b4dff7ac2dba8c`, plan blob `e287b41e7ee6d6586022bf0d4e0b79170a8c7702`, pinned fixture digest `sha256:987dab65550837b6abe2d5d820f4c6e5fbd8531b3e56f85e015d36c26b65be2f`, and successful Golden Gates run `32577150955`.
+
+Issue #52 comment `5381075909` later superseded that execution grant in full. PR #64 and all of its code, tests, receipts, CI, and evidence are historical and excluded from the controlling successor authorization; none may be reused to satisfy its tasks.
 
 The earlier PR #63 merge remains reconciled as preservation-only by `ABG-03-MERGE-RECONCILIATION.md`. No merge, runtime activation, Canon promotion, Supabase mutation, plugin packaging, Skill Submission Pack, OpenAI portal action, deployment, publication, or admission authority is granted here.
 
@@ -29,7 +33,7 @@ The earlier PR #63 merge remains reconciled as preservation-only by `ABG-03-MERG
 | CI trigger hardening | `63f8a36eff0dc9742636be0d06b19a4660c5265a` | Add non-main push evidence lane for Applause Gate. |
 | Compatibility repair | `f7f055770dbd30e28af555bf56285c8fddf74ce6` | Update stale manifest inventory assertion from 11 to 12 while preserving 44 core runtime cases. |
 
-## TDD and conformance evidence
+## Historical TDD and conformance evidence
 
 Each behavioral tranche was constructed RED → GREEN before its implementation commit. Repository-hosted verification on `f7f055770dbd30e28af555bf56285c8fddf74ce6` then executed the full relevant suite.
 
@@ -62,15 +66,17 @@ These rulings preserve candidate-before-canon and capability-does-not-imply-auth
 - registry version: `0.3.0`
 - registry SHA-256: `4d1e36f421a1a8aebcbdb094705818c8af3ad7fce00e3d0c408bc9d80bb83391`
 
-## Final-head rule
+## Historical final-head rule
 
-This documentation-only successor must itself remain green before handoff. The final PR conversation receipt records the run IDs bound to the resulting exact head; any later commit invalidates that handoff and requires fresh verification.
+The PR #64 documentation-only successor was required to remain green before its historical handoff. Those results have no force under the controlling successor plan.
 
 ## Current authority state
 
 ```text
-H0_B_IMPLEMENTATION = CANDIDATE_IMPLEMENTED
-FINAL_CI = PASS
+PR_64_IMPLEMENTATION = HISTORICAL_EXCLUDED
+PR_64_FINAL_CI = HISTORICAL_PASS
+SUCCESSOR_TASK_0 = IN_REVIEW
+SUCCESSOR_TASK_1 = NOT_STARTED
 RUNTIME_ACTIVATION = NOT_AUTHORIZED
 CANON_PROMOTION = NOT_AUTHORIZED
 MERGE = NOT_AUTHORIZED
