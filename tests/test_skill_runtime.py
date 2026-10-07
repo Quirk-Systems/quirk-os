@@ -114,6 +114,12 @@ class SkillIntegrityTests(unittest.TestCase):
                 ("formatted_reference_status", "DRAFT_SKILL_STATUS"),
                 ("formatted_collapsed_status", "DRAFT_SKILL_STATUS"),
                 ("formatted_shortcut_status", "DRAFT_SKILL_STATUS"),
+                ("html_list_status", "DRAFT_SKILL_STATUS"),
+                ("html_paragraph_status", "DRAFT_SKILL_STATUS"),
+                ("heading_bold_contract", "DRAFT_SKILL_STATUS"),
+                ("heading_closing_contract", "DRAFT_SKILL_STATUS"),
+                ("heading_setext_contract", "DRAFT_SKILL_STATUS"),
+                ("heading_nested_contract", "DRAFT_SKILL_STATUS"),
                 ("registry", "REGISTRY_SKILL_DRIFT"),
             )
             for attack, expected_code in attacks:
@@ -134,6 +140,17 @@ class SkillIntegrityTests(unittest.TestCase):
                     elif attack == "frontmatter_status":
                         source.write_text(original_source.replace("name: quirk-intent-shaper\n",
                                                                  "name: quirk-intent-shaper\nstatus: active\n", 1))
+                    elif attack.startswith("html_"):
+                        declaration = "<ul><li><strong>Status:</strong> active</li></ul>" if attack == "html_list_status" else "<p>Status: active</p>"
+                        source.write_text(original_source + "\n" + declaration + "\n")
+                    elif attack.startswith("heading_"):
+                        heading = {
+                            "heading_bold_contract": "## **Contract**",
+                            "heading_closing_contract": "## Contract ##",
+                            "heading_setext_contract": "Contract\n--------",
+                            "heading_nested_contract": "### Contract",
+                        }[attack]
+                        source.write_text(original_source + "\n" + heading + "\n")
                     elif attack.startswith("formatted_"):
                         declarations = {
                             "formatted_bold_status": "- **Status:** active",

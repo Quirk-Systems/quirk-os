@@ -8,3 +8,4 @@
 - Count status bullets across the entire skill source and require RFC 3339 format validation before timestamp parsing, including ordinary-section status contradictions and Python-only ISO syntax regressions.
 - Normalize Markdown status labels before counting declarations, covering emphasis, code, links, HTML, ordered lists, and blockquotes while requiring the sole canonical candidate line in the contract.
 - Recognize reference-style status labels; validate current preference shape and defer boundary timestamp parsing to its structured rejection path, with adversarial cases through the conformance dispatcher.
+- Refuse raw HTML outside fenced draft examples and normalize formatted ATX/Setext contract headings before enforcing the single-contract boundary.
