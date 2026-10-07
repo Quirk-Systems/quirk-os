@@ -97,6 +97,11 @@ class SkillIntegrityTests(unittest.TestCase):
                 ("unquoted_candidate_status", "DRAFT_SKILL_STATUS"),
                 ("duplicate_unquoted_active_status", "DRAFT_SKILL_STATUS"),
                 ("duplicate_quoted_candidate_status", "DRAFT_SKILL_STATUS"),
+                ("outside_active_status", "DRAFT_SKILL_STATUS"),
+                ("outside_candidate_status", "DRAFT_SKILL_STATUS"),
+                ("outside_star_status", "DRAFT_SKILL_STATUS"),
+                ("outside_lowercase_status", "DRAFT_SKILL_STATUS"),
+                ("moved_candidate_status", "DRAFT_SKILL_STATUS"),
                 ("registry", "REGISTRY_SKILL_DRIFT"),
             )
             for attack, expected_code in attacks:
@@ -117,6 +122,16 @@ class SkillIntegrityTests(unittest.TestCase):
                     elif attack == "frontmatter_status":
                         source.write_text(original_source.replace("name: quirk-intent-shaper\n",
                                                                  "name: quirk-intent-shaper\nstatus: active\n", 1))
+                    elif attack in {"outside_star_status", "outside_lowercase_status", "moved_candidate_status"}:
+                        declaration = "* Status: active" if attack == "outside_star_status" else "- status: active"
+                        text = original_source
+                        if attack == "moved_candidate_status":
+                            text = text.replace("- Status: `candidate`", "", 1)
+                            declaration = "- Status: `candidate`"
+                        source.write_text(text + f"\n## Admission posture\n\n{declaration}\n")
+                    elif attack in {"outside_active_status", "outside_candidate_status"}:
+                        status = "active" if attack == "outside_active_status" else "`candidate`"
+                        source.write_text(original_source + f"\n## Admission posture\n\n- Status: {status}\n")
                     elif attack in {"unquoted_active_status", "unquoted_candidate_status"}:
                         status = "active" if attack == "unquoted_active_status" else "candidate"
                         source.write_text(original_source.replace("- Status: `candidate`", f"- Status: {status}", 1))

@@ -369,7 +369,9 @@ class IntentShaperContractTests(unittest.TestCase):
         base = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012")["input"])
         for enabled in (False, True):
             for field in ("valid_from", "valid_until", "as_of"):
-                for value in ("not-a-date", "2026-10-05T08:00:00", "2026-02-30T08:00:00Z", 1, [], {}):
+                for value in ("not-a-date", "2026-10-05T08:00:00", "2026-02-30T08:00:00Z",
+                              "2026-10-05X08:00:00+00:00", "20261005T080000+0000",
+                              "2026-10-05T08:00:00+00", 1, [], {}):
                     with self.subTest(enabled=enabled, field=field, value=value):
                         payload = copy.deepcopy(base)
                         payload["settings"]["personalization_enabled"] = enabled

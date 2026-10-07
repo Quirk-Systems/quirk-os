@@ -5,3 +5,4 @@
 - Preserve the draft Intent Shaper source outside the twelve-package runtime manifest registry, all sixteen admission holds, and no runtime admission or deployment authority.
 - Address Copilot's duplicate-contract bypass: require exactly one contract section and one candidate status, with adversarial cases for both contract headings and a redundant candidate section.
 - Address Codex's follow-up findings: count unquoted status declarations and reject malformed current-preference timestamps before any protected read in either personalization mode.
+- Count status bullets across the entire skill source and require RFC 3339 format validation before timestamp parsing, including ordinary-section status contradictions and Python-only ISO syntax regressions.

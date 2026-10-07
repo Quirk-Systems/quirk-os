@@ -128,8 +128,12 @@ def main() -> int:
         if frontmatter.get("name") != skill_id:
             fail("DRAFT_SKILL_NAME_MISMATCH", f"{source_path.relative_to(root)}: name mismatch")
         contracts = re.findall(r"(?ms)^## (?:Quirk contract|Contract)\n(.*?)(?=^## |\Z)", source_text)
-        statuses = re.findall(r"(?m)^[ \t]*-[ \t]+Status:[ \t]*(.*?)[ \t]*$", contracts[0]) if len(contracts) == 1 else []
-        if statuses != ["`candidate`"] or frontmatter.get("status", "candidate") != "candidate":
+        status_bullet = r"(?mi)^[ \t]*[-+*][ \t]+Status:[ \t]*(.*?)[ \t]*$"
+        statuses = re.findall(status_bullet, source_text)
+        contract_statuses = re.findall(status_bullet, contracts[0]) if len(contracts) == 1 else []
+        if (len(contracts) != 1 or statuses != ["`candidate`"]
+                or contract_statuses != ["`candidate`"]
+                or frontmatter.get("status", "candidate") != "candidate"):
             fail("DRAFT_SKILL_STATUS", f"{source_path.relative_to(root)}: draft must remain candidate")
         if (root / "skills" / skill_id / "manifest.json").exists():
             fail("DRAFT_SKILL_MANIFEST_PRESENT", f"{skill_id}: draft package may not join manifest registry")

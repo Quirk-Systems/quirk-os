@@ -16,6 +16,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Protocol
 
+from jsonschema import FormatChecker
+
 SOURCE_RANK: dict[str, int] = {
     "explicit_current": 50,
     "purpose_scoped_setting": 45,
@@ -202,6 +204,8 @@ class FailOnReadEvidencePort(RecordingEvidencePort):
 def _parse_time(value: str | None) -> datetime | None:
     if value is None:
         return None
+    if not isinstance(value, str) or not FormatChecker().conforms(value, "date-time"):
+        raise ValueError("date-time must use RFC 3339 syntax")
     normalized = value[:-1] + "+00:00" if value.endswith(("Z", "z")) else value
     parsed = datetime.fromisoformat(normalized)
     if parsed.tzinfo is None:
