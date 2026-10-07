@@ -1,0 +1,89 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr137-markdown-status.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "c0fb38cda6629cbde4848482cb4e2db9e818d0a2",
+    "commit": "607db55d1de3a351ab95aea52e8373b3fa5df8ed",
+    "changed_paths": [
+      "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "scripts/validate_skills.py",
+      "tests/test_skill_runtime.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr137-markdown-status.2026-10-07",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Address Copilot/Codex findings 4208262573 and 4208268331. Recognize Markdown list items, normalize formatted labels for detection, then require the only status declaration to be the canonical candidate line inside the sole contract. Regress bold, italic, inline code, ordered lists, blockquotes, links, HTML, entities and strikethrough. Same byte-identical local source passed 80 focused tests and 329 repository tests (328 passed, one native Windows test skipped on Linux), 48/48 skill cases, 44/44 Intent Shaper fixtures, valid QIS fixture and Golden candidate gates. Sixteen admission holds remain. No runtime admission, deployment, human approval or hosted validation is claimed.",
+      "evidence_paths": [
+        "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+        "scripts/validate_skills.py",
+        "tests/test_skill_runtime.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "state": "present",
+      "git_blob": "457ef1d3fa48d4df473af1cb5f9888badb32aa74",
+      "sha256": "sha256:c67148e6e2d1e7c3881790735fce34f3c8bba5e39644e12f81ebec46815a87f0"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "b81dbf5384d53d66d514e4c0ceccae32a97cda4a",
+      "sha256": "sha256:84ae36888a2652a200b1cfa140b65f2c76c92715b5568f2f5d14e48a37cf9622"
+    },
+    {
+      "path": "tests/test_skill_runtime.py",
+      "state": "present",
+      "git_blob": "14c15408d72899d74751c9d029e23182c80bc985",
+      "sha256": "sha256:2eacc519fe730237c1ecce8445c9f471256086a52cf994880df8d500b2095824"
+    }
+  ],
+  "verification": {
+    "verified_at": "2026-10-07T14:41:10Z",
+    "commands": [
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_skill_runtime tests.test_qis_harness",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/pr137-markdown-skills.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /tmp/pr137-markdown-intent.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /tmp/pr137-markdown-golden.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ]
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:ee33a631da63140e253462561ce93792007addde968a3e58d19130f870ff2bbc"
+}
