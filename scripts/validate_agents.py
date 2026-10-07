@@ -165,7 +165,13 @@ def registry_sha256(registry: dict[str, Any]) -> str:
     return sha256_hex({key: value for key, value in registry.items() if key != "registry_sha256"})
 
 
+def _manifest_is_symlink(root: Path, manifest_path: Path) -> bool:
+    return any(path.is_symlink() for path in (root / "agents", manifest_path.parent, manifest_path))
+
+
 def build_registry_entry(root: Path, manifest_path: Path) -> dict[str, Any]:
+    if _manifest_is_symlink(root, manifest_path):
+        raise ValueError("agent source must be a regular file, not a symlink")
     payload = manifest_path.read_bytes()
     manifest = load_agent_yaml(payload)
     metadata = manifest["metadata"]
@@ -308,6 +314,10 @@ def validate_repository(root: Path) -> dict[str, Any]:
     for agent_dir in agent_dirs:
         manifest_path = agent_dir / "agent.yaml"
         rel = manifest_path.relative_to(root).as_posix()
+        if _manifest_is_symlink(root, manifest_path):
+            discovered_manifests.add(rel)
+            fail("AGENT_SOURCE_SYMLINK", f"{rel}: agent source must be a regular file, not a symlink")
+            continue
         if not manifest_path.is_file():
             fail("AGENT_MANIFEST_MISSING", rel)
             continue
@@ -459,9 +469,12 @@ def validate_repository(root: Path) -> dict[str, Any]:
 
     for agent_id in sorted(set(entries_on_disk) - set(registry_entries)):
         fail("AGENT_UNREGISTERED", f"{agent_id}: agent folder is missing from agents/registry.json")
+    validated_by_path = {entry["manifest_path"]: entry for entry in entries_on_disk.values()}
     for agent_id, entry in sorted(registry_entries.items()):
         if entry["manifest_path"] not in discovered_manifests:
             fail("REGISTRY_ORPHAN", f"{agent_id}: registered manifest is absent: {entry['manifest_path']}")
+        elif entry["manifest_path"] in validated_by_path and validated_by_path[entry["manifest_path"]]["id"] != agent_id:
+            fail("REGISTRY_MANIFEST_DRIFT", f"{agent_id}: registry ID does not match the referenced manifest")
     for agent_id in sorted(set(registry_entries) & set(entries_on_disk)):
         for key, expected in entries_on_disk[agent_id].items():
             if registry_entries[agent_id].get(key) != expected:
