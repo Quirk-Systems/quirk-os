@@ -1,0 +1,276 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.manifest-verifier-candidate-b516bfa13b8b",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "31a3fc56c71f55351f0c2be2bc18ad80a3007d08",
+    "commit": "b516bfa13b8b13503f36e6010e37a934fdc4ebac",
+    "changed_paths": [
+      ".claude/skills/verify/SKILL.md",
+      ".github/CODEOWNERS",
+      ".github/workflows/sync-control-plane-conformance.yml",
+      "decisions/ADR-0002-manifest-approval-trust-root.md",
+      "decisions/ADR-0003-manifest-content-hash-preimage.md",
+      "docs/briefs/2026-10-04-manifest-verifier-boundaries.md",
+      "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+      "docs/sync-control-plane/MANIFEST-VERIFIER.md",
+      "evals/sync-control-plane/conformance-results.json",
+      "evals/sync-control-plane/content-hash-vectors.json",
+      "evals/sync-control-plane/manifest-boundary-crossings.json",
+      "evals/sync-control-plane/manifest-boundary-proof.json",
+      "evals/sync-control-plane/manifest-verifier-research.json",
+      "evals/sync-control-plane/valid-active-manifest.json",
+      "policies/manifest-admission-policy.yaml",
+      "policies/manifest-verifier-policy.candidate.json",
+      "schemas/manifest-approval-attestation.schema.json",
+      "schemas/manifest-evaluation.schema.json",
+      "scripts/manifest_admission.py",
+      "scripts/prove_manifest_boundaries.py",
+      "scripts/sync_control_plane/attestation.py",
+      "scripts/sync_control_plane/content.py",
+      "scripts/sync_control_plane/policy.py",
+      "scripts/sync_control_plane/projection.py",
+      "scripts/validate_sync_control_plane.py",
+      "supabase/migrations/20261004140000_sync_control_plane_verified_projection.sql",
+      "supabase/tests/manifest_verified_projection.cutover.sql",
+      "supabase/tests/manifest_verified_projection.sql",
+      "tests/test_manifest_admission.py",
+      "tests/test_sync_control_plane.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.manifest-verifier-candidate-b516bfa13b8b",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Candidate implementation of the approved review-root, metadata-inclusive hash and protected database projection. All 250 Python tests pass; focused synthetic crossing and research ledgers validate. SQL behavioral evidence is pending CI. No protected live host or authentic activation is claimed, and deliberate trust-gap findings remain open.",
+      "evidence_paths": [
+        "docs/sync-control-plane/MANIFEST-VERIFIER.md",
+        "evals/sync-control-plane/conformance-results.json",
+        "evals/sync-control-plane/manifest-boundary-crossings.json",
+        "evals/sync-control-plane/manifest-boundary-proof.json",
+        "evals/sync-control-plane/manifest-verifier-research.json",
+        "tests/test_manifest_admission.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".claude/skills/verify/SKILL.md",
+      "state": "present",
+      "git_blob": "c3ba6744e95f2da27e4608637c5aae36340e1f88",
+      "sha256": "sha256:338b154d012cfa63a06bb340a16631b14f94c7b2551df733092b5fc7bf11feb4"
+    },
+    {
+      "path": ".github/CODEOWNERS",
+      "state": "present",
+      "git_blob": "c567f7212f4b09f1c4c2fc3837f68d2a2d9e9fb5",
+      "sha256": "sha256:be4079c5cd614b633b7529082b2fad58cb017db388cf266145dfc58d73f2f1c0"
+    },
+    {
+      "path": ".github/workflows/sync-control-plane-conformance.yml",
+      "state": "present",
+      "git_blob": "bc9e61cda393c9286b9b1e80e5b7b90a22c360a8",
+      "sha256": "sha256:f2e7eb0dacdb05cd1cf1ab81860124e23cb1a3671e424cf7125236525bea971e"
+    },
+    {
+      "path": "decisions/ADR-0002-manifest-approval-trust-root.md",
+      "state": "present",
+      "git_blob": "cf25feb5dd8e472f3edc6331238d02c862b39417",
+      "sha256": "sha256:6367fbd397588504c82bb5d6c6b9615ff3a8f156c84f5a55f4abd7f3df9fdc57"
+    },
+    {
+      "path": "decisions/ADR-0003-manifest-content-hash-preimage.md",
+      "state": "present",
+      "git_blob": "013cf00cf032c39c5e3d92f509d9831001e5180a",
+      "sha256": "sha256:565cdc0757307c92351b24bae3c25be3d7c0d7b236470358e851b229277d4e9c"
+    },
+    {
+      "path": "docs/briefs/2026-10-04-manifest-verifier-boundaries.md",
+      "state": "present",
+      "git_blob": "f0a8b3bb58ece8a41420dae9ab01163cbfbeb944",
+      "sha256": "sha256:13370b9b0c205dd18a4a21cee0ce8acbce6d68f9a1befd1abf0607c6e5a18c11"
+    },
+    {
+      "path": "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+      "state": "present",
+      "git_blob": "ce9ded8aac37705c8d4c74c3757f6486e65f13fd",
+      "sha256": "sha256:cf0914f8964390a6dd6dde51bd27b38a229ef6dec51ae4664bc77b35ce4a6a1a"
+    },
+    {
+      "path": "docs/sync-control-plane/MANIFEST-VERIFIER.md",
+      "state": "present",
+      "git_blob": "2c179c174ccb1148a884dee2f1af50da45754bd7",
+      "sha256": "sha256:ed7a419985085e63305d00d0c9e6a84fe016c0472b4378bdf62627d95a2f4fe1"
+    },
+    {
+      "path": "evals/sync-control-plane/conformance-results.json",
+      "state": "present",
+      "git_blob": "8dfc0afc41a385901730dd0531df8f9657d8a725",
+      "sha256": "sha256:0029216ef8741a80a85cb2686a35a2bbe4a7213ae73bac26587b08ea93d88e1b"
+    },
+    {
+      "path": "evals/sync-control-plane/content-hash-vectors.json",
+      "state": "present",
+      "git_blob": "5ea553e7a5409f49896b3e12c5cabc56f08db21d",
+      "sha256": "sha256:05a50766ee77ae062d508377df14b16b150bb979accbef1f078dbcafca163806"
+    },
+    {
+      "path": "evals/sync-control-plane/manifest-boundary-crossings.json",
+      "state": "present",
+      "git_blob": "6fdf88266044b62185cc3a92825c887d40223bd3",
+      "sha256": "sha256:cd77a9f191947ed79838e48b001f9db678bb90177ec1970351425c378ac18279"
+    },
+    {
+      "path": "evals/sync-control-plane/manifest-boundary-proof.json",
+      "state": "present",
+      "git_blob": "71561c871e18010a64cc5c21906948fe594a19ca",
+      "sha256": "sha256:982c06daf815e5872062a285ff52cd5199d0524594c3823ffe936c373c941215"
+    },
+    {
+      "path": "evals/sync-control-plane/manifest-verifier-research.json",
+      "state": "present",
+      "git_blob": "57a1634f97561358c17a4ac18d08052c9ed170e8",
+      "sha256": "sha256:26ae2357f845b463f781739d6622cf65e9918e521d35b078a381f40a4fd003fb"
+    },
+    {
+      "path": "evals/sync-control-plane/valid-active-manifest.json",
+      "state": "present",
+      "git_blob": "5f8747e037480eddf68c18ddef72c5a1008157e1",
+      "sha256": "sha256:6164a1cf21aba2b1d5edbf021602b680190d3a619a8eec9db915bba20222a0fb"
+    },
+    {
+      "path": "policies/manifest-admission-policy.yaml",
+      "state": "present",
+      "git_blob": "8c25ecdfe645ae745c03f9b4ba194b73d0ccb485",
+      "sha256": "sha256:8e20f1219a80d7cb3f768ed866c3493ee0331fd66fce53a274ba21d3fbdf06a5"
+    },
+    {
+      "path": "policies/manifest-verifier-policy.candidate.json",
+      "state": "present",
+      "git_blob": "449f8b54b061512ac4f2095c55a40012e20a5826",
+      "sha256": "sha256:492e058ce8e4263be3ad2f33d48b006941b8c5dc84523e344ce8946210999395"
+    },
+    {
+      "path": "schemas/manifest-approval-attestation.schema.json",
+      "state": "present",
+      "git_blob": "82b94e1d95cef09e9ae4710e02c102512b34db39",
+      "sha256": "sha256:0168ba999f032b013b8fea9473f08d5f171d3367d2bb681c700ce442dc5e6005"
+    },
+    {
+      "path": "schemas/manifest-evaluation.schema.json",
+      "state": "present",
+      "git_blob": "76ac7287dc6f2cbf9fa4160c1829edd15a82df9d",
+      "sha256": "sha256:cd2f026285d9c8c757c0468cccff2573d6ec8357ba007b78c00994a21602a2aa"
+    },
+    {
+      "path": "scripts/manifest_admission.py",
+      "state": "present",
+      "git_blob": "82717187a4f7ef694a520921360914ef1b428738",
+      "sha256": "sha256:9ae589565e0bc9777c88912683a6ae25da92807f5794f02ef14d1302fa7171d2"
+    },
+    {
+      "path": "scripts/prove_manifest_boundaries.py",
+      "state": "present",
+      "git_blob": "31bef3e97d283e4e9ef7b70ec9d3f11fe9aff401",
+      "sha256": "sha256:05a60c0346906bdf3a5fed53dc0b1ee85e827f3bacea2f28f434fc4293fbf012"
+    },
+    {
+      "path": "scripts/sync_control_plane/attestation.py",
+      "state": "present",
+      "git_blob": "807562c66c767b48f784630ce805f1c4673bb6e9",
+      "sha256": "sha256:bd170e0d07ba504a3c12fea1483b6eec2ea8cd5b430ce19a0af37e597e80deb2"
+    },
+    {
+      "path": "scripts/sync_control_plane/content.py",
+      "state": "present",
+      "git_blob": "3de4dfc250fd80337179c18f7a335e6940e87037",
+      "sha256": "sha256:cff3e57e6cba714d8cf0b3d34294a86ed6e81ce18a56f89ceaaa85597bd63fab"
+    },
+    {
+      "path": "scripts/sync_control_plane/policy.py",
+      "state": "present",
+      "git_blob": "0d794ffc7151318ee501761ecec98b33398773d6",
+      "sha256": "sha256:cbd3a6aaabb616c7f1f012a3b2897348b3f1d0490823f51ae9d0a9b629eb76bd"
+    },
+    {
+      "path": "scripts/sync_control_plane/projection.py",
+      "state": "present",
+      "git_blob": "fa1b695be6ccca913506add5a745a61423bb4a4f",
+      "sha256": "sha256:8e403419d7a101b2172208af1174485876501470e5d5615755a9ac3500e270ce"
+    },
+    {
+      "path": "scripts/validate_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "b5828bea343a1902d5f1403c608547c86822fe39",
+      "sha256": "sha256:5fbdd6b3f33759b7e45bac9f9eac4bf9fa58c295f09a0dc2a5fab208d46d6a60"
+    },
+    {
+      "path": "supabase/migrations/20261004140000_sync_control_plane_verified_projection.sql",
+      "state": "present",
+      "git_blob": "1efdc02a5670b70b02d7feb480b3205e9532c890",
+      "sha256": "sha256:d8ec5d1bef106f7210558887420325f6e86a222804b7884453aacd9087a8c21c"
+    },
+    {
+      "path": "supabase/tests/manifest_verified_projection.cutover.sql",
+      "state": "present",
+      "git_blob": "20cd0cdde3b436e84d420f52078667ac3c426e05",
+      "sha256": "sha256:90b52d570ceae46fdf3de3d77a1e5ab398c7023522c6515169280256fb09de9c"
+    },
+    {
+      "path": "supabase/tests/manifest_verified_projection.sql",
+      "state": "present",
+      "git_blob": "4543eacbbaae681730d74bcd692a96af2368174d",
+      "sha256": "sha256:16eef1f568a0d52c68793baa2799ce399ad9ff233be0e23222014c7fe5a29e5d"
+    },
+    {
+      "path": "tests/test_manifest_admission.py",
+      "state": "present",
+      "git_blob": "96d7abce5606e3ebdf0700ee9f36b65bfd250fa2",
+      "sha256": "sha256:35dc74df3a52064ef2731dd291c38a61e4c231945d68d27a2b4441af9d583b1d"
+    },
+    {
+      "path": "tests/test_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "5ec99d6516c004dd7f8fb1e79451023f849c737a",
+      "sha256": "sha256:02a41428789ded66caccb1f08bba162c13c04739e596a7f29e95f12709c490c3"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": ".venv/bin/python -m unittest discover -s tests -p test_*.py -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": ".venv/bin/python scripts/validate_sync_control_plane.py --repo . --output /tmp/manifest-reproduced-conformance.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "cmp evals/sync-control-plane/conformance-results.json /tmp/manifest-reproduced-conformance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": ".venv/bin/python /root/.codex/skills/remote-skills/demonstrate-quirk-boundaries/scripts/validate_boundary_bundle.py evals/sync-control-plane/manifest-boundary-proof.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": ".venv/bin/python /root/.codex/skills/remote-skills/skill-6a7ba38f2f1081919467414559b3031a/scripts/validate_research_bundle.py evals/sync-control-plane/manifest-verifier-research.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T15:13:37Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:4f8348484459c5d92f777ca4ecd3f97726ce6a802bd7671ad0c95709dcca3122"
+}
