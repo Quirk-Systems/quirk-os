@@ -28,6 +28,12 @@ revocation. Later successful verification can refresh an unrevoked row. Revocati
 freshness window, not instantaneous. GitHub API authentication is never supplied
 by a judged runtime payload.
 
+Subject documents must pass their complete skill-package or runtime-manifest
+schema, including formats and digest shape, before subject scope or binding
+mismatches can establish policy invalidation. Install `requirements-evals.txt`
+in the trusted worker to enable date-time and URI format checking. Missing format
+validators fail closed without updating either timestamp.
+
 Before live rollout, audit current migration state and active manifests. The
 migration refuses pre-existing active rows without matching protected records;
 it never backfills synthetic grants or rewrites approval history. A database

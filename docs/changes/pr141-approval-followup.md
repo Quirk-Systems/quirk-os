@@ -38,3 +38,22 @@ tests pass. Sync conformance output is byte-identical; Golden candidate
 structural gates pass with all 16 holds. Tests use synthetic fixtures and mocked
 connections; hosted checks are reported separately. Freshness, immutable binding
 and no-runtime-authority boundaries remain unchanged.
+
+## PR #143 complete-subject correction — 2026-10-07
+
+Validate skill packages against `skill-package.schema.json` and runtime manifests
+against `runtime-manifest.schema.json`, including formats, before computing
+digests or interpreting subject scope and binding mismatches. The manifest digest
+format is now checked before binding comparison. Pin the URI format dependency
+so format validation is active in the worker and CI environment. Schema failures
+remain ordinary ValueError and cannot update either registry timestamp.
+
+All 269 repository tests pass, including 28 approval methods. New adversarial
+coverage removes or nulls every required subject field (including nested fields),
+tests invalid digests, types, dates, URI, extra fields and authority constants,
+proves later recovery without timestamp writes, and retains sticky revocation
+for well-formed binding and scope violations. All three malformed-subject test
+methods fail against the preceding implementation. Sync conformance regenerates
+byte-identically; Golden structural gates pass with all 16 holds. Local tests use
+synthetic fixtures and mocked database connections; hosted CI and fresh review
+are separate merge requirements. No real grant, admission or runtime authority.

@@ -10,6 +10,8 @@ import copy
 import json
 import re
 from datetime import datetime, timezone
+from pathlib import Path
+from jsonschema import Draft202012Validator, FormatChecker
 from urllib.parse import quote
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 
@@ -24,6 +26,18 @@ CONTRACT_FIELDS = ("manifest_key", "manifest_kind", "version", "canonical_uri", 
 
 class PolicyInvalidation(ValueError):
     """A complete response proves that the approval policy no longer holds."""
+
+
+def _subject_document(subject, schema_name: str) -> None:
+    """Reject incomplete/malformed immutable documents before policy decisions."""
+    schema_path = Path(__file__).resolve().parents[2] / "schemas" / schema_name
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    checker = FormatChecker()
+    if not {"date-time", "uri"} <= checker.checkers.keys():
+        raise ValueError("subject format validators unavailable; install requirements-evals.txt")
+    error = next(Draft202012Validator(schema, format_checker=checker).iter_errors(subject), None)
+    if error is not None:
+        raise ValueError(f"invalid GitHub subject document: {error.message}")
 
 
 def _pr_binding(pr) -> tuple:
@@ -171,13 +185,7 @@ def verified_record(api, pr_number: int, request_path: str, *, now: str) -> dict
     subject = api.document(request["subject_path"], commit)
     if request["subject_kind"] == "skill":
         from .skill_runtime import manifest_digest, declared_actions, AUTHORITY_RANK
-        if (any(not isinstance(subject[key], str) or not subject[key] for key in ("id", "version"))
-                or not isinstance(subject["authority"]["ceiling"], str)
-                or not isinstance(subject["tools"], list)):
-            raise ValueError("invalid GitHub skill document")
-        for tool in subject["tools"]:
-            if not isinstance(tool["actions"], list) or any(not isinstance(a, str) for a in tool["actions"]):
-                raise ValueError("invalid GitHub skill operations")
+        _subject_document(subject, "skill-package.schema.json")
         digest = manifest_digest(subject)
         identity, version = subject.get("id"), subject.get("version")
         if request["authority_ceiling"] not in AUTHORITY_RANK or AUTHORITY_RANK[request["authority_ceiling"]] > AUTHORITY_RANK.get(subject.get("authority", {}).get("ceiling"), -1):
@@ -186,9 +194,7 @@ def verified_record(api, pr_number: int, request_path: str, *, now: str) -> dict
             raise PolicyInvalidation("request exceeds subject operations")
         contract = {}
     elif request["subject_kind"] == "manifest":
-        if any(not isinstance(subject[key], str) or not subject[key]
-               for key in ("manifest_key", "version", "content_hash", "authority_ceiling")):
-            raise ValueError("invalid GitHub manifest document")
+        _subject_document(subject, "runtime-manifest.schema.json")
         digest = subject["content_hash"]
         identity, version = subject.get("manifest_key"), subject.get("version")
         contract = manifest_contract(subject)
@@ -196,10 +202,10 @@ def verified_record(api, pr_number: int, request_path: str, *, now: str) -> dict
             raise PolicyInvalidation("manifest approval scope mismatch")
     else:
         raise PolicyInvalidation("unknown approval subject kind")
-    if (request["subject_id"], request["subject_version"], request["subject_digest"]) != (identity, version, digest):
-        raise PolicyInvalidation("approval subject binding mismatch")
     if not isinstance(digest, str) or not re.fullmatch(r"[a-f0-9]{64}", digest):
         raise ValueError("invalid subject digest")
+    if (request["subject_id"], request["subject_version"], request["subject_digest"]) != (identity, version, digest):
+        raise PolicyInvalidation("approval subject binding mismatch")
     # Paginate completely. Conservative latest-review semantics deny comments,
     # dismissal, and changes requested after an approval; a fresh approval restores it.
     reviews = []

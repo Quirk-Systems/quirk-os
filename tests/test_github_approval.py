@@ -154,6 +154,128 @@ class ApprovalTests(unittest.TestCase):
             (141, '.quirk/approval-requests/grant.manifest.valid.json', SHA, 1, None)]
         return connection, cursor
 
+    def subject_fixture(self, kind):
+        api = FixtureAPI()
+        if kind == 'skill':
+            from scripts.sync_control_plane.skill_runtime import manifest_digest
+            api.subject, _ = admitted_copy()
+            api.request.update(subject_kind='skill', subject_id=api.subject['id'],
+                subject_version=api.subject['version'], subject_digest=manifest_digest(api.subject),
+                authority_ceiling=api.subject['authority']['ceiling'],
+                allowed_actions=[api.subject['tools'][0]['actions'][0]])
+        return api
+
+    def assert_subject_failure_recovers(self, api, valid_api):
+        connection, cursor = self.refresh_fixture()
+        with self.assertRaises(ValueError) as error:
+            refresh(connection, api, 'grant.manifest.valid', now=NOW)
+        self.assertNotIsInstance(error.exception, PolicyInvalidation)
+        # Only role and row reads; neither verification nor revocation may write.
+        self.assertEqual(cursor.execute.call_count, 2)
+        cursor.fetchone.side_effect = [('quirk_approval_ingestor',),
+            (141, '.quirk/approval-requests/grant.manifest.valid.json', SHA, 1, None)]
+        self.assertTrue(refresh(connection, valid_api, 'grant.manifest.valid', now=NOW))
+        self.assertIn('set verified_at=', cursor.execute.call_args.args[0])
+
+    def test_malformed_manifest_digest_never_writes_and_can_recover(self):
+        for digest in ['bad digest', 'g' * 64, 'A' * 64, 'a' * 63, 'a' * 65, '', None, 42]:
+            with self.subTest(digest=digest):
+                api = FixtureAPI(); api.subject['content_hash'] = digest
+                self.assert_subject_failure_recovers(api, FixtureAPI())
+
+    def test_complete_subject_schemas_required_before_binding_or_scope_policy(self):
+        # Remove every required field recursively, including conditional admission
+        # fields and nested tool/contract entries, using valid documents as controls.
+        def required_paths(schema, document, prefix=()):
+            for key in schema.get('required', []):
+                yield prefix + (key,)
+            for key, child in schema.get('properties', {}).items():
+                if isinstance(document, dict) and key in document:
+                    yield from required_paths(child, document[key], prefix + (key,))
+            if isinstance(document, list):
+                for index, item in enumerate(document):
+                    child = schema.get('items', {})
+                    if '$ref' in child:
+                        child = schema_root['$defs'][child['$ref'].split('/')[-1]]
+                    yield from required_paths(child, item, prefix + (index,))
+        for kind, name in [('manifest', 'runtime-manifest'), ('skill', 'skill-package')]:
+            schema_root = json.loads((ROOT / 'schemas' / (name + '.schema.json')).read_text())
+            valid = self.subject_fixture(kind)
+            self.verify(valid)
+            paths = set(required_paths(schema_root, valid.subject))
+            # Both valid controls meet the schema's active/admitted condition.
+            paths.update((key,) for key in schema_root['allOf'][0]['then']['required'])
+            for path in sorted(paths, key=str):
+                for invalid in ['missing', None]:
+                    with self.subTest(kind=kind, path=path, invalid=invalid):
+                        api = self.subject_fixture(kind)
+                        target = api.subject
+                        for key in path[:-1]: target = target[key]
+                        if invalid == 'missing': del target[path[-1]]
+                        else: target[path[-1]] = invalid
+                        # A well-formed scope violation cannot preempt schema failure.
+                        api.request['allowed_actions'] = ['delete_all']
+                        self.assert_subject_failure_recovers(api, self.subject_fixture(kind))
+
+    def test_subject_types_formats_and_extra_fields_never_refresh_or_revoke(self):
+        cases = [('manifest', (), []), ('skill', (), []),
+                 ('manifest', ('canonical_uri',), 'not a URI'),
+                 ('manifest', ('admission', 'decided_at'), 'not a timestamp'),
+                 ('manifest', ('domains',), ['unknown']),
+                 ('manifest', ('tools',), [None]),
+                 ('manifest', ('unexpected',), True),
+                 ('skill', ('provenance', 'created_at'), 'not a timestamp'),
+                 ('skill', ('admission', 'decided_at'), '2026-10-06T03:30:00'),
+                 ('skill', ('integrity', 'manifest_sha256'), 'g' * 64),
+                 ('skill', ('integrity', 'source_blob_sha'), 'bad digest'),
+                 ('skill', ('tools', 0, 'actions'), ['bad action']),
+                 ('skill', ('authority', 'self_activation'), True),
+                 ('skill', ('unexpected',), True)]
+        for kind, path, value in cases:
+            with self.subTest(kind=kind, path=path):
+                api = self.subject_fixture(kind)
+                if not path: api.subject = value
+                else:
+                    target = api.subject
+                    for key in path[:-1]: target = target[key]
+                    target[path[-1]] = value
+                # Even matching the recomputed digest must not refresh freshness.
+                if kind == 'skill' and isinstance(api.subject, dict):
+                    from scripts.sync_control_plane.skill_runtime import manifest_digest
+                    api.request['subject_digest'] = manifest_digest(api.subject)
+                self.assert_subject_failure_recovers(api, self.subject_fixture(kind))
+
+    def test_valid_subject_binding_and_scope_violations_still_revoke_stickily(self):
+        for kind in ['manifest', 'skill']:
+            for change in ['digest', 'identity', 'version', 'scope']:
+                with self.subTest(kind=kind, change=change):
+                    api = self.subject_fixture(kind)
+                    if change == 'digest': api.request['subject_digest'] = 'e' * 64
+                    elif change == 'identity': api.request['subject_id'] = 'other.subject'
+                    elif change == 'version': api.request['subject_version'] = '2.0.0'
+                    else: api.request['allowed_actions'] = ['delete_all']
+                    connection, cursor = self.refresh_fixture()
+                    self.assertFalse(refresh(connection, api, 'grant.manifest.valid', now=NOW))
+                    self.assertIn('set revoked_at=', cursor.execute.call_args.args[0])
+                    # A later valid document cannot revive the revoked row.
+                    cursor.fetchone.side_effect = [('quirk_approval_ingestor',),
+                        (141, '.quirk/approval-requests/grant.manifest.valid.json', SHA, 1, NOW)]
+                    recovered = self.subject_fixture(kind); recovered.get = Mock()
+                    self.assertFalse(refresh(connection, recovered, 'grant.manifest.valid', now=NOW))
+                    recovered.get.assert_not_called()
+
+    def test_missing_format_dependencies_fail_closed_without_timestamp_write(self):
+        from jsonschema import FormatChecker
+        for missing in ['date-time', 'uri']:
+            with self.subTest(missing=missing):
+                checkers = {k: v for k, v in FormatChecker.checkers.items() if k != missing}
+                with patch.object(FormatChecker, 'checkers', checkers):
+                    connection, cursor = self.refresh_fixture()
+                    with self.assertRaises(ValueError) as error:
+                        refresh(connection, FixtureAPI(), 'grant.manifest.valid', now=NOW)
+                    self.assertNotIsInstance(error.exception, PolicyInvalidation)
+                    self.assertEqual(cursor.execute.call_count, 2)
+
     def test_mutable_repository_metadata_does_not_revoke_or_deny(self):
         api = FixtureAPI()
         initial, final = copy.deepcopy(api.pr), copy.deepcopy(api.pr)
