@@ -29,6 +29,12 @@ from sync_control_plane.mappers import (  # noqa: E402
     receipt_runtime_to_canonical,
 )
 from sync_control_plane.policy import evaluate_fixture, validate_manifest_admission, validate_manifest_structure  # noqa: E402
+from sync_control_plane.skill_runtime import (  # noqa: E402
+    build_model_tool_request_receipt,
+    map_skill_tools_to_runtime_bindings,
+    resolve_model_visible_tools,
+    serialize_model_request,
+)
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -407,6 +413,35 @@ def main() -> int:
     static.update(projection_job_checks(repo / ".github/workflows/sync-control-plane-conformance.yml"))
     mappings = mapping_roundtrip(schemas["binding"], schemas["receipt"])
 
+    tool_registry_schema = load_json(repo / "schemas/tool-registry.schema.json")
+    model_tool_receipt_schema = load_json(repo / "schemas/model-tool-request-receipt.schema.json")
+    Draft202012Validator.check_schema(tool_registry_schema)
+    Draft202012Validator.check_schema(model_tool_receipt_schema)
+    tool_registry = load_json(repo / "evals/sync-control-plane/tool-registry.v1.json")
+    model_tool_fixture = load_json(repo / "evals/sync-control-plane/model-tool-request.fixture.json")
+    tool_registry_errors = validate(tool_registry_schema, tool_registry)
+    model_tool_manifest_errors = validate(schemas["manifest"], model_tool_fixture["manifest"])
+    canonical_tool_mapping = map_skill_tools_to_runtime_bindings(
+        {"tools": [{"name": "quirk_runtime", "actions": ["read_sources"], "required": True}]},
+        tool_registry,
+    )
+    tool_resolution = resolve_model_visible_tools(model_tool_fixture["manifest"], tool_registry)
+    request = serialize_model_request(
+        model_tool_fixture["manifest"],
+        tool_registry,
+        model="conformance-proof-model",
+        messages=model_tool_fixture["messages"],
+    ) if tool_resolution["resolved"] else None
+    tool_receipt = build_model_tool_request_receipt(
+        request,
+        receipt_id="receipt.sync-control-plane.model-tool-proof.0001",
+        serialized_at="2026-09-25T00:00:00Z",
+    ) if request else None
+    tool_receipt_errors = validate(model_tool_receipt_schema, tool_receipt) if tool_receipt else ["request was not serialized"]
+    emitted_tool_names = [tool["function"]["name"] for tool in request["tools"]] if request else []
+    allowed_schema_present = request is not None and "source_refs" in request["tools"][0]["function"]["parameters"]["properties"]
+    forbidden_schema_absent = request is not None and "quirk_runtime__promote_canon" not in emitted_tool_names and "object_ref" not in request["tools"][0]["function"]["parameters"]["properties"]
+
     checks = {
         "fixture_count_11": len(results) == 11,
         "all_fixtures_pass": all(item["passed"] for item in results),
@@ -418,6 +453,13 @@ def main() -> int:
         "trigger_collision_rejected": bool(collision_schema_errors),
         "migration_hardening_complete": all(static.values()),
         "mapping_roundtrip_passes": not mappings["binding_schema_errors"] and not mappings["receipt_schema_errors"] and mappings["binding_roundtrip_stable"] and mappings["receipt_roundtrip_stable"],
+        "tool_registry_passes_schema": not tool_registry_errors,
+        "model_tool_manifest_passes_schema": not model_tool_manifest_errors,
+        "canonical_tool_mapping_resolves": canonical_tool_mapping["mapped"] and canonical_tool_mapping["bindings"] == model_tool_fixture["manifest"]["tools"],
+        "model_tool_projection_resolves": tool_resolution["resolved"],
+        "allowed_tool_schema_present": allowed_schema_present,
+        "forbidden_tool_schema_absent": forbidden_schema_absent,
+        "model_tool_receipt_logs_unknown_metrics": not tool_receipt_errors and tool_receipt["measurement_state"] == "not_observed",
     }
     eligible = all(checks.values())
     payload = {
@@ -439,6 +481,15 @@ def main() -> int:
         },
         "migration_static": static,
         "mapping_proof": mappings,
+        "model_tool_schema_proof": {
+            "tool_registry_errors": tool_registry_errors,
+            "manifest_schema_errors": model_tool_manifest_errors,
+            "canonical_mapping": canonical_tool_mapping,
+            "resolution": tool_resolution,
+            "serialized_request": request,
+            "receipt": tool_receipt,
+            "receipt_schema_errors": tool_receipt_errors,
+        },
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     payload["content_hash_sha256"] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()

@@ -7,6 +7,8 @@
 - Every package declares candidate status, family, authority ceiling, triggers, collisions, typed contracts, method, tools, resources, quality, learning, compatibility, provenance, and stop conditions.
 - 44 executable cases cover positive, adversarial, regression, and authority behavior for every skill.
 - Runtime-loader tests reject candidate loading, source tampering, manifest tampering, self-approval, over-ceiling grants, expired grants, undeclared actions, empty action scopes, and digest mismatch.
+- A version-pinned tool registry now resolves `tools[].ref` to concrete action parameter schemas. The serializer emits only admitted-manifest allowlisted action schemas; unknown refs/actions and candidate manifests fail closed.
+- Model-request receipts record input/output tokens, cash cost, latency, human effort, and updater upkeep as observed values or explicit unknowns—never invented estimates.
 - A positive loader control accepts only an ephemeral admitted copy with a separate approval record and scoped grant.
 - Run receipts validate independently from admission and remain explicitly immutable.
 - Source and runtime mappings forbid silent loss and reverse mutation of Canon.
@@ -22,7 +24,7 @@
 | Procedures | 11 versioned procedures and 44 executable cases | live bounded trials |
 | Processes | loader, grant, receipt, learning, and supersession sequence | operational owner and review cadence |
 | Profiling | trigger, family, inputs, outputs, resources, and anti-patterns | observed routing precision/recall |
-| Interoperability | mapping contract and runtime-manifest references | independent consumer round trip |
+| Interoperability | versioned tool registry, exact serialized allowed-schema proof, and unknown-metric receipt | live provider request/response capture and independent consumer round trip |
 | Security | fail-closed loader and least-action grants | threat review and revocation/replay proof |
 | Statistical | calibrated forecaster cases and explicit score threshold | empirical sample and drift evidence |
 | Lexical | stable IDs and grammar separation | portfolio collision review |

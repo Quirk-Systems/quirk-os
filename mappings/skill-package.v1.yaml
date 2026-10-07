@@ -27,8 +27,12 @@ canonical_to_runtime:
     source: integrity.source_blob_sha
   trigger_contract:
     source: triggers
-  tool_scope:
+  tools:
     source: tools
+    transform: resolve_canonical_tool_names_to_version_pinned_refs
+    consumer: scripts/sync_control_plane/skill_runtime.py:map_skill_tools_to_runtime_bindings
+    registry_contract: schemas/tool-registry.schema.json
+    fail_closed_on: [unknown_tool_name, unknown_action, duplicate_canonical_name]
   stop_conditions:
     source: contract.stop_conditions
 runtime_to_canonical:

@@ -1,0 +1,36 @@
+{
+  "schema_version": "tool-registry.v1",
+  "tools": [
+    {
+      "ref": "tool.quirk_runtime@1.0.0",
+      "canonical_name": "quirk_runtime",
+      "title": "Quirk Runtime",
+      "actions": [
+        {
+          "name": "read_sources",
+          "description": "Read listed source references without mutation.",
+          "parameter_schema": {
+            "type": "object",
+            "properties": {
+              "source_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+            },
+            "required": ["source_refs"],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "promote_canon",
+          "description": "Request canonical promotion for an approved object.",
+          "parameter_schema": {
+            "type": "object",
+            "properties": {
+              "object_ref": {"type": "string", "minLength": 1}
+            },
+            "required": ["object_ref"],
+            "additionalProperties": false
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "manifest": {
+    "schema_version": "runtime-manifest.v2",
+    "manifest_key": "agent.tool-schema-proof",
+    "manifest_kind": "agent",
+    "version": "1.0.0",
+    "status": "active",
+    "requested_status": "active",
+    "canonical_uri": "https://github.com/Quirk-Systems/quirk-os/blob/main/evals/sync-control-plane/model-tool-request.fixture.json",
+    "content_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "authority_ceiling": "propose",
+    "domains": ["sync"],
+    "tools": [
+      {
+        "ref": "tool.quirk_runtime@1.0.0",
+        "allowed_actions": ["read_sources"]
+      }
+    ],
+    "inputs_schema_ref": "schemas/source-binding.schema.json",
+    "outputs_schema_ref": "schemas/sync-run-receipt.schema.json",
+    "eval_refs": ["eval.model-tool-request"],
+    "stop_conditions": ["missing_authority"],
+    "admission": {
+      "decision": "approved",
+      "decision_ref": "decision.model-tool-request.0001",
+      "authority_grant_ref": "grant.model-tool-request.0001",
+      "requested_by": "agent.tool-schema-proof",
+      "approved_by": "human.bryan",
+      "evaluated_content_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "transition_ref": "transition.model-tool-request.0001",
+      "decided_at": "2026-09-25T00:00:00Z",
+      "evidence_refs": ["eval://model-tool-request"]
+    },
+    "metadata": {}
+  },
+  "messages": [{"role": "user", "content": "Read the cited sources."}]
+}
