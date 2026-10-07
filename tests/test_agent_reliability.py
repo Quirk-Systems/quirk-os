@@ -92,6 +92,17 @@ class CandidateAuthorityTests(unittest.TestCase):
                     "missing_human_authority_source",
                 )
 
+    def test_authority_dependency_digests_must_be_nonempty_strings(self):
+        for field in ("policy_digest", "object_digest"):
+            for value in ("", "   ", None, {}, True, 1):
+                with self.subTest(field=field, value=value):
+                    case = copy.deepcopy(self.safe)
+                    for section in ("proposal", "current"):
+                        case[section][field] = value
+                    result = evaluate_authority(case)
+                    self.assertFalse(result["eligible_candidate"])
+                    self.assertIn("unbound_dependency_digest", result["reasons"])
+
     def test_permit_is_bound_to_exact_grant_and_epoch(self):
         self.check_mutation(lambda c: c["permit"].update(grant_id="grant:other"), "permit_stale_or_mismatched")
         self.check_mutation(lambda c: c["permit"].update(grant_epoch=c["grant"]["epoch"] - 1), "permit_stale_or_mismatched")
@@ -157,6 +168,15 @@ class CompletionTests(unittest.TestCase):
                 case = copy.deepcopy(self.safe)
                 case["current"][field] = "changed"
                 self.assertIn("stale_evidence", evaluate_completion(case)["reasons"])
+
+    def test_completion_evidence_digest_must_be_a_nonempty_string(self):
+        for value in ("", "   ", None, {"forged": True}, True, 1, ["digest"]):
+            with self.subTest(value=value):
+                case = copy.deepcopy(self.safe)
+                case["obligations"][0]["evidence_digest"] = value
+                result = evaluate_completion(case)
+                self.assertFalse(result["completion_candidate"])
+                self.assertIn("unverified_obligation", result["reasons"])
 
     def test_correct_output_does_not_excuse_invalid_trajectory(self):
         case = copy.deepcopy(self.safe)
@@ -254,6 +274,15 @@ class ObservationalScoringTests(unittest.TestCase):
         for value in (None, []):
             with self.subTest(value=value), self.assertRaisesRegex(ValueError, "must be an object"):
                 score_observations(value)
+
+    def test_supplied_production_scores_must_be_finite_numbers(self):
+        for value in (float("nan"), float("inf"), -float("inf"), None, "0.5", True, {}):
+            with self.subTest(value=value):
+                data = copy.deepcopy(sample()["observations"])
+                data["simulation"][0]["production_score"] = value
+                self.assertEqual("INVALID_MATCH", score_observations(data)["simulation_status"])
+                with self.assertRaisesRegex(ValueError, "invalid observations"):
+                    run_pack(sample(), data)
 
     def test_defection_rate_uses_initially_correct_population(self):
         data = copy.deepcopy(sample()["observations"])

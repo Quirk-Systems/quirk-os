@@ -21,5 +21,18 @@
     "Sandbox or production safety",
     "Permission to broaden authority"
   ],
-  "authority_effect": "none"
+  "authority_effect": "none",
+  "repair_verification": {
+    "observed_at": "2026-10-07",
+    "baseline_commit": "2f2141a1d3b8927f50ec510d27fa68eab16b3664",
+    "focused_tests_passed": 54,
+    "repository_tests_passed": 171,
+    "hosted_checks": "not executed for this repair",
+    "review": "fresh repaired-head review required",
+    "repairs": [
+      "Reject empty or non-string authority policy/object digests",
+      "Reject non-string or empty completion evidence digests",
+      "Reject supplied malformed or non-finite production scores"
+    ]
+  }
 }

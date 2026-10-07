@@ -94,6 +94,12 @@ def _evaluate_authority(case: dict[str, Any]) -> dict[str, Any]:
             "evidence_digest": evidence["source_digest"], "policy_digest": current["policy_digest"],
             "object_digest": current["object_digest"], "permit_id": permit["id"],
         }
+        if any(
+            not isinstance(snapshot[key], str) or not snapshot[key].strip()
+            for snapshot in (proposal, current)
+            for key in ("policy_digest", "object_digest")
+        ):
+            reasons.append("unbound_dependency_digest")
         if grant["status"] != "active" or _time(grant["expires_at"]) <= _time(current["time"]):
             reasons.append("inactive_grant")
         if grant["epoch"] != current["epoch"]:
@@ -169,7 +175,11 @@ def evaluate_completion(case: dict[str, Any]) -> dict[str, Any]:
                 raise ValueError("invalid obligation")
             if obligation["validator"] == "model:planner" or not str(obligation["validator"]).startswith("validator:"):
                 reasons.append("self_signed")
-            if obligation["status"] != "passed" or not obligation["evidence_digest"]:
+            if (
+                obligation["status"] != "passed"
+                or not isinstance(obligation["evidence_digest"], str)
+                or not obligation["evidence_digest"].strip()
+            ):
                 reasons.append("unverified_obligation")
             if any(not isinstance(obligation[key], str) or not obligation[key] for key in digests):
                 reasons.append("unbound_dependency_digest")
@@ -257,6 +267,7 @@ def score_observations(data: dict[str, Any]) -> dict[str, Any]:
         and isinstance(item["variant"], str)
         and bool(item["variant"])
         and _number(item["simulation_score"])
+        and ("production_score" not in item or _number(item["production_score"]))
         for item in simulations
     )
     has_matched_production = valid_simulation_inputs and all(
