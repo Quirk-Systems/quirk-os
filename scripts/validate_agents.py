@@ -27,12 +27,13 @@ import re
 import sys
 import time
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
 from referencing import Registry, Resource
+from referencing.jsonschema import DRAFT202012
 
 
 DISTILLED_PREFIX = "quirk-distilled-"
@@ -92,6 +93,10 @@ EXPECTED_POLICY = {'api_version': 'quirk.dev/policy/v1alpha1',
 # Skill packages use their own ceiling ladder; ``execute_bounded`` is the only rung
 # absent from the runtime-manifest ladder and is ranked as ``execute_reversible``.
 SKILL_CEILING_EQUIVALENTS = {"execute_bounded": "execute_reversible"}
+AUTHORITY_LADDER = (
+    "observe", "infer", "propose", "execute_reversible", "enforce_invariant", "execute_protected",
+)
+
 DIGEST_POLICY = {
     "source_algorithm": "git-blob-sha1-raw-bytes",
     "manifest_algorithm": "sha256-canonical-json-of-parsed-yaml-v1",
@@ -192,8 +197,14 @@ def _schema_errors(validator: Draft202012Validator, instance: Any) -> list[str]:
 def _repo_file(root: Path, ref: Any) -> Path | None:
     if not isinstance(ref, str) or not ref or "://" in ref:
         return None
+    # One portable interpretation on POSIX and Windows, including drive/ADS syntax.
+    if "\\" in ref or ":" in ref or any(ord(char) < 32 or ord(char) == 127 for char in ref):
+        return None
+    pure = PurePosixPath(ref)
+    if pure.as_posix() != ref or ".." in pure.parts or ref == ".":
+        return None
     try:
-        if Path(ref).is_absolute():
+        if pure.is_absolute():
             return None
         candidate = (root / ref).resolve()
         if root != candidate and root not in candidate.parents:
@@ -226,18 +237,21 @@ def validate_repository(root: Path) -> dict[str, Any]:
         return payload
 
     schemas: dict[str, dict[str, Any]] = {}
+    resources = Registry()
     for name in (RUNTIME_SCHEMA, MANIFEST_SCHEMA, REGISTRY_SCHEMA):
         path = root / "schemas" / name
         try:
-            schema = json.loads(read_bytes(path))
+            schema = json.loads(read_bytes(path), object_pairs_hook=_unique_json_object)
             Draft202012Validator.check_schema(schema)
+            if not isinstance(schema, dict) or not isinstance(schema.get("$id"), str):
+                raise ValueError("schema must be an object with a string $id")
+            if schema.get("$schema", "https://json-schema.org/draft/2020-12/schema") != "https://json-schema.org/draft/2020-12/schema":
+                raise ValueError("unsupported schema dialect; expected Draft 2020-12")
+            resource = Resource.from_contents(schema, default_specification=DRAFT202012)
+            resources = resources.with_resource(schema["$id"], resource)
             schemas[name] = schema
         except Exception as exc:  # noqa: BLE001 - every failure is reported as a finding
             fail("SCHEMA_INVALID", f"schemas/{name}: {exc}")
-
-    resources = Registry().with_resources(
-        (schema["$id"], Resource.from_contents(schema)) for schema in schemas.values() if "$id" in schema
-    )
 
     def make_validator(name: str) -> Draft202012Validator | None:
         schema = schemas.get(name)
@@ -248,10 +262,13 @@ def validate_repository(root: Path) -> dict[str, Any]:
     manifest_validator = make_validator(MANIFEST_SCHEMA)
     registry_validator = make_validator(REGISTRY_SCHEMA)
 
-    ceiling_order = schemas.get(RUNTIME_SCHEMA, {}).get("properties", {}).get("authority_ceiling", {}).get("enum", [])
-    rank = {ceiling: index for index, ceiling in enumerate(ceiling_order)}
-    if not rank:
-        fail("CEILING_LADDER_MISSING", f"schemas/{RUNTIME_SCHEMA}: authority_ceiling enum unavailable")
+    ceiling_schema = schemas.get(RUNTIME_SCHEMA, {}).get("properties", {}).get("authority_ceiling", {})
+    ceiling_order = ceiling_schema.get("enum", []) if isinstance(ceiling_schema, dict) else []
+    rank = {ceiling: index for index, ceiling in enumerate(AUTHORITY_LADDER)}
+    vocabulary_valid = (isinstance(ceiling_order, list) and all(isinstance(value, str) for value in ceiling_order)
+            and len(ceiling_order) == len(AUTHORITY_LADDER) and set(ceiling_order) == set(AUTHORITY_LADDER))
+    if not vocabulary_valid:
+        fail("CEILING_VOCABULARY_DRIFT", f"schemas/{RUNTIME_SCHEMA}: authority vocabulary differs from the pinned ladder")
 
     protected_actions: set[str] = set()
     try:
@@ -267,7 +284,19 @@ def validate_repository(root: Path) -> dict[str, Any]:
     skill_ceilings: dict[str, str] = {}
     try:
         skill_registry = json.loads(read_bytes(root / "skills" / "registry.json"), object_pairs_hook=_unique_json_object)
-        skill_ceilings = {entry["id"]: entry["authority_ceiling"] for entry in skill_registry.get("skills", [])}
+        if not isinstance(skill_registry, dict) or not isinstance(skill_registry.get("skills"), list):
+            raise ValueError("skill registry must contain a skills array")
+        parsed_ceilings: dict[str, str] = {}
+        for entry in skill_registry["skills"]:
+            if not isinstance(entry, dict) or not isinstance(entry.get("id"), str) or not isinstance(entry.get("authority_ceiling"), str):
+                raise ValueError("each skill must have string id and authority_ceiling")
+            skill_id, ceiling = entry["id"], entry["authority_ceiling"]
+            if skill_id in parsed_ceilings:
+                raise ValueError(f"duplicate skill id {skill_id!r}")
+            if SKILL_CEILING_EQUIVALENTS.get(ceiling, ceiling) not in rank:
+                raise ValueError(f"unknown skill ceiling {ceiling!r}")
+            parsed_ceilings[skill_id] = ceiling
+        skill_ceilings = parsed_ceilings
     except Exception as exc:  # noqa: BLE001
         fail("SKILL_REGISTRY_INVALID", f"skills/registry.json: {exc}")
 
@@ -290,7 +319,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
             fail("AGENT_PARSE_FAILURE", f"{rel}: {exc}")
             continue
 
-        if manifest_validator is None or len(schemas) != 3:
+        if manifest_validator is None or len(schemas) != 3 or not vocabulary_valid:
             fail("AGENT_SCHEMA", f"{rel}: required schemas unavailable")
             continue
         try:

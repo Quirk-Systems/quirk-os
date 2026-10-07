@@ -19,6 +19,7 @@ Binding a skill, holding a tool, or passing conformance never implies authority 
 - Schema validity (Draft 2020-12 with `FormatChecker`). Status, version, ceiling, domain, routing-policy, and rights-review vocabularies are `$ref`-reused from `schemas/runtime-manifest.schema.json`.
 - Folder ↔ `metadata.id` ↔ registry agreement in both directions, plus all registry digests.
 - Every bound skill exists in `skills/registry.json`; `quirk-distilled-*` skills are never bindable.
+- Authority ranks use an explicit ladder, independently of unordered schema enums. Schema vocabulary changes fail conformance.
 - **Ceiling rule:** each bound skill's ceiling must be ≤ the agent's ceiling, so an agent never binds authority it does not hold. Skill `execute_bounded` ranks as runtime `execute_reversible`.
 - `authority.prohibited` covers every `protected_actions` entry in the admission policy.
 - Referenced policy, schema, evaluation, trigger, admission, and rights-review evidence files exist inside the repository.
@@ -39,7 +40,7 @@ The validator pins policy v0.4, including its verification contract, to detect d
 
 `observability.ci_metrics_refs` declares generated output paths and is checked for repository containment; those outputs need not exist before CI runs. `benchmark_refs` names source files and must resolve to existing repository files. Telemetry never substitutes for admission evidence.
 
-Malformed paths and filesystem failures produce unresolved-reference findings. Existing manifests rejected by parsing or schema validation are not mislabeled as absent registry orphans.
+References use normalized POSIX repository-relative paths on every host; Windows separators, drive/stream syntax, traversal, and control characters are rejected. Malformed paths and filesystem failures produce unresolved-reference findings. Every changed repository path triggers agent CI because referenced evidence can live anywhere in the repository. Existing manifests rejected by parsing or schema validation are not mislabeled as absent registry orphans.
 
 ## Digest policy
 
@@ -52,7 +53,7 @@ Recorded in `registry.json` as `digest_policy` and checked by the validator:
 | `admission.evaluated_content_hash` | same as `manifest_sha256`, with the `admission` block removed |
 | `registry_sha256` | SHA-256 of canonical JSON of the registry without `registry_sha256` |
 
-Agent and policy YAML and registry JSON are parsed with duplicate keys rejected, and must contain only JSON-representable values (quote timestamps).
+Agent and policy YAML, schema JSON, and registry JSON are parsed with duplicate keys rejected, and must contain only JSON-representable values (quote timestamps).
 
 ## Adding or changing an agent
 

@@ -390,5 +390,101 @@ class AgentManifestTests(unittest.TestCase):
         self.assertIn("AGENT_REF_MISSING", codes(report))
 
 
+    def test_schema_enum_order_cannot_change_authority(self) -> None:
+        path = self.root / "schemas/runtime-manifest.schema.json"
+        schema = json.loads(path.read_text())
+        schema["properties"]["authority_ceiling"]["enum"].reverse()
+        path.write_text(json.dumps(schema))
+        def escalate(m: dict[str, Any]) -> None:
+            m["authority"]["ceiling"] = "execute_protected"
+            self.admit(m, granted_ceiling="enforce_invariant")
+        report = self.mutate(escalate)
+        self.assertIn("AGENT_CEILING_EXCEEDS_GRANT", codes(report))
+        self.assertNotIn("CEILING_VOCABULARY_DRIFT", codes(report))
+        report = self.mutate(lambda m: self.admit(m, granted_ceiling="execute_protected"))
+        self.assertEqual(report["status"], "pass")
+        report = self.mutate(lambda m: m["authority"].update(ceiling="observe"))
+        self.assertIn("AGENT_SKILL_CEILING_EXCEEDS_AGENT", codes(report))
+
+    def test_authority_vocabulary_drift_fails_closed(self) -> None:
+        path = self.root / "schemas/runtime-manifest.schema.json"
+        original = json.loads(path.read_text())
+        for value in (True, {"enum": ["observe"]}, {"enum": [["observe"]]}, {"enum": ["unknown"]}):
+            with self.subTest(value=value):
+                schema = json.loads(json.dumps(original))
+                schema["properties"]["authority_ceiling"] = value
+                path.write_text(json.dumps(schema))
+                self.assertIn("CEILING_VOCABULARY_DRIFT", codes(validate_repository(self.root)))
+
+    def test_schema_resources_use_explicit_draft_and_preserve_reports(self) -> None:
+        for name in ("runtime-manifest.schema.json", "agent-manifest.schema.json", "agent-registry.schema.json"):
+            path = self.root / "schemas" / name
+            schema = json.loads(path.read_text()); schema.pop("$schema"); path.write_text(json.dumps(schema))
+        self.assertEqual(main(["--repo", str(self.root), "--output", "out/report.json", "--metrics-output", "out/metrics.json"]), 0)
+        path = self.root / "schemas/agent-manifest.schema.json"
+        schema = json.loads(path.read_text()); schema["$schema"] = "https://example.invalid/unknown-draft"; path.write_text(json.dumps(schema))
+        self.assertEqual(main(["--repo", str(self.root), "--output", "out/report.json", "--metrics-output", "out/metrics.json"]), 1)
+        self.assertIn("SCHEMA_INVALID", codes(json.loads((self.root / "out/report.json").read_text())))
+        self.assertGreater(json.loads((self.root / "out/metrics.json").read_text())["finding_count"], 0)
+
+    def test_schema_duplicate_keys_fail_before_contract_interpretation(self) -> None:
+        for name in ("runtime-manifest.schema.json", "agent-manifest.schema.json", "agent-registry.schema.json"):
+            path = self.root / "schemas" / name
+            original = path.read_text()
+            path.write_text(original.replace('"properties":', '"properties": {}, "properties":', 1))
+            report = validate_repository(self.root)
+            self.assertIn("SCHEMA_INVALID", codes(report))
+            path.write_text(original)
+
+    def test_windows_paths_do_not_become_literal_posix_evidence(self) -> None:
+        for ref in (r"..\outside.json", r"C:\outside.json", "C:outside.json", r"\\server\share\file.json", "proof.json:stream"):
+            with self.subTest(ref=ref):
+                # On Linux these can exist as ordinary filenames; still reject them.
+                try:
+                    (self.root / ref).write_text("{}")
+                except OSError:
+                    pass
+                report = self.mutate(lambda m: m["trigger_contract"].update(evidence_refs=[ref]))
+                self.assertIn("AGENT_REF_MISSING", codes(report))
+
+    def test_malformed_skill_ceiling_preserves_cli_artifacts(self) -> None:
+        path = self.root / "skills/registry.json"
+        original = json.loads(path.read_text())
+        for ceiling in ({}, [], None, 1, "not_a_ceiling"):
+            with self.subTest(ceiling=ceiling):
+                registry = json.loads(json.dumps(original))
+                registry["skills"][0]["authority_ceiling"] = ceiling
+                path.write_text(json.dumps(registry))
+                self.assertEqual(main(["--repo", str(self.root), "--output", "out/report.json", "--metrics-output", "out/metrics.json"]), 1)
+                self.assertIn("SKILL_REGISTRY_INVALID", codes(json.loads((self.root / "out/report.json").read_text())))
+                self.assertGreater(json.loads((self.root / "out/metrics.json").read_text())["finding_count"], 0)
+
+    def test_agent_ci_covers_arbitrary_evidence_changes(self) -> None:
+        workflow = yaml.safe_load((ROOT / ".github/workflows/validate-agents.yml").read_text())
+        triggers = workflow.get("on", workflow.get(True))
+        for event in ("pull_request", "push"):
+            self.assertEqual(triggers[event]["paths"], ["**"])
+        evidence = self.root / "other/approval.json"
+        evidence.parent.mkdir(); evidence.write_text("{}")
+        report = self.mutate(lambda m: m["trigger_contract"].update(evidence_refs=["other/approval.json"]))
+        self.assertEqual(report["status"], "pass")
+        evidence.unlink()
+        self.assertIn("AGENT_REF_MISSING", codes(validate_repository(self.root)))
+
+    def test_identifier_line_terminators_fail_schema(self) -> None:
+        original = self.load()
+        changes = (
+            lambda m: m.update(stop_conditions=["missing_authority\n"]),
+            lambda m: m["tools"]["github"].update(allowed=["read\n"]),
+            lambda m: m["tools"].update({"unsafe\n": {"allowed": ["read"]}}),
+            lambda m: m["tools"]["vercel"].update(deployment="prohibited_until_admitted\n"),
+            lambda m: m["tools"]["cloudflare"].update(state="deferred_unbound\n"),
+        )
+        for change in changes:
+            with self.subTest(change=change):
+                self.write(json.loads(json.dumps(original)))
+                self.assertIn("AGENT_SCHEMA", codes(self.mutate(change)))
+
+
 if __name__ == "__main__":
     unittest.main()

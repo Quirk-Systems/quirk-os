@@ -38,7 +38,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "pattern": "^agent\\.[a-z0-9][a-z0-9-]*$"
+          "pattern": "^agent\\.[a-z0-9][a-z0-9-]*(?![\\s\\S])"
         },
         "version": {
           "$ref": "runtime-manifest.schema.json#/properties/version"
@@ -83,7 +83,7 @@
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "pattern": "^[a-z0-9_]+$"
+            "pattern": "^[a-z0-9_]+(?![\\s\\S])"
           },
           "allOf": [
             {
@@ -121,7 +121,7 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^skill\\.quirk-[a-z0-9-]+$"
+        "pattern": "^skill\\.quirk-[a-z0-9-]+(?![\\s\\S])"
       }
     },
     "trigger_contract": {
@@ -154,7 +154,7 @@
       "type": "object",
       "minProperties": 1,
       "propertyNames": {
-        "pattern": "^[a-z0-9_]+$"
+        "pattern": "^[a-z0-9_]+(?![\\s\\S])"
       },
       "additionalProperties": {
         "type": "object",
@@ -169,7 +169,7 @@
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "pattern": "^[a-z0-9_]+$"
+              "pattern": "^[a-z0-9_]+(?![\\s\\S])"
             }
           },
           "schema_scope": {
@@ -178,16 +178,16 @@
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "pattern": "^[a-z0-9_]+$"
+              "pattern": "^[a-z0-9_]+(?![\\s\\S])"
             }
           },
           "deployment": {
             "type": "string",
-            "pattern": "^[a-z0-9_]+$"
+            "pattern": "^[a-z0-9_]+(?![\\s\\S])"
           },
           "state": {
             "type": "string",
-            "pattern": "^[a-z0-9_]+$"
+            "pattern": "^[a-z0-9_]+(?![\\s\\S])"
           }
         }
       }
@@ -204,7 +204,7 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^[a-z0-9_]+$"
+        "pattern": "^[a-z0-9_]+(?![\\s\\S])"
       }
     },
     "receipt_required": {
@@ -281,7 +281,7 @@
       "properties": {
         "schema_ref": {
           "type": "string",
-          "pattern": "^schemas/[a-z0-9-]+\\.schema\\.json$"
+          "pattern": "^schemas/[a-z0-9-]+\\.schema\\.json(?![\\s\\S])"
         }
       }
     },
@@ -317,15 +317,15 @@
         },
         "requested_by": {
           "type": "string",
-          "pattern": "^(human|agent|service|system)\\.[a-z0-9._-]+$"
+          "pattern": "^(human|agent|service|system)\\.[a-z0-9._-]+(?![\\s\\S])"
         },
         "approved_by": {
           "type": "string",
-          "pattern": "^(human|agent|service|system)\\.[a-z0-9._-]+$"
+          "pattern": "^(human|agent|service|system)\\.[a-z0-9._-]+(?![\\s\\S])"
         },
         "evaluated_content_hash": {
           "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
+          "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
         },
         "transition_ref": {
           "type": "string",

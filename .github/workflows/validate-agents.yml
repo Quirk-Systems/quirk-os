@@ -2,32 +2,11 @@ name: Validate Quirk Agents Candidate
 
 on:
   pull_request:
-    paths:
-      - '.github/workflows/validate-agents.yml'
-      - 'agents/**'
-      - 'evals/sync-control-plane/**'
-      - 'policies/manifest-admission-policy.yaml'
-      - 'requirements-evals.txt'
-      - 'schemas/agent-*.json'
-      - 'schemas/runtime-manifest.schema.json'
-      - 'scripts/validate_agents.py'
-      - 'skills/registry.json'
-      - 'tests/test_agent_manifest.py'
-      - 'supabase/tests/sync_control_plane_outbox_claim_benchmark.sql'
+    # References may name any repository file; every change must revalidate them.
+    paths: ['**']
   push:
     branches-ignore: [main]
-    paths:
-      - '.github/workflows/validate-agents.yml'
-      - 'agents/**'
-      - 'evals/sync-control-plane/**'
-      - 'policies/manifest-admission-policy.yaml'
-      - 'requirements-evals.txt'
-      - 'schemas/agent-*.json'
-      - 'schemas/runtime-manifest.schema.json'
-      - 'scripts/validate_agents.py'
-      - 'skills/registry.json'
-      - 'tests/test_agent_manifest.py'
-      - 'supabase/tests/sync_control_plane_outbox_claim_benchmark.sql'
+    paths: ['**']
   workflow_dispatch:
 
 permissions:
