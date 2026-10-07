@@ -1,0 +1,205 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr137-current-base.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "a1e52c78093c8e47078f9813d00edc45d32fb1ca",
+    "commit": "b924d411cbe9851d1502dbf5ce5f1c39f54e5704",
+    "changed_paths": [
+      ".quirk/evidence/issue131-intent-shaper-b4697d10c74a.json",
+      "CHANGELOG.md",
+      "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "docs/personalization/ISSUE-131-REPAIR.md",
+      "evals/intent-shaper/cases.json",
+      "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+      "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+      "evals/qis-agent-harness/receipt.hash-mismatch.json",
+      "evals/qis-agent-harness/receipt.material-mismatch.json",
+      "evals/qis-agent-harness/receipt.missing-evidence.json",
+      "evals/qis-agent-harness/receipt.unexpected-field.json",
+      "evals/qis-agent-harness/receipt.unknown-verdict.json",
+      "evals/qis-agent-harness/receipt.valid-provenance.json",
+      "scripts/intent_shaper/policy.py",
+      "scripts/validate_intent_shaper.py",
+      "scripts/validate_skills.py",
+      "tests/test_intent_shaper.py",
+      "tests/test_skill_runtime.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr137-current-base.2026-10-07",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Integrated original PR 137 repair with current main without rewriting immutable evidence ancestry. All ten scoped repairs retained. Refreshed seven synthetic negative fixture case digests and canonical seals; each negative retains exactly its intended defect. Local normal-clone run on Python 3.12: 327 tests, 326 passed, one native Windows test skipped on Linux; 44/44 Intent Shaper fixtures, 48/48 skill cases, valid QIS fixture and Golden candidate gates pass. The original exact head also passes 251 tests. Worktree-only admission test failures were caused by a test assuming .git is a directory, and are absent in a normal clone. All sixteen admission holds and draft Intent Shaper exclusion from runtime registry remain. No hosted validation, fresh human approval, runtime admission or deployment is claimed. Synthetic receipt counts are test data only.",
+      "evidence_paths": [
+        ".quirk/evidence/issue131-intent-shaper-b4697d10c74a.json",
+        "CHANGELOG.md",
+        "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+        "docs/personalization/ISSUE-131-REPAIR.md",
+        "evals/intent-shaper/cases.json",
+        "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+        "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+        "evals/qis-agent-harness/receipt.hash-mismatch.json",
+        "evals/qis-agent-harness/receipt.material-mismatch.json",
+        "evals/qis-agent-harness/receipt.missing-evidence.json",
+        "evals/qis-agent-harness/receipt.unexpected-field.json",
+        "evals/qis-agent-harness/receipt.unknown-verdict.json",
+        "evals/qis-agent-harness/receipt.valid-provenance.json",
+        "scripts/intent_shaper/policy.py",
+        "scripts/validate_intent_shaper.py",
+        "scripts/validate_skills.py",
+        "tests/test_intent_shaper.py",
+        "tests/test_skill_runtime.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".quirk/evidence/issue131-intent-shaper-b4697d10c74a.json",
+      "state": "present",
+      "git_blob": "634bcc9ab84c6f18e0e3107fd69df3b6b1349f54",
+      "sha256": "sha256:7d4993bc5b8b54c6d2f7bb21511ce390725d6ebc385e54615166491d5d6ee7e8"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "state": "present",
+      "git_blob": "8928c89d44b3de45ca89b34decd0bd6c8436f826",
+      "sha256": "sha256:c2f8f1e058a174e95668f25cf690412f36e080aa0cdfd207907959fb35794e8e"
+    },
+    {
+      "path": "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "state": "present",
+      "git_blob": "9d4629efd4a7745d15c236a4023b11b05219204c",
+      "sha256": "sha256:007e4c35e063cacd70929faae8984cf3b04642fe19c8a927ec7e68dd293768d6"
+    },
+    {
+      "path": "docs/personalization/ISSUE-131-REPAIR.md",
+      "state": "present",
+      "git_blob": "92a0aabde0a67f737beba09835cf863dd15c6345",
+      "sha256": "sha256:a2c1ed373462025e618589b97a05ad599d9dd8af8f83df7d4dbc73094de99372"
+    },
+    {
+      "path": "evals/intent-shaper/cases.json",
+      "state": "present",
+      "git_blob": "d0ed5a3c142b817f81643373c8a1a5c73984b050",
+      "sha256": "sha256:e33d1e9c17760a7e2d762b605e240f01fc579b97867873fd3aa82fde0cb16ef6"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.ancestry-mismatch.json",
+      "state": "present",
+      "git_blob": "5077aa997157d2b215dc0b41e10c35d6de80e615",
+      "sha256": "sha256:c5c967b0151788ef8d970b0b6362bfa54396f09098e62f44ec7cc86521ba3db4"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.critical-failure-pass.json",
+      "state": "present",
+      "git_blob": "67ecda349e308c3b23937a13658df433de7491fa",
+      "sha256": "sha256:5aa3398c706c1105e045e0fbdf4352c27176bacdf297c8b362915e14fbc2383d"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.hash-mismatch.json",
+      "state": "present",
+      "git_blob": "1e68e9b19bdb1a7033d68559d152daaffd650d1f",
+      "sha256": "sha256:368f15af7fce9994a2c2b3a750cafe900b317b76e411b1fb0eb22bc36faed49e"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.material-mismatch.json",
+      "state": "present",
+      "git_blob": "b97d8f383dfb73b4c57c0aa2f5106e4a83db8c54",
+      "sha256": "sha256:b17f53a33015cfe865c60db37c05e384166c5f0da5768f4e2e7bbdf68a3e85b1"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.missing-evidence.json",
+      "state": "present",
+      "git_blob": "f4b9409f9401bc93511b8eccb462fcadc97cc7d2",
+      "sha256": "sha256:a8dc02cd58636890886266381c282dc9ec11e722c75e43015251a77926da4ce5"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.unexpected-field.json",
+      "state": "present",
+      "git_blob": "12b614d57ca8bdf61b6a303bbad84396416a2bec",
+      "sha256": "sha256:eb10a0161f7f9a4104dfac3473fbffb4a227abe7feb77896cd4318d0f2b8c384"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.unknown-verdict.json",
+      "state": "present",
+      "git_blob": "f4959802d1a18b11116e38b04dfc77c7c1cf9305",
+      "sha256": "sha256:bf4a19a28410c31bef033008bc82b308e3c38d0bf68fdee2415e72a4ad84ae0d"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.valid-provenance.json",
+      "state": "present",
+      "git_blob": "302a08fcfd1cedd9c11c6dc977b0289ca59075b7",
+      "sha256": "sha256:e7ce53ea68897b18168ae8788d957e009a5eeba5ffeae697cb6a5b1202339021"
+    },
+    {
+      "path": "scripts/intent_shaper/policy.py",
+      "state": "present",
+      "git_blob": "065a4f0438210707b25c347c21e51423ed1ae514",
+      "sha256": "sha256:3fb97e0254d88f5bdf668295e0ec7878dc41cb38619052d4654b3a2dfb767d53"
+    },
+    {
+      "path": "scripts/validate_intent_shaper.py",
+      "state": "present",
+      "git_blob": "24d48cacb97e565f9dddc8638e59c4699aaf44cd",
+      "sha256": "sha256:6ff1befc8479fbc69676fc11fff61bfa0941b342f06538380fec90c946643358"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "d3ab704fed5614e73b3d99b8ab132acaee28c5ba",
+      "sha256": "sha256:47536156928ea64e5fbcb920c8000d140e4cd69d9fbb89620fb0355b648f5a03"
+    },
+    {
+      "path": "tests/test_intent_shaper.py",
+      "state": "present",
+      "git_blob": "8386daf6868a5aae550d6ad746565808d32c677f",
+      "sha256": "sha256:c440ff023ab6ae6518c5b1d151f9b6e06d6b7de01b80cbd5a2b9fd8ccaa2600e"
+    },
+    {
+      "path": "tests/test_skill_runtime.py",
+      "state": "present",
+      "git_blob": "0b36b62838241393709bd035dde89252942bd485",
+      "sha256": "sha256:39487ed26bf2e0761d14a405c03f8c849415f165dd9a9edb75cdf1c3fc89c81e"
+    }
+  ],
+  "verification": {
+    "verified_at": "2026-10-07T14:13:08Z",
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /tmp/pr137-final-intent.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/pr137-final-skills.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /tmp/pr137-final-golden.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ]
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:e2c447463e3c28dbe1ab318cc80e023d6f8610ea592676c8b498c892abf04850"
+}
+
