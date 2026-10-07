@@ -1,0 +1,220 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr111.authorization-reconciliation.54266cdc5e80",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "38ba6b9b6a3ddd2ee34807bfde5cf5be4673691f",
+    "commit": "54266cdc5e8093ff158e2023076c9606328fdbb2",
+    "changed_paths": [
+      ".github/workflows/distill-loop-conformance.yml",
+      ".github/workflows/sync-control-plane-conformance.yml",
+      ".github/workflows/validate-skills.yml",
+      "docs/changelog/2026-10-07-pr111-authorization-reconciliation.md",
+      "docs/skills/ADMISSION-EVIDENCE.md",
+      "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+      "docs/sync-control-plane/PR-111-authority-binding.md",
+      "evals/sync-control-plane/cases/SCP-011.json",
+      "evals/sync-control-plane/conformance-results.json",
+      "evals/sync-control-plane/model-tool-request.fixture.json",
+      "evals/sync-control-plane/tool-registry.v1.json",
+      "mappings/skill-package.v1.yaml",
+      "schemas/model-tool-grant.schema.json",
+      "schemas/model-tool-request-receipt.schema.json",
+      "schemas/runtime-manifest.schema.json",
+      "schemas/tool-registry.schema.json",
+      "scripts/sync_control_plane/skill_runtime.py",
+      "scripts/validate_sync_control_plane.py",
+      "skills/README.md",
+      "tests/test_model_tool_adapter.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr111.authorization-reconciliation.54266cdc5e80",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Reconciles versioned model-tool projection with current main authorization gates. Exact subject ran 391 tests (390 passed, one Windows-only skip) and four validators with exit 0. Evidence covers candidate implementation only; no human approval, merge authorization, runtime admission or activation is claimed.",
+      "evidence_paths": [
+        ".github/workflows/distill-loop-conformance.yml",
+        ".github/workflows/sync-control-plane-conformance.yml",
+        ".github/workflows/validate-skills.yml",
+        "docs/changelog/2026-10-07-pr111-authorization-reconciliation.md",
+        "docs/skills/ADMISSION-EVIDENCE.md",
+        "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+        "docs/sync-control-plane/PR-111-authority-binding.md",
+        "evals/sync-control-plane/cases/SCP-011.json",
+        "evals/sync-control-plane/conformance-results.json",
+        "evals/sync-control-plane/model-tool-request.fixture.json",
+        "evals/sync-control-plane/tool-registry.v1.json",
+        "mappings/skill-package.v1.yaml",
+        "schemas/model-tool-grant.schema.json",
+        "schemas/model-tool-request-receipt.schema.json",
+        "schemas/runtime-manifest.schema.json",
+        "schemas/tool-registry.schema.json",
+        "scripts/sync_control_plane/skill_runtime.py",
+        "scripts/validate_sync_control_plane.py",
+        "skills/README.md",
+        "tests/test_model_tool_adapter.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/distill-loop-conformance.yml",
+      "state": "present",
+      "git_blob": "8d3e245549300e452a8a8bd2ab656f43eddff752",
+      "sha256": "sha256:34df0762f7bf9e4c7835e98fc4c91f128dc70b95b0896db9599d8b8b5c98c8b2"
+    },
+    {
+      "path": ".github/workflows/sync-control-plane-conformance.yml",
+      "state": "present",
+      "git_blob": "b842add6d1c3d240c68e7f391d3d2b030aea9b73",
+      "sha256": "sha256:f7aefed7d5e5781380057f223af31e3289d032e961c5459783a06f9aad333857"
+    },
+    {
+      "path": ".github/workflows/validate-skills.yml",
+      "state": "present",
+      "git_blob": "3a40d680fd8f24095eaf75a629365f93d87744be",
+      "sha256": "sha256:71b7d678b0e73a5064bb3b2f4fa79e71a518bee7c898d3857a2684a0526402d1"
+    },
+    {
+      "path": "docs/changelog/2026-10-07-pr111-authorization-reconciliation.md",
+      "state": "present",
+      "git_blob": "8555e9990918022773e8d0552be55d83c7da7a73",
+      "sha256": "sha256:dcf1aec31c07d759a2aacbc4324bf0301d98118495e3ac5b4fa55c19c575dfe2"
+    },
+    {
+      "path": "docs/skills/ADMISSION-EVIDENCE.md",
+      "state": "present",
+      "git_blob": "7f2bc304f681588d3c3114f97c6075868eaf6c9f",
+      "sha256": "sha256:8c20647d352832aa61ebf8094a801872d2362cedcdf89c6581445875ea56a144"
+    },
+    {
+      "path": "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+      "state": "present",
+      "git_blob": "c70a8831259e570ad0ee1c2a9af9b7550a462657",
+      "sha256": "sha256:dbffcff7c2e3ae32e16d9deec4c987b5570852f9c1f34f21438db4c9ecf29a5c"
+    },
+    {
+      "path": "docs/sync-control-plane/PR-111-authority-binding.md",
+      "state": "present",
+      "git_blob": "5f70aa174acd84b6612ffeb9c2d63e132e001463",
+      "sha256": "sha256:3ca4f011b6d9cc63cd85030fe9918224c5c317fd8905819eb222745c8fbdf9a1"
+    },
+    {
+      "path": "evals/sync-control-plane/cases/SCP-011.json",
+      "state": "present",
+      "git_blob": "06ce1b8e2a302e661f2a4ad41662144d79467381",
+      "sha256": "sha256:e4829d5ffbb12af0cb2a871803ea69e3f44ef63666f54fc624e552f09bb6dd04"
+    },
+    {
+      "path": "evals/sync-control-plane/conformance-results.json",
+      "state": "present",
+      "git_blob": "44cd0e0d1fe35bfbc43065d2e1f4ef1748bbe9c5",
+      "sha256": "sha256:1dd2e4250963b59ae59d3d617508a616fcc39ef43f6fce4cd9d6b61f9528ba71"
+    },
+    {
+      "path": "evals/sync-control-plane/model-tool-request.fixture.json",
+      "state": "present",
+      "git_blob": "3b35c471c465da452326bd6d5b0e50f8955dac3b",
+      "sha256": "sha256:8179e31fb204e464ba40e11f56ad48dab7c3f04703806841cf66c8cd2d4c25bb"
+    },
+    {
+      "path": "evals/sync-control-plane/tool-registry.v1.json",
+      "state": "present",
+      "git_blob": "032a847214a930f300ee651844b312f3c5f9495d",
+      "sha256": "sha256:d5cd5935bf47debf28dd02da5b0c4a4c7f8a0d00a18cf8c2a1dc2daee8e54b5a"
+    },
+    {
+      "path": "mappings/skill-package.v1.yaml",
+      "state": "present",
+      "git_blob": "7657eaac1d44d9f65a6d683480965150fbb11dd7",
+      "sha256": "sha256:a3623238cf3d6d1b1d61c9a1128d386d3bbf394a73e469deef3570fd46cc9634"
+    },
+    {
+      "path": "schemas/model-tool-grant.schema.json",
+      "state": "present",
+      "git_blob": "badf67bb3c31de7a0194fff9fd733f805b231a5e",
+      "sha256": "sha256:d6f3f458ab5c0a133175005a58bd94002499aabc362d0c343f7c82f084526bb3"
+    },
+    {
+      "path": "schemas/model-tool-request-receipt.schema.json",
+      "state": "present",
+      "git_blob": "68d3aecd3bf6e0b1d7779b770f5a4a37af1682e5",
+      "sha256": "sha256:fee4c7663c159008c84d47b7268fd4c22b23ced00abf5cda0bcdd0ccfecec561"
+    },
+    {
+      "path": "schemas/runtime-manifest.schema.json",
+      "state": "present",
+      "git_blob": "5df621941225c75c4f6b598114b433ab20c285a3",
+      "sha256": "sha256:18418066bce960e26e32c38d098230d0f80b1bd20d1a77af0b5bc3b3473e51a8"
+    },
+    {
+      "path": "schemas/tool-registry.schema.json",
+      "state": "present",
+      "git_blob": "7a9424c999dde0215ac6f0d157a7979b86ebc518",
+      "sha256": "sha256:e7ff684661352415ebd6e5ff109b0640ded60faa9910a5eed02f85b1e0f65d10"
+    },
+    {
+      "path": "scripts/sync_control_plane/skill_runtime.py",
+      "state": "present",
+      "git_blob": "d576d7648b7af6271f9aef9f8d50b6b341128472",
+      "sha256": "sha256:e2b8d4e46f272b03883bc98b10cddda8ed02769f942992f36715728204847d98"
+    },
+    {
+      "path": "scripts/validate_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "2eabab91d675d7c59c3be2b1ad3fdbef964eac34",
+      "sha256": "sha256:18a651be17f2c54511854db4b9105d2953d2b7ad96e750c81b538e91e3d73533"
+    },
+    {
+      "path": "skills/README.md",
+      "state": "present",
+      "git_blob": "58fad509591a980cbac7f9893d78503084592e8e",
+      "sha256": "sha256:c32b927290397b44158b1de87c29652834e84ec4191cc4829d3a31d948f711eb"
+    },
+    {
+      "path": "tests/test_model_tool_adapter.py",
+      "state": "present",
+      "git_blob": "fdd4b27ca2bf384938bb674bd8b958516b628203",
+      "sha256": "sha256:6ce8be7ff9d2147fdab370574aeb077e4875fdf64c038bc92f382f25e1413f9e"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py' -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --repo . --output /tmp/pr111-sync.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/pr111-skills.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONPATH=scripts python scripts/validate_distill_loop.py --repo . --output /tmp/pr111-distill.json --require-pass",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T18:13:21Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:ff3a457f271a63cac11eeaca1ed528587eb921c7425cc424c1e4e1f1145b0e73"
+}
