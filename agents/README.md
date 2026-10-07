@@ -21,8 +21,10 @@ Binding a skill, holding a tool, or passing conformance never implies authority 
 - Every bound skill exists in `skills/registry.json`; `quirk-distilled-*` skills are never bindable.
 - **Ceiling rule:** each bound skill's ceiling must be ≤ the agent's ceiling, so an agent never binds authority it does not hold. Skill `execute_bounded` ranks as runtime `execute_reversible`.
 - `authority.prohibited` covers every `protected_actions` entry in the admission policy.
-- Referenced policy, schema, and evidence files exist inside the repository.
-- Static admission-policy rules: multi-skill agents block on collisions; `active` requires an admission record with evidence; requester ≠ approver; the agent ceiling may not exceed `admission.granted_ceiling`; `admission.evaluated_content_hash` must match the manifest content; `data_productization` requires an approved rights review.
+- Referenced policy, schema, evaluation, trigger, admission, and rights-review evidence files exist inside the repository.
+- Schema-invalid manifests never reach semantic checks; failure reports and metrics remain available.
+- The supported admission policy is pinned, including rule IDs, requirements, conditions, and protected actions; unsupported policy changes fail conformance.
+- Static admission-policy rules: multi-skill agents block on collisions; `active` requires nonempty `eval_refs` and an admission record with evidence; requester ≠ approver; the agent ceiling may not exceed `admission.granted_ceiling`; `admission.evaluated_content_hash` must match the manifest content; `data_productization` requires an approved rights review.
 
 ```bash
 pip install -r requirements-evals.txt
@@ -42,7 +44,7 @@ Recorded in `registry.json` as `digest_policy` and checked by the validator:
 | `admission.evaluated_content_hash` | same as `manifest_sha256`, with the `admission` block removed |
 | `registry_sha256` | SHA-256 of canonical JSON of the registry without `registry_sha256` |
 
-YAML is parsed with duplicate keys rejected, and must contain only JSON-representable values (quote timestamps).
+Agent and policy YAML and registry JSON are parsed with duplicate keys rejected, and must contain only JSON-representable values (quote timestamps).
 
 ## Adding or changing an agent
 

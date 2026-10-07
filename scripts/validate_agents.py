@@ -41,6 +41,32 @@ MANIFEST_SCHEMA = "agent-manifest.schema.json"
 REGISTRY_SCHEMA = "agent-registry.schema.json"
 RUNTIME_SCHEMA = "runtime-manifest.schema.json"
 POLICY_PATH = "policies/manifest-admission-policy.yaml"
+# Pin the supported policy semantics; policy changes require validator review.
+EXPECTED_POLICY = {'api_version': 'quirk.dev/policy/v1alpha1',
+ 'kind': 'Policy',
+ 'metadata': {'id': 'policy.manifest-admission', 'version': '0.2.0', 'status': 'candidate'},
+ 'invariant': 'capability_never_implies_authority',
+ 'rules': [{'id': 'no_self_approval', 'require': 'admission.requested_by != admission.approved_by'},
+           {'id': 'evaluated_hash_matches',
+            'require': 'admission.evaluated_content_hash == content_hash'},
+           {'id': 'explicit_grant', 'require': 'admission.authority_grant_ref'},
+           {'id': 'legal_transition', 'require': 'admission.transition_ref'},
+           {'id': 'active_requires_evidence',
+            'require': 'eval_refs and stop_conditions and admission.evidence_refs'},
+           {'id': 'rights_before_productization',
+            'when': 'domains contains data_productization',
+            'require': 'rights_review.outcome == approved and rights_review.license_verified and '
+                       'rights_review.privacy_review == approved and '
+                       'rights_review.provenance_complete'},
+           {'id': 'collisions_fail_closed',
+            'when': 'manifest_kind == orchestrator and len(skill_refs) > 1',
+            'require': 'trigger_contract.collision_behavior == block'}],
+ 'protected_actions': ['activate_manifest',
+                       'promote_canon',
+                       'expand_authority',
+                       'merge_pull_request',
+                       'deploy_production']}
+
 # Skill packages use their own ceiling ladder; ``execute_bounded`` is the only rung
 # absent from the runtime-manifest ladder and is ranked as ``execute_reversible``.
 SKILL_CEILING_EQUIVALENTS = {"execute_bounded": "execute_reversible"}
@@ -67,6 +93,15 @@ def _construct_unique_mapping(loader: _UniqueKeyLoader, node: yaml.MappingNode, 
 
 
 _UniqueKeyLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_unique_mapping)
+
+
+def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate key {key!r}")
+        result[key] = value
+    return result
 
 
 def canonical_json_bytes(value: Any) -> bytes:
@@ -186,7 +221,9 @@ def validate_repository(root: Path) -> dict[str, Any]:
 
     protected_actions: set[str] = set()
     try:
-        policy = yaml.safe_load(read_bytes(root / POLICY_PATH))
+        policy = yaml.load(read_bytes(root / POLICY_PATH), Loader=_UniqueKeyLoader)
+        if policy != EXPECTED_POLICY:
+            fail("POLICY_DRIFT", f"{POLICY_PATH}: unsupported policy; update and review the validator before conformance")
         protected_actions = set(policy.get("protected_actions", []))
         if not protected_actions:
             fail("POLICY_PROTECTED_ACTIONS_MISSING", f"{POLICY_PATH}: protected_actions is empty")
@@ -195,7 +232,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
 
     skill_ceilings: dict[str, str] = {}
     try:
-        skill_registry = json.loads(read_bytes(root / "skills" / "registry.json"))
+        skill_registry = json.loads(read_bytes(root / "skills" / "registry.json"), object_pairs_hook=_unique_json_object)
         skill_ceilings = {entry["id"]: entry["authority_ceiling"] for entry in skill_registry.get("skills", [])}
     except Exception as exc:  # noqa: BLE001
         fail("SKILL_REGISTRY_INVALID", f"skills/registry.json: {exc}")
@@ -217,9 +254,18 @@ def validate_repository(root: Path) -> dict[str, Any]:
             fail("AGENT_PARSE_FAILURE", f"{rel}: {exc}")
             continue
 
-        if manifest_validator is not None:
-            for message in _schema_errors(manifest_validator, manifest):
-                fail("AGENT_SCHEMA", f"{rel}: {message}")
+        if manifest_validator is None or len(schemas) != 3:
+            fail("AGENT_SCHEMA", f"{rel}: required schemas unavailable")
+            continue
+        try:
+            schema_errors = _schema_errors(manifest_validator, manifest)
+        except Exception as exc:  # noqa: BLE001 - unresolved schemas fail closed
+            fail("AGENT_SCHEMA", f"{rel}: {exc}")
+            continue
+        for message in schema_errors:
+            fail("AGENT_SCHEMA", f"{rel}: {message}")
+        if schema_errors:
+            continue
 
         metadata = manifest.get("metadata") if isinstance(manifest.get("metadata"), dict) else {}
         authority = manifest.get("authority") if isinstance(manifest.get("authority"), dict) else {}
@@ -259,6 +305,10 @@ def validate_repository(root: Path) -> dict[str, Any]:
             binding = manifest.get(key)
             refs.append(binding.get("schema_ref") if isinstance(binding, dict) else None)
         refs.extend(trigger.get("evidence_refs") or [])
+        refs.extend(manifest.get("eval_refs", []))
+        for block in ("admission", "rights_review"):
+            if isinstance(manifest.get(block), dict):
+                refs.extend(manifest[block].get("evidence_refs", []))
         for ref in refs:
             if ref is None:
                 continue
@@ -310,7 +360,7 @@ def validate_repository(root: Path) -> dict[str, Any]:
     registry_path = agents_dir / "registry.json"
     registry_entries: dict[str, dict[str, Any]] = {}
     try:
-        registry = json.loads(read_bytes(registry_path))
+        registry = json.loads(read_bytes(registry_path), object_pairs_hook=_unique_json_object)
         if registry_validator is not None:
             for message in _schema_errors(registry_validator, registry):
                 fail("REGISTRY_SCHEMA", f"agents/registry.json: {message}")

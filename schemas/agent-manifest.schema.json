@@ -215,6 +215,9 @@
     },
     "rights_review": {
       "$ref": "runtime-manifest.schema.json#/properties/rights_review"
+    },
+    "eval_refs": {
+      "$ref": "runtime-manifest.schema.json#/properties/eval_refs"
     }
   },
   "$defs": {
@@ -317,8 +320,14 @@
       },
       "then": {
         "required": [
-          "admission"
-        ]
+          "admission",
+          "eval_refs"
+        ],
+        "properties": {
+          "eval_refs": {
+            "minItems": 1
+          }
+        }
       }
     },
     {
