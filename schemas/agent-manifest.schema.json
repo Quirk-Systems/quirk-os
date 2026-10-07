@@ -215,7 +215,10 @@
       "$ref": "#/$defs/admission"
     },
     "rights_review": {
-      "$ref": "runtime-manifest.schema.json#/properties/rights_review"
+      "$ref": "runtime-manifest.schema.json#/properties/rights_review",
+      "properties": {
+        "reviewed_by": {"not": {"pattern": "[\\r\\n]"}}
+      }
     },
     "eval_refs": {
       "$ref": "runtime-manifest.schema.json#/properties/eval_refs"
