@@ -1,0 +1,89 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr137-html-contract.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "f0bf5a5560cbf049c9924c7137bfc96595812527",
+    "commit": "5baa2c20a7f7edde76a2fc4729cad5f4365b9dcb",
+    "changed_paths": [
+      "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "scripts/validate_skills.py",
+      "tests/test_skill_runtime.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr137-html-contract.2026-10-07",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Address Codex findings 4208515576 and 4208515593. Refuse raw HTML in draft prose while preserving fenced output placeholders; normalize ATX and Setext heading labels before counting all contract sections. Regress raw HTML lists/paragraphs, emphasized headings, closing ATX hashes, Setext and nested duplicate headings. Same byte-identical local source passed 81 focused tests and 330 repository tests (329 passed, one native Windows test skipped on Linux), 48/48 skill cases, 44/44 Intent Shaper fixtures, valid QIS fixture and Golden candidate gates. Sixteen admission holds remain. No runtime admission, deployment, human approval or hosted validation is claimed.",
+      "evidence_paths": [
+        "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+        "scripts/validate_skills.py",
+        "tests/test_skill_runtime.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "state": "present",
+      "git_blob": "f5f1b5face4732ab80a8c68727e98fca7296ab08",
+      "sha256": "sha256:51bfb1ee401f2e73c8c46ee821f6580c5d9233bde77f4f2d92e161c9a4f8d20b"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "992e003030b71ed1914e90ed6589151d7c3379ad",
+      "sha256": "sha256:1438628efd478ce69882053a90d0983e78eb114ff825a730915b2d2ed6753c02"
+    },
+    {
+      "path": "tests/test_skill_runtime.py",
+      "state": "present",
+      "git_blob": "92ca38418cdaad7b310a438dc4426be611f398fc",
+      "sha256": "sha256:0d0f07ea10f2fbcd1e54772cf024c70b0cc7744f447f8bba20b2a3101cfd470c"
+    }
+  ],
+  "verification": {
+    "verified_at": "2026-10-07T15:02:43Z",
+    "commands": [
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_skill_runtime tests.test_qis_harness",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/pr137-html-skills.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /tmp/pr137-html-intent.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /tmp/pr137-html-golden.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ]
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:9e3c41f6d72e1cd8e6058ac6e6afd4c2b32bbc9559fb311441a925b7fa293e22"
+}
