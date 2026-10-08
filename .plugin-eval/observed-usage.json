@@ -1,0 +1,20 @@
+{
+  "schema_version": "quirk.plugin-eval-observed-usage.v1",
+  "recorded_at": "2026-09-11T18:40:15Z",
+  "status": "UNAVAILABLE",
+  "method": "plugin-eval codex-cli benchmark",
+  "measured": false,
+  "sample_count": 0,
+  "usage_log_written": false,
+  "reason": "The unauthenticated Codex benchmark did not complete its first scenario and emitted no token telemetry.",
+  "estimated_budget": {
+    "label": "estimated",
+    "method": "estimated-static",
+    "trigger_cost_tokens": 49,
+    "invoke_cost_tokens": 669,
+    "deferred_cost_tokens": 1149,
+    "total_tokens": 1867
+  },
+  "stop_condition": "Measured results are required; static estimates cannot substitute for observed usage.",
+  "authority_effect": "none"
+}

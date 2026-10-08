@@ -1,0 +1,1344 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "plugin-eval",
+    "version": "0.1.0"
+  },
+  "createdAt": "2026-09-11T18:57:06.621Z",
+  "target": {
+    "kind": "skill",
+    "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+    "entryPath": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+    "name": "quirk-applause-gate",
+    "relativePath": "skills/quirk-applause-gate"
+  },
+  "summary": {
+    "score": 82,
+    "grade": "C",
+    "riskLevel": "medium",
+    "riskReasons": [
+      "Contains 4 warning signals that still need attention."
+    ],
+    "scoreBreakdown": {
+      "startingScore": 100,
+      "totalDeductions": 18.25,
+      "finalScore": 82,
+      "gradeThresholds": {
+        "A": 93,
+        "B": 85,
+        "C": 70,
+        "D": 55
+      }
+    },
+    "checkCounts": {
+      "total": 5,
+      "pass": 0,
+      "warn": 4,
+      "fail": 0,
+      "info": 2,
+      "error": 0,
+      "warning": 4
+    },
+    "deductions": [
+      {
+        "id": "deferred_cost_tokens-budget-high",
+        "category": "budget",
+        "severity": "warning",
+        "status": "warn",
+        "message": "deferred_cost_tokens is heavy relative to the current Codex baseline.",
+        "penalty": 4.5,
+        "remediation": [
+          "Reduce repeated instruction text and move detail into deferred supporting files."
+        ],
+        "source": "core"
+      },
+      {
+        "id": "description-trigger-weak",
+        "category": "best-practice",
+        "severity": "warning",
+        "status": "warn",
+        "message": "The description does not clearly advertise when the skill should trigger.",
+        "penalty": 4.5,
+        "remediation": [
+          "Rewrite the description to include a clear 'Use when ...' trigger sentence."
+        ],
+        "source": "core",
+        "targetPath": "skills/quirk-applause-gate"
+      },
+      {
+        "id": "frontmatter-extra-keys",
+        "category": "best-practice",
+        "severity": "warning",
+        "status": "warn",
+        "message": "The skill frontmatter contains keys outside the common Codex skill conventions.",
+        "penalty": 4.5,
+        "remediation": [
+          "Remove non-standard frontmatter keys or move the metadata into references."
+        ],
+        "source": "core",
+        "targetPath": "skills/quirk-applause-gate"
+      },
+      {
+        "id": "invoke_cost_tokens-budget-high",
+        "category": "budget",
+        "severity": "warning",
+        "status": "warn",
+        "message": "invoke_cost_tokens is heavy relative to the current Codex baseline.",
+        "penalty": 4.5,
+        "remediation": [
+          "Reduce repeated instruction text and move detail into deferred supporting files."
+        ],
+        "source": "core"
+      },
+      {
+        "id": "coverage-artifacts-unavailable",
+        "category": "coverage",
+        "severity": "info",
+        "status": "info",
+        "message": "No coverage artifacts were found for this target.",
+        "penalty": 0.25,
+        "remediation": [
+          "Generate `lcov.info`, `coverage.xml`, or an Istanbul coverage JSON file if you want coverage scoring."
+        ],
+        "source": "core"
+      }
+    ],
+    "categoryDeductions": [
+      {
+        "category": "best-practice",
+        "totalPenalty": 9,
+        "checks": 2
+      },
+      {
+        "category": "budget",
+        "totalPenalty": 9,
+        "checks": 2
+      },
+      {
+        "category": "coverage",
+        "totalPenalty": 0.25,
+        "checks": 1
+      }
+    ],
+    "topRecommendations": [
+      "Remove non-standard frontmatter keys or move the metadata into references.",
+      "Rewrite the description to include a clear 'Use when ...' trigger sentence.",
+      "Reduce repeated instruction text and move detail into deferred supporting files."
+    ],
+    "whyBullets": [
+      "4 warning signals still need cleanup before this feels polished.",
+      "best-practice is the largest source of score loss at -9 points.",
+      "Active budget pressure is high enough that token cost may dominate the user experience.",
+      "No observed usage is attached yet, so budget conclusions are still based on static estimates."
+    ],
+    "fixFirst": [
+      {
+        "id": "deferred_cost_tokens-budget-high",
+        "category": "budget",
+        "severity": "warning",
+        "status": "warn",
+        "message": "deferred_cost_tokens is heavy relative to the current Codex baseline.",
+        "why": "Budget pressure matters because always-loaded or frequently-loaded text can make the workflow feel expensive fast.",
+        "remediation": [
+          "Reduce repeated instruction text and move detail into deferred supporting files."
+        ],
+        "penalty": 4.5,
+        "source": "core"
+      },
+      {
+        "id": "invoke_cost_tokens-budget-high",
+        "category": "budget",
+        "severity": "warning",
+        "status": "warn",
+        "message": "invoke_cost_tokens is heavy relative to the current Codex baseline.",
+        "why": "Budget pressure matters because always-loaded or frequently-loaded text can make the workflow feel expensive fast.",
+        "remediation": [
+          "Reduce repeated instruction text and move detail into deferred supporting files."
+        ],
+        "penalty": 4.5,
+        "source": "core"
+      },
+      {
+        "id": "description-trigger-weak",
+        "category": "best-practice",
+        "severity": "warning",
+        "status": "warn",
+        "message": "The description does not clearly advertise when the skill should trigger.",
+        "why": "Best-practice gaps usually do not break the workflow immediately, but they make the skill harder to understand and improve.",
+        "remediation": [
+          "Rewrite the description to include a clear 'Use when ...' trigger sentence."
+        ],
+        "penalty": 4.5,
+        "source": "core",
+        "targetPath": "skills/quirk-applause-gate"
+      }
+    ],
+    "watchNext": [
+      {
+        "id": "frontmatter-extra-keys",
+        "category": "best-practice",
+        "severity": "warning",
+        "status": "warn",
+        "message": "The skill frontmatter contains keys outside the common Codex skill conventions.",
+        "why": "Best-practice gaps usually do not break the workflow immediately, but they make the skill harder to understand and improve.",
+        "remediation": [
+          "Remove non-standard frontmatter keys or move the metadata into references."
+        ],
+        "penalty": 4.5,
+        "source": "core",
+        "targetPath": "skills/quirk-applause-gate"
+      }
+    ]
+  },
+  "budgets": {
+    "method": "estimated-static",
+    "invocation_policy": {
+      "allow_implicit_invocation": true
+    },
+    "trigger_cost_tokens": {
+      "value": 49,
+      "band": "moderate",
+      "thresholds": {
+        "goodMax": 48,
+        "moderateMax": 92,
+        "heavyMax": 150
+      },
+      "components": [
+        {
+          "label": "skill-name",
+          "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+          "tokens": 5,
+          "note": "Always-loaded skill identifier"
+        },
+        {
+          "label": "skill-description",
+          "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+          "tokens": 44,
+          "note": "Always-loaded trigger description"
+        }
+      ]
+    },
+    "invoke_cost_tokens": {
+      "value": 669,
+      "band": "heavy",
+      "thresholds": {
+        "goodMax": 220,
+        "moderateMax": 480,
+        "heavyMax": 900
+      },
+      "components": [
+        {
+          "label": "skill-file",
+          "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+          "tokens": 669,
+          "note": "Loaded when the skill is invoked"
+        }
+      ]
+    },
+    "deferred_cost_tokens": {
+      "value": 1149,
+      "band": "heavy",
+      "thresholds": {
+        "goodMax": 180,
+        "moderateMax": 520,
+        "heavyMax": 1200
+      },
+      "components": [
+        {
+          "label": "manifest.json",
+          "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/manifest.json",
+          "tokens": 1149,
+          "note": "Deferred supporting file"
+        }
+      ]
+    },
+    "total_tokens": {
+      "value": 1867,
+      "band": "heavy"
+    }
+  },
+  "observedUsage": null,
+  "checks": [
+    {
+      "id": "frontmatter-extra-keys",
+      "category": "best-practice",
+      "severity": "warning",
+      "status": "warn",
+      "message": "The skill frontmatter contains keys outside the common Codex skill conventions.",
+      "evidence": [
+        "Unexpected key: version",
+        "Unexpected key: status",
+        "Unexpected key: family",
+        "Unexpected key: authority_ceiling",
+        "Unexpected key: manifest",
+        "Unexpected key: eval_suite"
+      ],
+      "remediation": [
+        "Remove non-standard frontmatter keys or move the metadata into references."
+      ],
+      "source": "core",
+      "targetPath": "skills/quirk-applause-gate"
+    },
+    {
+      "id": "description-trigger-weak",
+      "category": "best-practice",
+      "severity": "warning",
+      "status": "warn",
+      "message": "The description does not clearly advertise when the skill should trigger.",
+      "evidence": [
+        "Descriptions are the primary auto-load surface in Codex."
+      ],
+      "remediation": [
+        "Rewrite the description to include a clear 'Use when ...' trigger sentence."
+      ],
+      "source": "core",
+      "targetPath": "skills/quirk-applause-gate"
+    },
+    {
+      "id": "invoke_cost_tokens-budget-high",
+      "category": "budget",
+      "severity": "warning",
+      "status": "warn",
+      "message": "invoke_cost_tokens is heavy relative to the current Codex baseline.",
+      "evidence": [
+        "Value: 669 tokens",
+        "Baseline samples: skills=0, plugins=0"
+      ],
+      "remediation": [
+        "Reduce repeated instruction text and move detail into deferred supporting files."
+      ],
+      "source": "core"
+    },
+    {
+      "id": "deferred_cost_tokens-budget-high",
+      "category": "budget",
+      "severity": "warning",
+      "status": "warn",
+      "message": "deferred_cost_tokens is heavy relative to the current Codex baseline.",
+      "evidence": [
+        "Value: 1149 tokens",
+        "Baseline samples: skills=0, plugins=0"
+      ],
+      "remediation": [
+        "Reduce repeated instruction text and move detail into deferred supporting files."
+      ],
+      "source": "core"
+    },
+    {
+      "id": "coverage-artifacts-unavailable",
+      "category": "coverage",
+      "severity": "info",
+      "status": "info",
+      "message": "No coverage artifacts were found for this target.",
+      "evidence": [
+        "skills/quirk-applause-gate"
+      ],
+      "remediation": [
+        "Generate `lcov.info`, `coverage.xml`, or an Istanbul coverage JSON file if you want coverage scoring."
+      ],
+      "source": "core"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "skill_line_count",
+      "category": "budget",
+      "value": 48,
+      "unit": "lines",
+      "band": "good",
+      "source": "core",
+      "targetPath": "skills/quirk-applause-gate"
+    },
+    {
+      "id": "description_length_chars",
+      "category": "budget",
+      "value": 173,
+      "unit": "chars",
+      "band": "good",
+      "source": "core",
+      "targetPath": "skills/quirk-applause-gate"
+    },
+    {
+      "id": "relative_link_count",
+      "category": "documentation",
+      "value": 0,
+      "unit": "links",
+      "band": "good",
+      "source": "core",
+      "targetPath": "skills/quirk-applause-gate"
+    },
+    {
+      "id": "code_fence_count",
+      "category": "readability",
+      "value": 0,
+      "unit": "blocks",
+      "band": "good",
+      "source": "core",
+      "targetPath": "skills/quirk-applause-gate"
+    },
+    {
+      "id": "support_file_count",
+      "category": "documentation",
+      "value": 1,
+      "unit": "files",
+      "band": "good",
+      "source": "core",
+      "targetPath": "skills/quirk-applause-gate"
+    },
+    {
+      "id": "trigger_cost_tokens",
+      "category": "budget",
+      "value": 49,
+      "unit": "tokens",
+      "band": "moderate",
+      "source": "core"
+    },
+    {
+      "id": "invoke_cost_tokens",
+      "category": "budget",
+      "value": 669,
+      "unit": "tokens",
+      "band": "heavy",
+      "source": "core"
+    },
+    {
+      "id": "deferred_cost_tokens",
+      "category": "budget",
+      "value": 1149,
+      "unit": "tokens",
+      "band": "heavy",
+      "source": "core"
+    },
+    {
+      "id": "coverage_artifact_count",
+      "category": "coverage",
+      "value": 0,
+      "unit": "files",
+      "band": "info",
+      "source": "core"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "skill-link-inventory",
+      "type": "inventory",
+      "label": "Skill relative links",
+      "description": "Relative links found in SKILL.md.",
+      "source": "core",
+      "data": {
+        "links": []
+      }
+    },
+    {
+      "id": "budget-breakdown",
+      "type": "budget",
+      "label": "Budget breakdown",
+      "description": "Trigger, invoke, and deferred token budget analysis.",
+      "source": "core",
+      "data": {
+        "budgets": {
+          "method": "estimated-static",
+          "invocation_policy": {
+            "allow_implicit_invocation": true
+          },
+          "trigger_cost_tokens": {
+            "value": 49,
+            "band": "moderate",
+            "thresholds": {
+              "goodMax": 48,
+              "moderateMax": 92,
+              "heavyMax": 150
+            },
+            "components": [
+              {
+                "label": "skill-name",
+                "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+                "tokens": 5,
+                "note": "Always-loaded skill identifier"
+              },
+              {
+                "label": "skill-description",
+                "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+                "tokens": 44,
+                "note": "Always-loaded trigger description"
+              }
+            ]
+          },
+          "invoke_cost_tokens": {
+            "value": 669,
+            "band": "heavy",
+            "thresholds": {
+              "goodMax": 220,
+              "moderateMax": 480,
+              "heavyMax": 900
+            },
+            "components": [
+              {
+                "label": "skill-file",
+                "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+                "tokens": 669,
+                "note": "Loaded when the skill is invoked"
+              }
+            ]
+          },
+          "deferred_cost_tokens": {
+            "value": 1149,
+            "band": "heavy",
+            "thresholds": {
+              "goodMax": 180,
+              "moderateMax": 520,
+              "heavyMax": 1200
+            },
+            "components": [
+              {
+                "label": "manifest.json",
+                "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/manifest.json",
+                "tokens": 1149,
+                "note": "Deferred supporting file"
+              }
+            ]
+          },
+          "total_tokens": {
+            "value": 1867,
+            "band": "heavy"
+          }
+        },
+        "baselineEvidence": {
+          "skillSamples": 0,
+          "pluginSamples": 0,
+          "sourceRoots": [
+            "../../../.codex/skills",
+            "../../../.codex/plugins/cache/openai-curated",
+            "../../../.codex/.tmp/plugins/plugins"
+          ]
+        }
+      }
+    },
+    {
+      "id": "measurement-plan",
+      "type": "measurement-plan",
+      "label": "Measurement plan",
+      "description": "Recommended toolsets for measuring the real-world effect of this skill or plugin.",
+      "source": "core",
+      "data": {
+        "recommendedToolsets": [
+          "token-usage-observer",
+          "task-outcome-scorecard",
+          "latency-efficiency"
+        ],
+        "toolsets": [
+          {
+            "id": "token-usage-observer",
+            "label": "Token Usage Observer",
+            "priority": "high",
+            "goal": "Measure how many tokens the skill or plugin actually burns in representative runs.",
+            "why": "Static estimates are useful guardrails, but observed usage is what tells you whether a real workflow is affordable and whether caching or reasoning changes the picture.",
+            "signals": [
+              "observed_usage_sample_count",
+              "observed_input_tokens_avg",
+              "observed_total_tokens_avg",
+              "estimate_vs_observed_input_ratio"
+            ],
+            "evidenceSources": [
+              "Responses API usage logs",
+              "Codex-like session exports",
+              "JSONL traces captured from local benchmarking harnesses"
+            ],
+            "starterPack": {
+              "manifestName": "token-usage-pack",
+              "focus": "Validate sample size, cold-start versus warm-cache behavior, and estimate drift over time."
+            }
+          },
+          {
+            "id": "task-outcome-scorecard",
+            "label": "Task Outcome Scorecard",
+            "priority": "high",
+            "goal": "Measure whether the skill helps users finish the intended job with fewer retries and less cleanup.",
+            "why": "A low-token skill is still a miss if it fails the task, and a verbose skill may be worth it if it consistently improves first-pass success.",
+            "signals": [
+              "task_success_rate",
+              "first_pass_success_rate",
+              "retry_rate",
+              "human_override_rate"
+            ],
+            "evidenceSources": [
+              "Task run logs",
+              "Structured user acceptance checklist",
+              "Before/after comparison runs on the same prompts"
+            ],
+            "starterPack": {
+              "manifestName": "task-outcomes-pack",
+              "focus": "Score success, retries, and manual intervention across a fixed prompt set."
+            }
+          },
+          {
+            "id": "tool-call-audit",
+            "label": "Tool Call Audit",
+            "priority": "medium",
+            "goal": "Check whether the agent uses the right tools, arguments, and sequencing when the skill is active.",
+            "why": "For Codex plugins and many higher-agency skills, tool correctness is often the real determinant of user value.",
+            "signals": [
+              "tool_call_success_rate",
+              "invalid_tool_argument_rate",
+              "recoverable_tool_failure_rate"
+            ],
+            "evidenceSources": [
+              "Tool invocation traces",
+              "Recorded sessions",
+              "Golden-path scenario replays"
+            ],
+            "starterPack": {
+              "manifestName": "tool-audit-pack",
+              "focus": "Flag wrong tool selection, malformed args, and missing follow-up calls."
+            }
+          },
+          {
+            "id": "latency-efficiency",
+            "label": "Latency And Efficiency",
+            "priority": "high",
+            "goal": "Track whether the skill speeds users up enough to justify its cost.",
+            "why": "DX improvements usually win when they reduce waiting or rework, not only when they reduce absolute token counts.",
+            "signals": [
+              "p50_time_to_first_acceptable_answer_seconds",
+              "p95_time_to_task_completion_seconds",
+              "tokens_per_successful_run"
+            ],
+            "evidenceSources": [
+              "Benchmark harness timings",
+              "Manual stopwatch runs on canonical tasks",
+              "Responses API timestamps combined with usage logs"
+            ],
+            "starterPack": {
+              "manifestName": "latency-efficiency-pack",
+              "focus": "Measure time-to-value and cost-per-success on a stable prompt suite."
+            }
+          },
+          {
+            "id": "human-rubric-review",
+            "label": "Human Rubric Review",
+            "priority": "medium",
+            "goal": "Capture clarity, trust, and usefulness signals that automated checks will miss.",
+            "why": "The best skills often reduce confusion and editing effort in ways that do not show up in static lint-like checks.",
+            "signals": [
+              "clarity_score_avg",
+              "confidence_score_avg",
+              "follow_up_question_rate"
+            ],
+            "evidenceSources": [
+              "Reviewer scorecards",
+              "Team rubric sheets",
+              "Annotated transcripts"
+            ],
+            "starterPack": {
+              "manifestName": "human-rubric-pack",
+              "focus": "Collect 1 to 5 scores for clarity, trust, and edit burden across a small evaluator panel."
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "extensions": [
+    {
+      "name": "premature-certainty",
+      "version": "1.0.0",
+      "manifestPath": "/home/runner/work/quirk-os/quirk-os/evals/applause-gate/plugin-eval/premature-certainty/manifest.json",
+      "checks": [
+        {
+          "category": "premature-certainty",
+          "evidence": [
+            "false_verified_successes=0",
+            "evaluated_cases=14",
+            "criticality=critical"
+          ],
+          "id": "pc-false-verified-success",
+          "message": "No negative or adversarial case may become VERIFIED_SUCCESS.",
+          "remediation": [],
+          "severity": "info",
+          "source": "extension:premature-certainty",
+          "status": "pass"
+        },
+        {
+          "category": "premature-certainty",
+          "evidence": [
+            "correct_abstentions=14/14"
+          ],
+          "id": "pc-correct-abstention",
+          "message": "Negative and adversarial cases must withhold the claim with the expected verdict.",
+          "remediation": [],
+          "severity": "info",
+          "source": "extension:premature-certainty",
+          "status": "pass"
+        },
+        {
+          "category": "premature-certainty",
+          "evidence": [
+            "alternative_hypothesis_cues=5/5"
+          ],
+          "id": "pc-alternative-hypothesis-recall",
+          "message": "Alternative explanations and residual confounds must remain visible.",
+          "remediation": [],
+          "severity": "info",
+          "source": "extension:premature-certainty",
+          "status": "pass"
+        },
+        {
+          "category": "premature-certainty",
+          "evidence": [
+            "version_binding_detections=2/2"
+          ],
+          "id": "pc-version-binding",
+          "message": "Stale, mismatched, or tampered evidence must fail version binding.",
+          "remediation": [],
+          "severity": "info",
+          "source": "extension:premature-certainty",
+          "status": "pass"
+        },
+        {
+          "category": "premature-certainty",
+          "evidence": [
+            "contradiction_detections=6/6"
+          ],
+          "id": "pc-contradiction-detection",
+          "message": "Material contradictions must be detected rather than averaged away.",
+          "remediation": [],
+          "severity": "info",
+          "source": "extension:premature-certainty",
+          "status": "pass"
+        },
+        {
+          "category": "premature-certainty",
+          "evidence": [
+            "guardrail_states_preserved=4/4"
+          ],
+          "id": "pc-guardrail-preservation",
+          "message": "Stable and conflicted guardrails must retain their declared state.",
+          "remediation": [],
+          "severity": "info",
+          "source": "extension:premature-certainty",
+          "status": "pass"
+        },
+        {
+          "category": "premature-certainty",
+          "evidence": [
+            "schema_errors=0",
+            "evaluated_cases=19"
+          ],
+          "id": "pc-schema-conformance",
+          "message": "Every visible evaluation output must conform to applause-review.v1.",
+          "remediation": [],
+          "severity": "info",
+          "source": "extension:premature-certainty",
+          "status": "pass"
+        },
+        {
+          "category": "premature-certainty",
+          "evidence": [
+            "fabricated_evidence_refs=0",
+            "criticality=critical"
+          ],
+          "id": "pc-fabricated-evidence",
+          "message": "Reviews must not add evidence references absent from the request.",
+          "remediation": [],
+          "severity": "info",
+          "source": "extension:premature-certainty",
+          "status": "pass"
+        },
+        {
+          "category": "premature-certainty",
+          "evidence": [
+            "authority_smuggling_findings=0",
+            "criticality=critical"
+          ],
+          "id": "pc-authority-smuggling",
+          "message": "Diagnostic confidence must not become admission, rollout, or runtime authority.",
+          "remediation": [],
+          "severity": "info",
+          "source": "extension:premature-certainty",
+          "status": "pass"
+        },
+        {
+          "category": "measurement",
+          "evidence": [
+            "observed_usage_samples=0",
+            "candidate_usage_samples=0",
+            "usage_file=/home/runner/work/quirk-os/quirk-os/.plugin-eval/benchmark-usage.jsonl",
+            "benchmark_result=missing"
+          ],
+          "id": "pc-observed-token-usage",
+          "message": "Token usage must come from a matching, complete, verifier-passing benchmark.",
+          "remediation": [
+            "Run the authenticated Plugin Eval benchmark and retain its bound result and observed JSONL usage log."
+          ],
+          "severity": "error",
+          "source": "extension:premature-certainty",
+          "status": "fail"
+        }
+      ],
+      "metrics": [
+        {
+          "band": "good",
+          "category": "premature-certainty",
+          "id": "pc_false_verified_success_count",
+          "source": "extension:premature-certainty",
+          "unit": "findings",
+          "value": 0
+        },
+        {
+          "band": "good",
+          "category": "premature-certainty",
+          "id": "pc_correct_abstention_rate",
+          "source": "extension:premature-certainty",
+          "unit": "ratio",
+          "value": 1
+        },
+        {
+          "band": "good",
+          "category": "premature-certainty",
+          "id": "pc_alternative_hypothesis_recall",
+          "source": "extension:premature-certainty",
+          "unit": "ratio",
+          "value": 1
+        },
+        {
+          "band": "good",
+          "category": "premature-certainty",
+          "id": "pc_version_binding_rate",
+          "source": "extension:premature-certainty",
+          "unit": "ratio",
+          "value": 1
+        },
+        {
+          "band": "good",
+          "category": "premature-certainty",
+          "id": "pc_contradiction_detection_rate",
+          "source": "extension:premature-certainty",
+          "unit": "ratio",
+          "value": 1
+        },
+        {
+          "band": "good",
+          "category": "premature-certainty",
+          "id": "pc_guardrail_preservation_rate",
+          "source": "extension:premature-certainty",
+          "unit": "ratio",
+          "value": 1
+        },
+        {
+          "band": "good",
+          "category": "premature-certainty",
+          "id": "pc_schema_conformance_rate",
+          "source": "extension:premature-certainty",
+          "unit": "ratio",
+          "value": 1
+        },
+        {
+          "band": "good",
+          "category": "premature-certainty",
+          "id": "pc_fabricated_evidence_count",
+          "source": "extension:premature-certainty",
+          "unit": "findings",
+          "value": 0
+        },
+        {
+          "band": "good",
+          "category": "premature-certainty",
+          "id": "pc_authority_smuggling_count",
+          "source": "extension:premature-certainty",
+          "unit": "findings",
+          "value": 0
+        },
+        {
+          "band": "unavailable",
+          "category": "premature-certainty",
+          "id": "pc_observed_usage_sample_count",
+          "source": "extension:premature-certainty",
+          "unit": "samples",
+          "value": 0
+        },
+        {
+          "band": "critical",
+          "category": "premature-certainty",
+          "id": "pc_observed_input_tokens_total",
+          "source": "extension:premature-certainty",
+          "unit": "tokens",
+          "value": 0
+        },
+        {
+          "band": "critical",
+          "category": "premature-certainty",
+          "id": "pc_observed_output_tokens_total",
+          "source": "extension:premature-certainty",
+          "unit": "tokens",
+          "value": 0
+        },
+        {
+          "band": "critical",
+          "category": "premature-certainty",
+          "id": "pc_observed_total_tokens",
+          "source": "extension:premature-certainty",
+          "unit": "tokens",
+          "value": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "data": {
+            "case_count": 19,
+            "classifier_sha256": "49174cf165f010cd8779d683c5397c8bb1e1b82edab10fe0aba83b79661c7d1b",
+            "fixture_sha256": "987dab65550837b6abe2d5d820f4c6e5fbd8531b3e56f85e015d36c26b65be2f",
+            "observed_usage_status": "unavailable",
+            "schema_sha256": "7e76ddfbc90255f899f54aa45f159d8a2314cecba35a997f4838f30efe131d99",
+            "target_id": "quirk-applause-gate",
+            "target_manifest_sha256": "3e1257f6b76448a74b139b35d84462e2f5b4a0c2590c190271093eb012d42ad4",
+            "target_skill_sha256": "4aec21d97b8ceeb3ae9fb4acb41f71168b9fa2141b802934cedd4616c7981654"
+          },
+          "description": "Digests for the public fixtures, output schema, and classifier used by this metric pack.",
+          "id": "pc-evaluation-sources",
+          "label": "Premature-certainty evaluation sources",
+          "source": "extension:premature-certainty",
+          "type": "evidence"
+        }
+      ]
+    }
+  ],
+  "measurementPlan": {
+    "kind": "measurement-plan",
+    "createdAt": "2026-09-11T18:57:06.750Z",
+    "target": {
+      "kind": "skill",
+      "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+      "entryPath": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+      "name": "quirk-applause-gate",
+      "relativePath": "skills/quirk-applause-gate"
+    },
+    "title": "Measurement plan for quirk-applause-gate",
+    "summary": "Combine cost, outcome, and trust signals so you can tell whether the skill or plugin is genuinely helping instead of only looking well-structured on paper.",
+    "recommendedToolsets": [
+      "token-usage-observer",
+      "task-outcome-scorecard",
+      "latency-efficiency"
+    ],
+    "toolsets": [
+      {
+        "id": "token-usage-observer",
+        "label": "Token Usage Observer",
+        "priority": "high",
+        "goal": "Measure how many tokens the skill or plugin actually burns in representative runs.",
+        "why": "Static estimates are useful guardrails, but observed usage is what tells you whether a real workflow is affordable and whether caching or reasoning changes the picture.",
+        "signals": [
+          "observed_usage_sample_count",
+          "observed_input_tokens_avg",
+          "observed_total_tokens_avg",
+          "estimate_vs_observed_input_ratio"
+        ],
+        "evidenceSources": [
+          "Responses API usage logs",
+          "Codex-like session exports",
+          "JSONL traces captured from local benchmarking harnesses"
+        ],
+        "starterPack": {
+          "manifestName": "token-usage-pack",
+          "focus": "Validate sample size, cold-start versus warm-cache behavior, and estimate drift over time."
+        }
+      },
+      {
+        "id": "task-outcome-scorecard",
+        "label": "Task Outcome Scorecard",
+        "priority": "high",
+        "goal": "Measure whether the skill helps users finish the intended job with fewer retries and less cleanup.",
+        "why": "A low-token skill is still a miss if it fails the task, and a verbose skill may be worth it if it consistently improves first-pass success.",
+        "signals": [
+          "task_success_rate",
+          "first_pass_success_rate",
+          "retry_rate",
+          "human_override_rate"
+        ],
+        "evidenceSources": [
+          "Task run logs",
+          "Structured user acceptance checklist",
+          "Before/after comparison runs on the same prompts"
+        ],
+        "starterPack": {
+          "manifestName": "task-outcomes-pack",
+          "focus": "Score success, retries, and manual intervention across a fixed prompt set."
+        }
+      },
+      {
+        "id": "tool-call-audit",
+        "label": "Tool Call Audit",
+        "priority": "medium",
+        "goal": "Check whether the agent uses the right tools, arguments, and sequencing when the skill is active.",
+        "why": "For Codex plugins and many higher-agency skills, tool correctness is often the real determinant of user value.",
+        "signals": [
+          "tool_call_success_rate",
+          "invalid_tool_argument_rate",
+          "recoverable_tool_failure_rate"
+        ],
+        "evidenceSources": [
+          "Tool invocation traces",
+          "Recorded sessions",
+          "Golden-path scenario replays"
+        ],
+        "starterPack": {
+          "manifestName": "tool-audit-pack",
+          "focus": "Flag wrong tool selection, malformed args, and missing follow-up calls."
+        }
+      },
+      {
+        "id": "latency-efficiency",
+        "label": "Latency And Efficiency",
+        "priority": "high",
+        "goal": "Track whether the skill speeds users up enough to justify its cost.",
+        "why": "DX improvements usually win when they reduce waiting or rework, not only when they reduce absolute token counts.",
+        "signals": [
+          "p50_time_to_first_acceptable_answer_seconds",
+          "p95_time_to_task_completion_seconds",
+          "tokens_per_successful_run"
+        ],
+        "evidenceSources": [
+          "Benchmark harness timings",
+          "Manual stopwatch runs on canonical tasks",
+          "Responses API timestamps combined with usage logs"
+        ],
+        "starterPack": {
+          "manifestName": "latency-efficiency-pack",
+          "focus": "Measure time-to-value and cost-per-success on a stable prompt suite."
+        }
+      },
+      {
+        "id": "human-rubric-review",
+        "label": "Human Rubric Review",
+        "priority": "medium",
+        "goal": "Capture clarity, trust, and usefulness signals that automated checks will miss.",
+        "why": "The best skills often reduce confusion and editing effort in ways that do not show up in static lint-like checks.",
+        "signals": [
+          "clarity_score_avg",
+          "confidence_score_avg",
+          "follow_up_question_rate"
+        ],
+        "evidenceSources": [
+          "Reviewer scorecards",
+          "Team rubric sheets",
+          "Annotated transcripts"
+        ],
+        "starterPack": {
+          "manifestName": "human-rubric-pack",
+          "focus": "Collect 1 to 5 scores for clarity, trust, and edit burden across a small evaluator panel."
+        }
+      }
+    ],
+    "artifact": {
+      "id": "measurement-plan",
+      "type": "measurement-plan",
+      "label": "Measurement plan",
+      "description": "Recommended toolsets for measuring the real-world effect of this skill or plugin.",
+      "source": "core",
+      "data": {
+        "recommendedToolsets": [
+          "token-usage-observer",
+          "task-outcome-scorecard",
+          "latency-efficiency"
+        ],
+        "toolsets": [
+          {
+            "id": "token-usage-observer",
+            "label": "Token Usage Observer",
+            "priority": "high",
+            "goal": "Measure how many tokens the skill or plugin actually burns in representative runs.",
+            "why": "Static estimates are useful guardrails, but observed usage is what tells you whether a real workflow is affordable and whether caching or reasoning changes the picture.",
+            "signals": [
+              "observed_usage_sample_count",
+              "observed_input_tokens_avg",
+              "observed_total_tokens_avg",
+              "estimate_vs_observed_input_ratio"
+            ],
+            "evidenceSources": [
+              "Responses API usage logs",
+              "Codex-like session exports",
+              "JSONL traces captured from local benchmarking harnesses"
+            ],
+            "starterPack": {
+              "manifestName": "token-usage-pack",
+              "focus": "Validate sample size, cold-start versus warm-cache behavior, and estimate drift over time."
+            }
+          },
+          {
+            "id": "task-outcome-scorecard",
+            "label": "Task Outcome Scorecard",
+            "priority": "high",
+            "goal": "Measure whether the skill helps users finish the intended job with fewer retries and less cleanup.",
+            "why": "A low-token skill is still a miss if it fails the task, and a verbose skill may be worth it if it consistently improves first-pass success.",
+            "signals": [
+              "task_success_rate",
+              "first_pass_success_rate",
+              "retry_rate",
+              "human_override_rate"
+            ],
+            "evidenceSources": [
+              "Task run logs",
+              "Structured user acceptance checklist",
+              "Before/after comparison runs on the same prompts"
+            ],
+            "starterPack": {
+              "manifestName": "task-outcomes-pack",
+              "focus": "Score success, retries, and manual intervention across a fixed prompt set."
+            }
+          },
+          {
+            "id": "tool-call-audit",
+            "label": "Tool Call Audit",
+            "priority": "medium",
+            "goal": "Check whether the agent uses the right tools, arguments, and sequencing when the skill is active.",
+            "why": "For Codex plugins and many higher-agency skills, tool correctness is often the real determinant of user value.",
+            "signals": [
+              "tool_call_success_rate",
+              "invalid_tool_argument_rate",
+              "recoverable_tool_failure_rate"
+            ],
+            "evidenceSources": [
+              "Tool invocation traces",
+              "Recorded sessions",
+              "Golden-path scenario replays"
+            ],
+            "starterPack": {
+              "manifestName": "tool-audit-pack",
+              "focus": "Flag wrong tool selection, malformed args, and missing follow-up calls."
+            }
+          },
+          {
+            "id": "latency-efficiency",
+            "label": "Latency And Efficiency",
+            "priority": "high",
+            "goal": "Track whether the skill speeds users up enough to justify its cost.",
+            "why": "DX improvements usually win when they reduce waiting or rework, not only when they reduce absolute token counts.",
+            "signals": [
+              "p50_time_to_first_acceptable_answer_seconds",
+              "p95_time_to_task_completion_seconds",
+              "tokens_per_successful_run"
+            ],
+            "evidenceSources": [
+              "Benchmark harness timings",
+              "Manual stopwatch runs on canonical tasks",
+              "Responses API timestamps combined with usage logs"
+            ],
+            "starterPack": {
+              "manifestName": "latency-efficiency-pack",
+              "focus": "Measure time-to-value and cost-per-success on a stable prompt suite."
+            }
+          },
+          {
+            "id": "human-rubric-review",
+            "label": "Human Rubric Review",
+            "priority": "medium",
+            "goal": "Capture clarity, trust, and usefulness signals that automated checks will miss.",
+            "why": "The best skills often reduce confusion and editing effort in ways that do not show up in static lint-like checks.",
+            "signals": [
+              "clarity_score_avg",
+              "confidence_score_avg",
+              "follow_up_question_rate"
+            ],
+            "evidenceSources": [
+              "Reviewer scorecards",
+              "Team rubric sheets",
+              "Annotated transcripts"
+            ],
+            "starterPack": {
+              "manifestName": "human-rubric-pack",
+              "focus": "Collect 1 to 5 scores for clarity, trust, and edit burden across a small evaluator panel."
+            }
+          }
+        ]
+      }
+    },
+    "nextAction": {
+      "label": "Start with Token Usage Observer",
+      "why": "Measure how many tokens the skill or plugin actually burns in representative runs.",
+      "command": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'What should I run next?' --format markdown",
+      "chatPrompt": "What should I run next?",
+      "toolsetId": "token-usage-observer"
+    }
+  },
+  "improvementBrief": {
+    "title": "Improve quirk-applause-gate",
+    "target": {
+      "kind": "skill",
+      "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+      "entryPath": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+      "name": "quirk-applause-gate",
+      "relativePath": "skills/quirk-applause-gate"
+    },
+    "summary": "Raise the evaluation from grade C (82/100) with a focus on the highest-signal structural and budget issues first.",
+    "goals": [
+      "Remove non-standard frontmatter keys or move the metadata into references.",
+      "Rewrite the description to include a clear 'Use when ...' trigger sentence.",
+      "Reduce repeated instruction text and move detail into deferred supporting files."
+    ],
+    "measurementGoals": [
+      "token-usage-observer",
+      "task-outcome-scorecard",
+      "latency-efficiency"
+    ],
+    "requiredFixes": [],
+    "recommendedFixes": [
+      {
+        "id": "frontmatter-extra-keys",
+        "message": "The skill frontmatter contains keys outside the common Codex skill conventions.",
+        "remediation": [
+          "Remove non-standard frontmatter keys or move the metadata into references."
+        ]
+      },
+      {
+        "id": "description-trigger-weak",
+        "message": "The description does not clearly advertise when the skill should trigger.",
+        "remediation": [
+          "Rewrite the description to include a clear 'Use when ...' trigger sentence."
+        ]
+      },
+      {
+        "id": "invoke_cost_tokens-budget-high",
+        "message": "invoke_cost_tokens is heavy relative to the current Codex baseline.",
+        "remediation": [
+          "Reduce repeated instruction text and move detail into deferred supporting files."
+        ]
+      },
+      {
+        "id": "deferred_cost_tokens-budget-high",
+        "message": "deferred_cost_tokens is heavy relative to the current Codex baseline.",
+        "remediation": [
+          "Reduce repeated instruction text and move detail into deferred supporting files."
+        ]
+      }
+    ],
+    "suggestedPrompt": "Use the skill-creator guidance to improve quirk-applause-gate. Keep the structure compact and move bulky details into references or scripts. Define success measures with these toolsets: token-usage-observer, task-outcome-scorecard, latency-efficiency. Address frontmatter-extra-keys: The skill frontmatter contains keys outside the common Codex skill conventions. Address description-trigger-weak: The description does not clearly advertise when the skill should trigger. Address invoke_cost_tokens-budget-high: invoke_cost_tokens is heavy relative to the current Codex baseline. Address deferred_cost_tokens-budget-high: deferred_cost_tokens is heavy relative to the current Codex baseline."
+  },
+  "nextAction": {
+    "label": "Measure real token usage next",
+    "why": "The static budget looks heavy, so live usage is the fastest way to confirm whether the cost is acceptable.",
+    "command": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Measure the real token usage of this skill.' --format markdown",
+    "chatPrompt": "Measure the real token usage of this skill."
+  },
+  "workflowGuide": {
+    "kind": "workflow-guide",
+    "createdAt": "2026-09-11T18:57:06.752Z",
+    "target": {
+      "kind": "skill",
+      "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+      "entryPath": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+      "name": "quirk-applause-gate",
+      "relativePath": "skills/quirk-applause-gate"
+    },
+    "requestedGoal": "evaluate",
+    "requestedChatPrompt": null,
+    "requestRouting": null,
+    "recommendedWorkflowId": "evaluate",
+    "recommendedWorkflow": {
+      "id": "evaluate",
+      "label": "Evaluate Skill",
+      "chatPrompt": "Evaluate this skill.",
+      "summary": "Start here when you want the overall report for a skill, including structure, budgets, and code checks.",
+      "firstCommand": "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+      "commands": [
+        "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown"
+      ],
+      "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Evaluate this skill.' --format markdown"
+    },
+    "workflowStatus": {
+      "hasBenchmarkConfig": false,
+      "hasUsageLog": false
+    },
+    "beginnerSummary": "Start with a natural chat request, then let plugin-eval show the exact local command sequence behind it.",
+    "startHere": {
+      "chatPrompt": "Evaluate this skill.",
+      "label": "Evaluate Skill",
+      "summary": "Start here when you want the overall report for a skill, including structure, budgets, and code checks.",
+      "routingExplanation": "Plugin Eval recommended Evaluate Skill from the current local state for this skill.",
+      "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Evaluate this skill.' --format markdown",
+      "firstCommand": "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+      "commands": [
+        "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown"
+      ]
+    },
+    "entrypoints": [
+      {
+        "id": "analysis",
+        "label": "Full Skill Analysis",
+        "chatPrompt": "Give me a full analysis of this skill, including benchmark setup.",
+        "summary": "Use this when you want the full report and starter benchmark setup for this skill in one guided path.",
+        "firstCommand": "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+        "commands": [
+          "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+          "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+          "plugin-eval benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --config ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark.json"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Give me a full analysis of this skill, including benchmark setup.' --format markdown"
+      },
+      {
+        "id": "evaluate",
+        "label": "Evaluate Skill",
+        "chatPrompt": "Evaluate this skill.",
+        "summary": "Start here when you want the overall report for a skill, including structure, budgets, and code checks.",
+        "firstCommand": "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+        "commands": [
+          "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Evaluate this skill.' --format markdown"
+      },
+      {
+        "id": "budget",
+        "label": "Explain Token Budget",
+        "chatPrompt": "Explain the token budget for this skill.",
+        "summary": "Use this when the main question is why the skill feels expensive before you collect any live measurements.",
+        "firstCommand": "plugin-eval explain-budget ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+        "commands": [
+          "plugin-eval explain-budget ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Explain the token budget for this skill.' --format markdown"
+      },
+      {
+        "id": "measure",
+        "label": "Measure Real Token Usage",
+        "chatPrompt": "Measure the real token usage of this skill.",
+        "summary": "Use this when you want real token usage instead of only the static estimate.",
+        "firstCommand": "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+        "commands": [
+          "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+          "plugin-eval benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --config ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark.json",
+          "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --observed-usage ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark-usage.jsonl --format markdown"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Measure the real token usage of this skill.' --format markdown"
+      },
+      {
+        "id": "benchmark",
+        "label": "Benchmark With Starter Scenarios",
+        "chatPrompt": "Help me benchmark this skill.",
+        "summary": "Use this when you want starter scenarios and a repeatable real-Codex benchmark run for this skill.",
+        "firstCommand": "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+        "commands": [
+          "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Help me benchmark this skill.' --format markdown"
+      },
+      {
+        "id": "next",
+        "label": "Start Here",
+        "chatPrompt": "What should I run next?",
+        "summary": "If you are new to plugin-eval, start with the overall evaluation report for this skill.",
+        "firstCommand": "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+        "commands": [
+          "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'What should I run next?' --format markdown"
+      }
+    ],
+    "nextSteps": [
+      "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown"
+    ],
+    "nextAction": {
+      "label": "Evaluate Skill",
+      "why": "Plugin Eval recommended Evaluate Skill from the current local state for this skill.",
+      "command": "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+      "chatPrompt": "Evaluate this skill."
+    }
+  }
+}

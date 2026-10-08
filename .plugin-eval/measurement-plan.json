@@ -1,0 +1,386 @@
+{
+  "kind": "measurement-plan",
+  "createdAt": "2026-09-11T18:39:12.911Z",
+  "target": {
+    "kind": "skill",
+    "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+    "entryPath": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+    "name": "quirk-applause-gate",
+    "relativePath": "skills/quirk-applause-gate"
+  },
+  "title": "Measurement plan for quirk-applause-gate",
+  "summary": "Combine cost, outcome, and trust signals so you can tell whether the skill or plugin is genuinely helping instead of only looking well-structured on paper.",
+  "recommendedToolsets": [
+    "token-usage-observer",
+    "task-outcome-scorecard",
+    "latency-efficiency"
+  ],
+  "toolsets": [
+    {
+      "id": "token-usage-observer",
+      "label": "Token Usage Observer",
+      "priority": "high",
+      "goal": "Measure how many tokens the skill or plugin actually burns in representative runs.",
+      "why": "Static estimates are useful guardrails, but observed usage is what tells you whether a real workflow is affordable and whether caching or reasoning changes the picture.",
+      "signals": [
+        "observed_usage_sample_count",
+        "observed_input_tokens_avg",
+        "observed_total_tokens_avg",
+        "estimate_vs_observed_input_ratio"
+      ],
+      "evidenceSources": [
+        "Responses API usage logs",
+        "Codex-like session exports",
+        "JSONL traces captured from local benchmarking harnesses"
+      ],
+      "starterPack": {
+        "manifestName": "token-usage-pack",
+        "focus": "Validate sample size, cold-start versus warm-cache behavior, and estimate drift over time."
+      }
+    },
+    {
+      "id": "task-outcome-scorecard",
+      "label": "Task Outcome Scorecard",
+      "priority": "high",
+      "goal": "Measure whether the skill helps users finish the intended job with fewer retries and less cleanup.",
+      "why": "A low-token skill is still a miss if it fails the task, and a verbose skill may be worth it if it consistently improves first-pass success.",
+      "signals": [
+        "task_success_rate",
+        "first_pass_success_rate",
+        "retry_rate",
+        "human_override_rate"
+      ],
+      "evidenceSources": [
+        "Task run logs",
+        "Structured user acceptance checklist",
+        "Before/after comparison runs on the same prompts"
+      ],
+      "starterPack": {
+        "manifestName": "task-outcomes-pack",
+        "focus": "Score success, retries, and manual intervention across a fixed prompt set."
+      }
+    },
+    {
+      "id": "tool-call-audit",
+      "label": "Tool Call Audit",
+      "priority": "medium",
+      "goal": "Check whether the agent uses the right tools, arguments, and sequencing when the skill is active.",
+      "why": "For Codex plugins and many higher-agency skills, tool correctness is often the real determinant of user value.",
+      "signals": [
+        "tool_call_success_rate",
+        "invalid_tool_argument_rate",
+        "recoverable_tool_failure_rate"
+      ],
+      "evidenceSources": [
+        "Tool invocation traces",
+        "Recorded sessions",
+        "Golden-path scenario replays"
+      ],
+      "starterPack": {
+        "manifestName": "tool-audit-pack",
+        "focus": "Flag wrong tool selection, malformed args, and missing follow-up calls."
+      }
+    },
+    {
+      "id": "latency-efficiency",
+      "label": "Latency And Efficiency",
+      "priority": "high",
+      "goal": "Track whether the skill speeds users up enough to justify its cost.",
+      "why": "DX improvements usually win when they reduce waiting or rework, not only when they reduce absolute token counts.",
+      "signals": [
+        "p50_time_to_first_acceptable_answer_seconds",
+        "p95_time_to_task_completion_seconds",
+        "tokens_per_successful_run"
+      ],
+      "evidenceSources": [
+        "Benchmark harness timings",
+        "Manual stopwatch runs on canonical tasks",
+        "Responses API timestamps combined with usage logs"
+      ],
+      "starterPack": {
+        "manifestName": "latency-efficiency-pack",
+        "focus": "Measure time-to-value and cost-per-success on a stable prompt suite."
+      }
+    },
+    {
+      "id": "human-rubric-review",
+      "label": "Human Rubric Review",
+      "priority": "medium",
+      "goal": "Capture clarity, trust, and usefulness signals that automated checks will miss.",
+      "why": "The best skills often reduce confusion and editing effort in ways that do not show up in static lint-like checks.",
+      "signals": [
+        "clarity_score_avg",
+        "confidence_score_avg",
+        "follow_up_question_rate"
+      ],
+      "evidenceSources": [
+        "Reviewer scorecards",
+        "Team rubric sheets",
+        "Annotated transcripts"
+      ],
+      "starterPack": {
+        "manifestName": "human-rubric-pack",
+        "focus": "Collect 1 to 5 scores for clarity, trust, and edit burden across a small evaluator panel."
+      }
+    }
+  ],
+  "artifact": {
+    "id": "measurement-plan",
+    "type": "measurement-plan",
+    "label": "Measurement plan",
+    "description": "Recommended toolsets for measuring the real-world effect of this skill or plugin.",
+    "source": "core",
+    "data": {
+      "recommendedToolsets": [
+        "token-usage-observer",
+        "task-outcome-scorecard",
+        "latency-efficiency"
+      ],
+      "toolsets": [
+        {
+          "id": "token-usage-observer",
+          "label": "Token Usage Observer",
+          "priority": "high",
+          "goal": "Measure how many tokens the skill or plugin actually burns in representative runs.",
+          "why": "Static estimates are useful guardrails, but observed usage is what tells you whether a real workflow is affordable and whether caching or reasoning changes the picture.",
+          "signals": [
+            "observed_usage_sample_count",
+            "observed_input_tokens_avg",
+            "observed_total_tokens_avg",
+            "estimate_vs_observed_input_ratio"
+          ],
+          "evidenceSources": [
+            "Responses API usage logs",
+            "Codex-like session exports",
+            "JSONL traces captured from local benchmarking harnesses"
+          ],
+          "starterPack": {
+            "manifestName": "token-usage-pack",
+            "focus": "Validate sample size, cold-start versus warm-cache behavior, and estimate drift over time."
+          }
+        },
+        {
+          "id": "task-outcome-scorecard",
+          "label": "Task Outcome Scorecard",
+          "priority": "high",
+          "goal": "Measure whether the skill helps users finish the intended job with fewer retries and less cleanup.",
+          "why": "A low-token skill is still a miss if it fails the task, and a verbose skill may be worth it if it consistently improves first-pass success.",
+          "signals": [
+            "task_success_rate",
+            "first_pass_success_rate",
+            "retry_rate",
+            "human_override_rate"
+          ],
+          "evidenceSources": [
+            "Task run logs",
+            "Structured user acceptance checklist",
+            "Before/after comparison runs on the same prompts"
+          ],
+          "starterPack": {
+            "manifestName": "task-outcomes-pack",
+            "focus": "Score success, retries, and manual intervention across a fixed prompt set."
+          }
+        },
+        {
+          "id": "tool-call-audit",
+          "label": "Tool Call Audit",
+          "priority": "medium",
+          "goal": "Check whether the agent uses the right tools, arguments, and sequencing when the skill is active.",
+          "why": "For Codex plugins and many higher-agency skills, tool correctness is often the real determinant of user value.",
+          "signals": [
+            "tool_call_success_rate",
+            "invalid_tool_argument_rate",
+            "recoverable_tool_failure_rate"
+          ],
+          "evidenceSources": [
+            "Tool invocation traces",
+            "Recorded sessions",
+            "Golden-path scenario replays"
+          ],
+          "starterPack": {
+            "manifestName": "tool-audit-pack",
+            "focus": "Flag wrong tool selection, malformed args, and missing follow-up calls."
+          }
+        },
+        {
+          "id": "latency-efficiency",
+          "label": "Latency And Efficiency",
+          "priority": "high",
+          "goal": "Track whether the skill speeds users up enough to justify its cost.",
+          "why": "DX improvements usually win when they reduce waiting or rework, not only when they reduce absolute token counts.",
+          "signals": [
+            "p50_time_to_first_acceptable_answer_seconds",
+            "p95_time_to_task_completion_seconds",
+            "tokens_per_successful_run"
+          ],
+          "evidenceSources": [
+            "Benchmark harness timings",
+            "Manual stopwatch runs on canonical tasks",
+            "Responses API timestamps combined with usage logs"
+          ],
+          "starterPack": {
+            "manifestName": "latency-efficiency-pack",
+            "focus": "Measure time-to-value and cost-per-success on a stable prompt suite."
+          }
+        },
+        {
+          "id": "human-rubric-review",
+          "label": "Human Rubric Review",
+          "priority": "medium",
+          "goal": "Capture clarity, trust, and usefulness signals that automated checks will miss.",
+          "why": "The best skills often reduce confusion and editing effort in ways that do not show up in static lint-like checks.",
+          "signals": [
+            "clarity_score_avg",
+            "confidence_score_avg",
+            "follow_up_question_rate"
+          ],
+          "evidenceSources": [
+            "Reviewer scorecards",
+            "Team rubric sheets",
+            "Annotated transcripts"
+          ],
+          "starterPack": {
+            "manifestName": "human-rubric-pack",
+            "focus": "Collect 1 to 5 scores for clarity, trust, and edit burden across a small evaluator panel."
+          }
+        }
+      ]
+    }
+  },
+  "nextAction": {
+    "label": "Start with Token Usage Observer",
+    "why": "Measure how many tokens the skill or plugin actually burns in representative runs.",
+    "command": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'What should I run next?' --format markdown",
+    "chatPrompt": "What should I run next?",
+    "toolsetId": "token-usage-observer"
+  },
+  "workflowGuide": {
+    "kind": "workflow-guide",
+    "createdAt": "2026-09-11T18:39:12.914Z",
+    "target": {
+      "kind": "skill",
+      "path": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+      "entryPath": "/home/runner/work/quirk-os/quirk-os/skills/quirk-applause-gate/SKILL.md",
+      "name": "quirk-applause-gate",
+      "relativePath": "skills/quirk-applause-gate"
+    },
+    "requestedGoal": "measure",
+    "requestedChatPrompt": null,
+    "requestRouting": null,
+    "recommendedWorkflowId": "measure",
+    "recommendedWorkflow": {
+      "id": "measure",
+      "label": "Measure Real Token Usage",
+      "chatPrompt": "Measure the real token usage of this skill.",
+      "summary": "Use this when you want real token usage instead of only the static estimate.",
+      "firstCommand": "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+      "commands": [
+        "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+        "plugin-eval benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --config ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark.json",
+        "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --observed-usage ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark-usage.jsonl --format markdown"
+      ],
+      "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Measure the real token usage of this skill.' --format markdown"
+    },
+    "workflowStatus": {
+      "hasBenchmarkConfig": false,
+      "hasUsageLog": false
+    },
+    "beginnerSummary": "Start with a natural chat request, then let plugin-eval show the exact local command sequence behind it.",
+    "startHere": {
+      "chatPrompt": "Measure the real token usage of this skill.",
+      "label": "Measure Real Token Usage",
+      "summary": "Use this when you want real token usage instead of only the static estimate.",
+      "routingExplanation": "Plugin Eval recommended Measure Real Token Usage from the current local state for this skill.",
+      "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Measure the real token usage of this skill.' --format markdown",
+      "firstCommand": "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+      "commands": [
+        "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+        "plugin-eval benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --config ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark.json",
+        "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --observed-usage ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark-usage.jsonl --format markdown"
+      ]
+    },
+    "entrypoints": [
+      {
+        "id": "analysis",
+        "label": "Full Skill Analysis",
+        "chatPrompt": "Give me a full analysis of this skill, including benchmark setup.",
+        "summary": "Use this when you want the full report and starter benchmark setup for this skill in one guided path.",
+        "firstCommand": "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+        "commands": [
+          "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+          "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+          "plugin-eval benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --config ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark.json"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Give me a full analysis of this skill, including benchmark setup.' --format markdown"
+      },
+      {
+        "id": "evaluate",
+        "label": "Evaluate Skill",
+        "chatPrompt": "Evaluate this skill.",
+        "summary": "Start here when you want the overall report for a skill, including structure, budgets, and code checks.",
+        "firstCommand": "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+        "commands": [
+          "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Evaluate this skill.' --format markdown"
+      },
+      {
+        "id": "budget",
+        "label": "Explain Token Budget",
+        "chatPrompt": "Explain the token budget for this skill.",
+        "summary": "Use this when the main question is why the skill feels expensive before you collect any live measurements.",
+        "firstCommand": "plugin-eval explain-budget ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+        "commands": [
+          "plugin-eval explain-budget ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Explain the token budget for this skill.' --format markdown"
+      },
+      {
+        "id": "measure",
+        "label": "Measure Real Token Usage",
+        "chatPrompt": "Measure the real token usage of this skill.",
+        "summary": "Use this when you want real token usage instead of only the static estimate.",
+        "firstCommand": "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+        "commands": [
+          "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+          "plugin-eval benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --config ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark.json",
+          "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --observed-usage ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark-usage.jsonl --format markdown"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Measure the real token usage of this skill.' --format markdown"
+      },
+      {
+        "id": "benchmark",
+        "label": "Benchmark With Starter Scenarios",
+        "chatPrompt": "Help me benchmark this skill.",
+        "summary": "Use this when you want starter scenarios and a repeatable real-Codex benchmark run for this skill.",
+        "firstCommand": "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+        "commands": [
+          "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'Help me benchmark this skill.' --format markdown"
+      },
+      {
+        "id": "next",
+        "label": "Start Here",
+        "chatPrompt": "What should I run next?",
+        "summary": "If you are new to plugin-eval, start with the overall evaluation report for this skill.",
+        "firstCommand": "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown",
+        "commands": [
+          "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --format markdown"
+        ],
+        "startCommand": "plugin-eval start ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --request 'What should I run next?' --format markdown"
+      }
+    ],
+    "nextSteps": [
+      "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+      "plugin-eval benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --config ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark.json",
+      "plugin-eval analyze ~/work/quirk-os/quirk-os/skills/quirk-applause-gate --observed-usage ~/work/quirk-os/quirk-os/skills/quirk-applause-gate/.plugin-eval/benchmark-usage.jsonl --format markdown"
+    ],
+    "nextAction": {
+      "label": "Measure Real Token Usage",
+      "why": "Plugin Eval recommended Measure Real Token Usage from the current local state for this skill.",
+      "command": "plugin-eval init-benchmark ~/work/quirk-os/quirk-os/skills/quirk-applause-gate",
+      "chatPrompt": "Measure the real token usage of this skill."
+    }
+  }
+}
