@@ -1,0 +1,230 @@
+{
+  "schema_version": "skill-submission-pack.v1",
+  "status": "BLOCKED_INPUT_CONFLICT",
+  "generated_for": {
+    "repository": "Quirk-Systems/quirk-os",
+    "issue": 60,
+    "generated_on": "2026-09-11"
+  },
+  "rule_snapshot": {
+    "checked_on": "2026-09-11",
+    "official_sources": [
+      "https://developers.openai.com/plugins/build/plugins",
+      "https://developers.openai.com/plugins/deploy/submission"
+    ],
+    "verified": false,
+    "packaged_rules_ref": null,
+    "conflict_assessment": null
+  },
+  "package": {
+    "source_candidate": {
+      "id": "quirk-applause-gate",
+      "title": "Quirk Applause Gate",
+      "version": "0.1.0",
+      "source_blob_sha1": "66bcdb29c071dc4c1866941c70a0b8314b768423",
+      "manifest_sha256": "d20de6656de630870d06762e52c22eda9ac3fc0c7e74535428ddb3311180c719"
+    },
+    "submitted_package": {
+      "public_name": null,
+      "version": null,
+      "sha256": null,
+      "classification": null,
+      "contains_mcp": null,
+      "requires_authentication": null,
+      "uses_live_data": null,
+      "performs_external_actions": null,
+      "capability_allowlist": []
+    },
+    "publisher": {
+      "name": null,
+      "website": null
+    },
+    "support_and_privacy": {
+      "support_url": null,
+      "privacy_policy_url": null,
+      "data_handling_claim": null
+    }
+  },
+  "public_copy": {
+    "listing": null,
+    "supported_capabilities": [],
+    "starter_prompts": [],
+    "release_notes": null
+  },
+  "evidence_notes": {
+    "scope_note": "Source-candidate facts and tests are not evidence for an absent submitted package. Public copy remains empty rather than exposing internal Quirk machinery or inventing claims.",
+    "ledger": [
+      {
+        "id": "ABG11-E001",
+        "classification": "PROPOSED_OR_UNVERIFIED",
+        "claim": "The local branch contains quirk-applause-gate version 0.1.0 with the recorded source blob and canonical manifest digests, but the branch lineage is excluded by the superseding issue 52 decision.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "skills/quirk-applause-gate/SKILL.md",
+          "skills/quirk-applause-gate/manifest.json"
+        ]
+      },
+      {
+        "id": "ABG11-E002",
+        "classification": "PROPOSED_OR_UNVERIFIED",
+        "claim": "The local source files describe supplied-evidence-only, infer-authority behavior, but the source lineage is not an authorized current product fact.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "skills/quirk-applause-gate/SKILL.md:18-47",
+          "skills/quirk-applause-gate/manifest.json:11-18"
+        ]
+      },
+      {
+        "id": "ABG11-E003",
+        "classification": "PASSED_TEST_EVIDENCE",
+        "claim": "The repository Applause Gate validator executed against source candidate 0.1.0 and passed five positive, three negative, and eleven adversarial cases; receipt e9933874001f86f27822e48d58cedc9d755759b0cf28f721ece52421c6ee4fcf is source evidence only.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "scripts/validate_applause_gate.py",
+          "evals/applause-gate/cases.json",
+          "receipt:e9933874001f86f27822e48d58cedc9d755759b0cf28f721ece52421c6ee4fcf"
+        ]
+      },
+      {
+        "id": "ABG11-E004",
+        "classification": "PROPOSED_OR_UNVERIFIED",
+        "claim": "The official submission and packaging URLs were identified on 2026-09-11, but their current contents could not be retrieved directly in this environment.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "https://developers.openai.com/plugins/build/plugins",
+          "https://developers.openai.com/plugins/deploy/submission"
+        ]
+      },
+      {
+        "id": "ABG11-E005",
+        "classification": "MISSING",
+        "claim": "Issue 57 has not supplied an independent Plugin Eval disposition or immutable report reference.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "Quirk-Systems/quirk-os#57",
+          "Quirk-Systems/quirk-os#93"
+        ]
+      },
+      {
+        "id": "ABG11-E006",
+        "classification": "MISSING",
+        "claim": "Issue 58 has not supplied a deterministic package, package SHA-256, packaged rules snapshot, archive boundary, or fresh-install evidence.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "Quirk-Systems/quirk-os#58",
+          "Quirk-Systems/quirk-os#96"
+        ]
+      },
+      {
+        "id": "ABG11-E007",
+        "classification": "MISSING",
+        "claim": "Publisher identity, support URL, privacy policy URL, and approved public data-handling facts were not supplied.",
+        "submitted_package_sha256": null,
+        "evidence_refs": []
+      },
+      {
+        "id": "ABG11-E008",
+        "classification": "MISSING",
+        "claim": "Five positive and three negative executed review cases bound to the submitted package SHA-256 were not supplied.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "Quirk-Systems/quirk-os#58",
+          "Quirk-Systems/quirk-os#60"
+        ]
+      },
+      {
+        "id": "ABG11-E009",
+        "classification": "CONTRADICTION",
+        "claim": "The local branch and H0-B evidence derive from PR 64, while issue 52 comment 5381075909 excludes PR 64 and all of its code, tests, receipts, CI, and evidence from the superseding authorization.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "docs/applause-gate/H0-B-EVIDENCE.md",
+          "Quirk-Systems/quirk-os#52-comment-5381075909"
+        ]
+      },
+      {
+        "id": "ABG11-E010",
+        "classification": "CONTRADICTION",
+        "claim": "The frozen fixture metadata describes version 0.1.0-fixture-only with no evaluator, while this excluded local lineage contains an evaluator labeled version 0.1.0.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "evals/applause-gate/cases.json",
+          "scripts/validate_applause_gate.py:89-107"
+        ]
+      },
+      {
+        "id": "ABG11-E011",
+        "classification": "MISSING",
+        "claim": "Issue 56 has not supplied a completed independent PASS_CANDIDATE_EVIDENCE verdict from the authorized successor lineage.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "Quirk-Systems/quirk-os#56",
+          "Quirk-Systems/quirk-os#94"
+        ]
+      },
+      {
+        "id": "ABG11-E012",
+        "classification": "PROPOSED_OR_UNVERIFIED",
+        "claim": "No authorized issue 59 projection evidence was supplied, so this pack makes no projection claim and uses no projection evidence.",
+        "submitted_package_sha256": null,
+        "evidence_refs": [
+          "Quirk-Systems/quirk-os#59",
+          "Quirk-Systems/quirk-os#95"
+        ]
+      }
+    ]
+  },
+  "independent_verdict": {
+    "value": null,
+    "reference": "Quirk-Systems/quirk-os#57"
+  },
+  "review_cases": {
+    "positive": [],
+    "negative": []
+  },
+  "missing_inputs": [
+    "Directly verified current submission-rule contents and field limits",
+    "Reconciled authorized candidate lineage after issue 52 comment 5381075909",
+    "Completed independent PASS_CANDIDATE_EVIDENCE verdict from issue 56",
+    "Packaged rule snapshot and conflict comparison from issue 58",
+    "Independent Plugin Eval disposition and immutable report from issue 57",
+    "Deterministic submitted-package version and SHA-256 from issue 58",
+    "Submitted-package skills-only boundary and capability allowlist from issue 58",
+    "Five positive and three negative executed cases bound to that package SHA-256",
+    "Publisher identity and website",
+    "Support URL, privacy policy URL, and approved data-handling facts"
+  ],
+  "contradictions": [
+    "Local PR 64-derived bytes and H0-B evidence claim an implemented candidate, but issue 52 comment 5381075909 explicitly excludes that lineage and all of its evidence.",
+    "Fixture metadata remains 0.1.0-fixture-only with evaluator_implementation_present false, while the excluded local lineage contains an evaluator reporting candidate version 0.1.0."
+  ],
+  "version_drift": [
+    "The local fixture corpus declares 0.1.0-fixture-only while the local validator reports 0.1.0; neither can be bound to a missing issue 58 package version."
+  ],
+  "owner_actions": [
+    "Resolve the PR 64 supersession conflict and identify the authorized current candidate lineage before reusing any local source or test evidence.",
+    "Complete and independently review issue 56, then supply its exact verdict and immutable evidence references.",
+    "Complete and independently review issue 57, then supply its exact disposition and immutable report reference.",
+    "Complete issue 58, then supply its rule snapshot, package boundary, package version, SHA-256, and executed package evidence.",
+    "Verify the current official submission rules in an environment that can retrieve the official pages.",
+    "Supply approved publisher, support, privacy, and public data-handling facts.",
+    "Rerun the Submission Pack Writer against the frozen inputs; do not reuse this partial pack as a submission-ready draft."
+  ],
+  "unperformed_actions": [
+    "portal_scan",
+    "portal_upload",
+    "submission",
+    "review",
+    "attestation",
+    "publication",
+    "tag",
+    "merge",
+    "deployment"
+  ],
+  "attestations": {
+    "portal_operations_performed": false,
+    "openai_review_or_approval_claimed": false,
+    "product_verdict_upgraded": false,
+    "source_tests_used_as_submitted_package_evidence": false
+  }
+}
