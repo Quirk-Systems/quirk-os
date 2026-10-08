@@ -103,4 +103,50 @@ class ChangeMaintenanceTests(unittest.TestCase):
         self.assertTrue(r["text"].startswith(s))
 
 
+
+
+class GitDocsProposalTests(unittest.TestCase):
+    def proposal(self, **overrides):
+        import hashlib
+        from sync_control_plane.git_docs_proposal import prepare_git_docs_proposal
+        content = "Template payload beta"
+        raw = content.encode()
+        args = dict(repository="Quirk-Systems/quirk-os", commit="a" * 40,
+                    path="templates/disposable.txt", blob_sha=hashlib.sha1(
+                        b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest(),
+                    source_text=content, document_id="disposable", revision_id="revision-1",
+                    tab_id="t.0", current_text="owner 😀\n" + START + "\nold\n" + END + "\nsuffix\n",
+                    owner="human.bryan")
+        args.update(overrides)
+        args.setdefault("expected_digest", digest(args["current_text"]))
+        return prepare_git_docs_proposal(**args)
+
+    def test_native_lease_and_utf16_ranges_preserve_owner_text(self):
+        r = self.proposal()
+        self.assertEqual(r["batch"]["write_control"], {"requiredRevisionId": "revision-1"})
+        self.assertEqual(r["batch"]["requests"][0]["deleteContentRange"]["range"]["startIndex"], 10)
+        self.assertTrue(r["prepared"]["text"].startswith("owner 😀\n"))
+        self.assertTrue(r["prepared"]["text"].endswith("\nsuffix\n"))
+        self.assertEqual([a["object_key"] for a in r["plan"]["actions"]], ["template", "document"])
+        self.assertFalse(r["executable"])
+
+    def test_forged_source_or_unpinned_ref_rejected(self):
+        for overrides in ({"source_text": "forged"}, {"commit": "main"}, {"path": "../source"},
+                          {"revision_id": ""}, {"expected_digest": digest("stale")}):
+            with self.assertRaises(ValueError): self.proposal(**overrides)
+
+    def test_noop_has_no_requests(self):
+        r = self.proposal()
+        again = self.proposal(current_text=r["prepared"]["text"])
+        self.assertEqual(again["batch"]["requests"], [])
+
+    def test_missing_or_ambiguous_markers_rejected(self):
+        for text in ("unmarked\n", START, START + END + START + END):
+            with self.assertRaises(ValueError): self.proposal(current_text=text)
+
+    def test_source_and_revision_changes_invalidate_dependency_key(self):
+        baseline = self.proposal()["plan"]["actions"][-1]["idempotency_key"]
+        for overrides in ({"commit": "b" * 40}, {"revision_id": "revision-2"}, {"owner": "other"}):
+            self.assertNotEqual(baseline, self.proposal(**overrides)["plan"]["actions"][-1]["idempotency_key"])
+
 if __name__ == "__main__": unittest.main()

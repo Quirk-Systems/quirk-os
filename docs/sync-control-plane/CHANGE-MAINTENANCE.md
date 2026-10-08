@@ -139,8 +139,12 @@ No Golden, complete, production-ready or system-wide enforcement claim is made.
 Decision: reuse the Sync Control Plane instead of building a parallel receipt
 system or letting every provider edit every object. Rollback: remove this
 additive module, tests and document; no runtime data or existing defaults change.
-Next move: review the draft, then test one Git-backed template-to-document chain
-with a real source revision and a provider-native write lease.
+The disposable Git-to-Docs path now has an observed provider-native target lease,
+Git file-SHA conflict rejection, safe owner-text preservation and replay rejection.
+See [GIT-DOCS-PROOF.md](GIT-DOCS-PROOF.md) for exact versions and limits.
+`git_docs_proposal.py` remains an inert request preparer; runtime admission is unchanged.
+Next move: independently review coordinator authority/revocation and cross-provider
+source-race handling; durable deduplication and atomic branch-ref lease remain unproved.
 
 Sources: current Sync Control Plane INTEROPERABILITY.md, README.md,
 sync-decision.schema.json and sync-run-receipt.schema.json at base
