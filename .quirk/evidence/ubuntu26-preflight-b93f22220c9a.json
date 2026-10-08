@@ -1,0 +1,66 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.ubuntu26-preflight.b93f22220c9a",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "03f70e1a790bac09294fe0f31a3c5f0d0fb4418e",
+    "commit": "b93f22220c9ac5fac9fdeafd605cd9c80d888323",
+    "changed_paths": [
+      ".github/workflows/agent-reliability.yml",
+      "evals/agent-reliability/CHANGELOG.md"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.ubuntu26-preflight.b93f22220c9a",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Adds a bounded, read-only Ubuntu 26 exact-head fixture probe and changelog; local Python 3.12 tests passed, 433 repository cases with one skip. Hosted Ubuntu 26 compatibility, review, merge, and runtime authority are not established.",
+      "evidence_paths": [
+        ".github/workflows/agent-reliability.yml",
+        "evals/agent-reliability/CHANGELOG.md"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/agent-reliability.yml",
+      "state": "present",
+      "git_blob": "102ebaffd8372d24983ff1408eb92698ffda538c",
+      "sha256": "sha256:95b350385c98d8f5567693bfcdcedaa2611b405719e0fa50c8c64fa8d31ed7c3"
+    },
+    {
+      "path": "evals/agent-reliability/CHANGELOG.md",
+      "state": "present",
+      "git_blob": "1795ffd39262bd7ca5d33975916ed5dc588ee7ba",
+      "sha256": "sha256:f6afbfa616767c422076692f98542ee04a1841e71b4db40498f354c02e3502e2"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest tests/test_agent_reliability.py -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agent_reliability.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-08T16:44:36Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:7f8499d1cca20362e033caff18c317900efe7356dbce70516deaeaa6690af48b"
+}
