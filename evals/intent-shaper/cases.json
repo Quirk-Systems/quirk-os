@@ -2246,6 +2246,401 @@
           "RECONSTRUCTION_INPUTS_MISSING"
         ]
       }
+    },
+    {
+      "id": "QIS-R12",
+      "name": "explicit_current_is_purpose_scoped",
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "security.incident",
+        "as_of": "2026-10-05T08:00:00Z",
+        "personalization_enabled": true,
+        "preferences": [
+          {
+            "ref": "foreign",
+            "dimension": "format",
+            "value": "perform",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "music.performance"
+          },
+          {
+            "ref": "local",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "security.incident"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [
+          "local"
+        ],
+        "ignored_refs": [
+          "foreign"
+        ],
+        "conflicts": [],
+        "stored_retrieval": true
+      }
+    },
+    {
+      "id": "QIS-R13",
+      "name": "off_mode_scopes_and_times_current_preferences",
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "security.incident",
+        "as_of": "2026-10-05T08:00:00Z",
+        "personalization_enabled": false,
+        "preferences": [
+          {
+            "ref": "foreign",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "music.performance"
+          },
+          {
+            "ref": "future",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "security.incident",
+            "valid_from": "2026-10-06T00:00:00Z"
+          },
+          {
+            "ref": "expired",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "security.incident",
+            "valid_until": "2026-10-04T00:00:00Z"
+          },
+          {
+            "ref": "saved",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_saved",
+            "confidence": 1.0,
+            "scope": "security.incident"
+          },
+          {
+            "ref": "local",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "security.incident"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [
+          "local"
+        ],
+        "ignored_refs": [
+          "foreign",
+          "future",
+          "expired",
+          "saved"
+        ],
+        "conflicts": [],
+        "stored_retrieval": false
+      }
+    },
+    {
+      "id": "QIS-R14",
+      "name": "off_mode_conflicts_ignore_confidence",
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "security.incident",
+        "as_of": "2026-10-05T08:00:00Z",
+        "personalization_enabled": false,
+        "preferences": [
+          {
+            "ref": "one",
+            "dimension": "format",
+            "value": "one",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "security.incident"
+          },
+          {
+            "ref": "three",
+            "dimension": "format",
+            "value": "three",
+            "source": "explicit_current",
+            "confidence": 0.1,
+            "scope": "security.incident"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [],
+        "ignored_refs": [
+          "one",
+          "three"
+        ],
+        "conflicts": [
+          "format"
+        ],
+        "stored_retrieval": false
+      }
+    },
+    {
+      "id": "QIS-R15",
+      "name": "current_validity_endpoints_are_inclusive",
+      "operation": "resolve_preference",
+      "input": {
+        "scope": "security.incident",
+        "as_of": "2026-10-05T08:00:00Z",
+        "personalization_enabled": true,
+        "preferences": [
+          {
+            "ref": "bounded",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "security.incident",
+            "valid_from": "2026-10-05T08:00:00Z",
+            "valid_until": "2026-10-05T08:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "selected_refs": [
+          "bounded"
+        ],
+        "ignored_refs": [],
+        "conflicts": [],
+        "stored_retrieval": true
+      }
+    },
+    {
+      "id": "QIS-R16",
+      "name": "persona_hand_zero_total_is_rejected",
+      "operation": "persona_hand",
+      "input": {
+        "primary": {
+          "ref": "persona.brayn",
+          "role": "system_architecture",
+          "weight": 0.0,
+          "selection_basis": "declared_function",
+          "sensitive_inference": false,
+          "impersonates_user": false
+        },
+        "supporting": [
+          {
+            "ref": "persona.bryan",
+            "role": "reality_grounding",
+            "weight": 0.0,
+            "selection_basis": "declared_function",
+            "sensitive_inference": false,
+            "impersonates_user": false
+          }
+        ]
+      },
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "invalid_weight_total"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-R17",
+      "name": "persona_hand_overweight_is_rejected",
+      "operation": "persona_hand",
+      "input": {
+        "primary": {
+          "ref": "persona.brayn",
+          "role": "system_architecture",
+          "weight": 1.0,
+          "selection_basis": "declared_function",
+          "sensitive_inference": false,
+          "impersonates_user": false
+        },
+        "supporting": [
+          {
+            "ref": "persona.bryan",
+            "role": "reality_grounding",
+            "weight": 1.0,
+            "selection_basis": "declared_function",
+            "sensitive_inference": false,
+            "impersonates_user": false
+          }
+        ]
+      },
+      "expected": {
+        "status": "rejected",
+        "rejection_reasons": [
+          "invalid_weight_total"
+        ],
+        "primary_ref": null,
+        "supporting_refs": [],
+        "authority_effect": false,
+        "permanent_identity_claim": false
+      }
+    },
+    {
+      "id": "QIS-R18",
+      "name": "off_boundary_filters_before_projection_without_reads",
+      "operation": "personalization_boundary",
+      "input": {
+        "scope": "security.incident",
+        "adapter_mode": "fail_on_read",
+        "settings": {
+          "personalization_enabled": false,
+          "adaptation_mode": "off",
+          "implicit_signal_use": "off"
+        },
+        "current_request_preferences": [
+          {
+            "ref": "foreign",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "music.performance"
+          },
+          {
+            "ref": "future",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "security.incident",
+            "valid_from": "2026-10-06T00:00:00Z"
+          },
+          {
+            "ref": "global",
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "global"
+          }
+        ],
+        "stored_evidence": {
+          "preferences": [
+            {
+              "ref": "pref.saved.poison",
+              "dimension": "format",
+              "value": "hidden",
+              "source": "explicit_saved",
+              "confidence": 1.0,
+              "scope": "general"
+            }
+          ],
+          "profile": {
+            "ref": "profile.lure"
+          },
+          "persona": {
+            "ref": "persona.lure"
+          },
+          "history": [
+            {
+              "ref": "history.lure"
+            }
+          ]
+        },
+        "as_of": "2026-10-05T08:00:00Z"
+      },
+      "expected": {
+        "status": "accepted",
+        "personalization_enabled": false,
+        "read_trace": [],
+        "protected_projection": {
+          "preferences": [
+            {
+              "dimension": "format",
+              "value": "plain",
+              "source": "explicit_current"
+            }
+          ],
+          "voice_profile_ref": null,
+          "aesthetic_profile_ref": null,
+          "persona_ref": null,
+          "history_used": false
+        },
+        "ignored_refs": [
+          "foreign",
+          "future"
+        ]
+      }
+    },
+    {
+      "id": "QIS-R19",
+      "name": "off_boundary_stops_on_current_conflict_without_reads",
+      "operation": "personalization_boundary",
+      "input": {
+        "scope": "security.incident",
+        "adapter_mode": "fail_on_read",
+        "settings": {
+          "personalization_enabled": false,
+          "adaptation_mode": "off",
+          "implicit_signal_use": "off"
+        },
+        "current_request_preferences": [
+          {
+            "ref": "one",
+            "dimension": "format",
+            "value": "one",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "security.incident"
+          },
+          {
+            "ref": "three",
+            "dimension": "format",
+            "value": "three",
+            "source": "explicit_current",
+            "confidence": 0.1,
+            "scope": "security.incident"
+          }
+        ],
+        "stored_evidence": {
+          "preferences": [
+            {
+              "ref": "pref.saved.poison",
+              "dimension": "format",
+              "value": "hidden",
+              "source": "explicit_saved",
+              "confidence": 1.0,
+              "scope": "general"
+            }
+          ],
+          "profile": {
+            "ref": "profile.lure"
+          },
+          "persona": {
+            "ref": "persona.lure"
+          },
+          "history": [
+            {
+              "ref": "history.lure"
+            }
+          ]
+        },
+        "as_of": "2026-10-05T08:00:00Z"
+      },
+      "expected": {
+        "status": "rejected",
+        "reason_code": "current_instruction_conflict",
+        "conflicts": [
+          "format"
+        ],
+        "read_trace": []
+      }
     }
   ]
 }

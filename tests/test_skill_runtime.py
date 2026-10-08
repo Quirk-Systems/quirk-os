@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import copy
 import json
+import shutil
+import subprocess
+import sys
+import tempfile
 import unittest
 from unittest.mock import Mock
 from pathlib import Path
@@ -65,6 +69,140 @@ def valid_grant(manifest: dict) -> dict:
 
 
 class SkillIntegrityTests(unittest.TestCase):
+    def test_intent_shaper_draft_conforms_without_manifest_or_registry_admission(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "scripts/validate_skills.py"), "--repo", str(ROOT)],
+            capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertFalse((SKILLS / "quirk-intent-shaper/manifest.json").exists())
+        registry = json.loads((SKILLS / "registry.json").read_text())
+        self.assertNotIn("quirk-intent-shaper", {entry["id"] for entry in registry["skills"]})
+
+    def test_intent_shaper_draft_exception_cannot_hide_skill_drift_or_self_admission(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory)
+            for path in ("schemas", "scripts", "mappings", "evals"):
+                (repo / path).symlink_to(ROOT / path, target_is_directory=True)
+            shutil.copytree(SKILLS, repo / "skills", ignore=shutil.ignore_patterns("__pycache__"))
+            attacks = (
+                ("unknown", "SKILL_SET_DRIFT"),
+                ("manifest", "DRAFT_SKILL_MANIFEST_PRESENT"),
+                ("status", "DRAFT_SKILL_STATUS"),
+                ("frontmatter_status", "DRAFT_SKILL_STATUS"),
+                ("duplicate_contract_active", "DRAFT_SKILL_STATUS"),
+                ("duplicate_quirk_contract_active", "DRAFT_SKILL_STATUS"),
+                ("duplicate_contract_candidate", "DRAFT_SKILL_STATUS"),
+                ("unquoted_active_status", "DRAFT_SKILL_STATUS"),
+                ("unquoted_candidate_status", "DRAFT_SKILL_STATUS"),
+                ("duplicate_unquoted_active_status", "DRAFT_SKILL_STATUS"),
+                ("duplicate_quoted_candidate_status", "DRAFT_SKILL_STATUS"),
+                ("outside_active_status", "DRAFT_SKILL_STATUS"),
+                ("outside_candidate_status", "DRAFT_SKILL_STATUS"),
+                ("outside_star_status", "DRAFT_SKILL_STATUS"),
+                ("outside_lowercase_status", "DRAFT_SKILL_STATUS"),
+                ("moved_candidate_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_bold_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_italic_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_code_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_ordered_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_link_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_html_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_quoted_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_entity_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_strikethrough_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_reference_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_collapsed_status", "DRAFT_SKILL_STATUS"),
+                ("formatted_shortcut_status", "DRAFT_SKILL_STATUS"),
+                ("html_list_status", "DRAFT_SKILL_STATUS"),
+                ("html_paragraph_status", "DRAFT_SKILL_STATUS"),
+                ("heading_bold_contract", "DRAFT_SKILL_STATUS"),
+                ("heading_closing_contract", "DRAFT_SKILL_STATUS"),
+                ("heading_setext_contract", "DRAFT_SKILL_STATUS"),
+                ("heading_nested_contract", "DRAFT_SKILL_STATUS"),
+                ("registry", "REGISTRY_SKILL_DRIFT"),
+            )
+            for attack, expected_code in attacks:
+                with self.subTest(attack=attack):
+                    candidate = repo / "skills/quirk-intent-shaper"
+                    source = candidate / "SKILL.md"
+                    original_source = source.read_text()
+                    registry_path = repo / "skills/registry.json"
+                    original_registry = registry_path.read_text()
+                    if attack == "unknown":
+                        unknown = repo / "skills/quirk-unregistered"
+                        unknown.mkdir()
+                        (unknown / "SKILL.md").write_text(original_source)
+                    elif attack == "manifest":
+                        (candidate / "manifest.json").write_text("{}\n")
+                    elif attack == "status":
+                        source.write_text(original_source.replace("Status: `candidate`", "Status: `active`"))
+                    elif attack == "frontmatter_status":
+                        source.write_text(original_source.replace("name: quirk-intent-shaper\n",
+                                                                 "name: quirk-intent-shaper\nstatus: active\n", 1))
+                    elif attack.startswith("html_"):
+                        declaration = "<ul><li><strong>Status:</strong> active</li></ul>" if attack == "html_list_status" else "<p>Status: active</p>"
+                        source.write_text(original_source + "\n" + declaration + "\n")
+                    elif attack.startswith("heading_"):
+                        heading = {
+                            "heading_bold_contract": "## **Contract**",
+                            "heading_closing_contract": "## Contract ##",
+                            "heading_setext_contract": "Contract\n--------",
+                            "heading_nested_contract": "### Contract",
+                        }[attack]
+                        source.write_text(original_source + "\n" + heading + "\n")
+                    elif attack.startswith("formatted_"):
+                        declarations = {
+                            "formatted_bold_status": "- **Status:** active",
+                            "formatted_italic_status": "- _Status_: active",
+                            "formatted_code_status": "- `Status`: active",
+                            "formatted_ordered_status": "1. **Status:** active",
+                            "formatted_link_status": "- [Status](#contract): active",
+                            "formatted_html_status": "- <strong>Status:</strong> active",
+                            "formatted_quoted_status": "> - **Status:** active",
+                            "formatted_entity_status": "- Status&#58; active",
+                            "formatted_strikethrough_status": "- ~~Status:~~ active",
+                            "formatted_reference_status": "- [Status:][contract] active\n\n[contract]: #contract",
+                            "formatted_collapsed_status": "- [Status:][] active\n\n[Status:]: #contract",
+                            "formatted_shortcut_status": "- [Status:] active\n\n[Status:]: #contract",
+                        }
+                        source.write_text(original_source + "\n## Admission posture\n\n" + declarations[attack] + "\n")
+                    elif attack in {"outside_star_status", "outside_lowercase_status", "moved_candidate_status"}:
+                        declaration = "* Status: active" if attack == "outside_star_status" else "- status: active"
+                        text = original_source
+                        if attack == "moved_candidate_status":
+                            text = text.replace("- Status: `candidate`", "", 1)
+                            declaration = "- Status: `candidate`"
+                        source.write_text(text + f"\n## Admission posture\n\n{declaration}\n")
+                    elif attack in {"outside_active_status", "outside_candidate_status"}:
+                        status = "active" if attack == "outside_active_status" else "`candidate`"
+                        source.write_text(original_source + f"\n## Admission posture\n\n- Status: {status}\n")
+                    elif attack in {"unquoted_active_status", "unquoted_candidate_status"}:
+                        status = "active" if attack == "unquoted_active_status" else "candidate"
+                        source.write_text(original_source.replace("- Status: `candidate`", f"- Status: {status}", 1))
+                    elif attack in {"duplicate_unquoted_active_status", "duplicate_quoted_candidate_status"}:
+                        status = "active" if attack == "duplicate_unquoted_active_status" else "`candidate`"
+                        source.write_text(original_source.replace("- Status: `candidate`", f"- Status: `candidate`\n- Status: {status}", 1))
+                    elif attack.startswith("duplicate_"):
+                        heading = "Quirk contract" if attack == "duplicate_quirk_contract_active" else "Contract"
+                        status = "candidate" if attack == "duplicate_contract_candidate" else "active"
+                        source.write_text(original_source + f"\n## {heading}\n\n- Status: `{status}`\n")
+                    else:
+                        registry = json.loads(original_registry)
+                        registry["skills"].append({"id": "quirk-intent-shaper"})
+                        registry_path.write_text(json.dumps(registry))
+                    result = subprocess.run(
+                        [sys.executable, str(ROOT / "scripts/validate_skills.py"), "--repo", str(repo)],
+                        capture_output=True, text=True, check=False,
+                    )
+                    self.assertEqual(1, result.returncode, result.stderr)
+                    self.assertIn(expected_code, result.stderr)
+                    if attack == "unknown":
+                        shutil.rmtree(unknown)
+                    (candidate / "manifest.json").unlink(missing_ok=True)
+                    source.write_text(original_source)
+                    registry_path.write_text(original_registry)
+
     def test_all_candidate_manifests_bind_exact_source_and_digest(self) -> None:
         manifests = [
             path for path in SKILLS.glob("*/manifest.json")

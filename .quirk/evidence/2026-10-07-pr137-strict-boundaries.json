@@ -1,0 +1,105 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr137-strict-boundaries.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "994c391a72dd3c93317a3a86e32e59d18dfe1d59",
+    "commit": "30a9249062a769cdccb032a5acbcf5295f34c83e",
+    "changed_paths": [
+      "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "scripts/intent_shaper/policy.py",
+      "scripts/validate_skills.py",
+      "tests/test_intent_shaper.py",
+      "tests/test_skill_runtime.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr137-strict-boundaries.2026-10-07",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Address Codex findings 4208194043 and 4208194065. Count Status bullets across the entire skill source while requiring the sole canonical candidate declaration inside exactly one contract. Regress outside-section contradictions, alternate bullet markers, lowercase declarations, and relocated candidate status. Validate RFC 3339 with the same jsonschema FormatChecker used by plan validation before datetime parsing, rejecting arbitrary separators, compact dates and abbreviated offsets before protected reads in both modes. Same byte-identical local source passed 80 focused tests and 329 repository tests (328 passed, one native Windows test skipped on Linux), 48/48 skill cases, 44/44 Intent Shaper fixtures, valid QIS fixture and Golden candidate gates. Sixteen admission holds remain. No runtime admission, deployment, human approval or hosted validation is claimed.",
+      "evidence_paths": [
+        "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+        "scripts/intent_shaper/policy.py",
+        "scripts/validate_skills.py",
+        "tests/test_intent_shaper.py",
+        "tests/test_skill_runtime.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "state": "present",
+      "git_blob": "fc05cb446095305b8da1d960fb51ade8c1a2c6a7",
+      "sha256": "sha256:56e6721e1b2c4ed13073f97025b2f158031005766edc5c35fe00f33802d09b89"
+    },
+    {
+      "path": "scripts/intent_shaper/policy.py",
+      "state": "present",
+      "git_blob": "6d606af5cfabd4921214b508715f1df2cb9d2a71",
+      "sha256": "sha256:b8efcf7c896fbfbc65029076bcd54147c921486137791e3e8d3fe2f9b8ec4dbd"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "abcb6bfee56b008b149459c4c7959b517b583c2f",
+      "sha256": "sha256:ab86190d18f4671e3cd7201c1e06e68d19727304c0c7a97e0e4ad451b006509d"
+    },
+    {
+      "path": "tests/test_intent_shaper.py",
+      "state": "present",
+      "git_blob": "5ee82c26893c452e326b8dc5277420bb4fb0f34c",
+      "sha256": "sha256:ffc1feecd13e3d387f3449301635739b1371c83ad27bf5537408941ede47f2d3"
+    },
+    {
+      "path": "tests/test_skill_runtime.py",
+      "state": "present",
+      "git_blob": "d493b90291bd67d7e5b9264e623737e9605d2ebe",
+      "sha256": "sha256:c26f17a67d234cc155bde668dc6a38cd0a2c9ecc3cfcb0953bda88ecc4e13fcf"
+    }
+  ],
+  "verification": {
+    "verified_at": "2026-10-07T14:34:20Z",
+    "commands": [
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_skill_runtime tests.test_qis_harness",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/pr137-strict-skills.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /tmp/pr137-strict-intent.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /tmp/pr137-strict-golden.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ]
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:0ee1d45e0aee3191abad2a3d2a6c886c6fdbe25492146a222bdff3b08791c475"
+}

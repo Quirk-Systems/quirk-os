@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import json
 import os
+import re
 import sys
 import time
 from collections import Counter, defaultdict
@@ -67,6 +69,49 @@ def schema_errors(schema: dict[str, Any], instance: Any) -> list[str]:
     ]
 
 
+def markdown_label(text: str) -> str:
+    label = html.unescape(text)
+    label = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", label)
+    label = re.sub(r"\[([^\]]+)\](?:[ \t]*\[[^\]]*\])?", r"\1", label)
+    label = re.sub(r"<[^>]*>", "", label)
+    return re.sub(r"[\\`*_~]", "", label).strip()
+
+
+def draft_prose(text: str) -> str:
+    """Exclude fenced examples when refusing raw HTML declarations."""
+    lines: list[str] = []
+    fence: str | None = None
+    for line in text.splitlines():
+        marker = re.match(r"^[ \t]*(`{3,}|~{3,})", line)
+        if fence is None and marker:
+            fence = marker[1]
+            lines.append("")
+        elif fence is not None:
+            if re.fullmatch(r"[ \t]*" + re.escape(fence[0]) + "{" + str(len(fence)) + r",}[ \t]*", line):
+                fence = None
+            lines.append("")
+        else:
+            lines.append(line)
+    return "\n".join(lines)
+
+
+def contract_heading_count(text: str) -> int:
+    headings = re.findall(r"(?m)^[ \t]*(?:>[ \t]*)*#{1,6}[ \t]+(.*)$", text)
+    headings += re.findall(r"(?m)^([^\n]+)\n[ \t]*(?:={3,}|-{3,})[ \t]*$", text)
+    return sum(markdown_label(re.sub(r"[ \t]+#+[ \t]*$", "", title)).casefold()
+               in {"contract", "quirk contract"} for title in headings)
+
+
+def status_bullets(text: str) -> list[str]:
+    """Recognize formatted status labels while retaining canonical source text."""
+    declarations: list[str] = []
+    for item in re.findall(r"(?m)^[ \t]*(?:>[ \t]*)*(?:[-+*]|[0-9]+[.)])[ \t]+(.*?)[ \t]*$", text):
+        label = markdown_label(item)
+        if re.match(r"(?i)^Status[ \t]*:", label):
+            declarations.append(item)
+    return declarations
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate the Quirk Skills candidate registry.")
     parser.add_argument("--repo", default=".", help="Repository root.")
@@ -126,7 +171,15 @@ def main() -> int:
             continue
         if frontmatter.get("name") != skill_id:
             fail("DRAFT_SKILL_NAME_MISMATCH", f"{source_path.relative_to(root)}: name mismatch")
-        if "Status: `candidate`" not in source_text and "status: candidate" not in source_text.lower():
+        contracts = re.findall(r"(?ms)^## (?:Quirk contract|Contract)\n(.*?)(?=^## |\Z)", source_text)
+        prose = draft_prose(source_text)
+        statuses = status_bullets(source_text)
+        contract_statuses = status_bullets(contracts[0]) if len(contracts) == 1 else []
+        if (len(contracts) != 1 or contract_heading_count(prose) != 1
+                or re.search(r"<[!/?A-Za-z]", prose)
+                or statuses != ["Status: `candidate`"]
+                or contract_statuses != ["Status: `candidate`"]
+                or frontmatter.get("status", "candidate") != "candidate"):
             fail("DRAFT_SKILL_STATUS", f"{source_path.relative_to(root)}: draft must remain candidate")
         if (root / "skills" / skill_id / "manifest.json").exists():
             fail("DRAFT_SKILL_MANIFEST_PRESENT", f"{skill_id}: draft package may not join manifest registry")

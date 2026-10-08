@@ -15,7 +15,7 @@ import sys
 from jsonschema import Draft202012Validator, FormatChecker
 import yaml
 
-from intent_shaper.policy import SOURCE_RANK, evaluate_cases
+from intent_shaper.policy import SOURCE_RANK, evaluate_cases, validate_plan_policy
 
 
 EVALUATED_CANDIDATE_SHA = "f5effa3d6da3e5879e10007492aeff39a1c643be"
@@ -48,6 +48,18 @@ REQUIRED_PROHIBITIONS = {
 def canonical_hash(value: object) -> str:
     payload = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
+
+
+def validate_plan(plan: object, schema: dict) -> list[str]:
+    """Validate timestamp formats and plan-level policy through one boundary."""
+
+    schema_errors = sorted(
+        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(plan),
+        key=lambda error: tuple(map(str, error.absolute_path)),
+    )
+    if schema_errors:
+        return [f"{'/'.join(map(str, error.absolute_path))}:{error.message}" for error in schema_errors]
+    return validate_plan_policy(plan)
 
 
 def validate_policy(policy: object) -> list[str]:
@@ -129,10 +141,7 @@ def main() -> int:
     Draft202012Validator.check_schema(schema)
     Draft202012Validator.check_schema(receipt_schema)
     receipt_validator = Draft202012Validator(receipt_schema, format_checker=FormatChecker())
-    sample_errors = sorted(
-        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(sample),
-        key=lambda error: list(error.path),
-    )
+    sample_errors = validate_plan(sample, schema)
     policy_errors = validate_policy(policy)
     results = evaluate_cases(suite["cases"])
     receipt_errors: list[str] = []
@@ -144,7 +153,7 @@ def main() -> int:
             )
 
     errors: list[str] = []
-    errors.extend(f"sample:{'/'.join(map(str, error.path))}:{error.message}" for error in sample_errors)
+    errors.extend(f"sample:{error}" for error in sample_errors)
     errors.extend(policy_errors)
     errors.extend(receipt_errors)
     errors.extend(f"fixture:{result['id']}" for result in results if not result["passed"])
