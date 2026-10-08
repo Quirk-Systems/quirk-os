@@ -17,7 +17,7 @@ Immutable source: https://github.com/Quirk-Systems/quirk-os/blob/520c38281be334c
 
 Disposable target: https://docs.google.com/document/d/1ev7b7j73AZjHyeXjWLi-I0qwvHBoUbwES3PDetTRTg0/edit
 Tab `t.0`; native Docs revision IDs, requests, final text and provider error responses
-are recorded in `.quirk/evidence/pr148-git-docs-run.json` under outcome.
+are recorded in `docs/sync-control-plane/receipts/pr148-git-docs-run.json` under outcome.
 These opaque Docs revisions are caller-bound, short-lived write leases, not permanent
 historical retrieval IDs. Drive file revision IDs are not substituted for Docs revision IDs.
 
