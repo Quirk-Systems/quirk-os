@@ -1,0 +1,90 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr148.git-docs.0294f828a0d9",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "260263d77efce731dbdb240619d71985b843f72b",
+    "commit": "0294f828a0d9261e169bb0322cee9d2b3a845852",
+    "changed_paths": [
+      "scripts/sync_control_plane/git_docs_proposal.py",
+      "tests/test_change_maintenance.py",
+      "docs/sync-control-plane/CHANGE-MAINTENANCE.md",
+      "docs/sync-control-plane/GIT-DOCS-PROOF.md",
+      ".quirk/evidence/pr148-git-docs-run.json"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr148.git-docs.0294f828a0d9",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "21 focused tests passed; full local discovery ran 454 tests with one skip, OK, against the exact content blobs listed. Session-observed disposable Git file stale-SHA conflict and Docs requiredRevisionId rejection, successful guarded marker update preserving intervening owner text, and stale batch replay rejection. No hosted results for this new subject, independent review, durable deduplication, runtime authority validation, atomic branch-ref lease or cross-provider transaction is established.",
+      "evidence_paths": [
+        "scripts/sync_control_plane/git_docs_proposal.py",
+        "tests/test_change_maintenance.py",
+        "docs/sync-control-plane/CHANGE-MAINTENANCE.md",
+        "docs/sync-control-plane/GIT-DOCS-PROOF.md",
+        ".quirk/evidence/pr148-git-docs-run.json"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "scripts/sync_control_plane/git_docs_proposal.py",
+      "state": "present",
+      "git_blob": "584502f22f55614a6a25797b66b944aeac1a550f",
+      "sha256": "sha256:d521690ad53f8b03de5254fa0eaa944a9113b43123f373ea8bf04a7fa195d68f"
+    },
+    {
+      "path": "tests/test_change_maintenance.py",
+      "state": "present",
+      "git_blob": "d9b4b5688f71c09842aac779f684f5911b776150",
+      "sha256": "sha256:7ac86f761e4480ac014649f563ca50c80589cbbba156de24b72ca4e1009b5dde"
+    },
+    {
+      "path": "docs/sync-control-plane/CHANGE-MAINTENANCE.md",
+      "state": "present",
+      "git_blob": "ce138c322fb75fdd0dffec78d0cc46eb067fc3d8",
+      "sha256": "sha256:7690349617e5a95b4b51fad3516fac104324511fdb3ba38f1529126a40227423"
+    },
+    {
+      "path": "docs/sync-control-plane/GIT-DOCS-PROOF.md",
+      "state": "present",
+      "git_blob": "baabbdcfc8417f8cf7a28f024dcfe47424489b22",
+      "sha256": "sha256:d317a735446a22dccf56936238d55b7b7455eb9bc981741a96bdd9d4e6b17540"
+    },
+    {
+      "path": ".quirk/evidence/pr148-git-docs-run.json",
+      "state": "present",
+      "git_blob": "ac937dfc6ea31f34a00b7e88d0efeeb18db8d868",
+      "sha256": "sha256:933b492ba8edb9b99e39d222b631067c2fdecf93ded505d96ee90bf43892f838"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_change_maintenance.py' -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-08T18:51:05.658963Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:f8fea9c4d0d920747f57a6fa057e902733161ef6172fd280e16428e87b61a4e0"
+}
