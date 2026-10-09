@@ -1,0 +1,72 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr147-repair-loop.9178f2daf59b",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "7de7063b780cabc579b15cac9d530fa4eec28e93",
+    "commit": "9178f2daf59b09d7eeffe972d205de9267792f8a",
+    "changed_paths": [
+      "docs/changes/verification-repair-routes.md",
+      "scripts/agent_reliability/repair_loop.py",
+      "scripts/route_agent_verification.py",
+      "tests/test_repair_loop.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr147-repair-loop.9178f2daf59b",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "77 focused tests pass locally in a partial checkout: 58 inherited reliability methods, nine route methods and ten loop methods. Route fixture parity across 28 original authority/completion cases remains passing. Loop cases verify dependency-ordered steps, structural blocker reduction without user-benefit claims, newly exposed self-sign-off as a tradeoff, goal-shrinking rejection, no-progress and authority stops, budget enforcement, no post-stop continuation, repeated-mutation rejection, and CLI valid/invalid recovery. Synthetic assertions only; observations and mutations are not authenticated. No full repository local test, independent review, measured real-world benefit, causal repair proof, live integration, autonomous repair, grant, admission or runtime activation is claimed. Hosted checks are pending and separate.",
+      "evidence_paths": [
+        "docs/changes/verification-repair-routes.md",
+        "scripts/agent_reliability/repair_loop.py",
+        "scripts/route_agent_verification.py",
+        "tests/test_repair_loop.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "scripts/agent_reliability/repair_loop.py",
+      "state": "present",
+      "git_blob": "01d0f4161dbcaff9acd90f7b6c49e7679b7b4527",
+      "sha256": "sha256:3879571626c2058eefb95572222aea40ba38da524eb6ba19ef604b847c1df862"
+    },
+    {
+      "path": "tests/test_repair_loop.py",
+      "state": "present",
+      "git_blob": "0d96bdad0dfa605dda5dc380c05f35de42bf4da7",
+      "sha256": "sha256:1ee9f2e74677db9bf71e9065cd6a05c00cf18f9149cf373d3ff0ec94e2f6b16c"
+    },
+    {
+      "path": "scripts/route_agent_verification.py",
+      "state": "present",
+      "git_blob": "4ae47fdb747e382761374c3ae413a6b2caa28e92",
+      "sha256": "sha256:8ffe21034d270c937b1e1d939262236bd9568ded921cdf5538aedaedd641c80d"
+    },
+    {
+      "path": "docs/changes/verification-repair-routes.md",
+      "state": "present",
+      "git_blob": "a11025809744301c8d24d32227a49e3dec1c25b7",
+      "sha256": "sha256:164e3bf2f76ca80b833a3f472471cb253d6cf01a512252b631ae96f76961aac4"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py' -q",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-09T06:27:14.810001+00:00"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:fbb79c4c84f73a3692ef050f110baaf0f8fe2d97f9c5cacc6f20e259302f4963"
+}
