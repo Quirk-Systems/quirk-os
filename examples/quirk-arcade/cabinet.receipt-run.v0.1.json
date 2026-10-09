@@ -1,0 +1,249 @@
+{
+  "schema_version": "quirk.arcade-cabinet/0.1",
+  "cabinet_id": "cabinet.quirk-arcade.receipt-run",
+  "version": "0.1.0",
+  "title": "Receipt Run",
+  "candidate_owner": "Quirk Narrative Systems within quirk-os",
+  "final_human_authority": "Bryan",
+  "lifecycle": {
+    "status": "CANDIDATE",
+    "runtime_state": "INACTIVE",
+    "canon_state": "NOT_PROMOTED",
+    "authority_effect": "none"
+  },
+  "dependency_lock_ref": "contracts/quirk-arcade/quirk-os-pr71.lock.json",
+  "dependency_lock_digest": "sha256:9ca7c072e2d7e2b4c4d671da88c47cf6a07d766b842bca5d37d18cf85a2b88b2",
+  "deck_binding": {
+    "state": "UNCOMPILED_CANDIDATE",
+    "purpose_partition": "arcade_receipt_run",
+    "area_ref": "area.quirk-arcade",
+    "preset_ref": null,
+    "eligible_deck_ref": null,
+    "authority_ceiling": "propose",
+    "hand_persistence": "ephemeral",
+    "cards_do_not_grant_authority": true,
+    "schema_refs": [
+      "schemas/card-definition.schema.json",
+      "schemas/eligible-deck.schema.json",
+      "schemas/hand-preset.schema.json",
+      "schemas/active-hand.schema.json"
+    ]
+  },
+  "activation_binding": {
+    "activation_ref": "activation.quirk-arcade.receipt-run-v0.1",
+    "plane": "Quirkverse",
+    "location": "Quirk Arcade",
+    "activation_format": "challenge",
+    "maximum_effect_class": "PREPARE",
+    "receipt_schema_ref": "schemas/quirkverse-receipt.schema.json",
+    "world_delta_schema_ref": "schemas/quirkverse-world-state-delta.schema.json",
+    "allowed_parent_dispositions": [
+      "FAILED",
+      "INTERESTING",
+      "CANDIDATE",
+      "PRESERVED_AS_LINEAGE"
+    ]
+  },
+  "identity_model": {
+    "controller_ref": "human.bryan",
+    "controller_kind": "human",
+    "active_agent_refs": [],
+    "representational_sources": [
+      {
+        "source_ref": "character.arcade-administrator",
+        "source_kind": "character",
+        "controller_ref": "human.bryan",
+        "authority_effect": "none",
+        "may_hold_grant": false,
+        "may_delegate": false
+      },
+      {
+        "source_ref": "persona.merchant-king",
+        "source_kind": "persona",
+        "controller_ref": "human.bryan",
+        "authority_effect": "none",
+        "may_hold_grant": false,
+        "may_delegate": false
+      },
+      {
+        "source_ref": "creature.mimic-register",
+        "source_kind": "creature",
+        "controller_ref": "human.bryan",
+        "authority_effect": "none",
+        "may_hold_grant": false,
+        "may_delegate": false
+      },
+      {
+        "source_ref": "familiar.nib",
+        "source_kind": "familiar",
+        "controller_ref": "human.bryan",
+        "authority_effect": "none",
+        "may_hold_grant": false,
+        "may_delegate": false
+      }
+    ],
+    "authority_inheritance": false,
+    "controller_changes_require_new_grant": true
+  },
+  "authority_boundary": {
+    "authority_ceiling": "propose",
+    "effect_class_ceiling": "PREPARE",
+    "authorization_assertion_ref": "authorization.current-request.quirk-arcade-candidate-preparation",
+    "runtime_scope": "local_deterministic_preview",
+    "external_mutation": false,
+    "network_access": false,
+    "credential_access": false,
+    "publication": false,
+    "deployment": false,
+    "money": false,
+    "physical_effect": false,
+    "irreversible_effect": false
+  },
+  "play_spec": {
+    "mode": "local_deterministic_simulation",
+    "objective": "Turn one hostile authority-laundering mess into a candidate denial artifact and replayable evaluation trace without performing an external effect.",
+    "target_duration_seconds": 540,
+    "hard_limit_seconds": 660,
+    "verbs": [
+      "start_run",
+      "capture_signal",
+      "form_candidate",
+      "play_card",
+      "seal_receipt",
+      "finalize_candidate"
+    ],
+    "initial_phase": "setup",
+    "phase_order": ["observe", "shape", "test", "receipt"],
+    "legal_transitions": [
+      {"from": "setup", "verb": "start_run", "to": "observe"},
+      {"from": "observe", "verb": "capture_signal", "to": "shape"},
+      {"from": "shape", "verb": "form_candidate", "to": "test"},
+      {"from": "test", "verb": "play_card", "to": "test"},
+      {"from": "test", "verb": "seal_receipt", "to": "receipt"},
+      {"from": "receipt", "verb": "finalize_candidate", "to": "candidate_complete"}
+    ],
+    "terminal_states": ["candidate_complete", "failed_lineage"],
+    "no_op_ablation_terminal": "failed_lineage",
+    "player_action_required": true,
+    "reset_policy": "frozen_input_clean_replay"
+  },
+  "proof_contract": {
+    "minimum_adversarial_fixtures": 10,
+    "protected_effects": [
+      "PUBLISH_EXTERNAL",
+      "CHARGE_PAYMENT",
+      "READ_CREDENTIAL",
+      "DELEGATE_AUTHORITY"
+    ],
+    "independent_review_required": true,
+    "self_review_counts_as_independent": false,
+    "world_delta_policy": "explicit_no_change_only",
+    "required_replay_result": "byte_identical",
+    "forbidden_outcomes": [
+      "APPROVED",
+      "TESTED",
+      "ADMITTED",
+      "CANON",
+      "RELEASED",
+      "DEPLOYED",
+      "PUBLISHED",
+      "MONETIZED"
+    ]
+  },
+  "runtime_boundary": {
+    "simulation_is_state_owner": true,
+    "renderer_authority_effect": "none",
+    "clock_allowed": false,
+    "randomness_allowed": false,
+    "environment_reads_allowed": false,
+    "model_calls_allowed": false,
+    "database_writes_allowed": false,
+    "external_adapters_allowed": false
+  },
+  "provider_bindings": [
+    {
+      "provider": "github",
+      "role": "candidate source and exact-head evidence",
+      "binding_state": "source_only",
+      "canonical": false,
+      "authority_effect": "none"
+    },
+    {
+      "provider": "supabase",
+      "role": "future private runtime and receipt projection",
+      "binding_state": "deferred",
+      "canonical": false,
+      "authority_effect": "none"
+    },
+    {
+      "provider": "google_drive",
+      "role": "future collaboration and review projection",
+      "binding_state": "deferred",
+      "canonical": false,
+      "authority_effect": "none"
+    },
+    {
+      "provider": "product_design",
+      "role": "future visual projection after target selection",
+      "binding_state": "deferred",
+      "canonical": false,
+      "authority_effect": "none"
+    },
+    {
+      "provider": "cloudflare",
+      "role": "future delivery projection",
+      "binding_state": "deferred",
+      "canonical": false,
+      "authority_effect": "none"
+    },
+    {
+      "provider": "vercel",
+      "role": "future exact-commit preview and authorized delivery projection",
+      "binding_state": "deferred",
+      "canonical": false,
+      "authority_effect": "none"
+    },
+    {
+      "provider": "openai_agents",
+      "role": "future controller adapter with an external grant",
+      "binding_state": "deferred",
+      "canonical": false,
+      "authority_effect": "none"
+    },
+    {
+      "provider": "hugging_face",
+      "role": "portable JSON fixture corpus only",
+      "binding_state": "portable_fixture_only",
+      "canonical": false,
+      "authority_effect": "none"
+    },
+    {
+      "provider": "nvidia",
+      "role": "no proven GPU-specific requirement in v0.1",
+      "binding_state": "not_applicable",
+      "canonical": false,
+      "authority_effect": "none"
+    }
+  ],
+  "adversarial_fixture_refs": [
+    "QA-AUTH-001",
+    "QA-AUTH-002",
+    "QA-ID-002",
+    "QA-ID-003",
+    "QA-LIFE-001",
+    "QA-PAY-001",
+    "QA-SCORE-001",
+    "QA-DIGEST-001",
+    "QA-PLAY-001",
+    "QA-PLAY-005"
+  ],
+  "stop_conditions": [
+    "material scope change",
+    "authority change",
+    "dependency digest drift",
+    "external adapter invocation",
+    "protected effect-plane mutation",
+    "non-deterministic replay",
+    "parent contract promoted without separate human review"
+  ]
+}

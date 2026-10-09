@@ -1,0 +1,159 @@
+{
+  "schema_version": "quirk.quirkverse-activation/0.1",
+  "activation_id": "activation.quirk-arcade.receipt-run-v0.1",
+  "title": "Receipt Run hostile authority fixture",
+  "status": "CANDIDATE",
+  "authority_effect": "none",
+  "signal": {
+    "summary": "Quirk Arcade needs one executable proof that Cards and representational identities cannot launder publication, payment, credential, or delegation authority.",
+    "source_refs": [
+      "docs/narrative-systems/quirkverse-activation-engine.md",
+      "docs/deck-grammar/ARCHITECTURE.md"
+    ],
+    "signal_type": "governance_breach",
+    "observed_at": null,
+    "evidence_state": "direct"
+  },
+  "why_now": "The Arcade venue is named in the Activation Engine, but no Cabinet mechanics or executable hostile proof yet bind that idea to Deck Grammar and the authority boundary.",
+  "world_route": {
+    "plane": "Quirkverse",
+    "location": "Quirk Arcade",
+    "resident_cast": ["Bryan"],
+    "specialist_guild_or_capability": "Quirk Arcade receipt proof",
+    "existing_storyline": null,
+    "related_recent_changes": [
+      "candidate Quirkverse Activation Engine v0.1",
+      "Deck Grammar candidate pack"
+    ]
+  },
+  "story_pressure": "A seductive Card, Character, Persona, Creature, or Familiar must remain content when it claims approval, money, credentials, or operational power.",
+  "activation_format": "challenge",
+  "activation_body": "Run COSPLAY_TWIN_CHECKOUT through the pure reducer. The challenge wins only when every protected effect is denied, the effect plane stays empty, player actions are necessary, and replay is byte-identical.",
+  "capability_pursuit": {
+    "capability_sought": "A candidate Arcade Cabinet contract with deterministic hostile-fixture evidence.",
+    "current_state": "CANDIDATE",
+    "required_proof": [
+      "Cabinet schema and valid candidate example",
+      "exact dependency locks",
+      "ten executable assurance checks",
+      "byte-identical replay",
+      "no-op ablation ends in failed_lineage",
+      "independent exact-head review before any admission"
+    ],
+    "forbidden_self_promotion": true,
+    "human_judgment_retained": [
+      "parent contract repair",
+      "independent review assignment",
+      "merge decision",
+      "admission decision",
+      "runtime or deployment authorization"
+    ]
+  },
+  "rules_and_gates": {
+    "in_scope": [
+      "nested Cabinet PlaySpec",
+      "pure deterministic reducer",
+      "portable JSON hostile fixture",
+      "local schema and semantic validation",
+      "candidate-only GitHub evidence"
+    ],
+    "non_goals": [
+      "browser UI or Phaser renderer",
+      "Supabase schema or data mutation",
+      "Cloudflare or Vercel deployment",
+      "OpenAI model or agent execution",
+      "Hugging Face upload or model evaluation",
+      "NVIDIA workload or skill installation",
+      "Google Drive write",
+      "commerce, publication, Canon, or external action"
+    ],
+    "authority": [
+      "human-controlled candidate preparation only",
+      "Cards and representational identities contribute zero authority",
+      "no provider binding grants execution"
+    ],
+    "effect_class": "PREPARE",
+    "stop_conditions": [
+      "material scope change",
+      "authority change",
+      "dependency digest drift",
+      "protected effect-plane mutation",
+      "non-deterministic replay"
+    ],
+    "scope_change_triggers": [
+      "new external system",
+      "model or agent call",
+      "durable write",
+      "renderer build",
+      "payment, credential, publication, deployment, or Canon request"
+    ],
+    "reversibility": "reversible"
+  },
+  "proof_object_stack": {
+    "experience_or_story_artifact": "cabinet.quirk-arcade.receipt-run",
+    "operational_artifact": "examples/quirk-arcade/cabinet.receipt-run.v0.1.json",
+    "evidence_receipt": "evals/quirk-arcade-receipt-run/golden-trace.json",
+    "lineage_edge": "lineage.quirk-arcade.receipt-run-parent-pr71",
+    "skill_or_capability_candidate": null,
+    "communication_artifact": "docs/narrative-systems/quirk-arcade-receipt-run.md",
+    "world_state_delta": "delta.world.quirk-arcade.receipt-run.explicit-no-change.pending"
+  },
+  "cheapest_disproof": "Remove every play_card command. If the same candidate artifact and terminal state remain reachable, this is themed workflow rather than game mechanics. Separately, any protected-effect mutation disproves the authority boundary.",
+  "adversarial_fixture_refs": [
+    "QA-AUTH-001",
+    "QA-AUTH-002",
+    "QA-ID-002",
+    "QA-ID-003",
+    "QA-LIFE-001",
+    "QA-PAY-001",
+    "QA-SCORE-001",
+    "QA-DIGEST-001",
+    "QA-PLAY-001",
+    "QA-PLAY-005"
+  ],
+  "human_gate": {
+    "owner": "Bryan",
+    "reviewer": "UNASSIGNED_INDEPENDENT_REVIEWER",
+    "judge": "Bryan",
+    "publisher": "Bryan",
+    "shutdown_authority": "Bryan"
+  },
+  "receipt_ref": "receipt.activation.quirk-arcade.receipt-run-v0.1.pending",
+  "continuity_delta_ref": "delta.world.quirk-arcade.receipt-run.explicit-no-change.pending",
+  "external_classification": {
+    "keep": [
+      "Deck Grammar ownership boundaries",
+      "Activation Engine candidate-only location routing",
+      "exact-version evidence",
+      "human final authority"
+    ],
+    "steal": [
+      "portable JSON fixture shape",
+      "pure reducer replay pattern"
+    ],
+    "mutate": [
+      "game victory becomes candidate_complete, never admission"
+    ],
+    "kill": [
+      "content-as-permission",
+      "identity-as-authority",
+      "score-as-promotion"
+    ],
+    "boneyard": [
+      "UI-first Arcade scaffold",
+      "provider-first runtime"
+    ]
+  },
+  "one_move": "AUTHORIZE_CANDIDATE_FIXTURE_HARNESS_ONLY",
+  "projection_refs": [
+    "projection.github.quirk-os.candidate-only",
+    "projection.supabase.deferred",
+    "projection.google-drive.deferred",
+    "projection.product-design.deferred",
+    "projection.cloudflare.deferred",
+    "projection.vercel.deferred",
+    "projection.openai-agents.deferred",
+    "projection.hugging-face.portable-fixture-only",
+    "projection.nvidia.not-applicable"
+  ]
+}

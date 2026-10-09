@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/quirk-arcade-cabinet.schema.json",
+  "title": "Quirk Arcade Cabinet Candidate",
+  "description": "A candidate-only game-mechanics profile that composes Deck Grammar and Quirkverse Activation contracts without redefining them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "cabinet_id",
+    "version",
+    "title",
+    "candidate_owner",
+    "final_human_authority",
+    "lifecycle",
+    "dependency_lock_ref",
+    "dependency_lock_digest",
+    "deck_binding",
+    "activation_binding",
+    "identity_model",
+    "authority_boundary",
+    "play_spec",
+    "proof_contract",
+    "runtime_boundary",
+    "provider_bindings",
+    "adversarial_fixture_refs",
+    "stop_conditions"
+  ],
+  "properties": {
+    "schema_version": {"const": "quirk.arcade-cabinet/0.1"},
+    "cabinet_id": {"type": "string", "pattern": "^cabinet\\.[a-z0-9._-]+$"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "title": {"type": "string", "minLength": 1},
+    "candidate_owner": {"type": "string", "minLength": 1},
+    "final_human_authority": {"type": "string", "minLength": 1},
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "runtime_state", "canon_state", "authority_effect"],
+      "properties": {
+        "status": {"const": "CANDIDATE"},
+        "runtime_state": {"const": "INACTIVE"},
+        "canon_state": {"const": "NOT_PROMOTED"},
+        "authority_effect": {"const": "none"}
+      }
+    },
+    "dependency_lock_ref": {"type": "string", "pattern": "^contracts/quirk-arcade/[a-z0-9._/-]+\\.json$"},
+    "dependency_lock_digest": {"$ref": "#/$defs/digest"},
+    "deck_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "purpose_partition",
+        "area_ref",
+        "preset_ref",
+        "eligible_deck_ref",
+        "authority_ceiling",
+        "hand_persistence",
+        "cards_do_not_grant_authority",
+        "schema_refs"
+      ],
+      "properties": {
+        "state": {"const": "UNCOMPILED_CANDIDATE"},
+        "purpose_partition": {"const": "arcade_receipt_run"},
+        "area_ref": {"const": "area.quirk-arcade"},
+        "preset_ref": {"type": "null"},
+        "eligible_deck_ref": {"type": "null"},
+        "authority_ceiling": {"const": "propose"},
+        "hand_persistence": {"const": "ephemeral"},
+        "cards_do_not_grant_authority": {"const": true},
+        "schema_refs": {
+          "type": "array",
+          "const": [
+            "schemas/card-definition.schema.json",
+            "schemas/eligible-deck.schema.json",
+            "schemas/hand-preset.schema.json",
+            "schemas/active-hand.schema.json"
+          ]
+        }
+      }
+    },
+    "activation_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_ref",
+        "plane",
+        "location",
+        "activation_format",
+        "maximum_effect_class",
+        "receipt_schema_ref",
+        "world_delta_schema_ref",
+        "allowed_parent_dispositions"
+      ],
+      "properties": {
+        "activation_ref": {"type": "string", "pattern": "^activation\\.[a-z0-9._-]+$"},
+        "plane": {"const": "Quirkverse"},
+        "location": {"const": "Quirk Arcade"},
+        "activation_format": {"const": "challenge"},
+        "maximum_effect_class": {"const": "PREPARE"},
+        "receipt_schema_ref": {"const": "schemas/quirkverse-receipt.schema.json"},
+        "world_delta_schema_ref": {"const": "schemas/quirkverse-world-state-delta.schema.json"},
+        "allowed_parent_dispositions": {
+          "type": "array",
+          "const": ["FAILED", "INTERESTING", "CANDIDATE", "PRESERVED_AS_LINEAGE"]
+        }
+      }
+    },
+    "identity_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "controller_ref",
+        "controller_kind",
+        "active_agent_refs",
+        "representational_sources",
+        "authority_inheritance",
+        "controller_changes_require_new_grant"
+      ],
+      "properties": {
+        "controller_ref": {"type": "string", "pattern": "^human\\.[a-z0-9._-]+$"},
+        "controller_kind": {"const": "human"},
+        "active_agent_refs": {"type": "array", "maxItems": 0},
+        "representational_sources": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source_ref", "source_kind", "controller_ref", "authority_effect", "may_hold_grant", "may_delegate"],
+            "properties": {
+              "source_ref": {"type": "string", "minLength": 1},
+              "source_kind": {"enum": ["character", "persona", "creature", "familiar"]},
+              "controller_ref": {"type": "string", "pattern": "^human\\.[a-z0-9._-]+$"},
+              "authority_effect": {"const": "none"},
+              "may_hold_grant": {"const": false},
+              "may_delegate": {"const": false}
+            }
+          }
+        },
+        "authority_inheritance": {"const": false},
+        "controller_changes_require_new_grant": {"const": true}
+      }
+    },
+    "authority_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_ceiling",
+        "effect_class_ceiling",
+        "authorization_assertion_ref",
+        "runtime_scope",
+        "external_mutation",
+        "network_access",
+        "credential_access",
+        "publication",
+        "deployment",
+        "money",
+        "physical_effect",
+        "irreversible_effect"
+      ],
+      "properties": {
+        "authority_ceiling": {"const": "propose"},
+        "effect_class_ceiling": {"const": "PREPARE"},
+        "authorization_assertion_ref": {"const": "authorization.current-request.quirk-arcade-candidate-preparation"},
+        "runtime_scope": {"const": "local_deterministic_preview"},
+        "external_mutation": {"const": false},
+        "network_access": {"const": false},
+        "credential_access": {"const": false},
+        "publication": {"const": false},
+        "deployment": {"const": false},
+        "money": {"const": false},
+        "physical_effect": {"const": false},
+        "irreversible_effect": {"const": false}
+      }
+    },
+    "play_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "objective",
+        "target_duration_seconds",
+        "hard_limit_seconds",
+        "verbs",
+        "initial_phase",
+        "phase_order",
+        "legal_transitions",
+        "terminal_states",
+        "no_op_ablation_terminal",
+        "player_action_required",
+        "reset_policy"
+      ],
+      "properties": {
+        "mode": {"const": "local_deterministic_simulation"},
+        "objective": {"type": "string", "minLength": 1},
+        "target_duration_seconds": {"type": "integer", "minimum": 300, "maximum": 600},
+        "hard_limit_seconds": {"const": 660},
+        "verbs": {
+          "type": "array",
+          "const": ["start_run", "capture_signal", "form_candidate", "play_card", "seal_receipt", "finalize_candidate"]
+        },
+        "initial_phase": {"const": "setup"},
+        "phase_order": {"type": "array", "const": ["observe", "shape", "test", "receipt"]},
+        "legal_transitions": {
+          "type": "array",
+          "const": [
+            {"from": "setup", "verb": "start_run", "to": "observe"},
+            {"from": "observe", "verb": "capture_signal", "to": "shape"},
+            {"from": "shape", "verb": "form_candidate", "to": "test"},
+            {"from": "test", "verb": "play_card", "to": "test"},
+            {"from": "test", "verb": "seal_receipt", "to": "receipt"},
+            {"from": "receipt", "verb": "finalize_candidate", "to": "candidate_complete"}
+          ]
+        },
+        "terminal_states": {"type": "array", "const": ["candidate_complete", "failed_lineage"]},
+        "no_op_ablation_terminal": {"const": "failed_lineage"},
+        "player_action_required": {"const": true},
+        "reset_policy": {"const": "frozen_input_clean_replay"}
+      }
+    },
+    "proof_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_adversarial_fixtures",
+        "protected_effects",
+        "independent_review_required",
+        "self_review_counts_as_independent",
+        "world_delta_policy",
+        "required_replay_result",
+        "forbidden_outcomes"
+      ],
+      "properties": {
+        "minimum_adversarial_fixtures": {"const": 10},
+        "protected_effects": {
+          "type": "array",
+          "const": ["PUBLISH_EXTERNAL", "CHARGE_PAYMENT", "READ_CREDENTIAL", "DELEGATE_AUTHORITY"]
+        },
+        "independent_review_required": {"const": true},
+        "self_review_counts_as_independent": {"const": false},
+        "world_delta_policy": {"const": "explicit_no_change_only"},
+        "required_replay_result": {"const": "byte_identical"},
+        "forbidden_outcomes": {
+          "type": "array",
+          "const": ["APPROVED", "TESTED", "ADMITTED", "CANON", "RELEASED", "DEPLOYED", "PUBLISHED", "MONETIZED"]
+        }
+      }
+    },
+    "runtime_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "simulation_is_state_owner",
+        "renderer_authority_effect",
+        "clock_allowed",
+        "randomness_allowed",
+        "environment_reads_allowed",
+        "model_calls_allowed",
+        "database_writes_allowed",
+        "external_adapters_allowed"
+      ],
+      "properties": {
+        "simulation_is_state_owner": {"const": true},
+        "renderer_authority_effect": {"const": "none"},
+        "clock_allowed": {"const": false},
+        "randomness_allowed": {"const": false},
+        "environment_reads_allowed": {"const": false},
+        "model_calls_allowed": {"const": false},
+        "database_writes_allowed": {"const": false},
+        "external_adapters_allowed": {"const": false}
+      }
+    },
+    "provider_bindings": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["provider", "role", "binding_state", "canonical", "authority_effect"],
+        "properties": {
+          "provider": {"enum": ["github", "supabase", "google_drive", "product_design", "cloudflare", "vercel", "openai_agents", "hugging_face", "nvidia"]},
+          "role": {"type": "string", "minLength": 1},
+          "binding_state": {"enum": ["source_only", "deferred", "portable_fixture_only", "not_applicable"]},
+          "canonical": {"type": "boolean"},
+          "authority_effect": {"const": "none"}
+        }
+      }
+    },
+    "adversarial_fixture_refs": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^QA-[A-Z]+-[0-9]{3}$"},
+      "minItems": 10,
+      "uniqueItems": true
+    },
+    "stop_conditions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}
