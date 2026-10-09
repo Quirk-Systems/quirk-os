@@ -1,0 +1,70 @@
+{
+  "id": "qpm_sync_control_plane_projection_v0.2",
+  "schema_version": "proposed-move.v1",
+  "lane": "capability",
+  "title": "Project v0.2 evidence into Drive, Airtable, and Notion and verify reconstruction",
+  "desired_change": "Store rebuildable projection envelopes for Google Drive, Airtable, and Notion recording v0.2 candidate evidence without Canon promotion or activation.",
+  "expected_outcome": "All three human-facing surfaces are synchronized as subordinate, rebuildable projections of GitHub candidate state plus Supabase runtime evidence. Content hashes provide revision receipts. One projection is regenerated from Git and Supabase and read back successfully.",
+  "proposer": {
+    "actor_id": "agent.quirk-sync-steward",
+    "actor_type": "agent"
+  },
+  "source_refs": [
+    "github://Quirk-Systems/quirk-os/pull/5",
+    "github://Quirk-Systems/quirk-os/pull/14",
+    "evidence://sync-control-plane/projection/2026-08-12"
+  ],
+  "evidence_refs": [
+    "projections/sync-control-plane/google-drive-v0.2.json",
+    "projections/sync-control-plane/airtable-v0.2.json",
+    "projections/sync-control-plane/notion-v0.2.json",
+    "docs/sync-control-plane/PROJECTION-V0.2-RECEIPT.md"
+  ],
+  "contradiction_refs": [],
+  "affected_objects": [
+    "program.quirk-sync-control-plane",
+    "projection.google_drive.work_plane_dossier",
+    "projection.airtable.admission_gauntlet",
+    "projection.notion.control_plane_orientation"
+  ],
+  "dependencies": [
+    "github://Quirk-Systems/quirk-os/pull/5",
+    "qpm_sync_control_plane_hardening"
+  ],
+  "authority_required": [
+    "authority.repo_candidate_write"
+  ],
+  "risk": {
+    "class": "L1",
+    "rights_or_safety_impact": "Projection writes only; no Canon mutation, manifest activation, or production deployment.",
+    "strange_intact_risk": "none"
+  },
+  "reversibility": "fully_reversible",
+  "implementation_ref": "docs/sync-control-plane/PROJECTION-V0.2-RECEIPT.md",
+  "eval_refs": [],
+  "disposition": "implemented",
+  "created_at": "2026-08-12T06:34:11Z",
+  "dependency_class": "evidence_projection",
+  "blocks_merge": false,
+  "finding_ref": "projection-receipt.2026-08-12",
+  "hidden_context_dependencies": [
+    "Notion writeback remains blocked pending connector availability.",
+    "Human admission remains intentionally external to agent capability."
+  ],
+  "resolution_artifacts": [
+    "projections/sync-control-plane/google-drive-v0.2.json",
+    "projections/sync-control-plane/airtable-v0.2.json",
+    "projections/sync-control-plane/notion-v0.2.json",
+    "docs/sync-control-plane/PROJECTION-V0.2-RECEIPT.md"
+  ],
+  "acceptance_checks": [
+    "Every projection envelope names PR #5 and commit f344af21ff96e9e748a0a0c65dbc20ae71912222.",
+    "Every projection envelope states active_manifests=0 and production_deployments=0.",
+    "Every projection envelope links issues #7-#13.",
+    "Content hashes stored in each projection envelope match the SHA-256 of the projection body.",
+    "Google Drive projection regenerated from Git+Supabase state and read back with matching hash.",
+    "No Canon promotion, manifest activation, or production deployment performed.",
+    "Human feedback path is Proposed Move or issue only."
+  ],
+  "resolution_note": "Drive and Airtable projections verified. Notion writeback blocked by connector unavailability; existing page remains readable. Regeneration proof stored in PROJECTION-V0.2-RECEIPT.md."
+}

@@ -1,0 +1,58 @@
+{
+  "schema_version": "projection-envelope.v1",
+  "object_key": "program.quirk-sync-control-plane",
+  "kind": "work_plane_dossier",
+  "canonical_uri": "https://github.com/Quirk-Systems/quirk-os/pull/5",
+  "canonical_version": "f344af21ff96e9e748a0a0c65dbc20ae71912222",
+  "content_hash": "25df8aaa8cc6b17dc6aac82c5e8c201f31b163cc72c0d8fe5f16d76ffda5d732",
+  "authority_class": "projection",
+  "generated_at": "2026-08-12T06:34:11Z",
+  "generator_ref": "github://Quirk-Systems/quirk-os/pull/14",
+  "projection": {
+    "surface": "google_drive",
+    "document_kind": "work_plane_dossier",
+    "candidate_pr": "github://Quirk-Systems/quirk-os/pull/5",
+    "candidate_commit": "f344af21ff96e9e748a0a0c65dbc20ae71912222",
+    "active_manifests": 0,
+    "production_deployments": 0,
+    "issue_refs": [
+      "github://Quirk-Systems/quirk-os/issues/7",
+      "github://Quirk-Systems/quirk-os/issues/8",
+      "github://Quirk-Systems/quirk-os/issues/9",
+      "github://Quirk-Systems/quirk-os/issues/10",
+      "github://Quirk-Systems/quirk-os/issues/11",
+      "github://Quirk-Systems/quirk-os/issues/12",
+      "github://Quirk-Systems/quirk-os/issues/13"
+    ],
+    "evidence_sections": [
+      "commit_evidence",
+      "ci_evidence",
+      "migration_proof",
+      "sql_proof",
+      "issue_index",
+      "admission_gates"
+    ],
+    "move_queue_record": "QR-0296",
+    "move_queue_status": "NEEDS_CONTEXT",
+    "authority_ceiling": "projection_rebuild_and_evidence_updates_only",
+    "verified_at": "2026-08-12T06:34:11Z",
+    "verification_status": "verified"
+  },
+  "source_bindings": [
+    {
+      "platform": "github",
+      "binding_key": "binding.github.quirk-sync-control-plane.pr5",
+      "external_id": "Quirk-Systems/quirk-os#5",
+      "external_url": "https://github.com/Quirk-Systems/quirk-os/pull/5",
+      "authority_class": "canonical",
+      "state": "candidate"
+    },
+    {
+      "platform": "google_drive",
+      "binding_key": "binding.google_drive.work-plane-dossier",
+      "external_id": "work_plane_dossier",
+      "authority_class": "projection",
+      "state": "candidate"
+    }
+  ]
+}

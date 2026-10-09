@@ -1,0 +1,55 @@
+{
+  "schema_version": "projection-envelope.v1",
+  "object_key": "program.quirk-sync-control-plane",
+  "kind": "human_readable_orientation",
+  "canonical_uri": "https://github.com/Quirk-Systems/quirk-os/pull/5",
+  "canonical_version": "f344af21ff96e9e748a0a0c65dbc20ae71912222",
+  "content_hash": "ee0c398c6a4692dd4909b2075ca519f039539fdb715cea6844b23e965172418e",
+  "authority_class": "projection",
+  "generated_at": "2026-08-12T06:34:11Z",
+  "generator_ref": "github://Quirk-Systems/quirk-os/pull/14",
+  "projection": {
+    "surface": "notion",
+    "candidate_pr": "github://Quirk-Systems/quirk-os/pull/5",
+    "candidate_commit": "f344af21ff96e9e748a0a0c65dbc20ae71912222",
+    "active_manifests": 0,
+    "production_deployments": 0,
+    "issue_refs": [
+      "github://Quirk-Systems/quirk-os/issues/7",
+      "github://Quirk-Systems/quirk-os/issues/8",
+      "github://Quirk-Systems/quirk-os/issues/9",
+      "github://Quirk-Systems/quirk-os/issues/10",
+      "github://Quirk-Systems/quirk-os/issues/11",
+      "github://Quirk-Systems/quirk-os/issues/12",
+      "github://Quirk-Systems/quirk-os/issues/13"
+    ],
+    "sections": [
+      "v0.2_architecture",
+      "issue_index",
+      "evidence_matrix",
+      "authority_ceiling"
+    ],
+    "authority_ceiling": "projection_rebuild_and_evidence_updates_only",
+    "verified_at": "2026-08-12T06:34:11Z",
+    "verification_status": "connector_unavailable",
+    "writeback_status": "blocked",
+    "writeback_note": "Notion connector became unavailable during writeback. Existing projection remains readable. Writeback and verification remain outstanding."
+  },
+  "source_bindings": [
+    {
+      "platform": "github",
+      "binding_key": "binding.github.quirk-sync-control-plane.pr5",
+      "external_id": "Quirk-Systems/quirk-os#5",
+      "external_url": "https://github.com/Quirk-Systems/quirk-os/pull/5",
+      "authority_class": "canonical",
+      "state": "candidate"
+    },
+    {
+      "platform": "notion",
+      "binding_key": "binding.notion.control-plane-orientation",
+      "external_id": "control_plane_orientation",
+      "authority_class": "projection",
+      "state": "candidate"
+    }
+  ]
+}
