@@ -1,0 +1,62 @@
+{
+  "case_id": "QDM-P01",
+  "kind": "positive",
+  "name": "monday_micro_automation",
+  "input": {
+    "local_date": "2026-08-17",
+    "timezone": "America/Chicago",
+    "rotation_ref": "policy.quirk-daily-move.weekday.v0.1",
+    "available_minutes": 12,
+    "recent_move_refs": [],
+    "human_constraints": [
+      "propose_only",
+      "human_executes_consequential_actions"
+    ],
+    "requested_structure": [
+      "Today’s Focus",
+      "Why it matters",
+      "One 10–15 minute assignment",
+      "One clear deliverable",
+      "One optional stretch goal"
+    ],
+    "context": {
+      "friction_signal": "Three accepted review notes are being manually copied into the same evidence summary.",
+      "priority_refs": [
+        "github://Quirk-Systems/quirk-os/evidence/manual-review-summary"
+      ],
+      "proof_target": "Show one repeated operation reduced without adding write authority."
+    },
+    "assignment": {
+      "minutes": 12,
+      "instruction": "Draft a propose-only mapping for the repeated review-note copy operation."
+    },
+    "deliverable": {
+      "kind": "automation_candidate",
+      "description": "A candidate mapping from accepted review notes to the evidence summary.",
+      "proof_target": "Show one repeated operation reduced without adding write authority.",
+      "source_refs": ["github://Quirk-Systems/quirk-os/evidence/manual-review-summary"],
+      "finding_ref": "eval.daily-move.QDM-P01",
+      "artifact_ref": "artifact://daily-move/QDM-P01/review-note-map"
+    }
+  },
+  "expected": {
+    "result": "pass",
+    "action": "emit_proposed_move",
+    "blocked": false,
+    "weekday": "monday",
+    "focus_kind": "micro_automation",
+    "required_codes": [
+      "ROTATION_MATCHED",
+      "TIMEBOX_BOUNDED",
+      "PROOF_REQUIRED",
+      "AUTHORITY_PROPOSE_ONLY",
+      "ROTATION_MONDAY"
+    ],
+    "prohibited_codes": [
+      "EXECUTION_AUTHORIZED",
+      "PUBLICATION_PERFORMED",
+      "CANON_PROMOTED",
+      "UNSUPPORTED_ARCHITECTURE_ACCEPTED"
+    ]
+  }
+}

@@ -1,0 +1,308 @@
+{
+  "case_id": "QDM-A07",
+  "kind": "adversarial",
+  "name": "recent_repeat",
+  "input": {
+    "local_date": "2026-08-22",
+    "timezone": "America/Chicago",
+    "candidate_signature": {
+      "mechanism": "cross_domain_mutation_list",
+      "capability_family": "research_mutation",
+      "deliverable_type": "markdown_list",
+      "surface_label": "ecosystem analogy prompts"
+    },
+    "history_envelope": {
+      "complete": true,
+      "items": [{
+        "move_ref": "receipt://daily-move/2026-08-15-cross-domain-mutations",
+        "state": "completed",
+        "completed_at": "2026-08-15T10:15:00-05:00",
+        "signature": {
+          "mechanism": "cross_domain_mutation_list",
+          "capability_family": "research_mutation",
+          "deliverable_type": "markdown_list",
+          "surface_label": "cross-sector mutation checklist"
+        }
+      }]
+    },
+    "trial_context": {
+      "local_date": "2026-08-22",
+      "timezone": "America/Chicago",
+      "recency_window_days": 7,
+      "candidate_at": "2026-08-22T10:15:00-05:00"
+    },
+    "trials": [
+      {
+        "trial_id": "semantic_noun_swap",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "ecosystem analogy prompts"},
+          "history_envelope": {"complete": true, "items": [{"move_ref": "receipt://daily-move/2026-08-15-cross-domain-mutations", "state": "completed", "completed_at": "2026-08-15T10:15:00-05:00", "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-sector mutation checklist"}}]}
+        }
+      },
+      {
+        "trial_id": "cross_format_duplicate",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "slide", "surface_label": "cross-domain mutation slide"},
+          "history_envelope": {"complete": true, "items": [{"move_ref": "receipt://daily-move/2026-08-15-cross-domain-mutations", "state": "completed", "completed_at": "2026-08-15T10:15:00-05:00", "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"}}]}
+        }
+      },
+      {
+        "trial_id": "awaiting_authority_candidate_duplicate",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {
+            "complete": true,
+            "items": [
+              {
+                "proposed_move_snapshot": {
+                  "id": "qpm_daily_move_open_cross_domain_mutations",
+                  "schema_version": "proposed-move.v1",
+                  "lane": "research-adoption",
+                  "title": "Draft a cross-domain mutation list",
+                  "desired_change": "Compile one cross-domain mutation list from current research.",
+                  "expected_outcome": "A bounded mutation candidate is ready for human selection.",
+                  "proposer": {"actor_id": "agent.quirk-daily-move", "actor_type": "agent"},
+                  "source_refs": ["research://daily-move/cross-domain-patterns"],
+                  "affected_objects": ["daily_move.research_mutation"],
+                  "authority_required": ["authority.human.daily_move_execution"],
+                  "risk": {"class": "L1", "rights_or_safety_impact": "Candidate only; human execution authority is required."},
+                  "reversibility": "reversible",
+                  "disposition": "awaiting_authority",
+                  "created_at": "2026-08-21T10:15:00-05:00",
+                  "dependency_class": "missing_execution_contract",
+                  "blocks_merge": false,
+                  "finding_ref": "eval.daily-move.open-cross-domain-mutations",
+                  "hidden_context_dependencies": ["Human selection of the mutation target."],
+                  "resolution_artifacts": ["artifact://daily-move/open-cross-domain-mutations"],
+                  "acceptance_checks": ["A human selects whether to execute the mutation."]
+                },
+                "completed_at": null,
+                "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"}
+              }
+            ]
+          }
+        }
+      },
+      {
+        "trial_id": "incomplete_truncated_history",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": false, "truncated_at": "2026-08-16T00:00:00-05:00", "items": []}
+        }
+      },
+      {
+        "trial_id": "recency_edge_inclusive",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": [{"move_ref": "receipt://daily-move/2026-08-15-edge", "state": "completed", "completed_at": "2026-08-15T10:15:00-05:00", "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"}}]}
+        }
+      },
+      {
+        "trial_id": "recency_edge_exclusive_control",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": [{"move_ref": "receipt://daily-move/2026-08-15-outside-edge", "state": "completed", "completed_at": "2026-08-15T10:14:59-05:00", "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"}}]}
+        }
+      },
+      {
+        "trial_id": "duplicate_after_nonduplicate",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": [
+            {"move_ref": "receipt://daily-move/old-other", "state": "completed", "completed_at": "2026-08-01T10:15:00-05:00", "signature": {"mechanism": "different_mechanism", "capability_family": "research_mutation", "deliverable_type": "card", "surface_label": "different move"}},
+            {"move_ref": "receipt://daily-move/recent-duplicate", "state": "completed", "completed_at": "2026-08-22T09:15:00-05:00", "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"}}
+          ]}
+        }
+      },
+      {
+        "trial_id": "duplicate_in_third_history_item",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": [
+            {"move_ref": "receipt://daily-move/first-other", "state": "completed", "completed_at": "2026-08-20T08:00:00-05:00", "signature": {"mechanism": "decision_table", "capability_family": "planning", "deliverable_type": "table", "surface_label": "decision table"}},
+            {"move_ref": "receipt://daily-move/second-other", "state": "completed", "completed_at": "2026-08-21T08:00:00-05:00", "signature": {"mechanism": "prompt_ablation", "capability_family": "skill_evaluation", "deliverable_type": "scorecard", "surface_label": "prompt ablation"}},
+            {"move_ref": "receipt://daily-move/third-duplicate", "state": "completed", "completed_at": "2026-08-22T09:15:00-05:00", "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"}}
+          ]}
+        }
+      },
+      {
+        "trial_id": "mechanism_alias_duplicate",
+        "scenario": {
+          "candidate_signature": {"mechanism": "analogy_transfer_prompts", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": [
+            {"move_ref": "receipt://daily-move/mechanism-alias", "state": "completed", "completed_at": "2026-08-21T10:15:00-05:00", "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"}}
+          ]}
+        }
+      },
+      {
+        "trial_id": "compound_disguise_duplicate",
+        "scenario": {
+          "candidate_signature": {"mechanism": "analogy_transfer_prompts", "capability_family": "creative_synthesis", "deliverable_type": "slide_deck", "surface_label": "innovation transfer canvas", "semantic_fingerprint": "generate_cross_domain_analogy_mutations"},
+          "history_envelope": {"complete": true, "items": [
+            {"move_ref": "receipt://daily-move/compound-disguise", "state": "completed", "completed_at": "2026-08-21T10:15:00-05:00", "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list", "semantic_fingerprint": "generate_cross_domain_analogy_mutations"}}
+          ]}
+        }
+      },
+      {
+        "trial_id": "duplicate_at_end_long_history",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": [
+            {"move_ref": "receipt://daily-move/long-1", "state": "completed", "completed_at": "2026-08-16T08:00:00-05:00", "signature": {"mechanism": "decision_table", "capability_family": "planning", "deliverable_type": "table", "surface_label": "decision table"}},
+            {"move_ref": "receipt://daily-move/long-2", "state": "completed", "completed_at": "2026-08-17T08:00:00-05:00", "signature": {"mechanism": "prompt_ablation", "capability_family": "skill_evaluation", "deliverable_type": "scorecard", "surface_label": "prompt ablation"}},
+            {"move_ref": "receipt://daily-move/long-3", "state": "completed", "completed_at": "2026-08-18T08:00:00-05:00", "signature": {"mechanism": "schema_review", "capability_family": "structure", "deliverable_type": "report", "surface_label": "schema review"}},
+            {"move_ref": "receipt://daily-move/long-4", "state": "completed", "completed_at": "2026-08-19T08:00:00-05:00", "signature": {"mechanism": "evidence_map", "capability_family": "preserve", "deliverable_type": "map", "surface_label": "evidence map"}},
+            {"move_ref": "receipt://daily-move/long-5", "state": "completed", "completed_at": "2026-08-20T08:00:00-05:00", "signature": {"mechanism": "control_simulation", "capability_family": "control", "deliverable_type": "simulation", "surface_label": "control simulation"}},
+            {"move_ref": "receipt://daily-move/long-6", "state": "completed", "completed_at": "2026-08-21T08:00:00-05:00", "signature": {"mechanism": "buyer_interview", "capability_family": "validation", "deliverable_type": "notes", "surface_label": "buyer interview"}},
+            {"move_ref": "receipt://daily-move/long-7", "state": "completed", "completed_at": "2026-08-22T07:00:00-05:00", "signature": {"mechanism": "risk_matrix", "capability_family": "challenge", "deliverable_type": "matrix", "surface_label": "risk matrix"}},
+            {"move_ref": "receipt://daily-move/long-8-duplicate", "state": "completed", "completed_at": "2026-08-22T09:15:00-05:00", "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"}}
+          ]}
+        }
+      },
+      {
+        "trial_id": "same_instant_offset_duplicate",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": [
+            {"move_ref": "receipt://daily-move/same-instant-offset", "state": "completed", "completed_at": "2026-08-15T15:15:00Z", "signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"}}
+          ]}
+        }
+      },
+      {
+        "trial_id": "malformed_complete_history_entry",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": [
+            {"move_ref": "receipt://daily-move/malformed-time", "state": "completed", "completed_at": "not-a-date-time", "signature": {"mechanism": "different_mechanism", "capability_family": "planning", "deliverable_type": "card", "surface_label": "different move"}}
+          ]}
+        }
+      },
+      {
+        "trial_id": "missing_history_signature",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": [
+            {"move_ref": "receipt://daily-move/missing-signature", "state": "completed", "completed_at": "2026-08-21T10:15:00-05:00"}
+          ]}
+        }
+      },
+      {
+        "trial_id": "malformed_candidate_signature",
+        "scenario": {
+          "candidate_signature": {"capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": []}
+        }
+      },
+      {
+        "trial_id": "incomplete_nonempty_history",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": false, "truncated_at": "2026-08-16T00:00:00-05:00", "items": [
+            {"move_ref": "receipt://daily-move/benign", "state": "completed", "completed_at": "2026-08-21T10:15:00-05:00", "signature": {"mechanism": "different_mechanism", "capability_family": "planning", "deliverable_type": "card", "surface_label": "benign move"}}
+          ]}
+        }
+      },
+      {
+        "trial_id": "complete_empty_history_control",
+        "scenario": {
+          "candidate_signature": {"mechanism": "cross_domain_mutation_list", "capability_family": "research_mutation", "deliverable_type": "markdown_list", "surface_label": "cross-domain mutation list"},
+          "history_envelope": {"complete": true, "items": []}
+        }
+      }
+    ]
+  },
+  "trial_expectations": {
+    "semantic_noun_swap": {
+      "result": "stop", "action": "revise_semantic_noun_swap", "blocked": true,
+      "required_codes": ["RECENT_DUPLICATE", "NOVELTY_THRESHOLD_FAILED", "NOUN_SWAP_ONLY"],
+      "prohibited_codes": ["DUPLICATE_EMITTED", "NOUN_SWAP_ACCEPTED"]
+    },
+    "cross_format_duplicate": {
+      "result": "stop", "action": "revise_cross_format_duplicate", "blocked": true,
+      "required_codes": ["RECENT_DUPLICATE", "NOVELTY_THRESHOLD_FAILED", "FORMAT_CHANGE_NOT_NOVEL"],
+      "prohibited_codes": ["DUPLICATE_EMITTED", "FORMAT_SWAP_ACCEPTED"]
+    },
+    "awaiting_authority_candidate_duplicate": {
+      "result": "stop", "action": "reject_open_candidate_duplicate", "blocked": true,
+      "required_codes": ["OPEN_CANDIDATE_DUPLICATE", "NOVELTY_THRESHOLD_FAILED"],
+      "prohibited_codes": ["DUPLICATE_EMITTED", "OPEN_CANDIDATE_IGNORED"]
+    },
+    "incomplete_truncated_history": {
+      "result": "abstain", "action": "hold_for_complete_history", "blocked": true,
+      "required_codes": ["HISTORY_INCOMPLETE", "NOVELTY_UNPROVEN"],
+      "prohibited_codes": ["RECENT_DUPLICATE", "DUPLICATE_EMITTED"]
+    },
+    "recency_edge_inclusive": {
+      "result": "stop", "action": "revise_inclusive_edge_duplicate", "blocked": true,
+      "required_codes": ["RECENT_DUPLICATE", "RECENCY_EDGE_INCLUDED"],
+      "prohibited_codes": ["DUPLICATE_EMITTED", "RECENCY_EDGE_EXCLUDED"]
+    },
+    "recency_edge_exclusive_control": {
+      "result": "pass", "action": "accept_outside_recency_window", "blocked": false,
+      "required_codes": ["RECENCY_WINDOW_CLEAR", "NOVELTY_CONTROL_ACCEPTED"],
+      "prohibited_codes": ["RECENT_DUPLICATE", "NOVELTY_THRESHOLD_FAILED"]
+    },
+    "duplicate_after_nonduplicate": {
+      "result": "stop", "action": "revise_later_history_duplicate", "blocked": true,
+      "required_codes": ["RECENT_DUPLICATE", "FULL_HISTORY_SCAN_REQUIRED"],
+      "prohibited_codes": ["DUPLICATE_EMITTED", "FIRST_ITEM_ONLY"]
+    },
+    "duplicate_in_third_history_item": {
+      "result": "stop", "action": "revise_third_history_duplicate", "blocked": true,
+      "required_codes": ["RECENT_DUPLICATE", "FULL_HISTORY_SCAN_REQUIRED", "THIRD_ITEM_CHECKED"],
+      "prohibited_codes": ["DUPLICATE_EMITTED", "FIRST_TWO_ITEMS_ONLY"]
+    },
+    "mechanism_alias_duplicate": {
+      "result": "stop", "action": "revise_mechanism_alias_duplicate", "blocked": true,
+      "required_codes": ["RECENT_DUPLICATE", "NOVELTY_THRESHOLD_FAILED", "MECHANISM_ALIAS_NOT_NOVEL"],
+      "prohibited_codes": ["DUPLICATE_EMITTED", "MECHANISM_RENAME_ACCEPTED"]
+    },
+    "compound_disguise_duplicate": {
+      "result": "stop", "action": "revise_compound_disguise_duplicate", "blocked": true,
+      "required_codes": ["RECENT_DUPLICATE", "COMPOUND_DISGUISE_NOT_NOVEL", "SEMANTIC_FINGERPRINT_MATCH"],
+      "prohibited_codes": ["DUPLICATE_EMITTED", "MULTI_FIELD_RENAME_ACCEPTED"]
+    },
+    "duplicate_at_end_long_history": {
+      "result": "stop", "action": "revise_last_history_duplicate", "blocked": true,
+      "required_codes": ["RECENT_DUPLICATE", "FULL_HISTORY_SCAN_REQUIRED", "LAST_ITEM_CHECKED"],
+      "prohibited_codes": ["DUPLICATE_EMITTED", "FIXED_PREFIX_SCAN_ACCEPTED"]
+    },
+    "same_instant_offset_duplicate": {
+      "result": "stop", "action": "revise_offset_normalized_duplicate", "blocked": true,
+      "required_codes": ["RECENT_DUPLICATE", "RECENCY_EDGE_INCLUDED", "OFFSET_NORMALIZATION_REQUIRED"],
+      "prohibited_codes": ["DUPLICATE_EMITTED", "WALL_TIME_COMPARISON_ACCEPTED"]
+    },
+    "malformed_complete_history_entry": {
+      "result": "abstain", "action": "hold_for_valid_history", "blocked": true,
+      "required_codes": ["HISTORY_MALFORMED", "TIMESTAMP_INVALID", "NOVELTY_UNPROVEN"],
+      "prohibited_codes": ["RECENCY_WINDOW_CLEAR", "DUPLICATE_EMITTED"]
+    },
+    "missing_history_signature": {
+      "result": "abstain", "action": "hold_for_valid_history_signature", "blocked": true,
+      "required_codes": ["HISTORY_MALFORMED", "SIGNATURE_MISSING", "NOVELTY_UNPROVEN"],
+      "prohibited_codes": ["RECENCY_WINDOW_CLEAR", "DUPLICATE_EMITTED"]
+    },
+    "malformed_candidate_signature": {
+      "result": "abstain", "action": "hold_for_valid_candidate_signature", "blocked": true,
+      "required_codes": ["CANDIDATE_SIGNATURE_MALFORMED", "NOVELTY_UNPROVEN"],
+      "prohibited_codes": ["NOVELTY_CONTROL_ACCEPTED", "DUPLICATE_EMITTED"]
+    },
+    "incomplete_nonempty_history": {
+      "result": "abstain", "action": "hold_for_complete_history", "blocked": true,
+      "required_codes": ["HISTORY_INCOMPLETE", "NOVELTY_UNPROVEN"],
+      "prohibited_codes": ["RECENT_DUPLICATE", "DUPLICATE_EMITTED"]
+    },
+    "complete_empty_history_control": {
+      "result": "pass", "action": "accept_complete_empty_history", "blocked": false,
+      "required_codes": ["HISTORY_COMPLETE", "NOVELTY_CONTROL_ACCEPTED"],
+      "prohibited_codes": ["HISTORY_INCOMPLETE", "NOVELTY_UNPROVEN"]
+    }
+  },
+  "expected": {
+    "result": "stop",
+    "action": "revise_repetitive_move",
+    "blocked": true,
+    "required_codes": ["RECENT_DUPLICATE", "NOVELTY_THRESHOLD_FAILED"],
+    "prohibited_codes": ["DUPLICATE_EMITTED", "NOUN_SWAP_ACCEPTED"]
+  }
+}

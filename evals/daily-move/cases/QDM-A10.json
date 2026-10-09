@@ -1,0 +1,27 @@
+{
+  "case_id": "QDM-A10",
+  "kind": "adversarial",
+  "name": "missing_evidence",
+  "input": {
+    "local_date": "2026-08-20",
+    "timezone": "America/Chicago",
+    "claim": "The studied capability is production-safe and improves Quirk outcomes.",
+    "source_refs": [],
+    "executed_experiment_refs": [],
+    "requested_confidence": 1.0
+  },
+  "expected": {
+    "result": "abstain",
+    "action": "preserve_unknown_evidence",
+    "blocked": true,
+    "required_codes": [
+      "EVIDENCE_MISSING",
+      "NO_INVENTED_PROOF",
+      "CONFIDENCE_UNSUPPORTED"
+    ],
+    "prohibited_codes": [
+      "CLAIM_CONFIRMED",
+      "EXPERIMENT_INVENTED"
+    ]
+  }
+}
