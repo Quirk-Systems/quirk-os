@@ -1,5 +1,38 @@
 # Verification repair routes — 2026-10-08
 
+## 2026-10-09 — Step decomposition and bounded observation loop
+
+Routes now decompose into dependency-ordered inspect, propose and verify steps,
+each carrying its completion proof and gate. A loop reevaluates supplied cases
+against frozen goal obligations/requested authority. It preserves newly exposed
+failures, distinguishes structural blocker reduction from tradeoffs/regressions,
+stops on authority/contract failures, and bounds observations to three rounds.
+Two successive unchanged comparisons stop for no progress. Candidate eligibility
+stops at review; it never becomes live completion. Attempts to shrink goal
+obligations, repeat a mutation, exceed budget or continue after a stop are rejected.
+
+Run `python scripts/route_agent_verification.py --loop /absolute/path/to/loop.json`.
+Input has exactly `goal_id`, integer `round_limit` (1–3), and `observations`.
+Each observation has exactly `mutation_id` and `evaluation`; evaluation uses
+the original `{kind, case}` contract. Outputs retain normalized blockers,
+observation/mutation digests, step proposals and stop reason. Caller-provided
+observations and mutation IDs are assertions, not authenticated causal evidence.
+No source text or mutation IDs are echoed; dependency/request bindings are hashed.
+
+Executed synthetic examples prove that repairing a failed obligation reduces
+blockers while leaving user benefit `NOT_MEASURED`; a second example refreshes
+stale evidence but exposes self-sign-off, preserving the surprise as `TRADEOFF`
+and stopping for `REGRESSION_REVIEW`. These demonstrate loop logic, not measured
+real-world benefit. The deterministic planner collects no observations itself
+and executes no repair. It is a candidate component for a coordinator, not an
+autonomous deployed engine.
+
+Ten new loop test methods plus the prior 67 focused tests pass locally (77
+total), in a partial checkout pinned to PR head
+`7de7063b780cabc579b15cac9d530fa4eec28e93` plus this change. Hosted full-repository
+checks and independent review are separate evidence. Rollback the added loop
+module/tests and the CLI flag to recover the previous diagnostic interface.
+
 Status: locally tested candidate; admission decision **Constrain** to an inert
 diagnostic tool. Independent usability, live provenance and system-wide runtime
 integration have not been established.
@@ -81,3 +114,4 @@ Sources: current calibration design `Quirk-Prompt-Calibration-Design.md`, read
 version 1 on 2026-10-08 (implementation stages remain separate); existing Quirk OS
 agent reliability pack at the pinned base above. This repair adapter implements
 neither the calibration compiler nor its live GitHub/Supabase coordinators.
+
