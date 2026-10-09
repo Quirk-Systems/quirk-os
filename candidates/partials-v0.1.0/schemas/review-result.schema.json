@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:quirk:partials-review-result:v1alpha1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "captured_at",
+    "request_digest",
+    "rows",
+    "records",
+    "counts",
+    "authority",
+    "receipt"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "quirk.partials-review-result/v1alpha1"
+    },
+    "status": {
+      "const": "candidate"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "request_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "index",
+          "source_ref",
+          "input_digest",
+          "disposition",
+          "reason",
+          "duplicate_of"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "input_digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "disposition": {
+            "enum": [
+              "matched",
+              "quarantined",
+              "duplicate"
+            ]
+          },
+          "reason": {
+            "enum": [
+              "expectation_matched",
+              "invalid_record",
+              "expectation_missing",
+              "subject_mismatch",
+              "stale_capture",
+              "future_capture",
+              "identity_conflict",
+              "exact_replay"
+            ]
+          },
+          "duplicate_of": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "index",
+          "record",
+          "max_count"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "record": {
+            "$ref": "urn:quirk:partials:v1alpha1"
+          },
+          "max_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inputs",
+        "matched",
+        "quarantined",
+        "duplicates"
+      ],
+      "properties": {
+        "inputs": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "matched": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "quarantined": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duplicates": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maximum_right",
+        "effect_execution_allowed",
+        "calendar_write_allowed",
+        "canon_promotion_allowed",
+        "graph_application_allowed",
+        "training_allowed",
+        "human_review_required",
+        "upstream_hold_refs"
+      ],
+      "properties": {
+        "maximum_right": {
+          "const": "propose"
+        },
+        "effect_execution_allowed": {
+          "const": false
+        },
+        "calendar_write_allowed": {
+          "const": false
+        },
+        "canon_promotion_allowed": {
+          "const": false
+        },
+        "graph_application_allowed": {
+          "const": false
+        },
+        "training_allowed": {
+          "const": false
+        },
+        "human_review_required": {
+          "const": true
+        },
+        "upstream_hold_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability_ref",
+        "transform_version",
+        "output_digest",
+        "observed_human_benefit",
+        "human_review_minutes",
+        "compute_cost",
+        "limitations"
+      ],
+      "properties": {
+        "capability_ref": {
+          "const": "capability.partials-source-review/v0.1.0"
+        },
+        "transform_version": {
+          "const": "0.1.0"
+        },
+        "output_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "observed_human_benefit": {
+          "type": "null"
+        },
+        "human_review_minutes": {
+          "type": "null"
+        },
+        "compute_cost": {
+          "type": "null"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

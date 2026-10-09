@@ -1,0 +1,625 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:quirk:candidate:image-event-record:0.1.0",
+  "title": "Pinned unsigned Site image comparison record \u2014 candidate only",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "owner",
+    "pair_id",
+    "outcome",
+    "rationale",
+    "payload_json",
+    "payload_digest",
+    "graph_state",
+    "created_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "pair_id": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "outcome": {
+      "enum": [
+        "A",
+        "B",
+        "both",
+        "neither",
+        "skip"
+      ]
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "producerText": {
+        "min": 1,
+        "max": 2000
+      }
+    },
+    "payload_json": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 65536
+    },
+    "payload_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "graph_state": {
+      "const": "AWAITING_INTEGRATION"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "status",
+        "sourceSite",
+        "purpose",
+        "actor",
+        "presentation",
+        "judgment",
+        "graphProposal",
+        "limits",
+        "eventId",
+        "assets"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "quirk.image-preference-candidate.v0.1"
+        },
+        "kind": {
+          "const": "HumanImageComparison"
+        },
+        "status": {
+          "const": "candidate"
+        },
+        "sourceSite": {
+          "const": "appgprj_6a895cbd193481918ad2fccdf0e0ee3f"
+        },
+        "purpose": {
+          "const": "Private image comparison and candidate preference evidence"
+        },
+        "actor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "siteScopedId",
+            "crossSystemPrincipalMapping"
+          ],
+          "properties": {
+            "siteScopedId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "crossSystemPrincipalMapping": {
+              "const": null
+            }
+          }
+        },
+        "presentation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "question",
+            "context",
+            "A",
+            "B",
+            "createdAt",
+            "method"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            },
+            "question": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 300,
+              "producerText": {
+                "min": 5,
+                "max": 300
+              }
+            },
+            "context": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300,
+              "producerText": {
+                "min": 1,
+                "max": 300
+              }
+            },
+            "A": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "assetId",
+                "sha256"
+              ],
+              "properties": {
+                "assetId": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            "B": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "assetId",
+                "sha256"
+              ],
+              "properties": {
+                "assetId": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "method": {
+              "const": "Randomized side assignment; operator-selected assets; not a held-out study"
+            }
+          }
+        },
+        "judgment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outcome",
+            "rationale",
+            "createdAt"
+          ],
+          "properties": {
+            "outcome": {
+              "enum": [
+                "A",
+                "B",
+                "both",
+                "neither",
+                "skip"
+              ]
+            },
+            "rationale": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "producerText": {
+                "min": 1,
+                "max": 2000
+              }
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "graphProposal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "relation",
+            "from",
+            "to",
+            "context",
+            "criterion",
+            "autoApply"
+          ],
+          "properties": {
+            "relation": {
+              "enum": [
+                "PREFERRED_OVER",
+                null
+              ]
+            },
+            "from": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "to": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "context": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300,
+              "producerText": {
+                "min": 1,
+                "max": 300
+              }
+            },
+            "criterion": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 300,
+              "producerText": {
+                "min": 5,
+                "max": 300
+              }
+            },
+            "autoApply": {
+              "const": false
+            }
+          }
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "canonAdmission",
+            "runtimeAuthority",
+            "modelTraining",
+            "independentEvaluation"
+          ],
+          "properties": {
+            "canonAdmission": {
+              "const": false
+            },
+            "runtimeAuthority": {
+              "const": false
+            },
+            "modelTraining": {
+              "const": false
+            },
+            "independentEvaluation": {
+              "const": false
+            }
+          }
+        },
+        "eventId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "assets": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/asset"
+          }
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256",
+        "parentId",
+        "origin",
+        "lineage",
+        "rights"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "parentId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "origin": {
+          "enum": [
+            "upload",
+            "recovered_original",
+            "browser_variant",
+            "generated_variant"
+          ]
+        },
+        "lineage": {
+          "type": "object"
+        },
+        "rights": {
+          "enum": [
+            "review_only",
+            "operator_attested_private_use"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "upload"
+              }
+            },
+            "required": [
+              "origin"
+            ]
+          },
+          "then": {
+            "properties": {
+              "lineage": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {}
+              },
+              "parentId": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "recovered_original"
+              }
+            },
+            "required": [
+              "origin"
+            ]
+          },
+          "then": {
+            "properties": {
+              "lineage": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "sourcePath",
+                  "sourceSha256"
+                ],
+                "properties": {
+                  "sourcePath": {
+                    "type": "string",
+                    "pattern": "^/evidence/images/image-0[1-9]\\.jpg$"
+                  },
+                  "sourceSha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                }
+              },
+              "parentId": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "browser_variant"
+              }
+            },
+            "required": [
+              "origin"
+            ]
+          },
+          "then": {
+            "properties": {
+              "lineage": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "parentSha256",
+                  "processor",
+                  "verification",
+                  "parameters"
+                ],
+                "properties": {
+                  "parentSha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "processor": {
+                    "const": "browser-canvas-v1"
+                  },
+                  "verification": {
+                    "const": "client-reported recipe; server-verified byte digest"
+                  },
+                  "parameters": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "brightness",
+                      "contrast",
+                      "saturation",
+                      "rotate",
+                      "crop",
+                      "maxWidth"
+                    ],
+                    "properties": {
+                      "brightness": {
+                        "type": "number",
+                        "minimum": 0.5,
+                        "maximum": 1.5
+                      },
+                      "contrast": {
+                        "type": "number",
+                        "minimum": 0.5,
+                        "maximum": 1.5
+                      },
+                      "saturation": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 2
+                      },
+                      "rotate": {
+                        "enum": [
+                          0,
+                          90,
+                          180,
+                          270
+                        ]
+                      },
+                      "crop": {
+                        "enum": [
+                          "original",
+                          "square"
+                        ]
+                      },
+                      "maxWidth": {
+                        "type": "integer",
+                        "minimum": 320,
+                        "maximum": 2048
+                      }
+                    }
+                  }
+                }
+              },
+              "parentId": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "generated_variant"
+              }
+            },
+            "required": [
+              "origin"
+            ]
+          },
+          "then": {
+            "properties": {
+              "lineage": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "parentSha256",
+                  "provider",
+                  "model",
+                  "prompt",
+                  "quality",
+                  "size",
+                  "providerRequestId",
+                  "jobId",
+                  "permission",
+                  "verification"
+                ],
+                "properties": {
+                  "parentSha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "provider": {
+                    "const": "OpenAI"
+                  },
+                  "model": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 2000,
+                    "producerText": {
+                      "min": 5,
+                      "max": 2000
+                    }
+                  },
+                  "quality": {
+                    "const": "low"
+                  },
+                  "size": {
+                    "const": "1024x1024"
+                  },
+                  "providerRequestId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "jobId": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                  },
+                  "permission": {
+                    "const": "operator_attested_provider_processing"
+                  },
+                  "verification": {
+                    "const": "provider output; server-verified byte digest"
+                  }
+                }
+              },
+              "parentId": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "schema_version": "0.1",
+  "type": "CreativeTechniqueSkill",
+  "name": "writing-cuntsnickery",
+  "version": "0.1.0-candidate",
+  "status": "candidate",
+  "operative": false,
+  "admitted": false,
+  "active": false,
+  "canonical": false,
+  "published": false,
+  "deployed": false,
+  "owner": [
+    "Bryan",
+    "BryMinn"
+  ],
+  "invocation_doctrine": "Kick Wicked Dick Thick in the Cuntsnickery",
+  "purpose": "Transform compact explicit seeds into original, performance-ready, Suno-compatible candidate song assets through phonetic density, semantic mutation, elastic structure, and Lyric Nonce Mode.",
+  "relationship_to_longdong_fuckflow": "Longdong Fuckflow is the broader downstream-yield concept; this candidate implements one lyric transformation mechanism within that concept.",
+  "inputs": [
+    "seed phrase, title, scene, or existing lyrics",
+    "requested output mode",
+    "optional vocal stance",
+    "optional genre, tempo, and production lane",
+    "optional explicitness and structural constraints"
+  ],
+  "outputs": [
+    "song or requested song component",
+    "Suno style prompt when applicable",
+    "Suno-compatible structure tags when applicable",
+    "production and performance map when applicable",
+    "compact quality receipt"
+  ],
+  "supported_modes": [
+    "FULL_SONG",
+    "HOOK_ONLY",
+    "VERSE_ONLY",
+    "CONTINUE_EXISTING",
+    "REWRITE_WEAKER_SECTION",
+    "HOOK_TOURNAMENT",
+    "FREESTYLE_THROUGHFLOW",
+    "SUNO_STYLE_PROMPT_ONLY",
+    "PERFORMANCE_MAP_ONLY",
+    "VARIATION_PACK"
+  ],
+  "authority_ceiling": "propose",
+  "permissions": [
+    "create candidate lyrics",
+    "transform user-provided lyrics",
+    "propose production direction",
+    "produce non-operative evaluation evidence"
+  ],
+  "forbidden_actions": [
+    "publish or upload",
+    "impersonate a living artist",
+    "self-activate",
+    "claim admission or canon status",
+    "perform provider writes",
+    "grant runtime authority",
+    "silently self-modify"
+  ],
+  "critical_failure_classes": [
+    "repetition",
+    "generic explicit filler",
+    "artist imitation",
+    "consent fog"
+  ],
+  "red_stage": {
+    "skill_md_required_absent": true,
+    "minimum_executed_baselines": 3,
+    "required_verdict": "RED_CONFIRMED"
+  }
+}

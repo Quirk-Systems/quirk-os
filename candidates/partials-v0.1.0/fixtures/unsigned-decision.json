@@ -1,0 +1,221 @@
+{
+  "schema_version": "quirk.partials-unsigned-decision/v1alpha1",
+  "status": "candidate",
+  "context_digest": "sha256:6254c4daa5b0bb92b507530b908a581155ff846338b0af389d8517773b3e0e75",
+  "comparison_digest": "sha256:9bb53ad7ece27d995dc9702aef772218ed922e69932cbdd0aeaebade4ffbe976",
+  "before_request_digest": "sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc",
+  "after_request_digest": "sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a",
+  "context": {
+    "schema_version": "quirk.partials-decision-context/v1alpha1",
+    "comparison_digest": "sha256:9bb53ad7ece27d995dc9702aef772218ed922e69932cbdd0aeaebade4ffbe976",
+    "before_request_digest": "sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc",
+    "after_request_digest": "sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a",
+    "after_captured_at": "2026-09-10T00:30:00.000Z",
+    "authority": {
+      "maximum_right": "propose",
+      "effect_execution_allowed": false,
+      "calendar_write_allowed": false,
+      "canon_promotion_allowed": false,
+      "graph_application_allowed": false,
+      "training_allowed": false,
+      "human_review_required": true,
+      "upstream_hold_refs": [
+        "changes:human_review_open",
+        "changes:invalid_input_unresolved",
+        "changes:no_automatic_repair",
+        "os:inventory_unknown",
+        "os:no_runtime_or_calendar_authority",
+        "os:protected_schedule",
+        "preference:human_review_open",
+        "preference:no_graph_application",
+        "preference:no_model_training",
+        "preference:unsigned_source",
+        "review:expectations_are_caller_supplied",
+        "review:human_review_open",
+        "skills:candidate-only",
+        "skills:current-version-evaluation-required",
+        "skills:independent-qa-required",
+        "skills:no-admission-or-submission-grant"
+      ]
+    },
+    "options": [
+      {
+        "source_ref": "fixture:review:malformed",
+        "change": "unchanged",
+        "before_count": null,
+        "after_count": null,
+        "changed_fields": [],
+        "claims_requiring_revalidation": [],
+        "removed_holds": [],
+        "added_holds": [],
+        "proposed_repair": {
+          "status": "candidate",
+          "action": "repair_native_input",
+          "target_ref": "fixture:review:malformed",
+          "evidence_refs": [
+            "sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc",
+            "sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a",
+            "sha256:4b0e524a2429e658a8fb44dd8156843b31213fe70294e69c1dd5ae826df23b68"
+          ],
+          "acceptance_criteria": [
+            "Repair the owning input and rerun its adapter; retain the malformed source for inspection.",
+            "Preserve uncertainty and all existing authority obligations."
+          ],
+          "maximum_right": "propose",
+          "effect_execution_allowed": false,
+          "human_review_required": true
+        }
+      },
+      {
+        "source_ref": "fixture:review:os",
+        "change": "changed",
+        "before_count": "At least 6; total unknown",
+        "after_count": "At least 6; total unknown",
+        "changed_fields": [
+          "expectation",
+          "review_accounting"
+        ],
+        "claims_requiring_revalidation": [],
+        "removed_holds": [],
+        "added_holds": [],
+        "proposed_repair": {
+          "status": "candidate",
+          "action": "reinspect_source",
+          "target_ref": "fixture:review:os",
+          "evidence_refs": [
+            "sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc",
+            "sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a",
+            "sha256:901722bf755a27861fdf932a7902b61708c0fbdfc00517aed31cbc6bf4c42c8d"
+          ],
+          "acceptance_criteria": [
+            "Inspect the owning source and rerun its adapter; do not edit timestamps solely to pass freshness checks.",
+            "Preserve uncertainty and all existing authority obligations."
+          ],
+          "maximum_right": "propose",
+          "effect_execution_allowed": false,
+          "human_review_required": true
+        }
+      },
+      {
+        "source_ref": "fixture:review:preference",
+        "change": "replaced",
+        "before_count": "At least 1; total unknown",
+        "after_count": "At least 1; total unknown",
+        "changed_fields": [
+          "subject",
+          "expectation"
+        ],
+        "claims_requiring_revalidation": [
+          "inspection_shape_and_counts_consistent"
+        ],
+        "removed_holds": [],
+        "added_holds": [],
+        "proposed_repair": {
+          "status": "candidate",
+          "action": "revalidate_source_claims",
+          "target_ref": "fixture:review:preference",
+          "evidence_refs": [
+            "sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc",
+            "sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a",
+            "sha256:24b9c414e4a37eb6d8e7da2a294012be138387137291ba3cc4e8085a7f6cb69d",
+            "sha256:0fb9854d73f866697bd097bc896e0f2c35cb410770e1c1c55c1b8a7b4a4280ea"
+          ],
+          "acceptance_criteria": [
+            "Recheck source-bound claims against the new subject and scope; carried labels are unverified assertions.",
+            "Preserve uncertainty and all existing authority obligations."
+          ],
+          "maximum_right": "propose",
+          "effect_execution_allowed": false,
+          "human_review_required": true
+        }
+      },
+      {
+        "source_ref": "fixture:review:skills",
+        "change": "removed",
+        "before_count": "At least 2; total unknown",
+        "after_count": null,
+        "changed_fields": [],
+        "claims_requiring_revalidation": [],
+        "removed_holds": [
+          "skills:candidate-only",
+          "skills:current-version-evaluation-required",
+          "skills:independent-qa-required",
+          "skills:no-admission-or-submission-grant"
+        ],
+        "added_holds": [],
+        "proposed_repair": {
+          "status": "candidate",
+          "action": "account_for_removed_source",
+          "target_ref": "fixture:review:skills",
+          "evidence_refs": [
+            "sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc",
+            "sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a",
+            "sha256:0015b5e7a4f51593768d7b29fa656a5fc9dc9b19bf14e1d207f6b016684ab558"
+          ],
+          "acceptance_criteria": [
+            "Explain where the source went; do not treat absence as completed work or released obligations.",
+            "Preserve uncertainty and all existing authority obligations."
+          ],
+          "maximum_right": "propose",
+          "effect_execution_allowed": false,
+          "human_review_required": true
+        }
+      }
+    ],
+    "context_digest": "sha256:6254c4daa5b0bb92b507530b908a581155ff846338b0af389d8517773b3e0e75"
+  },
+  "source_ref": "fixture:review:malformed",
+  "proposed_repair": {
+    "status": "candidate",
+    "action": "repair_native_input",
+    "target_ref": "fixture:review:malformed",
+    "evidence_refs": [
+      "sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc",
+      "sha256:c6033cd793a466e84238274a252ca4fc1a2d55056fe4f222dd69b0cb0585b67a",
+      "sha256:4b0e524a2429e658a8fb44dd8156843b31213fe70294e69c1dd5ae826df23b68"
+    ],
+    "acceptance_criteria": [
+      "Repair the owning input and rerun its adapter; retain the malformed source for inspection.",
+      "Preserve uncertainty and all existing authority obligations."
+    ],
+    "maximum_right": "propose",
+    "effect_execution_allowed": false,
+    "human_review_required": true
+  },
+  "response": "selected",
+  "rationale": "Synthetic fixture: inspect the stale source before using its carried claims.",
+  "next_move": "Repair the owning input and rerun its adapter; retain the malformed source for inspection.",
+  "finish_condition": "Repair the owning input and rerun its adapter; retain the malformed source for inspection. Preserve uncertainty and all existing authority obligations.",
+  "captured_at": "2026-09-10T00:31:00.000Z",
+  "signature": null,
+  "human_origin": "claim_only",
+  "executed": false,
+  "observed_benefit": null,
+  "authority": {
+    "maximum_right": "propose",
+    "effect_execution_allowed": false,
+    "calendar_write_allowed": false,
+    "canon_promotion_allowed": false,
+    "graph_application_allowed": false,
+    "training_allowed": false,
+    "human_review_required": true,
+    "upstream_hold_refs": [
+      "changes:human_review_open",
+      "changes:invalid_input_unresolved",
+      "changes:no_automatic_repair",
+      "os:inventory_unknown",
+      "os:no_runtime_or_calendar_authority",
+      "os:protected_schedule",
+      "preference:human_review_open",
+      "preference:no_graph_application",
+      "preference:no_model_training",
+      "preference:unsigned_source",
+      "review:expectations_are_caller_supplied",
+      "review:human_review_open",
+      "skills:candidate-only",
+      "skills:current-version-evaluation-required",
+      "skills:independent-qa-required",
+      "skills:no-admission-or-submission-grant"
+    ]
+  }
+}

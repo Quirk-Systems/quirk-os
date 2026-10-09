@@ -1,0 +1,407 @@
+{
+  "schema_version": "quirk.partials-review-result/v1alpha1",
+  "status": "candidate",
+  "captured_at": "2026-09-10T00:00:00.000Z",
+  "request_digest": "sha256:272706e60dd45fc88ec92836e878cecd87bdb28b23895270a8f69d5e27ca28cc",
+  "rows": [
+    {
+      "index": 0,
+      "source_ref": "fixture:review:os",
+      "input_digest": "sha256:901722bf755a27861fdf932a7902b61708c0fbdfc00517aed31cbc6bf4c42c8d",
+      "disposition": "matched",
+      "reason": "expectation_matched",
+      "duplicate_of": null
+    },
+    {
+      "index": 1,
+      "source_ref": "fixture:review:preference",
+      "input_digest": "sha256:24b9c414e4a37eb6d8e7da2a294012be138387137291ba3cc4e8085a7f6cb69d",
+      "disposition": "matched",
+      "reason": "expectation_matched",
+      "duplicate_of": null
+    },
+    {
+      "index": 2,
+      "source_ref": "fixture:review:skills",
+      "input_digest": "sha256:0015b5e7a4f51593768d7b29fa656a5fc9dc9b19bf14e1d207f6b016684ab558",
+      "disposition": "matched",
+      "reason": "expectation_matched",
+      "duplicate_of": null
+    },
+    {
+      "index": 3,
+      "source_ref": "fixture:review:malformed",
+      "input_digest": "sha256:4b0e524a2429e658a8fb44dd8156843b31213fe70294e69c1dd5ae826df23b68",
+      "disposition": "quarantined",
+      "reason": "invalid_record",
+      "duplicate_of": null
+    }
+  ],
+  "records": [
+    {
+      "index": 0,
+      "record": {
+        "schema_version": "quirk.partials/v1alpha1",
+        "revision": 0,
+        "supersedes_digest": null,
+        "status": "candidate",
+        "knowledge": {
+          "status": "partial",
+          "known_items": [
+            {
+              "id": "synthetic:optional:1",
+              "label": "Synthetic optional initiative 1"
+            },
+            {
+              "id": "synthetic:optional:2",
+              "label": "Synthetic optional initiative 2"
+            },
+            {
+              "id": "synthetic:optional:3",
+              "label": "Synthetic optional initiative 3"
+            },
+            {
+              "id": "synthetic:optional:4",
+              "label": "Synthetic optional initiative 4"
+            },
+            {
+              "id": "synthetic:optional:5",
+              "label": "Synthetic optional initiative 5"
+            },
+            {
+              "id": "synthetic:optional:6",
+              "label": "Synthetic optional initiative 6"
+            }
+          ],
+          "lower_bound": 6,
+          "upper_bound": null,
+          "exact": null,
+          "completeness_basis": "unconfirmed"
+        },
+        "evidence": {
+          "status": "partial",
+          "satisfied": [
+            "native_shape_valid",
+            "native_receipts_consistent"
+          ],
+          "missing": [
+            "independent_human_benefit_verification",
+            "native_comparable_benefit_evidence",
+            "native:inventory_unknown",
+            "native:costs_unknown",
+            "native:insufficient_uses"
+          ],
+          "conflicts": [],
+          "limitations": [
+            "Native receipts establish local integrity, not authenticated human truth.",
+            "A use report is subjective feedback and supplies no elapsed minutes or completed commitment.",
+            "Native benefit result is a self-report comparison only."
+          ]
+        },
+        "work": {
+          "status": "not_started",
+          "completed_units": [],
+          "remaining_units": [
+            "initiative.weekly-planning"
+          ],
+          "failed_units": []
+        },
+        "availability": {
+          "status": "partial",
+          "present": [
+            "program_record",
+            "declared_protected_schedule"
+          ],
+          "missing": [],
+          "unverified": [
+            "current_real_world_capacity",
+            "protected_obligation_fit"
+          ]
+        },
+        "authority": {
+          "maximum_right": "propose",
+          "effect_execution_allowed": false,
+          "calendar_write_allowed": false,
+          "canon_promotion_allowed": false,
+          "graph_application_allowed": false,
+          "training_allowed": false,
+          "human_review_required": true,
+          "upstream_hold_refs": [
+            "os:inventory_unknown",
+            "os:protected_schedule",
+            "os:no_runtime_or_calendar_authority"
+          ]
+        },
+        "id": "os-partials:program.attention-demo",
+        "subject": {
+          "system": "Quirk-Systems/quirk-os",
+          "id": "program.attention-demo",
+          "version": "138039afad0826130505eb13230c5a0844c0f572/r0",
+          "digest": "sha256:884599232724271611bfa4acc6d7c290f5f8218d123bfbbcba4f1d7d3a8730d6"
+        },
+        "scope": {
+          "id": "os:active-optional-work",
+          "description": "Active discretionary initiatives in this program plus outside discretionary inventory; employment and essential care are excluded."
+        },
+        "provenance": {
+          "kind": "synthetic",
+          "source_refs": [
+            "fixture:os-partial"
+          ],
+          "captured_at": "2026-09-10T00:00:00.000Z"
+        }
+      },
+      "max_count": 2
+    },
+    {
+      "index": 1,
+      "record": {
+        "schema_version": "quirk.partials/v1alpha1",
+        "revision": 0,
+        "supersedes_digest": null,
+        "status": "candidate",
+        "knowledge": {
+          "status": "partial",
+          "known_items": [
+            {
+              "id": "preference-reference:sha256:8ef1a12cd4ad03f6241a52b51aa8072851821820a56ac9322e5dce27689cf067",
+              "label": "Candidate comparison 1"
+            }
+          ],
+          "lower_bound": 1,
+          "upper_bound": null,
+          "exact": null,
+          "completeness_basis": "unconfirmed"
+        },
+        "evidence": {
+          "status": "partial",
+          "satisfied": [
+            "inspection_shape_and_counts_consistent"
+          ],
+          "missing": [
+            "source_authentication",
+            "verified_human_origin",
+            "independent_evaluation",
+            "observed_human_benefit"
+          ],
+          "conflicts": [],
+          "limitations": [
+            "Structural projection does not authenticate the inspection or rerun original payload validation.",
+            "Unsigned export; human origin is a claim.",
+            "Replay checking covers this document only.",
+            "A last-page flag does not establish a complete export.",
+            "Included lineage metadata does not establish image byte availability or globally complete lineage."
+          ]
+        },
+        "work": {
+          "status": "partial",
+          "completed_units": [
+            "inspection_document_projected",
+            "row:0:NEW_CANDIDATE"
+          ],
+          "remaining_units": [
+            "verify_complete_export"
+          ],
+          "failed_units": []
+        },
+        "availability": {
+          "status": "partial",
+          "present": [
+            "inspection_envelope",
+            "asset_metadata:9596cd811612c91579468065a4f239fac60ea9db49610553a42378dbecb46842",
+            "asset_metadata:fd3f83026c379f41d4db4bc9f454337378efe29ccd2a06dcecdfe10d03dd255a"
+          ],
+          "missing": [],
+          "unverified": [
+            "complete_export",
+            "image_bytes:9596cd811612c91579468065a4f239fac60ea9db49610553a42378dbecb46842",
+            "image_bytes:fd3f83026c379f41d4db4bc9f454337378efe29ccd2a06dcecdfe10d03dd255a"
+          ]
+        },
+        "authority": {
+          "maximum_right": "propose",
+          "effect_execution_allowed": false,
+          "calendar_write_allowed": false,
+          "canon_promotion_allowed": false,
+          "graph_application_allowed": false,
+          "training_allowed": false,
+          "human_review_required": true,
+          "upstream_hold_refs": [
+            "preference:no_graph_application",
+            "preference:no_model_training",
+            "preference:unsigned_source",
+            "preference:human_review_open"
+          ]
+        },
+        "id": "preference-inspection:be9ce41005b03b8d2c1eb482a73a530f62eaafaa425b441f5628737bcf7ab584",
+        "subject": {
+          "system": "Quirk-Systems/quirk-preference",
+          "id": "image-intake-inspection",
+          "version": "f70a713c097436172760d633ccee9bacb071483b",
+          "digest": "sha256:be9ce41005b03b8d2c1eb482a73a530f62eaafaa425b441f5628737bcf7ab584"
+        },
+        "scope": {
+          "id": "preference:document-inspection",
+          "description": "Distinct candidate events observed in this one inspection document; full export size, image bytes, identity, and benefit remain unverified."
+        },
+        "provenance": {
+          "kind": "synthetic",
+          "source_refs": [
+            "fixture:preference-partial"
+          ],
+          "captured_at": "2026-09-10T00:00:00.000Z"
+        }
+      },
+      "max_count": null
+    },
+    {
+      "index": 2,
+      "record": {
+        "schema_version": "quirk.partials/v1alpha1",
+        "revision": 0,
+        "supersedes_digest": null,
+        "status": "candidate",
+        "knowledge": {
+          "status": "partial",
+          "known_items": [
+            {
+              "id": "SYN-RED-001",
+              "label": "SYN-RED-001: historical RED result reported"
+            },
+            {
+              "id": "SYN-RED-002",
+              "label": "SYN-RED-002: not executed"
+            }
+          ],
+          "lower_bound": 2,
+          "upper_bound": null,
+          "exact": null,
+          "completeness_basis": "unconfirmed"
+        },
+        "evidence": {
+          "status": "partial",
+          "satisfied": [
+            "historical_expected_negative_reported:SYN-RED-001"
+          ],
+          "missing": [
+            "current_version_passing_positive_cases",
+            "current_version_passing_negative_or_boundary_cases",
+            "independent_qa_verdict",
+            "immutable_package_digest"
+          ],
+          "conflicts": [],
+          "limitations": [
+            "RED_CONFIRMED is an expected historical failure, never current-version passing evidence.",
+            "PROPOSED_NOT_EXECUTED scenarios are not executed negative review cases.",
+            "References and recorded SHA-256 values are source declarations; artifact bytes are not verified by this adapter.",
+            "The native RED validator is not executed by this projection; internal consistency cannot establish admission or submission readiness."
+          ]
+        },
+        "work": {
+          "status": "partial",
+          "completed_units": [
+            "historical_result_report:SYN-RED-001"
+          ],
+          "remaining_units": [
+            "execute_scenario:SYN-RED-002",
+            "current_version_comparative_evaluation",
+            "independent_qa"
+          ],
+          "failed_units": []
+        },
+        "availability": {
+          "status": "partial",
+          "present": [
+            "candidate-object.json"
+          ],
+          "missing": [
+            "SKILL.md (intentionally absent)",
+            "plugin-bundle"
+          ],
+          "unverified": [
+            "independent-qa-verdict",
+            "package_artifact_inventory"
+          ]
+        },
+        "authority": {
+          "maximum_right": "propose",
+          "effect_execution_allowed": false,
+          "calendar_write_allowed": false,
+          "canon_promotion_allowed": false,
+          "graph_application_allowed": false,
+          "training_allowed": false,
+          "human_review_required": true,
+          "upstream_hold_refs": [
+            "skills:candidate-only",
+            "skills:current-version-evaluation-required",
+            "skills:independent-qa-required",
+            "skills:no-admission-or-submission-grant"
+          ]
+        },
+        "id": "skills:synthetic-technique:readiness",
+        "subject": {
+          "system": "Quirk-Systems/quirk-skills",
+          "id": "synthetic-technique",
+          "version": "0.1.0-candidate",
+          "digest": "sha256:621518a4aa75f65f8a6141930b95f6a20bc864a5e1e5e3e1e75202baa109c647"
+        },
+        "scope": {
+          "id": "synthetic-technique:red-readiness",
+          "description": "Declared RED-stage evaluation scenarios and package readiness; scenario completeness does not mean skill readiness."
+        },
+        "provenance": {
+          "kind": "synthetic",
+          "source_refs": [
+            "fixture:skills-partial"
+          ],
+          "captured_at": "2026-09-10T00:00:00.000Z"
+        }
+      },
+      "max_count": null
+    }
+  ],
+  "counts": {
+    "inputs": 4,
+    "matched": 3,
+    "quarantined": 1,
+    "duplicates": 0
+  },
+  "authority": {
+    "maximum_right": "propose",
+    "effect_execution_allowed": false,
+    "calendar_write_allowed": false,
+    "canon_promotion_allowed": false,
+    "graph_application_allowed": false,
+    "training_allowed": false,
+    "human_review_required": true,
+    "upstream_hold_refs": [
+      "os:inventory_unknown",
+      "os:no_runtime_or_calendar_authority",
+      "os:protected_schedule",
+      "preference:human_review_open",
+      "preference:no_graph_application",
+      "preference:no_model_training",
+      "preference:unsigned_source",
+      "review:expectations_are_caller_supplied",
+      "review:human_review_open",
+      "skills:candidate-only",
+      "skills:current-version-evaluation-required",
+      "skills:independent-qa-required",
+      "skills:no-admission-or-submission-grant"
+    ]
+  },
+  "receipt": {
+    "capability_ref": "capability.partials-source-review/v0.1.0",
+    "transform_version": "0.1.0",
+    "output_digest": "sha256:493ac13153d2949f181768bc00e8012f0ed3cbcf3c95562bfa68418eefa16d61",
+    "observed_human_benefit": null,
+    "human_review_minutes": null,
+    "compute_cost": null,
+    "limitations": [
+      "Matched means only agreement with explicit caller expectations within the supplied age limit.",
+      "No remote freshness, source authentication, admission, capacity or effect authority is established.",
+      "Counts describe input dispositions only; domain counts are never added across records.",
+      "Original request must be retained for replay; this output is not an authenticated ledger."
+    ]
+  }
+}

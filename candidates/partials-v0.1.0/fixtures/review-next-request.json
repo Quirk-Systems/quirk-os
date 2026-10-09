@@ -1,0 +1,251 @@
+{
+  "schema_version": "quirk.partials-review-request/v1alpha1",
+  "captured_at": "2026-09-10T00:30:00.000Z",
+  "max_age_seconds": 3600,
+  "entries": [
+    {
+      "source_ref": "fixture:review:os",
+      "record": {
+        "schema_version": "quirk.partials/v1alpha1",
+        "revision": 0,
+        "supersedes_digest": null,
+        "status": "candidate",
+        "knowledge": {
+          "status": "partial",
+          "known_items": [
+            {
+              "id": "synthetic:optional:1",
+              "label": "Synthetic optional initiative 1"
+            },
+            {
+              "id": "synthetic:optional:2",
+              "label": "Synthetic optional initiative 2"
+            },
+            {
+              "id": "synthetic:optional:3",
+              "label": "Synthetic optional initiative 3"
+            },
+            {
+              "id": "synthetic:optional:4",
+              "label": "Synthetic optional initiative 4"
+            },
+            {
+              "id": "synthetic:optional:5",
+              "label": "Synthetic optional initiative 5"
+            },
+            {
+              "id": "synthetic:optional:6",
+              "label": "Synthetic optional initiative 6"
+            }
+          ],
+          "lower_bound": 6,
+          "upper_bound": null,
+          "exact": null,
+          "completeness_basis": "unconfirmed"
+        },
+        "evidence": {
+          "status": "partial",
+          "satisfied": [
+            "native_shape_valid",
+            "native_receipts_consistent"
+          ],
+          "missing": [
+            "independent_human_benefit_verification",
+            "native_comparable_benefit_evidence",
+            "native:inventory_unknown",
+            "native:costs_unknown",
+            "native:insufficient_uses"
+          ],
+          "conflicts": [],
+          "limitations": [
+            "Native receipts establish local integrity, not authenticated human truth.",
+            "A use report is subjective feedback and supplies no elapsed minutes or completed commitment.",
+            "Native benefit result is a self-report comparison only."
+          ]
+        },
+        "work": {
+          "status": "not_started",
+          "completed_units": [],
+          "remaining_units": [
+            "initiative.weekly-planning"
+          ],
+          "failed_units": []
+        },
+        "availability": {
+          "status": "partial",
+          "present": [
+            "program_record",
+            "declared_protected_schedule"
+          ],
+          "missing": [],
+          "unverified": [
+            "current_real_world_capacity",
+            "protected_obligation_fit"
+          ]
+        },
+        "authority": {
+          "maximum_right": "propose",
+          "effect_execution_allowed": false,
+          "calendar_write_allowed": false,
+          "canon_promotion_allowed": false,
+          "graph_application_allowed": false,
+          "training_allowed": false,
+          "human_review_required": true,
+          "upstream_hold_refs": [
+            "os:inventory_unknown",
+            "os:protected_schedule",
+            "os:no_runtime_or_calendar_authority"
+          ]
+        },
+        "id": "os-partials:program.attention-demo",
+        "subject": {
+          "system": "Quirk-Systems/quirk-os",
+          "id": "program.attention-demo",
+          "version": "138039afad0826130505eb13230c5a0844c0f572/r0",
+          "digest": "sha256:884599232724271611bfa4acc6d7c290f5f8218d123bfbbcba4f1d7d3a8730d6"
+        },
+        "scope": {
+          "id": "os:active-optional-work",
+          "description": "Active discretionary initiatives in this program plus outside discretionary inventory; employment and essential care are excluded."
+        },
+        "provenance": {
+          "kind": "synthetic",
+          "source_refs": [
+            "fixture:os-partial"
+          ],
+          "captured_at": "2026-09-10T00:00:00.000Z"
+        }
+      },
+      "max_count": 2,
+      "expectation": {
+        "subject": {
+          "system": "Quirk-Systems/quirk-os",
+          "id": "program.attention-demo",
+          "version": "synthetic-next-version",
+          "digest": "sha256:7487964fcafccbe9b896b6cbfc10e624fb878132c271be158f6be6ceb9cb9a54"
+        },
+        "source_ref": "fixture:expected:os",
+        "observed_at": "2026-09-10T00:30:00.000Z"
+      }
+    },
+    {
+      "source_ref": "fixture:review:preference",
+      "record": {
+        "schema_version": "quirk.partials/v1alpha1",
+        "revision": 0,
+        "supersedes_digest": null,
+        "status": "candidate",
+        "knowledge": {
+          "status": "partial",
+          "known_items": [
+            {
+              "id": "preference-reference:sha256:8ef1a12cd4ad03f6241a52b51aa8072851821820a56ac9322e5dce27689cf067",
+              "label": "Candidate comparison 1"
+            }
+          ],
+          "lower_bound": 1,
+          "upper_bound": null,
+          "exact": null,
+          "completeness_basis": "unconfirmed"
+        },
+        "evidence": {
+          "status": "partial",
+          "satisfied": [
+            "inspection_shape_and_counts_consistent"
+          ],
+          "missing": [
+            "source_authentication",
+            "verified_human_origin",
+            "independent_evaluation",
+            "observed_human_benefit"
+          ],
+          "conflicts": [],
+          "limitations": [
+            "Structural projection does not authenticate the inspection or rerun original payload validation.",
+            "Unsigned export; human origin is a claim.",
+            "Replay checking covers this document only.",
+            "A last-page flag does not establish a complete export.",
+            "Included lineage metadata does not establish image byte availability or globally complete lineage."
+          ]
+        },
+        "work": {
+          "status": "partial",
+          "completed_units": [
+            "inspection_document_projected",
+            "row:0:NEW_CANDIDATE"
+          ],
+          "remaining_units": [
+            "verify_complete_export"
+          ],
+          "failed_units": []
+        },
+        "availability": {
+          "status": "partial",
+          "present": [
+            "inspection_envelope",
+            "asset_metadata:9596cd811612c91579468065a4f239fac60ea9db49610553a42378dbecb46842",
+            "asset_metadata:fd3f83026c379f41d4db4bc9f454337378efe29ccd2a06dcecdfe10d03dd255a"
+          ],
+          "missing": [],
+          "unverified": [
+            "complete_export",
+            "image_bytes:9596cd811612c91579468065a4f239fac60ea9db49610553a42378dbecb46842",
+            "image_bytes:fd3f83026c379f41d4db4bc9f454337378efe29ccd2a06dcecdfe10d03dd255a"
+          ]
+        },
+        "authority": {
+          "maximum_right": "propose",
+          "effect_execution_allowed": false,
+          "calendar_write_allowed": false,
+          "canon_promotion_allowed": false,
+          "graph_application_allowed": false,
+          "training_allowed": false,
+          "human_review_required": true,
+          "upstream_hold_refs": [
+            "preference:no_graph_application",
+            "preference:no_model_training",
+            "preference:unsigned_source",
+            "preference:human_review_open"
+          ]
+        },
+        "id": "preference-inspection:be9ce41005b03b8d2c1eb482a73a530f62eaafaa425b441f5628737bcf7ab584",
+        "subject": {
+          "system": "Quirk-Systems/quirk-preference",
+          "id": "image-intake-inspection",
+          "version": "f70a713c097436172760d633ccee9bacb071483b",
+          "digest": "sha256:813c0b11843940d7868723b3ae0fe3c831f03f16cfbecb1a8e1c8c4bb9818fb5"
+        },
+        "scope": {
+          "id": "preference:document-inspection",
+          "description": "Distinct candidate events observed in this one inspection document; full export size, image bytes, identity, and benefit remain unverified."
+        },
+        "provenance": {
+          "kind": "synthetic",
+          "source_refs": [
+            "fixture:preference-partial"
+          ],
+          "captured_at": "2026-09-10T00:00:00.000Z"
+        }
+      },
+      "max_count": null,
+      "expectation": {
+        "subject": {
+          "system": "Quirk-Systems/quirk-preference",
+          "id": "image-intake-inspection",
+          "version": "f70a713c097436172760d633ccee9bacb071483b",
+          "digest": "sha256:813c0b11843940d7868723b3ae0fe3c831f03f16cfbecb1a8e1c8c4bb9818fb5"
+        },
+        "source_ref": "fixture:expected:preference",
+        "observed_at": "2026-09-10T00:30:00.000Z"
+      }
+    },
+    {
+      "source_ref": "fixture:review:malformed",
+      "record": {
+        "invalid_fixture": true
+      },
+      "max_count": null,
+      "expectation": null
+    }
+  ]
+}

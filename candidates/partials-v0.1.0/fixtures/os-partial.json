@@ -1,0 +1,113 @@
+{
+  "schema_version": "quirk.partials/v1alpha1",
+  "revision": 0,
+  "supersedes_digest": null,
+  "status": "candidate",
+  "knowledge": {
+    "status": "partial",
+    "known_items": [
+      {
+        "id": "synthetic:optional:1",
+        "label": "Synthetic optional initiative 1"
+      },
+      {
+        "id": "synthetic:optional:2",
+        "label": "Synthetic optional initiative 2"
+      },
+      {
+        "id": "synthetic:optional:3",
+        "label": "Synthetic optional initiative 3"
+      },
+      {
+        "id": "synthetic:optional:4",
+        "label": "Synthetic optional initiative 4"
+      },
+      {
+        "id": "synthetic:optional:5",
+        "label": "Synthetic optional initiative 5"
+      },
+      {
+        "id": "synthetic:optional:6",
+        "label": "Synthetic optional initiative 6"
+      }
+    ],
+    "lower_bound": 6,
+    "upper_bound": null,
+    "exact": null,
+    "completeness_basis": "unconfirmed"
+  },
+  "evidence": {
+    "status": "partial",
+    "satisfied": [
+      "native_shape_valid",
+      "native_receipts_consistent"
+    ],
+    "missing": [
+      "independent_human_benefit_verification",
+      "native_comparable_benefit_evidence",
+      "native:inventory_unknown",
+      "native:costs_unknown",
+      "native:insufficient_uses"
+    ],
+    "conflicts": [],
+    "limitations": [
+      "Native receipts establish local integrity, not authenticated human truth.",
+      "A use report is subjective feedback and supplies no elapsed minutes or completed commitment.",
+      "Native benefit result is a self-report comparison only."
+    ]
+  },
+  "work": {
+    "status": "not_started",
+    "completed_units": [],
+    "remaining_units": [
+      "initiative.weekly-planning"
+    ],
+    "failed_units": []
+  },
+  "availability": {
+    "status": "partial",
+    "present": [
+      "program_record",
+      "declared_protected_schedule"
+    ],
+    "missing": [],
+    "unverified": [
+      "current_real_world_capacity",
+      "protected_obligation_fit"
+    ]
+  },
+  "authority": {
+    "maximum_right": "propose",
+    "effect_execution_allowed": false,
+    "calendar_write_allowed": false,
+    "canon_promotion_allowed": false,
+    "graph_application_allowed": false,
+    "training_allowed": false,
+    "human_review_required": true,
+    "upstream_hold_refs": [
+      "os:inventory_unknown",
+      "os:protected_schedule",
+      "os:no_runtime_or_calendar_authority"
+    ]
+  },
+  "id": "os-partials:program.attention-demo",
+  "subject": {
+    "system": "Quirk-Systems/quirk-os",
+    "id": "program.attention-demo",
+    "version": "138039afad0826130505eb13230c5a0844c0f572/r0",
+    "digest": "sha256:884599232724271611bfa4acc6d7c290f5f8218d123bfbbcba4f1d7d3a8730d6"
+  },
+  "scope": {
+    "id": "os:active-optional-work",
+    "description": "Active discretionary initiatives in this program plus outside discretionary inventory; employment and essential care are excluded."
+  },
+  "provenance": {
+    "kind": "source_projection",
+    "source_refs": [
+      "https://github.com/Quirk-Systems/quirk-os/tree/138039afad0826130505eb13230c5a0844c0f572",
+      "program:sha256:c57821c085c7c7cde453e535d8a4dec26efdc27a9b5063d523162de706d0723a",
+      "fixture:synthetic-optional-inventory"
+    ],
+    "captured_at": "2026-01-10T12:00:00.000Z"
+  }
+}

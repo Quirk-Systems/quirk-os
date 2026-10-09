@@ -1,0 +1,37 @@
+{
+  "repository": "Quirk-Systems/quirk-skills",
+  "commit": "8fbe2e9553ff140a783eaf8bbd7d97d64ec6c47c",
+  "purpose": "Pinned existing repository inputs for adapter compatibility; not current-version pass or human-use evidence.",
+  "files": [
+    {
+      "path": "skills/writing-cuntsnickery/candidate-object.json",
+      "fixture": "candidate-object.json",
+      "blob_sha": "e6677d76b1dd27833959a2edccf25191be5f3c88",
+      "source_url": "https://github.com/Quirk-Systems/quirk-skills/blob/8fbe2e9553ff140a783eaf8bbd7d97d64ec6c47c/skills/writing-cuntsnickery/candidate-object.json"
+    },
+    {
+      "path": "skills/writing-cuntsnickery/evals/baseline-scenarios.json",
+      "fixture": "baseline-scenarios.json",
+      "blob_sha": "96f9e9d7cb12a5c02a4f9fbad212650eeeff6099",
+      "source_url": "https://github.com/Quirk-Systems/quirk-skills/blob/8fbe2e9553ff140a783eaf8bbd7d97d64ec6c47c/skills/writing-cuntsnickery/evals/baseline-scenarios.json"
+    },
+    {
+      "path": "skills/writing-cuntsnickery/evidence/baseline-results.json",
+      "fixture": "baseline-results.json",
+      "blob_sha": "ce22b18132994a40a5f60aab8966d0fbb9963026",
+      "source_url": "https://github.com/Quirk-Systems/quirk-skills/blob/8fbe2e9553ff140a783eaf8bbd7d97d64ec6c47c/skills/writing-cuntsnickery/evidence/baseline-results.json"
+    },
+    {
+      "path": "skills/writing-cuntsnickery/submission/READINESS.md",
+      "fixture": "READINESS.md",
+      "blob_sha": "6922bb2f7dab26acdfc034b0c8219161c1f44fec",
+      "source_url": "https://github.com/Quirk-Systems/quirk-skills/blob/8fbe2e9553ff140a783eaf8bbd7d97d64ec6c47c/skills/writing-cuntsnickery/submission/READINESS.md"
+    },
+    {
+      "path": "skills/writing-cuntsnickery/STATUS.md",
+      "fixture": "STATUS.md",
+      "blob_sha": "e811fd6dd07b5dfebd1828f39fb21fce8e394c77",
+      "source_url": "https://github.com/Quirk-Systems/quirk-skills/blob/8fbe2e9553ff140a783eaf8bbd7d97d64ec6c47c/skills/writing-cuntsnickery/STATUS.md"
+    }
+  ]
+}

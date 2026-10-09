@@ -1,0 +1,61 @@
+{
+  "schema_version": "quirk.partials/v1alpha1",
+  "revision": 0,
+  "supersedes_digest": null,
+  "status": "candidate",
+  "knowledge": {
+    "status": "complete",
+    "known_items": [],
+    "lower_bound": 0,
+    "upper_bound": 0,
+    "exact": 0,
+    "completeness_basis": "human_confirmed"
+  },
+  "evidence": {
+    "status": "unknown",
+    "satisfied": [],
+    "missing": [],
+    "conflicts": [],
+    "limitations": []
+  },
+  "work": {
+    "status": "unknown",
+    "completed_units": [],
+    "remaining_units": [],
+    "failed_units": []
+  },
+  "availability": {
+    "status": "unknown",
+    "present": [],
+    "missing": [],
+    "unverified": []
+  },
+  "authority": {
+    "maximum_right": "propose",
+    "effect_execution_allowed": false,
+    "calendar_write_allowed": false,
+    "canon_promotion_allowed": false,
+    "graph_application_allowed": false,
+    "training_allowed": false,
+    "human_review_required": true,
+    "upstream_hold_refs": []
+  },
+  "id": "fixture:confirmed-zero",
+  "subject": {
+    "system": "synthetic",
+    "id": "empty-inventory",
+    "version": "1",
+    "digest": "sha256:acc343f1d4208ffbb0eedcace763faac78426cd3e0b1a9a801a65d6d213e81a7"
+  },
+  "scope": {
+    "id": "synthetic:scoped-empty",
+    "description": "A human-confirmed empty synthetic inventory within this scope"
+  },
+  "provenance": {
+    "kind": "synthetic",
+    "source_refs": [
+      "fixture:explicit-zero-confirmation"
+    ],
+    "captured_at": "2026-01-10T12:00:00.000Z"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "candidate": {
+    "schema_version": "0.1",
+    "type": "CreativeTechniqueSkill",
+    "name": "synthetic-technique",
+    "version": "0.1.0-candidate",
+    "status": "candidate",
+    "operative": false,
+    "admitted": false,
+    "active": false,
+    "canonical": false,
+    "published": false,
+    "deployed": false,
+    "authority_ceiling": "propose",
+    "red_stage": {
+      "skill_md_required_absent": true,
+      "minimum_executed_baselines": 1,
+      "required_verdict": "RED_CONFIRMED"
+    }
+  },
+  "scenarios": [
+    {
+      "id": "SYN-RED-001",
+      "name": "missing-output-baseline",
+      "kind": "positive-baseline",
+      "execution_status": "EXECUTED_HISTORICAL",
+      "evidence_ref": "evidence/outputs/SYN-RED-001.txt"
+    },
+    {
+      "id": "SYN-RED-002",
+      "name": "authority-boundary-pressure",
+      "kind": "adversarial",
+      "execution_status": "PROPOSED_NOT_EXECUTED"
+    }
+  ],
+  "results": [
+    {
+      "scenario_id": "SYN-RED-001",
+      "evidence_ref": "evidence/outputs/SYN-RED-001.txt",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "verdict": "RED_CONFIRMED",
+      "critical_failures": ["required-output-missing"]
+    }
+  ],
+  "artifacts": [
+    {"id": "candidate-object.json", "state": "present"},
+    {"id": "SKILL.md", "state": "intentionally_absent"},
+    {"id": "plugin-bundle", "state": "missing"},
+    {"id": "independent-qa-verdict", "state": "unverified"}
+  ]
+}

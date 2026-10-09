@@ -1,0 +1,87 @@
+{
+  "schema_version": "quirk.partials/v1alpha1",
+  "revision": 0,
+  "supersedes_digest": null,
+  "status": "candidate",
+  "knowledge": {
+    "status": "unknown",
+    "known_items": [],
+    "lower_bound": null,
+    "upper_bound": null,
+    "exact": null,
+    "completeness_basis": "unconfirmed"
+  },
+  "evidence": {
+    "status": "partial",
+    "satisfied": [
+      "inspection_shape_and_counts_consistent"
+    ],
+    "missing": [
+      "source_authentication",
+      "verified_human_origin",
+      "independent_evaluation",
+      "observed_human_benefit"
+    ],
+    "conflicts": [],
+    "limitations": [
+      "Structural projection does not authenticate the inspection or rerun original payload validation.",
+      "Unsigned export; human origin is a claim.",
+      "Replay checking covers this document only.",
+      "A last-page flag does not establish a complete export.",
+      "Included lineage metadata does not establish image byte availability or globally complete lineage."
+    ]
+  },
+  "work": {
+    "status": "partial",
+    "completed_units": [
+      "inspection_document_projected"
+    ],
+    "remaining_units": [
+      "verify_complete_export"
+    ],
+    "failed_units": []
+  },
+  "availability": {
+    "status": "partial",
+    "present": [
+      "inspection_envelope"
+    ],
+    "missing": [],
+    "unverified": [
+      "complete_export"
+    ]
+  },
+  "authority": {
+    "maximum_right": "propose",
+    "effect_execution_allowed": false,
+    "calendar_write_allowed": false,
+    "canon_promotion_allowed": false,
+    "graph_application_allowed": false,
+    "training_allowed": false,
+    "human_review_required": true,
+    "upstream_hold_refs": [
+      "preference:no_graph_application",
+      "preference:no_model_training",
+      "preference:unsigned_source",
+      "preference:human_review_open"
+    ]
+  },
+  "id": "preference-inspection:41390850a807638c8a03b6301dc2d05b452a8cba9c9bac9c7a60bb01187e8631",
+  "subject": {
+    "system": "Quirk-Systems/quirk-preference",
+    "id": "image-intake-inspection",
+    "version": "f70a713c097436172760d633ccee9bacb071483b",
+    "digest": "sha256:41390850a807638c8a03b6301dc2d05b452a8cba9c9bac9c7a60bb01187e8631"
+  },
+  "scope": {
+    "id": "preference:document-inspection",
+    "description": "Distinct candidate events observed in this one inspection document; full export size, image bytes, identity, and benefit remain unverified."
+  },
+  "provenance": {
+    "kind": "source_projection",
+    "source_refs": [
+      "https://github.com/Quirk-Systems/quirk-preference/blob/f70a713c097436172760d633ccee9bacb071483b/candidates/image-evidence-intake-v0.1.0/scripts/inspect.mjs"
+    ],
+    "captured_at": "2026-09-10T00:00:00.000Z"
+  }
+}
