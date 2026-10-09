@@ -1,0 +1,23 @@
+{
+  "pack": "one-to-infinity-contract-pack",
+  "version": "0.1.0-candidate",
+  "status": "candidate-only",
+  "branch": "candidate/one-to-infinity-contract-pack-v0.1.0",
+  "repository_path": "programs/one-to-infinity",
+  "no_runtime": true,
+  "no_canon_promotion": true,
+  "no_provider_access": true,
+  "no_publication_grant": true,
+  "contracts": [
+    "contracts/CONTRACTS.md"
+  ],
+  "fixtures": [
+    "fixtures/positive-fixtures.json",
+    "fixtures/adversarial-fixtures.json"
+  ],
+  "evidence": [
+    "evidence/validation-report.json"
+  ],
+  "adversarial_fixture_count": 11,
+  "positive_fixture_count": 4
+}
