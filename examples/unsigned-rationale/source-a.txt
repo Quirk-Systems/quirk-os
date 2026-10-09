@@ -1,0 +1,4 @@
+SYNTHETIC SOURCE A — written for a local contract fixture.
+The comparison screen places the decision question above both source cards.
+It labels the final action "Export unsigned rationale".
+No person has evaluated this screen.
