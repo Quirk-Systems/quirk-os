@@ -1,20 +1,13 @@
-flowchart LR
-  R["Object Type Registry"] --> S["Quirk Object Pack Scaffolder"]
-  T["Canonical GFM Templates"] --> S
-  U["ID · kind · title · owner · authority"] --> S
-  S --> M["MANIFEST.yaml"]
-  S --> RD["README.md"]
-  S --> RM["REPO-MANAGEMENT.md"]
-  S --> SP["SYSTEM-PROMPT.md"]
-  S --> CI["CUSTOM-INSTRUCTIONS.md"]
-  S --> ST["SETTINGS.yaml"]
-  S --> PI["PROJECT-INSTRUCTIONS.md"]
-  S --> RF["REFERENCES.md"]
-  S --> SK["SKILL.md"]
-  S --> EV["EVALS.yaml"]
-  S --> WF["OPERATING-WORKFLOW.yaml"]
-
-  M --> C{"Candidate admission"}
-  EV --> C
-  WF --> C
-  C -->|"human decision"| A["Admitted object pack"]
+flowchart TD
+  R["Registry and templates"] --> C["Compile in memory"]
+  I["Explicit typed inputs"] --> C
+  C --> V{"Schema and binding checks"}
+  S["Creation schema"] --> V
+  V -->|"invalid"| F["Refuse without publishing"]
+  V -->|"valid"| P["Preview and content digest"]
+  P -->|"dry run"| N["No files written"]
+  P -->|"write mode"| D{"Expected digest matches, if supplied"}
+  D -->|"changed"| F
+  D -->|"continue"| W["Stage and rename"]
+  W --> O["Eleven candidate modules"]
+  O --> H["Separate authoring, evaluation, and human admission"]
