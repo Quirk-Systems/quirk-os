@@ -1,0 +1,17 @@
+{
+  "expected_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "observed_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "binding": {
+    "schema_version": "source-binding.v2",
+    "binding_id": "binding.notion.fixture-projection-adapter-v0-2",
+    "object_key": "fixture.projection-adapter-v0-2",
+    "platform": "notion",
+    "external_id": "fixture-projection-adapter-v0-2-notion",
+    "authority_class": "projection",
+    "sync_direction": "push",
+    "state": "active",
+    "freshness": {
+      "status": "fresh"
+    }
+  }
+}

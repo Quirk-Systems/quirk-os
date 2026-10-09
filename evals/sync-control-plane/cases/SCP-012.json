@@ -1,0 +1,9 @@
+{
+  "idempotency_key": "projection:fixture.projection-adapter-v0-2:deliver:0001",
+  "projection": {
+    "object_key": "fixture.projection-adapter-v0-2",
+    "authority_class": "projection",
+    "platforms": ["drive", "airtable", "notion"]
+  },
+  "prior_receipts": []
+}
