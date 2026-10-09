@@ -2,7 +2,22 @@ api_version: quirk.dev/mapping/v1
 kind: ProjectionMapping
 metadata:
   id: mapping.sync-control-plane
-  version: 1.0.0
+  version: 1.1.0
+  status: stable
+  owner: quirk-os
+  changelog:
+    - version: 1.0.0
+      note: Initial canonical/runtime projection mapping (v0.2 hardening).
+    - version: 1.1.0
+      note: >-
+        Added purpose, named lossy fields, vendor_bindings rule, versioning
+        discipline, migration_guidance, and downstream pin requirement.
+        Lossy runtime fields are now explicitly declared and silent loss
+        is prohibited.
+purpose: >-
+  Translate stable Quirk canonical identifiers to private Supabase runtime
+  columns and back, without leaking runtime UUIDs into Canon or allowing
+  vendor IDs to become Quirk identity.
 canonical_to_runtime:
   source_binding:
     binding_id: source_bindings.binding_key
@@ -19,6 +34,17 @@ canonical_to_runtime:
     idempotency_key: run_receipts.idempotency_key
     immutable: constant true
     supersedes_receipt_id: run_receipts.supersedes_receipt_key
+  projection_envelope:
+    object_key: projection_envelopes.object_key
+    kind: projection_envelopes.kind
+    canonical_uri: projection_envelopes.canonical_uri
+    canonical_version: projection_envelopes.canonical_version
+    content_hash: projection_envelopes.content_hash
+    authority_class: constant projection
+    projection: projection_envelopes.projection
+    source_bindings: projection_envelopes.source_bindings
+    generated_at: projection_envelopes.generated_at
+    generator_ref: projection_envelopes.generator_ref
 runtime_to_canonical:
   source_binding:
     source_bindings.id: omitted_runtime_identity
@@ -28,8 +54,74 @@ runtime_to_canonical:
     run_receipts.id: omitted_runtime_identity
     run_receipts.receipt_key: receipt_id
     run_receipts.supersedes_receipt_key: supersedes_receipt_id
+  projection_envelope:
+    projection_envelopes.id: omitted_runtime_identity
+    projection_envelopes.object_key: object_key
+    note: no UUID remapping; all envelope fields are canonical-side identifiers
 invariants:
   - runtime UUIDs never replace stable Quirk object keys
   - every lossy field is named and tested
   - canonical and runtime projections validate independently
   - reverse sync emits a Proposed Move rather than mutating Canon
+loss:
+  allowed:
+    - field: source_bindings.id
+      direction: runtime_to_canonical
+      reason: >-
+        Supabase serial/UUID primary key is private runtime identity.
+        Never surfaces in Canon. Resolved through object_registry via object_id.
+    - field: run_receipts.id
+      direction: runtime_to_canonical
+      reason: >-
+        Supabase serial/UUID primary key is private runtime identity.
+        Never surfaces in Canon. Receipt is identified by receipt_key.
+    - field: source_bindings.object_id
+      direction: runtime_to_canonical
+      reason: >-
+        Foreign-key UUID to object_registry resolved to stable object_key
+        on projection. The UUID must never appear in a canonical document.
+  silent_loss: prohibited
+vendor_bindings:
+  rule: vendor_ids_are_bindings_not_quirk_identity
+  note: >-
+    A GitHub repo ID, Supabase table UUID, or Drive file ID is always stored
+    in source_bindings.external_id. It becomes a binding, not a Quirk object key.
+versioning:
+  mapping_version_independent_from_adapter_version: true
+  downstream_pin_required: true
+  pin_instruction: >-
+    Downstream repositories must reference this file at a tagged commit or
+    release. Example pin: quirk-os@mapping/sync-control-plane.v1.1.0.
+    Bumping the mapping version requires a separate commit from any vendor
+    adapter change.
+migration_guidance:
+  binding_id:
+    old_runtime_column: binding_id
+    new_runtime_column: binding_key
+    canonical_field: binding_id
+    note: >-
+      Rows created before v0.2 may carry a plain UUID in binding_id.
+      Re-derive the canonical binding_id using the binding.<platform>.<slug>
+      pattern and write it into binding_key. The old UUID column is retired.
+  receipt_id:
+    old_runtime_column: receipt_id
+    new_runtime_column: receipt_key
+    canonical_field: receipt_id
+    note: >-
+      Rows created before v0.2 may carry a plain UUID in receipt_id.
+      Re-derive using the receipt.<slug> pattern and write it into receipt_key.
+      The old UUID column is retired.
+  object_id_uuid:
+    affected_column: source_bindings.object_id
+    canonical_replacement: object_registry.object_key
+    note: >-
+      Runtime object_id UUIDs must never appear in canonical documents.
+      Always join through object_registry to resolve the stable object_key.
+reverse_sync:
+  mode: proposed_move_only
+  direct_canon_mutation: prohibited
+  note: >-
+    When a runtime observation (drift, vendor change, feedback) would alter a
+    canonical document, the sync plane must emit a typed Proposed Move.
+    The Proposed Move is reviewed and admitted by a human authority before any
+    Canon change is recorded.
