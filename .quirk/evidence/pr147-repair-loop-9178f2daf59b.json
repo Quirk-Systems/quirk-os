@@ -29,16 +29,16 @@
   ],
   "artifacts": [
     {
+      "path": "docs/changes/verification-repair-routes.md",
+      "state": "present",
+      "git_blob": "a11025809744301c8d24d32227a49e3dec1c25b7",
+      "sha256": "sha256:164e3bf2f76ca80b833a3f472471cb253d6cf01a512252b631ae96f76961aac4"
+    },
+    {
       "path": "scripts/agent_reliability/repair_loop.py",
       "state": "present",
       "git_blob": "01d0f4161dbcaff9acd90f7b6c49e7679b7b4527",
       "sha256": "sha256:3879571626c2058eefb95572222aea40ba38da524eb6ba19ef604b847c1df862"
-    },
-    {
-      "path": "tests/test_repair_loop.py",
-      "state": "present",
-      "git_blob": "0d96bdad0dfa605dda5dc380c05f35de42bf4da7",
-      "sha256": "sha256:1ee9f2e74677db9bf71e9065cd6a05c00cf18f9149cf373d3ff0ec94e2f6b16c"
     },
     {
       "path": "scripts/route_agent_verification.py",
@@ -47,10 +47,10 @@
       "sha256": "sha256:8ffe21034d270c937b1e1d939262236bd9568ded921cdf5538aedaedd641c80d"
     },
     {
-      "path": "docs/changes/verification-repair-routes.md",
+      "path": "tests/test_repair_loop.py",
       "state": "present",
-      "git_blob": "a11025809744301c8d24d32227a49e3dec1c25b7",
-      "sha256": "sha256:164e3bf2f76ca80b833a3f472471cb253d6cf01a512252b631ae96f76961aac4"
+      "git_blob": "0d96bdad0dfa605dda5dc380c05f35de42bf4da7",
+      "sha256": "sha256:1ee9f2e74677db9bf71e9065cd6a05c00cf18f9149cf373d3ff0ec94e2f6b16c"
     }
   ],
   "verification": {
@@ -61,12 +61,12 @@
         "exit_code": 0
       }
     ],
-    "verified_at": "2026-10-09T06:27:14.810001+00:00"
+    "verified_at": "2026-10-09T06:27:14.810001Z"
   },
   "authority": {
     "admission_effect": "none",
     "authority_ref": null
   },
   "correction": null,
-  "receipt_sha256": "sha256:fbb79c4c84f73a3692ef050f110baaf0f8fe2d97f9c5cacc6f20e259302f4963"
+  "receipt_sha256": "sha256:20401fdf02b67aebe3f38852a9408ad1e49eae661ff0fad5f6c228df89a01f86"
 }
