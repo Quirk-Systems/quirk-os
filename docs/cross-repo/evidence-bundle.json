@@ -75,7 +75,7 @@
       "output_hashes": [
         {
           "path": "docs/cross-repo/REVIEW.md",
-          "sha256": "2a137a59511bd0b1091a72173f12c7f6ea2fae8009e888326f241048ed781abb"
+          "sha256": "96b883d6f24cdcbe07574073a523549be8239d116cd989cbf490ed6b1f438b44"
         },
         {
           "path": "docs/cross-repo/repository-census.json",
@@ -104,6 +104,10 @@
         {
           "path": "experiments/cross_repo/capability.json",
           "sha256": "c94d4a2b0cc5f71bf7d0e1833322af175187c364db4c1f5c0a4da1949cb13a4b"
+        },
+        {
+          "path": ".github/workflows/cross-repo-candidate.yml",
+          "sha256": "32462df4737229ec82f11a3728b6f2453d26fb5e979052dc01a99d79c933003a"
         }
       ]
     },
@@ -113,7 +117,9 @@
       "full_admission_suite": "NOT_RUN",
       "warnings": [
         "Live consumers and human creative grade unverified"
-      ]
+      ],
+      "hosted_core_conformance": "PASS at 2080ecb5bd2d112eea218f908d27fbb10179b3df",
+      "hosted_crossing": "Check latest PR head; initial setup policy failure repaired with existing repository action pins"
     },
     "economics": {
       "compute_cost": null,
