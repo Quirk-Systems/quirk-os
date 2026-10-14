@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
+import html
 
 DOMAINS = ("music", "arcade", "town")
 BREADTH = ["creative medium", "capability ecosystem", "participatory world"]
@@ -95,6 +96,20 @@ def write_pack(pack, destination):
         hashes = {}
         for name, value in payload.items():
             encoded = (canonical(value) + "\n").encode("utf-8")
+            (temp / name).write_bytes(encoded)
+            hashes[name] = hashlib.sha256(encoded).hexdigest()
+        styles = Path(__file__).with_name("styles")
+        css = (styles / "quirk.css").read_text(encoding="utf-8")
+        lock = load(styles / "style-lock.json")
+        if hashlib.sha256(css.encode("utf-8")).hexdigest() != lock["output_sha256"]["quirk.css"]:
+            raise ValueError("style projection digest mismatch")
+        cards = "".join(
+            '<section class="quirk-card"><h2>' + html.escape(p["projection"]["domain"].title()) +
+            '</h2><p>' + html.escape(p["projection"]["interpretation"]) + '</p></section>'
+            for p in pack["projections"])
+        styled = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Quirk Branchwork</title><link rel="stylesheet" href="quirk.css"><body class="quirk-document"><p>Borrowed Tomorrow · candidate branches</p><h1>' + html.escape(pack["source"]["words"]) + '</h1><p>' + html.escape(pack["source"]["attribution"]) + '</p><div class="quirk-grid">' + cards + '</div><p>Source revision: ' + html.escape(pack["source"]["revision"]) + '</p><p><code>' + pack["source_sha256"] + '</code></p><p>No human preference, commitment or creative grade is recorded.</p></body></html>\n'
+        for name, content in {"index.html": styled, "quirk.css": css, "style-lock.json": canonical(lock) + "\n"}.items():
+            encoded = content.encode("utf-8")
             (temp / name).write_bytes(encoded)
             hashes[name] = hashlib.sha256(encoded).hexdigest()
         (temp / "receipt.json").write_text(canonical({

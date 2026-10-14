@@ -1,5 +1,9 @@
 # Synthetic cross-repository projection experiment
 
+The continuation also emits index.html with portable Quirk CSS and supports a
+bounded local refresh through synchronize.py. See
+[continuation](../../docs/cross-repo/CONTINUATION.md) for commands, checks and limits.
+
 This local adapter emits three **candidate** projections using the existing OS projection envelope. It preserves the source packet inside the pack, hashes canonicalized source content, and records output byte hashes. It calls no service and writes no canon, preferences, or world state. The fixture's fixed generated timestamp is not live execution time.
 
 From the repository root:

@@ -1,0 +1,11 @@
+{
+  "format": "quirk-style-projection/0.1",
+  "source": "Quirk-Systems/Quirk/packages/design-tokens/tokens",
+  "token_sha256": "d0f0d424dd0f1d7e9e782813300b6b4187f549f3f0827475c6a449484b07ab49",
+  "authority_effect": "none",
+  "output_sha256": {
+    "quirk.css": "9dbcfd6d6f5b9736837fba44c36e24acf395f3e7e96e0c2e0f2f7cad7e2f0b55",
+    "framework-bridge.css": "bbd0bad7e831fe4ec9b028fe235434ad8822aebc09a089c5974b08c898378e45",
+    "tokens.json": "d0f0d424dd0f1d7e9e782813300b6b4187f549f3f0827475c6a449484b07ab49"
+  }
+}
