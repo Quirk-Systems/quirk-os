@@ -1,0 +1,349 @@
+{
+  "inspected_at": "2026-10-14",
+  "scope": "Installed-repository search returned 49 results; not an exhaustive organization inventory",
+  "repositories": [
+    {
+      "repository": "Quirk-Systems/quirk-beauty",
+      "visibility": "private",
+      "reported_size": 1215,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-pet",
+      "visibility": "private",
+      "reported_size": 985,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-feed",
+      "visibility": "public",
+      "reported_size": 361,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/Quirk",
+      "visibility": "private",
+      "reported_size": 94701,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-art",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-press",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-memory",
+      "visibility": "private",
+      "reported_size": 101,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-home",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-dog",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-town",
+      "visibility": "private",
+      "reported_size": 163,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-data",
+      "visibility": "private",
+      "reported_size": 8,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-music",
+      "visibility": "private",
+      "reported_size": 25,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-run",
+      "visibility": "private",
+      "reported_size": 68,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-agents",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-local",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-house",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-money",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-prompt",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-lab",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-preference",
+      "visibility": "private",
+      "reported_size": 57,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-fitness",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-me",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-city",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-bio",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-core",
+      "visibility": "public",
+      "reported_size": 162,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-hygiene",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-os",
+      "visibility": "public",
+      "reported_size": 3054,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-ops",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-word",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-generator",
+      "visibility": "public",
+      "reported_size": 953,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-code",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-work",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-skills",
+      "visibility": "private",
+      "reported_size": 534,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-flirt",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-format",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-arena",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-health",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-arcade",
+      "visibility": "private",
+      "reported_size": 181,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-merchant",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-design",
+      "visibility": "private",
+      "reported_size": 32,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-feedback",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-market",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-intelligence",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-club",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "bryansayler/quirk-commerce",
+      "visibility": "private",
+      "reported_size": 434,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-directory",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-style",
+      "visibility": "private",
+      "reported_size": 0,
+      "inspection": "metadata_only_empty_or_uninitialized",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "bryansayler/quirk-beauty-store",
+      "visibility": "private",
+      "reported_size": 435,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/project-scaffold",
+      "visibility": "public",
+      "reported_size": 2921,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    }
+  ]
+}
