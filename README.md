@@ -4,6 +4,13 @@ Quirk OS is the operating foundation for a stateful human–agent ecosystem span
 
 ## Active architecture work
 
+### Cross-repository creative and world continuity
+
+[Cross-repo program](docs/cross-repo/PLAN.md) maps shared ownership, creative
+branches, personal continuity, and participatory worldbuilding. The
+[synthetic crossing](experiments/cross_repo/README.md) is locally executable;
+real host adapters, synchronization, human creative grading, and admission remain open.
+
 ### Quirk Core Golden Project Pack
 
 The first project pack defines the accountable machinery beneath Quirk Core:

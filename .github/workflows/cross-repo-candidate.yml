@@ -1,0 +1,21 @@
+name: cross-repo-candidate
+on:
+  pull_request:
+    paths:
+      - 'experiments/cross_repo/**'
+      - 'schemas/projection-envelope.schema.json'
+      - '.github/workflows/cross-repo-candidate.yml'
+permissions:
+  contents: read
+jobs:
+  synthetic-crossing:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # existing repo pin
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # existing repo pin
+        with:
+          python-version: '3.12'
+      - run: python -m pip install jsonschema==4.26.0
+      - run: python -m unittest discover -s experiments/cross_repo -p 'test_*.py' -v
+      - run: python experiments/cross_repo/compiler.py experiments/cross_repo/source.json "${RUNNER_TEMP}/quirk-favor-pack"

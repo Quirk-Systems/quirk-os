@@ -1,0 +1,136 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.cross-repo-20261014",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "03f70e1a790bac09294fe0f31a3c5f0d0fb4418e",
+    "commit": "0681138f9fa9a28ede9bdf4fdb3fa0bb0ecf05ab",
+    "changed_paths": [
+      ".github/workflows/cross-repo-candidate.yml",
+      "README.md",
+      "docs/cross-repo/IMPROVEMENT-LOOP.md",
+      "docs/cross-repo/PLAN.md",
+      "docs/cross-repo/REVIEW.md",
+      "docs/cross-repo/evidence-bundle.json",
+      "docs/cross-repo/repository-census.json",
+      "experiments/cross_repo/README.md",
+      "experiments/cross_repo/capability.json",
+      "experiments/cross_repo/compiler.py",
+      "experiments/cross_repo/source.json",
+      "experiments/cross_repo/test_compiler.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.cross-repo-local-crossing-20261014",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Candidate plan and synthetic compiler are present at exact subject bytes. Ten local tests pass. Live adapters, independent reuse, creative acceptance and full program admission remain unverified.",
+      "evidence_paths": [
+        ".github/workflows/cross-repo-candidate.yml",
+        "README.md",
+        "docs/cross-repo/IMPROVEMENT-LOOP.md",
+        "docs/cross-repo/PLAN.md",
+        "docs/cross-repo/REVIEW.md",
+        "docs/cross-repo/evidence-bundle.json",
+        "docs/cross-repo/repository-census.json",
+        "experiments/cross_repo/README.md",
+        "experiments/cross_repo/capability.json",
+        "experiments/cross_repo/compiler.py",
+        "experiments/cross_repo/source.json",
+        "experiments/cross_repo/test_compiler.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/cross-repo-candidate.yml",
+      "state": "present",
+      "git_blob": "a8fe0eb83ea0dc524c4735b183384342ec9b3ce0",
+      "sha256": "sha256:32462df4737229ec82f11a3728b6f2453d26fb5e979052dc01a99d79c933003a"
+    },
+    {
+      "path": "README.md",
+      "state": "present",
+      "git_blob": "198103850a7c2c294db88a3e8d0aa8e1cfb79c09",
+      "sha256": "sha256:601ea8f366f44baf1d05e86f08b90e732fbaba36061d5460d09acde61f2334c1"
+    },
+    {
+      "path": "docs/cross-repo/IMPROVEMENT-LOOP.md",
+      "state": "present",
+      "git_blob": "7ff06a5b831c939a3108f097899bbd09a30778e7",
+      "sha256": "sha256:1ef31cbbb51e65b56788d6f7aa109be7537130f1c1fe1c6ad8d21b781b755436"
+    },
+    {
+      "path": "docs/cross-repo/PLAN.md",
+      "state": "present",
+      "git_blob": "c4e8a665ffb53e378c6429de683b0d24e976d7da",
+      "sha256": "sha256:31a8c2ff2bc6e58d6cb848cf8c1735987158156d882460d8b2258eaffab4495a"
+    },
+    {
+      "path": "docs/cross-repo/REVIEW.md",
+      "state": "present",
+      "git_blob": "39152ed1fbcf012b201df585538095e5e2cfcec9",
+      "sha256": "sha256:96b883d6f24cdcbe07574073a523549be8239d116cd989cbf490ed6b1f438b44"
+    },
+    {
+      "path": "docs/cross-repo/evidence-bundle.json",
+      "state": "present",
+      "git_blob": "0abb69bc0f992e4ea82d3590fcb56d05896cba81",
+      "sha256": "sha256:bd0b6acdf1c67cb2cf0fe4e01b4cd989ea00d0ff938d4b276df4b696c059770c"
+    },
+    {
+      "path": "docs/cross-repo/repository-census.json",
+      "state": "present",
+      "git_blob": "0a6a235cddbfcea40cf5fded7e2f140b904949e0",
+      "sha256": "sha256:238a0d928df0e3836b5273df3ee1e72d31c4acc3b3f6b4cf41a8ce488c13b989"
+    },
+    {
+      "path": "experiments/cross_repo/README.md",
+      "state": "present",
+      "git_blob": "fa366453fdd40ee258c1bdb4ca7bde52155d343c",
+      "sha256": "sha256:c61542b67d78b447d6c925b48e74ec9ec56c94f58501e58d5a75c34e63eb5a82"
+    },
+    {
+      "path": "experiments/cross_repo/capability.json",
+      "state": "present",
+      "git_blob": "dcd4680877f0d4a2f749dae54d75aac38595ab75",
+      "sha256": "sha256:c94d4a2b0cc5f71bf7d0e1833322af175187c364db4c1f5c0a4da1949cb13a4b"
+    },
+    {
+      "path": "experiments/cross_repo/compiler.py",
+      "state": "present",
+      "git_blob": "6b9fe4af00c8b05dd2b8e08c8fb3b356bb30bbe8",
+      "sha256": "sha256:c33062835d66e75173062448b5125bfcffb0e759dfed833b3f33d53f546ef254"
+    },
+    {
+      "path": "experiments/cross_repo/source.json",
+      "state": "present",
+      "git_blob": "3e429863c1839fbf976aea4358913359b85e2211",
+      "sha256": "sha256:2e5be3bfcd311cc06e5ed772203c3c2238c4e97471c242f54a667517179b2d17"
+    },
+    {
+      "path": "experiments/cross_repo/test_compiler.py",
+      "state": "present",
+      "git_blob": "5905f8a3a08e4441a7f3119956d85e5591c91ebc",
+      "sha256": "sha256:ea17614a99c7a9da7af7514fedf29af9a2d94baf44f5977fadb20fee68d0ad06"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s experiments/cross_repo -p 'test_*.py' -v",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-14T08:53:50.495838Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:5d1788410507f9b83310480880a46ba8254331f25f9e1a822e6c1b013e151779"
+}
