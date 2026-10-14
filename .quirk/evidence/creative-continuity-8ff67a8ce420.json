@@ -1,0 +1,32 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.creative-continuity.8ff67a8ce420",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "63736360d25812333e8ef1e14ff314b8985b5ffa",
+    "commit": "8ff67a8ce420d28cbcf533ccef2770c2298409b0",
+    "changed_paths": [".github/workflows/context-continuity.yml", "AGENTS.md", "examples/creative-continuity.md", "examples/creative-continuity.request.json", "tests/test_creative_continuity.py"]
+  },
+  "claims": [{
+    "claim_id": "qclaim.creative-continuity.8ff67a8ce420",
+    "claim_type": "evidence",
+    "authority_effect": "none",
+    "statement": "The exact five candidate files add a pinned shared-defaults consumer, a synthetic creative-continuation fixture, 16 passing targeted regressions, a trial handoff, and expanded read-only workflow coverage. Tests ran on Python 3.13.5 against the unchanged Git-blob-verified resolver. Full repository validation, exact-range evidence validation, Python 3.12, hosted CI, fresh-host behavior, gameplay, human preference, and Roundtrip 01 were NOT_RUN. No runtime or authority effect is established.",
+    "evidence_paths": [".github/workflows/context-continuity.yml", "AGENTS.md", "examples/creative-continuity.md", "examples/creative-continuity.request.json", "tests/test_creative_continuity.py"]
+  }],
+  "artifacts": [
+    {"path": ".github/workflows/context-continuity.yml", "state": "present", "git_blob": "28d3b7b1d16320e05ab19b79b413f38002877f85", "sha256": "sha256:eb3a309b0449fa2b7ee2287c1683f3f2eb14b302cee1421edb7c1d352b52715d"},
+    {"path": "AGENTS.md", "state": "present", "git_blob": "2927894e081ea8c02e81bee4fe8476a94ecf6910", "sha256": "sha256:f2af385d1bec924038ef4ba021b58f303257e2e0d78971d43c2f8fb130de9a10"},
+    {"path": "examples/creative-continuity.md", "state": "present", "git_blob": "1a6673caf87889ceebdc99eebf7d62cc80aa0594", "sha256": "sha256:acc84e553fac49710e2c6be30b3118415f7afb276836333379348642299d70d3"},
+    {"path": "examples/creative-continuity.request.json", "state": "present", "git_blob": "356e29d0f88c13e9813bdaac67e79fafbf585f5e", "sha256": "sha256:54e084a011905169fa175f0449cf6e604b180e64ac1439bf8c67dc992d0221bd"},
+    {"path": "tests/test_creative_continuity.py", "state": "present", "git_blob": "7698ec0db5c8a64d2d22a8540341eff5477ac16f", "sha256": "sha256:9281f6ca4952d5a3774f9b2c6ccaa8e08c8b035ebcbd261710181c97f50bbc2c"}
+  ],
+  "verification": {
+    "commands": [{"command": "python3 -m unittest discover -s tests -p test_creative_continuity.py -v", "result": "pass", "exit_code": 0}],
+    "verified_at": "2026-10-14T23:37:23Z"
+  },
+  "authority": {"admission_effect": "none", "authority_ref": null},
+  "correction": null,
+  "receipt_sha256": "sha256:e4a91d704132d60c2e8bdfcea33dece317cf95468f108c07aefdfc6c65c644bf"
+}
