@@ -27,3 +27,5 @@ Load the smallest set of project instructions required for the current task. Do 
 ## Completion test
 
 Another qualified human or agent should be able to continue, evaluate, or safely stop the project without requiring invisible interpretation.
+
+For context-selection changes, use [the candidate continuity implementation](../context-continuity.md) and the repository profile. Preserve existing admission gates; untried references remain distinct from instructions.

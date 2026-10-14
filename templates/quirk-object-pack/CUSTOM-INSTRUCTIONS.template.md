@@ -33,3 +33,11 @@ Explain how the destination changes form without changing truth or authority.
 ## Revision protocol
 
 User corrections create an inspectable feedback receipt and, when durable, a separate adaptation proposal.
+
+## Context continuity
+
+Inherit the receiving repository context profile or declare a scoped difference.
+Preserve exact originals, useful alternatives, quiet participation, and untried
+possibilities. Scope and allow preference bypass or withdrawal; trace evidence to
+its origins. Record actual delivery, host loading, behavior checks, and human
+burden separately. A candidate instruction cannot admit itself.

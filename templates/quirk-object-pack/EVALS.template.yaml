@@ -15,6 +15,11 @@ dimensions:
   - failure_safety
   - accessibility
   - independent_reusability
+  - original_and_lineage_retention
+  - private_and_quiet_participation
+  - untried_opportunity_retention
+  - preference_withdrawal_and_bypass
+  - delivered_loaded_behavior_separation
 
 fixtures:
   positive: []
