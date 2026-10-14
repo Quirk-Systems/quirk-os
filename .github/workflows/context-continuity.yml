@@ -5,11 +5,14 @@ on:
       - scripts/context_continuity.py
       - scripts/validate_context_profiles.py
       - tests/test_context_continuity.py
+      - tests/test_creative_continuity.py
       - .quirk/context-profile.json
       - AGENTS.md
       - QUIRK-CONTEXT.md
       - docs/context-continuity.md
       - examples/working-defaults.request.json
+      - examples/creative-continuity.request.json
+      - examples/creative-continuity.md
       - .github/workflows/context-continuity.yml
 permissions:
   contents: read
@@ -23,5 +26,5 @@ jobs:
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.12'
-      - run: python3 -m unittest discover -s tests -p test_context_continuity.py -v
+      - run: python3 -m unittest discover -s tests -p 'test_*continuity*.py' -v
       - run: python3 scripts/validate_context_profiles.py .quirk/context-profile.json
