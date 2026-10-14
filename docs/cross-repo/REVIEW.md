@@ -8,6 +8,12 @@ Date: 2026-10-14. Evaluator: same coding assistant; no independent agent or huma
 | Break | Editing one projection's breadth list changed sibling projections and the module default | Added a counterexample, observed failure, copied the breadth list per output | 10 tests passed |
 | Earn | README command produced the pack; transactional write and source preservation checked | Clarified fixture-only timestamp, concurrency limits, and receipt mapping | CLI executed; final outputs hashable; live consumers still OPEN |
 
+Hosted verification initially stopped during job setup: organization policy requires
+full action commit pins. Reused the existing Golden Gates checkout and Python pins
+without changing policy. Core's hosted conformance check passed. The candidate CI
+now executes the same local synthetic tests; its latest result must be checked before
+reporting hosted passage.
+
 Local evidence: 10 test methods include ten rejection subcases, duplicate-key/non-finite
 inputs, stale/conflicting sources, denied self-promotion, unknown domains, schema
 validation, deterministic replay, mutation isolation, byte hashes, existing-path
