@@ -2,6 +2,8 @@
 import copy
 import importlib.util
 import json
+import subprocess
+import sys
 from pathlib import Path
 import unittest
 
@@ -25,6 +27,53 @@ def run(records, **options):
 
 
 class ContextContinuityTests(unittest.TestCase):
+    def test_working_defaults_small_request_cli_projection(self):
+        """Real CLI selection of pinned excerpts, not a fresh-agent behavior test."""
+        root = Path(__file__).resolve().parents[1]
+        request = json.loads((root / "examples/working-defaults.request.json").read_text())
+        completed = subprocess.run(
+            [sys.executable, "scripts/context_continuity.py",
+             "examples/working-defaults.request.json"],
+            cwd=root, capture_output=True, text=True, check=True,
+        )
+        result = json.loads(completed.stdout)
+        self.assertEqual("complete", result["status"])
+        self.assertEqual(["defaults.originals", "defaults.scope"],
+                         [r["id"] for r in result["instructions"]])
+        self.assertEqual([], result["references"])
+        selected = {r["id"]: r for r in result["instructions"]}
+        for original in request["records"]:
+            if original["id"] in selected:
+                self.assertEqual(original["original"], selected[original["id"]]["original"])
+                self.assertEqual(original["excerpt_sha256"], selected[original["id"]]["original_sha256"])
+                self.assertEqual(original["origin"], selected[original["id"]]["origin"])
+        self.assertIn({"id": "defaults.planning", "decision": "exclude",
+                       "reason": "outside task domain"}, result["decisions"])
+        rendered = subprocess.run(
+            [sys.executable, "scripts/context_continuity.py",
+             "examples/working-defaults.request.json", "--format", "markdown"],
+            cwd=root, capture_output=True, text=True, check=True,
+        ).stdout
+        for record in selected.values():
+            self.assertIn(record["original"], rendered)
+        self.assertNotIn("Capability Watch recommendation order", rendered)
+        self.assertNotIn("defaults.planning", rendered)
+        self.assertEqual({"delivered": False, "loaded": False, "behavior_tested": False},
+                         result["coverage"])
+        self.assertEqual("none", result["authority_effect"])
+
+    def test_working_defaults_scope_changes_without_source_mutation(self):
+        root = Path(__file__).resolve().parents[1]
+        request = json.loads((root / "examples/working-defaults.request.json").read_text())
+        original = copy.deepcopy(request["records"])
+        request["domains"] = ["substantial-planning"]
+        result = module.resolve(**request)
+        self.assertEqual(["defaults.planning", "defaults.scope"],
+                         [r["id"] for r in result["instructions"]])
+        request["admitted_instruction_ids"] = []
+        self.assertEqual([], module.resolve(**request)["instructions"])
+        self.assertEqual(original, request["records"])
+
     def test_exact_fragment_and_unknown_cost(self):
         original = "Lurkers… shine?\n\tNever-tried / still alive 🌀"
         result = run([source(original=original)])

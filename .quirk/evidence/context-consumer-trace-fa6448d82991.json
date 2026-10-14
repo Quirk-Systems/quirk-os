@@ -1,0 +1,103 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.context-consumer-trace.fa6448d82991",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "e1ff4ed510ddeffd18dcbfa0dc3d98ba6934a801",
+    "commit": "fa6448d829914b0f98c660d2186cc4faa4062c59",
+    "changed_paths": [
+      ".github/workflows/context-continuity.yml",
+      "AGENTS.md",
+      "QUIRK-CONTEXT.md",
+      "docs/context-continuity.md",
+      "examples/working-defaults.request.json",
+      "tests/test_context_continuity.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.context-consumer-trace.fa6448d82991",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Adds a pinned working-defaults pointer for one candidate repository consumer, a fixed Core reference, a scoped CLI projection fixture and regressions, and trace/host-test requirements. Local Python 3.12.14 suite ran 467 tests with one skip (466 passed); focused continuity suite ran 34 tests successfully. Does not establish fresh-agent loading, agent task behavior, consistency, human benefit, admission, or deployment.",
+      "evidence_paths": [
+        ".github/workflows/context-continuity.yml",
+        "AGENTS.md",
+        "QUIRK-CONTEXT.md",
+        "docs/context-continuity.md",
+        "examples/working-defaults.request.json",
+        "tests/test_context_continuity.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/context-continuity.yml",
+      "state": "present",
+      "git_blob": "5adb5b5414e5f75579798f1b4016e7695f3926e7",
+      "sha256": "sha256:50859589986739d365bb7419ccd7c34401a6d06992c8eae0be444cfb4cba72f6"
+    },
+    {
+      "path": "AGENTS.md",
+      "state": "present",
+      "git_blob": "349928d1c8b74e58bdb93e211a63b8002f096a96",
+      "sha256": "sha256:2fe638f1f527a5574c7ad4d0b61de565dfb8cbe56aaffa47a7ea350f3e8c9e4f"
+    },
+    {
+      "path": "QUIRK-CONTEXT.md",
+      "state": "present",
+      "git_blob": "df3cedce5f6b53e1c178c176cafb570d35345625",
+      "sha256": "sha256:59c8e034d4b38f0f08bd9a41524e8d18d78e976aaea3487607db7f43f3b64bf1"
+    },
+    {
+      "path": "docs/context-continuity.md",
+      "state": "present",
+      "git_blob": "8d26439b79d910b3e4058eea1af06d27e36edb28",
+      "sha256": "sha256:b39c56800c793d572f4fe176c0a0d1ef8b015490dcb04a30899bc6fbdb6521a0"
+    },
+    {
+      "path": "examples/working-defaults.request.json",
+      "state": "present",
+      "git_blob": "29a4709eca87da7d69d8ca9d7e0ba7ed3d08e0c7",
+      "sha256": "sha256:41b2512269fdb06ec73f36da2d9e6ce16f60817b806599e41f25f108669a77e9"
+    },
+    {
+      "path": "tests/test_context_continuity.py",
+      "state": "present",
+      "git_blob": "c4605eca0badd6cdb4186cfeeeafdb8a9323167c",
+      "sha256": "sha256:6a1f739278c56c2721c49fafc1b0f47265cddd671f4523208056fba103ba283c"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python3 -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 -m unittest discover -s tests -p test_context_continuity.py -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 scripts/validate_context_profiles.py .quirk/context-profile.json --contract /workspace/scratch/6d7ea53dbde1/verified-repos/quirk-core/contracts/context-continuity/v0.1/README.md",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-14T18:58:54.748004Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:f13eff401292d4164ac165ab922ef2a428102767c1960020caa7ece5ddfeb453"
+}
