@@ -6,6 +6,10 @@ on:
       - scripts/validate_context_profiles.py
       - tests/test_context_continuity.py
       - .quirk/context-profile.json
+      - AGENTS.md
+      - QUIRK-CONTEXT.md
+      - docs/context-continuity.md
+      - examples/working-defaults.request.json
       - .github/workflows/context-continuity.yml
 permissions:
   contents: read

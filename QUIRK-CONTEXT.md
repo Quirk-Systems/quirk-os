@@ -7,7 +7,7 @@ This repository applies that breadth to **context selection, agent guidance, and
 
 Read [the local profile](.quirk/context-profile.json) for its exact contract digest,
 observed base, applicable requirements, and evidence limits. The candidate source is
-[Quirk Core context continuity](https://github.com/Quirk-Systems/quirk-core/blob/codex/context-continuity-20261014/contracts/context-continuity/v0.1/README.md).
+[Quirk Core context continuity](https://github.com/Quirk-Systems/quirk-core/blob/08689b8ef118a5b17ebc86107ad123e07ee378a1/contracts/context-continuity/v0.1/README.md).
 
 ## Apply here
 

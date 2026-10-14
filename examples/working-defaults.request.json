@@ -1,0 +1,82 @@
+{
+  "records": [
+    {
+      "id": "defaults.scope",
+      "revision": "12ccf8f8b0c0d9077a9fae5ae94920f794752b29",
+      "original": "Preserve Quirk as a creative medium, capability ecosystem, and participatory world. Apply these defaults across design, building, mapping, implementation, code, creation, prompting, execution, research, learning loops, graphs, worldbuilding, extensions, events, tools, skills, plugins, resources, documentation, plans, notes, and changelogs. A tiny task needs only the relevant part.\n\nCurrent explicit instructions and applicable access constraints govern the task. Defaults remain revisable and cannot override higher-priority instructions or another person's choices. Use existing accepted contracts and sources. Do not turn a recommendation, retrieved source, successful check, or installed tool into authority.",
+      "origin": "https://github.com/Quirk-Systems/.github/blob/12ccf8f8b0c0d9077a9fae5ae94920f794752b29/docs/governance/WORKING_DEFAULTS.md",
+      "owner": "Quirk-Systems/.github",
+      "purpose": "*",
+      "audiences": [
+        "candidate-evaluation"
+      ],
+      "domains": [
+        "*"
+      ],
+      "derived_from": [],
+      "kind": "instruction",
+      "state": "untried",
+      "freshness": "historical",
+      "source_section": "Apply according to scope",
+      "source_sha256": "6af5ed22b44518dec3177bc17d057bdefb2c707605579b02b8188c710e2d7106",
+      "excerpt_sha256": "f62f6290061b410a70277e26be79af636fa1488ae7ec269cea5a4f41a7d99e20"
+    },
+    {
+      "id": "defaults.originals",
+      "revision": "12ccf8f8b0c0d9077a9fae5ae94920f794752b29",
+      "original": "Preserve raw sources, original expression, exact revisions when available, and transformation lineage. Separate observation, inference, proposal, human preference, process disposition, and outcome. Repeated summaries of one source are one lineage. Unknown, inaccessible, incomplete, untried, deferred, declined, failed, and successful are distinct states; silence is not approval or evidence of value.",
+      "origin": "https://github.com/Quirk-Systems/.github/blob/12ccf8f8b0c0d9077a9fae5ae94920f794752b29/docs/governance/WORKING_DEFAULTS.md",
+      "owner": "Quirk-Systems/.github",
+      "purpose": "*",
+      "audiences": [
+        "candidate-evaluation"
+      ],
+      "domains": [
+        "copyedit"
+      ],
+      "derived_from": [],
+      "kind": "instruction",
+      "state": "untried",
+      "freshness": "historical",
+      "source_section": "Evidence and learning",
+      "source_sha256": "6af5ed22b44518dec3177bc17d057bdefb2c707605579b02b8188c710e2d7106",
+      "excerpt_sha256": "ec86d80436d9e2866a2e3f503e36209e7c52d62c5465c8d35bce8f36cc4067d0"
+    },
+    {
+      "id": "defaults.planning",
+      "revision": "12ccf8f8b0c0d9077a9fae5ae94920f794752b29",
+      "original": "Use dependency and consequence before novelty or tool count. The Capability Watch recommendation order is: comparable observations and prior-proposal reconciliation; one coherent integration proof and a bounded command/effect map where needed; one useful capability trial; broader runtime enforcement or market exploration when the chosen work needs it. This is a sequencing default, not a requirement to implement the whole roadmap.\n\nExplain each recommendation through its evidence, expected benefit, uncertainty, prerequisites, responsible role, required skills/resources, smallest method, completion evidence, and stop or rollback condition. Distinguish a proposed owner from an accepted assignment. Give resource estimates in useful units and label them as estimates; protect human attention alongside time, compute, money, and maintenance.\n\nUse the existing Work Queue and source artifacts. Add a record only when no existing owner can hold the state. Prefer one bounded outcome, a small work-in-progress limit, and the cheapest observation that could change the decision. Compare against the ordinary workflow when judging improvement. Stop optional tests and analysis once the material uncertainty and required gates are resolved.",
+      "origin": "https://github.com/Quirk-Systems/.github/blob/12ccf8f8b0c0d9077a9fae5ae94920f794752b29/docs/governance/WORKING_DEFAULTS.md",
+      "owner": "Quirk-Systems/.github",
+      "purpose": "*",
+      "audiences": [
+        "candidate-evaluation"
+      ],
+      "domains": [
+        "substantial-planning"
+      ],
+      "derived_from": [],
+      "kind": "instruction",
+      "state": "untried",
+      "freshness": "historical",
+      "source_section": "Prioritize useful work",
+      "source_sha256": "6af5ed22b44518dec3177bc17d057bdefb2c707605579b02b8188c710e2d7106",
+      "excerpt_sha256": "d1e742ec83c855d3220106e0622c7ea8847ece04ba2994c1ed0b4baedcde1809"
+    }
+  ],
+  "release": "working-defaults-12ccf8f8b0c0d9077a9fae5ae94920f794752b29",
+  "audience": "candidate-evaluation",
+  "purpose": "copyedit",
+  "domains": [
+    "copyedit"
+  ],
+  "as_of": "2026-10-14T18:50:24Z",
+  "budget_chars": 4000,
+  "exploration_slots": 0,
+  "admitted_instruction_ids": [
+    "defaults.scope",
+    "defaults.originals",
+    "defaults.planning"
+  ],
+  "selector_owner": "quirk-os bounded fixture; not production admission"
+}
