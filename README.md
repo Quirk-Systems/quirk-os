@@ -39,3 +39,9 @@ Start here: [`agents/README.md`](agents/README.md)
 ## Repository status
 
 This repository is early and intentionally contract-first. Canonical definitions, runtime enforcement, and database/search projections remain separate. A polished document is not a release; Golden status requires executable schemas, evals, gates, evidence, and a successful **Ship It Without Bryan** review.
+
+## Context continuity
+
+For changes involving context, preferences, creative work, or participation, read
+[QUIRK-CONTEXT.md](QUIRK-CONTEXT.md) and preserve its scoped requirements.
+Do not treat this instruction entry point as proof of host loading or runtime adoption.

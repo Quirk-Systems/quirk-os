@@ -1,0 +1,168 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.context-continuity.87fffcdf2b1c",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "03f70e1a790bac09294fe0f31a3c5f0d0fb4418e",
+    "commit": "87fffcdf2b1c1b28d7a38022e8fc97dcd2ebb4b0",
+    "changed_paths": [
+      ".github/workflows/context-continuity.yml",
+      ".quirk/context-profile.json",
+      "AGENTS.md",
+      "QUIRK-CONTEXT.md",
+      "README.md",
+      "docs/canon/PROJECT-INSTRUCTIONS.md",
+      "docs/context-continuity.md",
+      "examples/context-continuity.request.json",
+      "scripts/benchmark_context_continuity.py",
+      "scripts/context_continuity.py",
+      "scripts/validate_context_profiles.py",
+      "templates/quirk-object-pack/CUSTOM-INSTRUCTIONS.template.md",
+      "templates/quirk-object-pack/EVALS.template.yaml",
+      "templates/quirk-object-pack/PROJECT-INSTRUCTIONS.template.md",
+      "templates/quirk-object-pack/SKILL.template.md",
+      "tests/test_context_continuity.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.context-continuity.87fffcdf2b1c",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Adds scoped candidate context continuity. Recorded checks validate the stated local scope; production adoption, host loading and human benefit are unproven.",
+      "evidence_paths": [
+        ".github/workflows/context-continuity.yml",
+        ".quirk/context-profile.json",
+        "AGENTS.md",
+        "QUIRK-CONTEXT.md",
+        "README.md",
+        "docs/canon/PROJECT-INSTRUCTIONS.md",
+        "docs/context-continuity.md",
+        "examples/context-continuity.request.json",
+        "scripts/benchmark_context_continuity.py",
+        "scripts/context_continuity.py",
+        "scripts/validate_context_profiles.py",
+        "templates/quirk-object-pack/CUSTOM-INSTRUCTIONS.template.md",
+        "templates/quirk-object-pack/EVALS.template.yaml",
+        "templates/quirk-object-pack/PROJECT-INSTRUCTIONS.template.md",
+        "templates/quirk-object-pack/SKILL.template.md",
+        "tests/test_context_continuity.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/context-continuity.yml",
+      "state": "present",
+      "git_blob": "c74efeebf29798617c65f0e55527eb189f4fff2f",
+      "sha256": "sha256:c33c4f79926efee241f9b4b7b06c6c3e02e73c1c201b1b1c45129b7123b8c40f"
+    },
+    {
+      "path": ".quirk/context-profile.json",
+      "state": "present",
+      "git_blob": "19712386aca68c6c45668311b6f3f3f971103961",
+      "sha256": "sha256:c18f1de474449f39b662f3d241c4329d49ea50f4c5686abdcad03b5336c88585"
+    },
+    {
+      "path": "AGENTS.md",
+      "state": "present",
+      "git_blob": "5a5e7eec7e37c92e080753c0d269d0b23ebafc64",
+      "sha256": "sha256:e2f389db3d64e7bdcbd2e5c08ebdd591b057c275dd461f6f343b0e84fbbee9b6"
+    },
+    {
+      "path": "QUIRK-CONTEXT.md",
+      "state": "present",
+      "git_blob": "5540bee64f282a8ba280831ec042e5e571e13b5c",
+      "sha256": "sha256:c3b9183e1187f4604ce2d336a886e37480dbd59f25b7e27f81af9cf2a54d577e"
+    },
+    {
+      "path": "README.md",
+      "state": "present",
+      "git_blob": "fcc48703056b52a009a4459eac7cad2d225b41a2",
+      "sha256": "sha256:f1fa1df5822937aa9233c2fd46c44ff3caf2e6a3ebc6fd64da1d98858c586bfa"
+    },
+    {
+      "path": "docs/canon/PROJECT-INSTRUCTIONS.md",
+      "state": "present",
+      "git_blob": "47931b8d23d7275f1a2421d33725ce77e60f75b3",
+      "sha256": "sha256:470ed47c0e7db3ae0dd19089db3b792d748b8bda7af4b91d807c89137d16846d"
+    },
+    {
+      "path": "docs/context-continuity.md",
+      "state": "present",
+      "git_blob": "e8ac04d5daf2ed1a11786eeaf2805a0a0a2a5692",
+      "sha256": "sha256:9420a0a36376c6176507d7083911a2614fe542a87662f33b5ce1cd8773a2a850"
+    },
+    {
+      "path": "examples/context-continuity.request.json",
+      "state": "present",
+      "git_blob": "7b08042ebda82eb3ddbed061ec8456af633804c8",
+      "sha256": "sha256:cd13c6b6d991bbdaaccd994de0afd2f8313cdf014d481f7e6994e1dc5a713c72"
+    },
+    {
+      "path": "scripts/benchmark_context_continuity.py",
+      "state": "present",
+      "git_blob": "444ed33dc5c2691597a0a1a405de4f313ee05271",
+      "sha256": "sha256:7b848cc01997eed5629b0e552a85facf24f555262938937faaea2fc0d39a2e0b"
+    },
+    {
+      "path": "scripts/context_continuity.py",
+      "state": "present",
+      "git_blob": "d2227168ac96838705323120f2724f9f943535c8",
+      "sha256": "sha256:5f57a22ba64d3d91ac432aa1ce9237ead75b1d1c56f6ff22c87af9bf1730ccbf"
+    },
+    {
+      "path": "scripts/validate_context_profiles.py",
+      "state": "present",
+      "git_blob": "fe92531aba94ac11fccdb8fb32de8b0690f5ab68",
+      "sha256": "sha256:c4661509bea661486380d1fd24132209bc107d912426edf49a5cfa67bfd144a6"
+    },
+    {
+      "path": "templates/quirk-object-pack/CUSTOM-INSTRUCTIONS.template.md",
+      "state": "present",
+      "git_blob": "ab7556ea7b7a409ef8cad4b96d4abceec4cab110",
+      "sha256": "sha256:909ca8e61bd5a46e88e99f2b86581f252070abe62fa01efdfea71f116c989013"
+    },
+    {
+      "path": "templates/quirk-object-pack/EVALS.template.yaml",
+      "state": "present",
+      "git_blob": "cb21d9f936cf6bf05595d6d8133e9b66698ad275",
+      "sha256": "sha256:2b7c8712ca0c37addaefeacbe51e51e7c7f27550ad115e7b5291f085e2073a1b"
+    },
+    {
+      "path": "templates/quirk-object-pack/PROJECT-INSTRUCTIONS.template.md",
+      "state": "present",
+      "git_blob": "0b440cd4084ced58975f86d2dcf5fe56bdf23cf8",
+      "sha256": "sha256:e7a2f9060e4c43106727fa5410a14853c9731b02dce977c077066b65673ffd52"
+    },
+    {
+      "path": "templates/quirk-object-pack/SKILL.template.md",
+      "state": "present",
+      "git_blob": "3eeb6ea11798593e7953a066f98401f25fdd8a6f",
+      "sha256": "sha256:aed1cb0cf5da4a7648d9ee07db610f97552666272885f03a82b52c6a71ab5f1a"
+    },
+    {
+      "path": "tests/test_context_continuity.py",
+      "state": "present",
+      "git_blob": "2b0b3adfb8728be827f2d7cb461d8f56afafd36d",
+      "sha256": "sha256:9f38d3fae16f1aef65cdebe4e1b76c8c4868ab2a1ece982fe5ca69afabf5a136"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PATH=/workspace/scratch/6d7ea53dbde1/.test-venv/bin:$PATH /workspace/scratch/6d7ea53dbde1/.test-venv/bin/python -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-14T08:47:14.343131Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:094714c11faa68c31414a34bebef1113b52714c6f653f7528d442718a5226262"
+}
