@@ -1,0 +1,168 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.agent-real-tasks.837e3ba051c7",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "528d1cfc304cce93cb48d2286c13f567d975df38",
+    "commit": "837e3ba051c7e2598497cdd65f465fb85cbfe229",
+    "changed_paths": [
+      ".github/workflows/agent-reliability.yml",
+      "evals/agent-reliability/v0.2.0/README.md",
+      "evals/agent-reliability/v0.2.0/real-tasks/README.md",
+      "evals/agent-reliability/v0.2.0/real-tasks/TASKS.md",
+      "evals/agent-reliability/v0.2.0/real-tasks/live-trial-template.json",
+      "evals/agent-reliability/v0.2.0/real-tasks/pack.json",
+      "evals/agent-reliability/v0.2.0/real-tasks/review-template.json",
+      "evals/agent-reliability/v0.2.0/real-tasks/validation-report.json",
+      "scripts/agent_reliability/real_tasks.py",
+      "scripts/validate_agent_real_tasks.py",
+      "tests/test_agent_real_tasks.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.agent-real-tasks.837e3ba051c7",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Author-run local verification at exact subject 837e3ba051c7e2598497cdd65f465fb85cbfe229. Python 3.12.14; installed dependencies match requirements-evals.txt (jsonschema 4.26.0, PyYAML 6.0.3, rfc3339-validator 0.1.4, rfc3986-validator 0.1.1). 13 new task-pack tests, 14 existing assurance tests, 58 existing reliability tests passed; full discovery ran 460 tests, 459 passed and one skipped. Six deterministic source queries against seven immutable public blobs matched the published keys; 72 exact-answer grader calls passed; existing assurance audits passed 168 authority/completion grader calls. Agent conformance passed; Golden candidate gates passed with 16 existing admission holds. git diff --check passed. Expected rejection: python scripts/validate_agent_real_tasks.py check --require-reviewed exited 1; all six unchanged v0.2.0 task_pair calls reject empty reviews with INVALID_PAIR/invalid_contract. This intentional hold is not an agent failure or failed construction check. No new real-task reviewer assertions, live-model observations, authenticated independent review, production authority, or hosted CI pass claimed. Frozen v0.1.2 and v0.2.0 contract/fixture files are unchanged. Normal check stdout SHA-256 176602e19e0dfa3121c5ca6c11ec28fc240b6eeab6141dfa304d66c3028ea81a equals the committed validation-report.json bytes; review-required check emits the identical report with exit 1.",
+      "evidence_paths": [
+        ".github/workflows/agent-reliability.yml",
+        "evals/agent-reliability/v0.2.0/README.md",
+        "evals/agent-reliability/v0.2.0/real-tasks/README.md",
+        "evals/agent-reliability/v0.2.0/real-tasks/TASKS.md",
+        "evals/agent-reliability/v0.2.0/real-tasks/live-trial-template.json",
+        "evals/agent-reliability/v0.2.0/real-tasks/pack.json",
+        "evals/agent-reliability/v0.2.0/real-tasks/review-template.json",
+        "evals/agent-reliability/v0.2.0/real-tasks/validation-report.json",
+        "scripts/agent_reliability/real_tasks.py",
+        "scripts/validate_agent_real_tasks.py",
+        "tests/test_agent_real_tasks.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/agent-reliability.yml",
+      "state": "present",
+      "git_blob": "8cf7820c0abc6ac8693e2f0c6b9986f9917c52e1",
+      "sha256": "sha256:4ee504a651c0cb39ced54b82ea13c58845076ca32bec87539ad3adfeb307deb7"
+    },
+    {
+      "path": "evals/agent-reliability/v0.2.0/README.md",
+      "state": "present",
+      "git_blob": "6e5e05a06707336eff6e7ae80e011a59ca2bc8a6",
+      "sha256": "sha256:920ce2cd63aaf81471261fd8c8f9fc8bb680a83bfd18c033263d3ce37ee7ea62"
+    },
+    {
+      "path": "evals/agent-reliability/v0.2.0/real-tasks/README.md",
+      "state": "present",
+      "git_blob": "d50cf47223a13f4ba80a2480ee31edaa54456363",
+      "sha256": "sha256:a03224dccbf9e824bcb318affc8b0c1352040dab283ab5c33c63b64dc2a4fd92"
+    },
+    {
+      "path": "evals/agent-reliability/v0.2.0/real-tasks/TASKS.md",
+      "state": "present",
+      "git_blob": "e6d5b676547f6d98e561a29b0e5d36e5bdd6ae66",
+      "sha256": "sha256:e1aab717bee8bf4ebe04d7dff91b3243dc466c2bd26038c1a03c0287329111c4"
+    },
+    {
+      "path": "evals/agent-reliability/v0.2.0/real-tasks/live-trial-template.json",
+      "state": "present",
+      "git_blob": "08b2840b51158dacc7845786e12b8aa49c180c1d",
+      "sha256": "sha256:c0f59fd7a2f3cb1078042ffe31be97fddfacb94dbcef520dbf9ed99822ae2fd2"
+    },
+    {
+      "path": "evals/agent-reliability/v0.2.0/real-tasks/pack.json",
+      "state": "present",
+      "git_blob": "98d92fb23e2c98ddead43801143ed69a552f9d90",
+      "sha256": "sha256:00fbbc3126d0b852503793816ffd1facf3f3b47c382b9c7793b9ce2478cb9005"
+    },
+    {
+      "path": "evals/agent-reliability/v0.2.0/real-tasks/review-template.json",
+      "state": "present",
+      "git_blob": "e055060ac2be75e0f54effd176f3d466f8fb1d7e",
+      "sha256": "sha256:77875a4499d1ed821b7de0d1825686eb1efcb2ea03f4e6e8e89a75a2a20c4d79"
+    },
+    {
+      "path": "evals/agent-reliability/v0.2.0/real-tasks/validation-report.json",
+      "state": "present",
+      "git_blob": "b5ee322ad82934f942e29661533743d7dcd16fc1",
+      "sha256": "sha256:176602e19e0dfa3121c5ca6c11ec28fc240b6eeab6141dfa304d66c3028ea81a"
+    },
+    {
+      "path": "scripts/agent_reliability/real_tasks.py",
+      "state": "present",
+      "git_blob": "e463aad04801f647256bdb2ec4e8f8347b23e25a",
+      "sha256": "sha256:7a69d40b7b9ecb6a2308284f57f5d32fb6901c38b44296e343e66fc7569a3d8d"
+    },
+    {
+      "path": "scripts/validate_agent_real_tasks.py",
+      "state": "present",
+      "git_blob": "0df075848eae524b2b9e903fce726efcd4b5d9f7",
+      "sha256": "sha256:8bef6ca12b00f4050c0fb2790210b0c203d21d25b406fd5b427c6422a3b01041"
+    },
+    {
+      "path": "tests/test_agent_real_tasks.py",
+      "state": "present",
+      "git_blob": "e69edf1f9bc3fbfff70d233dc43fd43fe7ed71cf",
+      "sha256": "sha256:0bc65f21e2a4fad1234c21c7daa090984b355e17f86e160782957bcfc669cbb8"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p test_agent_real_tasks.py -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p test_agent_assurance.py -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p test_agent_reliability.py -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agent_real_tasks.py check",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agent_assurance.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agents.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-31T21:01:41.660237Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:ed5eee6e94e7598598f49ea05873615e4ed4463c5bb07f72262374bf49f4f5a8"
+}
