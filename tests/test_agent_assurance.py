@@ -3,6 +3,8 @@ import copy
 import json
 import sys
 import subprocess
+import tempfile
+from unittest.mock import patch
 import unittest
 from pathlib import Path
 
@@ -12,6 +14,32 @@ from agent_reliability.assurance import audit_grader, disclosure, task_pair, dig
 
 
 class AssuranceTests(unittest.TestCase):
+    def test_malformed_nested_contract_fails_closed(self):
+        for value in (None, [], 1, 'text', True):
+            with self.subTest(value=value):
+                self.assertEqual('INVALID_PAIR', task_pair({'contract': value}, {'contract': value}, [])['status'])
+
+    def test_fixture_expectations_cannot_be_relabelled(self):
+        original = Path.read_text
+        def changed(path, *args, **kwargs):
+            text = original(path, *args, **kwargs)
+            if path.name == 'assurance-fixtures.json':
+                data = json.loads(text)
+                data['pairs'][0]['expected'] = 'INVALID_PAIR'
+                return json.dumps(data)
+            return text
+        with patch.object(Path, 'read_text', changed), self.assertRaises(ValueError):
+            run_assurance(ROOT)
+
+    def test_malformed_inventory_is_value_error(self):
+        original = Path.read_text
+        for value in (None, [], {'version': 'agent-assurance.v0.2.0', 'disclosure': None}):
+            def changed(path, *args, **kwargs):
+                if path.name == 'assurance-fixtures.json':
+                    return json.dumps(value)
+                return original(path, *args, **kwargs)
+            with patch.object(Path, 'read_text', changed), self.assertRaises(ValueError):
+                run_assurance(ROOT)
     def setUp(self):
         self.controls = [{'id': str(i), 'case': {'value': i}, 'expected': i % 2 == 0} for i in range(6)]
 
@@ -84,8 +112,9 @@ class AssuranceTests(unittest.TestCase):
 
     def test_cli_repeatable_outside_repository_cwd(self):
         command = [sys.executable, str(ROOT / 'scripts/validate_agent_assurance.py')]
-        first = subprocess.run(command, cwd='/tmp', capture_output=True, text=True)
-        second = subprocess.run(command, cwd='/tmp', capture_output=True, text=True)
+        with tempfile.TemporaryDirectory() as directory:
+            first = subprocess.run(command, cwd=directory, capture_output=True, text=True)
+            second = subprocess.run(command, cwd=directory, capture_output=True, text=True)
         self.assertEqual(0, first.returncode, first.stderr)
         self.assertEqual(first.stdout, second.stdout)
         self.assertTrue(json.loads(first.stdout)['passed'])

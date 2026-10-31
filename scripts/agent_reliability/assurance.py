@@ -100,7 +100,7 @@ def task_pair(a, b, reviews):
     try:
         fields = {'goal', 'tools', 'permissions', 'constraints', 'initial_state'}
         if not all(isinstance(x['contract'], dict) and fields.issubset(x['contract']) for x in (a, b)):
-            reasons.append('missing_task_contract')
+            raise ValueError('missing_task_contract')
         for x in (a, b):
             for name in ('goal', 'initial_state'):
                 if not isinstance(x['contract'].get(name), str) or not x['contract'][name]:
@@ -134,12 +134,33 @@ def run_assurance(root: Path):
     baseline_report = run_pack(pack)
     fixture_path = root / 'evals/agent-reliability/v0.2.0/assurance-fixtures.json'
     fixtures = json.loads(fixture_path.read_text())
-    if fixtures['version'] != VERSION:
+    if not isinstance(fixtures, dict) or fixtures.get('version') != VERSION:
         raise ValueError('wrong assurance version')
-    if {x['id'] for x in fixtures['disclosure']} != {'D1', 'D2', 'D3', 'D4'} or len(fixtures['disclosure']) != 4:
-        raise ValueError('invalid disclosure inventory')
-    if {x['id'] for x in fixtures['pairs']} != {f'T{i}' for i in range(1, 7)} or len(fixtures['pairs']) != 6:
-        raise ValueError('invalid task inventory')
+    if fixtures.get('provenance') != 'synthetic_example':
+        raise ValueError('synthetic provenance required')
+    expected = {
+        'disclosure': {'D1': True, 'D2': False, 'D3': False, 'D4': False},
+        'pairs': {f'T{i}': 'ELIGIBLE_ASSERTED_PAIR' if i <= 3 else 'INVALID_PAIR' for i in range(1, 7)},
+    }
+    for section, answers in expected.items():
+        rows = fixtures.get(section)
+        if not isinstance(rows, list) or len(rows) != len(answers):
+            raise ValueError(f'invalid {section} inventory')
+        ids = []
+        for row in rows:
+            if not isinstance(row, dict) or not isinstance(row.get('id'), str) or row['id'] not in answers:
+                raise ValueError(f'invalid {section} item')
+            answer = answers[row['id']]
+            if type(row.get('expected')) is not type(answer) or row['expected'] != answer:
+                raise ValueError(f'changed {section} expectation')
+            fields = ('candidate', 'policy') if section == 'disclosure' else ('a', 'b')
+            if any(not isinstance(row.get(field), dict) for field in fields):
+                raise ValueError(f'invalid {section} case')
+            if section == 'pairs' and not isinstance(row.get('reviews'), list):
+                raise ValueError('invalid reviews')
+            ids.append(row['id'])
+        if set(ids) != set(answers):
+            raise ValueError(f'duplicate or missing {section} cases')
     audits = {
         'authority': audit_grader(lambda c: evaluate_authority(c)['eligible_candidate'], pack['authority']),
         'completion': audit_grader(lambda c: evaluate_completion(c)['completion_candidate'], pack['completion']),
