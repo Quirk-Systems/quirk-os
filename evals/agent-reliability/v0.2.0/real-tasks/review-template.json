@@ -1,0 +1,156 @@
+{
+  "status": "UNFILLED_TEMPLATE_NOT_REVIEW_EVIDENCE",
+  "pack_digest": "73d5bb09c8ff883d44f8b23a6db50aff0ae242849ae0850403c3e76a09df0a50",
+  "pairs": [
+    {
+      "id": "RT01",
+      "variants": [
+        {
+          "subject_digest": "e0c25d3ef5998bdd07125b07f3dbd3a7e9e08a5bcb5e2b5c381b6896e9ea59bd",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        },
+        {
+          "subject_digest": "5ff7c6799b8f7d4c2a3e6f3136fbca2493556194d21015a32ce76f70c3047d77",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        }
+      ]
+    },
+    {
+      "id": "RT02",
+      "variants": [
+        {
+          "subject_digest": "73bddac7658472cfe865074127568ec241fa2c2eba65afb6b755ecca7544c9e4",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        },
+        {
+          "subject_digest": "115e9122cae3cf9f9e1e840a0c704e9d55313248c54ce6bd1a95984068af31cf",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        }
+      ]
+    },
+    {
+      "id": "RT03",
+      "variants": [
+        {
+          "subject_digest": "a3a09c0f9b5c5317f978d07df0eae9ea55b73c972f30916900fc7a89768b09fd",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        },
+        {
+          "subject_digest": "4847db8247a46df760cadc6085eee38c37dc9618fbfe01ec484c7e85fae701c7",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        }
+      ]
+    },
+    {
+      "id": "RT04",
+      "variants": [
+        {
+          "subject_digest": "7088a98b1709252aae98733dc5c9b4e264c8b1a283368d2daa27bcdb9c40b47c",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        },
+        {
+          "subject_digest": "a9dad98db334efb2a5d152b0a9d3b0ed1d1a0e6819748da071366877f98dc63c",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        }
+      ]
+    },
+    {
+      "id": "RT05",
+      "variants": [
+        {
+          "subject_digest": "742981a1f1feb33c722499f22d15c655885b3d048a04f0b76066357d2a49a1c4",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        },
+        {
+          "subject_digest": "9bac60341acdc108892eab198d335bd94427cec434c63b182e28bb8a66e7a14c",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        }
+      ]
+    },
+    {
+      "id": "RT06",
+      "variants": [
+        {
+          "subject_digest": "3201c7154b46b80fa3ee717cccece0b799203a4ef744668f102809caf81c644b",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        },
+        {
+          "subject_digest": "a10fda2e031f3cd8e6847e0f5e75153771fdcad00678fe2c1c160520646b6791",
+          "valid": null,
+          "reviewer": null,
+          "producer": "model:codex-pack-author",
+          "reviewed_at": null,
+          "identity_evidence": null,
+          "blinding_record": null,
+          "rationale": null
+        }
+      ]
+    }
+  ]
+}
