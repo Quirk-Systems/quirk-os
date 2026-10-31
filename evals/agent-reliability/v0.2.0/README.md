@@ -79,3 +79,12 @@ external effects, changed baselines or unverifiable evidence. Preserve failures.
 Rollback: revert this additive change and its CI entries; v0.1.2 is untouched.
 Capability deposit: reusable local grader audit and two inert contract checkers.
 Author testing is not independent release review. No admission to production.
+
+## Source-grounded task candidates
+
+The additive [real-task pack](real-tasks/README.md) contains six repository tasks
+with executable reference queries, immutable source identities, two exact prompts
+per task, and an unfilled independent-review template. Run
+`python scripts/validate_agent_real_tasks.py check` for construction checks.
+It intentionally reports zero eligible asserted pairs until actual independent
+reviews are supplied. It does not replace or relabel the synthetic fixtures above.
