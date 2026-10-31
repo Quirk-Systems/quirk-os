@@ -1,0 +1,24 @@
+{
+  "version": "agent-assurance.v0.2.0",
+  "base_commit": "03f70e1a790bac09294fe0f31a3c5f0d0fb4418e",
+  "observed_date": "2026-10-31",
+  "status": "CONSTRAIN",
+  "producer": "Codex author-run local checks",
+  "independent_review": "NOT_RUN",
+  "new_tests_passed": 11,
+  "baseline_tests_passed": 58,
+  "grader_calls": 168,
+  "injected_defects_detected": 4,
+  "cli_repeated_output": "BYTE_IDENTICAL",
+  "full_repository_suite": "NOT_VERIFIED: broader discovery stopped on missing jsonschema",
+  "hosted_ci": "NOT_OBSERVED",
+  "live_model_trial": "NOT_RUN",
+  "authority_effect": false,
+  "files_sha256": {
+    "scripts/agent_reliability/assurance.py": "baa5a71ff4efcaf28316f6205379b709d41af07a8b721ab02b9f8e34d1e0eb35",
+    "scripts/validate_agent_assurance.py": "4503eaa27c095b8796b4a208fab030d63cba1763719e432bd377dc381d90cc35",
+    "tests/test_agent_assurance.py": "67a085803d38528c74e2304305181fc39c7525f9ca4847c10245bb5e702c9fb4",
+    "evals/agent-reliability/v0.2.0/assurance-fixtures.json": "ace7c7da72710cf76cfe012ab80df561b35e20554c2f9869e59d874afd8f8d7c",
+    ".github/workflows/agent-reliability.yml": "44aa8ab0c01e50b6685b99b139c8f607763c98a946dc2fd27c6f4e7f763e5c07"
+  }
+}

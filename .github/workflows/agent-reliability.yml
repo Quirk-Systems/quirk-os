@@ -5,6 +5,8 @@ on:
     paths:
       - "scripts/agent_reliability/**"
       - "scripts/validate_agent_reliability.py"
+      - "scripts/validate_agent_assurance.py"
+      - "tests/test_agent_assurance.py"
       - "tests/test_agent_reliability.py"
       - "evals/agent-reliability/**"
       - ".github/workflows/agent-reliability.yml"
@@ -27,5 +29,7 @@ jobs:
           python-version: "3.12"
       - run: python -m unittest tests/test_agent_reliability.py -q
       - run: python scripts/validate_agent_reliability.py
+      - run: python -m unittest discover -s tests -p test_agent_assurance.py -q
+      - run: python scripts/validate_agent_assurance.py
       - run: python -m pip install -r requirements-evals.txt
       - run: python -m unittest discover -s tests -q
