@@ -1,66 +1,239 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://quirk.systems/schemas/applause-review.schema.json",
-  "title": "Applause Review",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "schema_version",
-    "review_id",
-    "candidate_id",
-    "case_id",
-    "claim",
-    "signal",
-    "claim_state",
-    "signal_state",
-    "evidence_sufficiency",
-    "causal_support",
-    "contradiction_state",
-    "guardrail_state",
-    "version_binding",
-    "freshness_state",
-    "commitment_risk",
-    "verdict",
-    "required_codes",
-    "withheld_claims",
-    "missing_proof",
-    "reversible_next_move",
-    "evidence_refs",
-    "warnings",
-    "authority_effect"
-  ],
-  "properties": {
-    "schema_version": {"const": "applause-review.v1"},
-    "review_id": {"type": "string", "minLength": 1},
-    "candidate_id": {"type": "string", "minLength": 1},
-    "case_id": {"type": "string", "minLength": 1},
-    "claim": {"type": "string", "minLength": 1},
-    "signal": {"type": "string", "minLength": 1},
-    "claim_state": {"type": "string", "minLength": 1},
-    "signal_state": {"type": "string", "minLength": 1},
-    "evidence_sufficiency": {"type": "string", "minLength": 1},
-    "causal_support": {"type": "string", "minLength": 1},
-    "contradiction_state": {"type": "string", "minLength": 1},
-    "guardrail_state": {"type": "string", "minLength": 1},
-    "version_binding": {"type": "string", "minLength": 1},
-    "freshness_state": {"type": "string", "minLength": 1},
-    "commitment_risk": {"type": "string", "minLength": 1},
-    "verdict": {
-      "enum": [
-        "SIGNAL_ONLY",
-        "SUPPORTED_DIAGNOSIS",
-        "VERIFIED_SUCCESS",
-        "FALSE_POSITIVE",
-        "UNRESOLVED",
-        "EVIDENCE_INTEGRITY_FAILURE"
-      ]
+  "title": "Applause Review Candidate Contract",
+  "x-quirk-status": "candidate",
+  "x-quirk-semantic-authority": false,
+  "x-quirk-runtime-authority": false,
+  "x-quirk-canon-effect": "none",
+  "$defs": {
+    "review_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type",
+        "schema_version",
+        "request_id",
+        "candidate_id",
+        "subject",
+        "claim",
+        "signal",
+        "evaluated_version",
+        "observation_window",
+        "evidence_assessments",
+        "primary_outcome_state",
+        "causal_support",
+        "guardrail_state",
+        "contradiction_state",
+        "version_binding",
+        "freshness_state",
+        "integrity_state",
+        "commitment_risk"
+      ],
+      "properties": {
+        "object_type": {"const": "applause_review_request"},
+        "schema_version": {"const": "applause-review-request.v1"},
+        "request_id": {"type": "string", "minLength": 1},
+        "candidate_id": {"const": "quirk-applause-gate"},
+        "subject": {"type": "string", "minLength": 1},
+        "claim": {"type": "string", "minLength": 1},
+        "signal": {"type": "string", "minLength": 1},
+        "evaluated_version": {"type": "string", "minLength": 1},
+        "observation_window": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start", "end", "state"],
+          "properties": {
+            "start": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+            },
+            "end": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+            },
+            "state": {"enum": ["complete", "incomplete", "selected", "unknown"]}
+          }
+        },
+        "evidence_assessments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "x-quirk-set-like": true,
+          "x-quirk-sort-by": ["evidence_ref", "evidence_kind", "content_digest"],
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidence_ref",
+              "evidence_kind",
+              "assertion_state",
+              "version_ref",
+              "content_digest",
+              "integrity_state"
+            ],
+            "properties": {
+              "evidence_ref": {"type": "string", "minLength": 1},
+              "evidence_kind": {
+                "enum": [
+                  "primary_outcome",
+                  "comparison",
+                  "causal",
+                  "guardrail",
+                  "contradiction",
+                  "version",
+                  "freshness",
+                  "integrity",
+                  "context"
+                ]
+              },
+              "assertion_state": {"enum": ["supports", "contradicts", "inconclusive"]},
+              "version_ref": {"type": "string", "minLength": 1},
+              "content_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+              "integrity_state": {"enum": ["valid", "invalid", "unknown"]}
+            }
+          }
+        },
+        "primary_outcome_state": {"enum": ["supported", "contradicted", "not_established"]},
+        "causal_support": {
+          "enum": ["supported", "bounded_support", "contradicted", "not_established"]
+        },
+        "guardrail_state": {"enum": ["stable", "conflicted", "not_established"]},
+        "contradiction_state": {"enum": ["none_detected", "material", "not_resolved"]},
+        "version_binding": {"enum": ["bound", "failed", "unproven"]},
+        "freshness_state": {"enum": ["current", "stale", "revoked", "unknown"]},
+        "integrity_state": {"enum": ["valid", "invalid", "unknown"]},
+        "commitment_risk": {"enum": ["low", "bounded", "high"]}
+      }
     },
-    "required_codes": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
-    "withheld_claims": {"type": "array", "items": {"type": "string", "minLength": 1}},
-    "missing_proof": {"type": "array", "items": {"type": "string", "minLength": 1}},
-    "reversible_next_move": {"type": "string", "minLength": 1},
-    "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
-    "warnings": {"type": "array", "items": {"type": "string", "minLength": 1}},
-    "authority_effect": {"const": "none"}
+    "applause_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_type",
+        "schema_version",
+        "request_id",
+        "candidate_id",
+        "request_payload_sha256",
+        "diagnostic_facts_sha256",
+        "primary_outcome_state",
+        "causal_support",
+        "guardrail_state",
+        "contradiction_state",
+        "version_binding",
+        "freshness_state",
+        "integrity_state",
+        "commitment_risk",
+        "verdict",
+        "required_codes",
+        "withheld_claims",
+        "missing_proof",
+        "contradiction_refs",
+        "evidence_refs",
+        "warnings",
+        "next_move",
+        "authority_effect",
+        "runtime_effect",
+        "canon_effect",
+        "admission_effect",
+        "release_publication_effect"
+      ],
+      "properties": {
+        "object_type": {"const": "applause_review"},
+        "schema_version": {"const": "applause-review.v1"},
+        "request_id": {"type": "string", "minLength": 1},
+        "candidate_id": {"const": "quirk-applause-gate"},
+        "request_payload_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "diagnostic_facts_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "primary_outcome_state": {"enum": ["supported", "contradicted", "not_established"]},
+        "causal_support": {
+          "enum": ["supported", "bounded_support", "contradicted", "not_established"]
+        },
+        "guardrail_state": {"enum": ["stable", "conflicted", "not_established"]},
+        "contradiction_state": {"enum": ["none_detected", "material", "not_resolved"]},
+        "version_binding": {"enum": ["bound", "failed", "unproven"]},
+        "freshness_state": {"enum": ["current", "stale", "revoked", "unknown"]},
+        "integrity_state": {"enum": ["valid", "invalid", "unknown"]},
+        "commitment_risk": {"enum": ["low", "bounded", "high"]},
+        "verdict": {
+          "enum": [
+            "SIGNAL_ONLY",
+            "SUPPORTED_DIAGNOSIS",
+            "VERIFIED_SUCCESS",
+            "FALSE_POSITIVE",
+            "UNRESOLVED",
+            "EVIDENCE_INTEGRITY_FAILURE"
+          ]
+        },
+        "required_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "x-quirk-set-like": true,
+          "x-quirk-sort": "utf8-bytes",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "withheld_claims": {
+          "type": "array",
+          "uniqueItems": true,
+          "x-quirk-set-like": true,
+          "x-quirk-sort": "utf8-bytes",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "missing_proof": {
+          "type": "array",
+          "uniqueItems": true,
+          "x-quirk-set-like": true,
+          "x-quirk-sort": "utf8-bytes",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "contradiction_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "x-quirk-set-like": true,
+          "x-quirk-sort": "utf8-bytes",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "x-quirk-set-like": true,
+          "x-quirk-sort": "utf8-bytes",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "warnings": {
+          "type": "array",
+          "uniqueItems": true,
+          "x-quirk-set-like": true,
+          "x-quirk-sort": "utf8-bytes",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "next_move": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "description", "execution_authorized"],
+          "properties": {
+            "kind": {
+              "enum": [
+                "request_evidence",
+                "record_candidate_evidence",
+                "defer_for_review",
+                "propose_reversible_test"
+              ]
+            },
+            "description": {"type": "string", "minLength": 1},
+            "execution_authorized": {"const": false}
+          }
+        },
+        "authority_effect": {"const": "none"},
+        "runtime_effect": {"const": "none"},
+        "canon_effect": {"const": "none"},
+        "admission_effect": {"const": "none"},
+        "release_publication_effect": {"const": "none"}
+      }
+    }
   }
 }
