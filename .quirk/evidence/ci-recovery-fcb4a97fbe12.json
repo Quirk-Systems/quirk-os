@@ -1,0 +1,89 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.ci-recovery.fcb4a97fbe12",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "9f26b090f4869590d824291c77c6352294f7f059",
+    "commit": "fcb4a97fbe12a0beb420c7887cf3b3dec4be1988",
+    "changed_paths": [
+      ".github/workflows/golden-gates.yml",
+      ".github/workflows/validate-agents.yml",
+      "tests/test_admission_workplan.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.ci-recovery.fcb4a97fbe12",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Golden and agent workflows explicitly check out and assert source head without persisted credentials. The admission adversarial fixture now resolves linked worktrees through Git. Python 3.12: 460 repository tests (459 pass, one skip), nine receipt guards, 4/4 positive fixtures and 11/11 intended adversarial rejections, Golden candidate and agent validation passed. Sixteen existing admission holds remain; hosted Python 3.13 execution, account eligibility and smoke are unverified.",
+      "evidence_paths": [
+        ".github/workflows/golden-gates.yml",
+        ".github/workflows/validate-agents.yml",
+        "tests/test_admission_workplan.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/golden-gates.yml",
+      "state": "present",
+      "git_blob": "2d6f169fc10aa0a8e4a82c7996b94c10eb69aaed",
+      "sha256": "sha256:791f3b4196f385cb9d209220d60da6cb3e0ceb5b54de84ceeaf687337b05f819"
+    },
+    {
+      "path": ".github/workflows/validate-agents.yml",
+      "state": "present",
+      "git_blob": "eaa662b8b02fe527a1ac08d95e531a83bcac04cb",
+      "sha256": "sha256:2964ec075ee4571b6921644530deff7177a6cdf370f42932e1f066af4134de63"
+    },
+    {
+      "path": "tests/test_admission_workplan.py",
+      "state": "present",
+      "git_blob": "37a375f2383788d365ff5a6b5bd394ee820a13ad",
+      "sha256": "sha256:1a51e66782440edefd3ab9188da2ed8e7ff5bfb7c7fe07c092e0bbccc3140381"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PATH=/workspace/scratch/39aab77656fc/review-venv/bin:$PATH python -m unittest discover -s tests -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PATH=/workspace/scratch/39aab77656fc/review-venv/bin:$PATH python -m unittest discover -s programs/one-to-infinity/tests -p test_emit_ci_receipt.py -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PATH=/workspace/scratch/39aab77656fc/review-venv/bin:$PATH python programs/one-to-infinity/tests/validate_contracts.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PATH=/workspace/scratch/39aab77656fc/review-venv/bin:$PATH python programs/one-to-infinity/tests/emit_ci_receipt.py --repo-root . --expected-head fcb4a97fbe12a0beb420c7887cf3b3dec4be1988",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PATH=/workspace/scratch/39aab77656fc/review-venv/bin:$PATH python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PATH=/workspace/scratch/39aab77656fc/review-venv/bin:$PATH python scripts/validate_agents.py --repo . --output /workspace/scratch/c812ba707e80/agents-published-results.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-11-01T19:03:14.669245Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:5858ed90bec69b06a25e14e9669c3cc7eadfcd0b8ea798c17d9ac8c6dee47210"
+}
