@@ -1,0 +1,90 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr148.git-docs.132947f482ec",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "260263d77efce731dbdb240619d71985b843f72b",
+    "commit": "132947f482ec212ebf1d70862931dc4ac36560a4",
+    "changed_paths": [
+      "docs/sync-control-plane/CHANGE-MAINTENANCE.md",
+      "docs/sync-control-plane/GIT-DOCS-PROOF.md",
+      "docs/sync-control-plane/receipts/pr148-git-docs-run.json",
+      "scripts/sync_control_plane/git_docs_proposal.py",
+      "tests/test_change_maintenance.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr148.git-docs.132947f482ec",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "21 focused tests passed; full local discovery ran 454 tests with one skip, OK, against the exact content blobs listed. Session-observed disposable Git file stale-SHA conflict and Docs requiredRevisionId rejection, successful guarded marker update preserving intervening owner text, and stale batch replay rejection. No hosted results for this new subject, independent review, durable deduplication, runtime authority validation, atomic branch-ref lease or cross-provider transaction is established. Receipt-format correction sorts paths and relocates the unchanged sync-run-receipt.v2 artifact outside the evidence-receipt.v1-only directory; observations and implementation bytes are unchanged.",
+      "evidence_paths": [
+        "docs/sync-control-plane/CHANGE-MAINTENANCE.md",
+        "docs/sync-control-plane/GIT-DOCS-PROOF.md",
+        "docs/sync-control-plane/receipts/pr148-git-docs-run.json",
+        "scripts/sync_control_plane/git_docs_proposal.py",
+        "tests/test_change_maintenance.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/sync-control-plane/CHANGE-MAINTENANCE.md",
+      "state": "present",
+      "git_blob": "ce138c322fb75fdd0dffec78d0cc46eb067fc3d8",
+      "sha256": "sha256:7690349617e5a95b4b51fad3516fac104324511fdb3ba38f1529126a40227423"
+    },
+    {
+      "path": "docs/sync-control-plane/GIT-DOCS-PROOF.md",
+      "state": "present",
+      "git_blob": "a3d36650bdbb023dba283143ded5f8395a80492d",
+      "sha256": "sha256:19621a75f54b7fd25b977910bc7faec167ed6a89b8ca114a59cf95976499279b"
+    },
+    {
+      "path": "docs/sync-control-plane/receipts/pr148-git-docs-run.json",
+      "state": "present",
+      "git_blob": "ac937dfc6ea31f34a00b7e88d0efeeb18db8d868",
+      "sha256": "sha256:933b492ba8edb9b99e39d222b631067c2fdecf93ded505d96ee90bf43892f838"
+    },
+    {
+      "path": "scripts/sync_control_plane/git_docs_proposal.py",
+      "state": "present",
+      "git_blob": "584502f22f55614a6a25797b66b944aeac1a550f",
+      "sha256": "sha256:d521690ad53f8b03de5254fa0eaa944a9113b43123f373ea8bf04a7fa195d68f"
+    },
+    {
+      "path": "tests/test_change_maintenance.py",
+      "state": "present",
+      "git_blob": "d9b4b5688f71c09842aac779f684f5911b776150",
+      "sha256": "sha256:7ac86f761e4480ac014649f563ca50c80589cbbba156de24b72ca4e1009b5dde"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_change_maintenance.py' -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-08T18:51:05.658963Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:7d3f18a108a7a27dc7e61954108662f9e858f51344239113761f32161e3e3983"
+}

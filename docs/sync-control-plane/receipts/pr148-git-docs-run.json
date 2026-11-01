@@ -1,0 +1,105 @@
+{
+  "schema_version": "sync-run-receipt.v2",
+  "receipt_id": "receipt.pr148.git-docs.20261008",
+  "idempotency_key": "pr148-disposable-git-docs-20261008",
+  "run_type": "validate",
+  "status": "succeeded",
+  "immutable": true,
+  "actor_ref": "human-directed assistant",
+  "authority_ref": null,
+  "started_at": "2026-10-08T18:45:40Z",
+  "completed_at": "2026-10-08T18:50:24.492321Z",
+  "input_refs": [
+    "520c38281be334c0312c6a2cfbba969dbf391b4a",
+    "c97e6182d43866e61c52d802b30730b5ea3cbe6d"
+  ],
+  "output_refs": [
+    "1ev7b7j73AZjHyeXjWLi-I0qwvHBoUbwES3PDetTRTg0"
+  ],
+  "evidence_refs": [
+    "docs/sync-control-plane/GIT-DOCS-PROOF.md"
+  ],
+  "metrics": {
+    "admission_effect": false,
+    "recurring_automation": false,
+    "production_writes": 0
+  },
+  "outcome": {
+    "date": "2026-10-08",
+    "original_head": "260263d77efce731dbdb240619d71985b843f72b",
+    "source": {
+      "repository": "Quirk-Systems/quirk-os",
+      "commit": "520c38281be334c0312c6a2cfbba969dbf391b4a",
+      "path": ".quirk/disposable/pr148-template.txt",
+      "blob_sha": "c97e6182d43866e61c52d802b30730b5ea3cbe6d",
+      "source_text": "Template payload beta",
+      "document_id": "1ev7b7j73AZjHyeXjWLi-I0qwvHBoUbwES3PDetTRTg0",
+      "revision_id": "ANLCKQlNuh6cv3zyF2C4hRC2Jd-4qsZBEDa0VZOSR2Kn2foHHt6-G3yaMjJKLv_4-c_RVu1UTJOkhYbK7YxyrrRDqQIcBseFVyIHQIrdqYs",
+      "tab_id": "t.0",
+      "current_text": "Concurrent owner edit\nOwner prefix\n<!-- quirk-change:start -->\nold\n<!-- quirk-change:end -->\nOwner suffix\n\n",
+      "owner": "human.bryan"
+    },
+    "initial_revision": "ANLCKQnex8tXvbI_aKI9hD9VgeuEe4lAPRlIJfnjPq23opQoIlvC8gA1GvMngSmF5CPJsQgOXgj-RNgC9QHh07Sf0cUp2dHWr70c8S6RYdA",
+    "conflict_revision": "ANLCKQlNuh6cv3zyF2C4hRC2Jd-4qsZBEDa0VZOSR2Kn2foHHt6-G3yaMjJKLv_4-c_RVu1UTJOkhYbK7YxyrrRDqQIcBseFVyIHQIrdqYs",
+    "final_revision": "ANLCKQm4jZGsk2X_v1VyqrP7iOjPCJfzIaY3AdUeULvB2Rmf7Cqd7VmgJoE3nw52TTqnU6LqoMOsFv3kg8t-8bxfFip3UayVZuAYC9KJE-s",
+    "final_text": "Concurrent owner edit\nOwner prefix\n<!-- quirk-change:start -->\nTemplate payload beta\n<!-- quirk-change:end -->\nOwner suffix\n\n",
+    "github_stale": {
+      "error": "GitHub API error 409: {\"message\":\".quirk/disposable/pr148-template.txt does not match cde5bc610198c6c100bdfba7c8c687544f2e8090\",\"documentation_url\":\"https://docs.github.com/rest/repos/contents#create-or-update-file-contents\",\"status\":\"409\"}",
+      "error_code": "CONFLICT",
+      "error_data": {
+        "message": ".quirk/disposable/pr148-template.txt does not match cde5bc610198c6c100bdfba7c8c687544f2e8090",
+        "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents",
+        "status": "409"
+      }
+    },
+    "docs_stale": {
+      "error": "HTTPError: 400: \n\n\n\nBad Request\n\nContent:\n{'code': 400,\n 'message': 'The required revision ID '\n            \"'ANLCKQnex8tXvbI_aKI9hD9VgeuEe4lAPRlIJfnjPq23opQoIlvC8gA1GvMngSmF5CPJsQgOXgj-RNgC9QHh07Sf0cUp2dHWr70c8S6RYdA' \"\n            'does not match the latest revision.',\n 'status': 'INVALID_ARGUMENT'}\n\nRequest URL:\nhttps://docs.googleapis.com/v1/documents/1ev7b7j73AZjHyeXjWLi-I0qwvHBoUbwES3PDetTRTg0:batchUpdate (Response: {'error': {'code': 400, 'message': \"The required revision ID 'ANLCKQnex8tXvbI_aKI9hD9VgeuEe4lAPRlIJfnjPq23opQoIlvC8gA1GvMngSmF5CPJsQgOXgj-RNgC9QHh07Sf0cUp2dHWr70c8S6RYdA' does not match the latest revision.\", 'status': 'INVALID_ARGUMENT'}})",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "guarded_batch": {
+      "document_id": "1ev7b7j73AZjHyeXjWLi-I0qwvHBoUbwES3PDetTRTg0",
+      "requests": [
+        {
+          "deleteContentRange": {
+            "range": {
+              "startIndex": 36,
+              "endIndex": 93,
+              "tabId": "t.0"
+            }
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 36,
+              "tabId": "t.0"
+            },
+            "text": "<!-- quirk-change:start -->\nTemplate payload beta\n<!-- quirk-change:end -->"
+          }
+        }
+      ],
+      "write_control": {
+        "requiredRevisionId": "ANLCKQlNuh6cv3zyF2C4hRC2Jd-4qsZBEDa0VZOSR2Kn2foHHt6-G3yaMjJKLv_4-c_RVu1UTJOkhYbK7YxyrrRDqQIcBseFVyIHQIrdqYs"
+      }
+    },
+    "readback_preserved": true,
+    "replay_error": {
+      "error": "HTTPError: 400: \n\n\n\nBad Request\n\nContent:\n{'code': 400,\n 'message': 'The required revision ID '\n            \"'ANLCKQlNuh6cv3zyF2C4hRC2Jd-4qsZBEDa0VZOSR2Kn2foHHt6-G3yaMjJKLv_4-c_RVu1UTJOkhYbK7YxyrrRDqQIcBseFVyIHQIrdqYs' \"\n            'does not match the latest revision.',\n 'status': 'INVALID_ARGUMENT'}\n\nRequest URL:\nhttps://docs.googleapis.com/v1/documents/1ev7b7j73AZjHyeXjWLi-I0qwvHBoUbwES3PDetTRTg0:batchUpdate (Response: {'error': {'code': 400, 'message': \"The required revision ID 'ANLCKQlNuh6cv3zyF2C4hRC2Jd-4qsZBEDa0VZOSR2Kn2foHHt6-G3yaMjJKLv_4-c_RVu1UTJOkhYbK7YxyrrRDqQIcBseFVyIHQIrdqYs' does not match the latest revision.\", 'status': 'INVALID_ARGUMENT'}})",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "branch_lease_probe": {
+      "status": "inconclusive",
+      "error_code": "UNKNOWN",
+      "reason": "GitHub GraphQL operation failed; subsequent branch read preserved beta; atomic branch-ref lease not established"
+    },
+    "source_final": {
+      "content": "Template payload beta",
+      "encoding": "utf-8",
+      "sha": "c97e6182d43866e61c52d802b30730b5ea3cbe6d",
+      "display_url": "https://github.com/Quirk-Systems/quirk-os/blob/agent/disposable-pr148-lease-proof-20261008/.quirk/disposable/pr148-template.txt",
+      "display_title": "pr148-template.txt"
+    },
+    "authority_basis": "Explicit user request for this disposable integration test; not a reusable runtime grant."
+  },
+  "receipt_hash": "4a7316c647c53d697b00cebb5f5e3c33dea74422eed489c8ac97e02a37e73634"
+}
