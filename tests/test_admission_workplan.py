@@ -4,6 +4,7 @@ import copy
 import json
 import hashlib
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -88,7 +89,12 @@ class AdmissionWorkplanTests(unittest.TestCase):
         # Copy only audit inputs and share Git history; no remote or operative mutation.
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / ".git").write_text("gitdir: " + str(ROOT / ".git") + "\n")
+            # A linked worktree's .git is a pointer file, not a Git directory.
+            # Resolve it through Git so this adversarial fixture works in either layout.
+            git_dir = subprocess.check_output(
+                ["git", "-C", str(ROOT), "rev-parse", "--absolute-git-dir"], text=True,
+            ).strip()
+            (root / ".git").write_text("gitdir: " + git_dir + "\n")
             for relative in (QUEUE, AUDIT):
                 target = root / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
