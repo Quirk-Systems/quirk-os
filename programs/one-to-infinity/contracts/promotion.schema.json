@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "One-to-Infinity promotion candidate contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_type",
+    "schema_version",
+    "promotion_id",
+    "transformation_id",
+    "target_status",
+    "decision",
+    "evidence_ids",
+    "artifact_digest",
+    "scope",
+    "rollback_plan"
+  ],
+  "properties": {
+    "contract_type": {
+      "const": "one_to_infinity_promotion"
+    },
+    "schema_version": {
+      "const": "0.2.0-candidate"
+    },
+    "promotion_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transformation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_status": {
+      "enum": [
+        "reviewed_candidate",
+        "validated_candidate"
+      ]
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_type",
+        "approver_id",
+        "automated",
+        "receipt_ref"
+      ],
+      "properties": {
+        "authority_type": {
+          "const": "human"
+        },
+        "approver_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "automated": {
+          "const": false
+        },
+        "receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidence_ids": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "artifact_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canon",
+        "runtime",
+        "publication",
+        "provider_access"
+      ],
+      "properties": {
+        "canon": {
+          "const": false
+        },
+        "runtime": {
+          "const": false
+        },
+        "publication": {
+          "const": false
+        },
+        "provider_access": {
+          "const": false
+        }
+      }
+    },
+    "rollback_plan": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

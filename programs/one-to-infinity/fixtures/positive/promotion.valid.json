@@ -1,0 +1,28 @@
+{
+  "contract_type": "one_to_infinity_promotion",
+  "schema_version": "0.2.0-candidate",
+  "promotion_id": "promotion-one",
+  "transformation_id": "oti-example",
+  "target_status": "reviewed_candidate",
+  "decision": {
+    "authority_type": "human",
+    "approver_id": "human-reviewer",
+    "automated": false,
+    "receipt_ref": "fixture-human-receipt"
+  },
+  "evidence_ids": [
+    "ev-1",
+    "ev-2",
+    "ev-3",
+    "ev-4",
+    "ev-5"
+  ],
+  "artifact_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "scope": {
+    "canon": false,
+    "runtime": false,
+    "publication": false,
+    "provider_access": false
+  },
+  "rollback_plan": "revert reviewed status"
+}

@@ -1,54 +1,14 @@
-# One-to-Infinity Contract Pack v0.1.0 Candidate
+# One-to-Infinity 0.2.0-candidate
 
-Status: **candidate-only / no-runtime / no-canon-promotion**.
+Executable candidate proof pack.
 
-This candidate pack gives the One-to-Infinity loop-engineering model a testable boundary before any infrastructure, provider adapter, runtime worker, publication surface, or canon admission exists.
+## Validate
 
-## Scope
+```bash
+python -m pip install jsonschema==4.26.0
+python tests/validate_contracts.py
+```
 
-This PR introduces source contracts and fixtures only:
+Expected: `4/4` positive fixtures accept and `11/11` adversarial fixtures reject for their intended rule.
 
-- transformation contract
-- run contract
-- evidence contract
-- promotion contract
-- 4 positive fixture expectations
-- 11 adversarial rejection fixtures
-- validation evidence report
-
-## Explicit non-grants
-
-This pack does **not** authorize:
-
-- runtime implementation
-- provider access
-- deployment
-- publication
-- automatic learning promotion
-- canonical admission
-- schema admission beyond this candidate package
-
-## Core rule
-
-A loop is not real until an output changes a future cycle through retained state.
-A loop is not compounding until evidence shows that retained state improved a later comparable cycle.
-
-## Five claims kept separate
-
-1. value proof
-2. retention proof
-3. mechanical closure proof
-4. economic scalability proof
-5. observed compounding proof
-
-Treating any one of these as proof of the others is evidence laundering.
-
-## Validation evidence
-
-`evidence/validation-report.json` records local candidate validation:
-
-- positive fixtures passing: 4
-- adversarial fixtures rejecting: 11
-- exit code: 0
-
-The validation report is evidence for this candidate pack only. It is not a human approval receipt, not a release decision, and not canon promotion.
+A green validator does **not** prove production value, retention, mechanical closure, economic scalability, compounding, runtime readiness, or canon admission.

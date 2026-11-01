@@ -1,23 +1,31 @@
 {
-  "pack": "one-to-infinity-contract-pack",
-  "version": "0.1.0-candidate",
+  "pack": "one-to-infinity",
+  "version": "0.2.0-candidate",
   "status": "candidate-only",
-  "branch": "candidate/one-to-infinity-contract-pack-v0.1.0",
-  "repository_path": "programs/one-to-infinity",
-  "no_runtime": true,
-  "no_canon_promotion": true,
-  "no_provider_access": true,
-  "no_publication_grant": true,
+  "schema_draft": "2020-12",
+  "boundaries": {
+    "runtime": false,
+    "provider_access": false,
+    "publication_grant": false,
+    "canon_promotion": false,
+    "autonomous_promotion": false
+  },
   "contracts": [
-    "contracts/CONTRACTS.md"
+    "contracts/transformation.schema.json",
+    "contracts/run.schema.json",
+    "contracts/evidence.schema.json",
+    "contracts/promotion.schema.json"
   ],
-  "fixtures": [
-    "fixtures/positive-fixtures.json",
-    "fixtures/adversarial-fixtures.json"
-  ],
-  "evidence": [
-    "evidence/validation-report.json"
-  ],
-  "adversarial_fixture_count": 11,
-  "positive_fixture_count": 4
+  "fixtures": {
+    "positive": 4,
+    "adversarial": 11
+  },
+  "validator": {
+    "entrypoint": "tests/validate_contracts.py",
+    "network_required": false,
+    "llm_required": false
+  },
+  "promotion": {
+    "authority": "human-only"
+  }
 }

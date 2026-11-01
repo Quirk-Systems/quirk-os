@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "One-to-Infinity evidence candidate contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_type",
+    "schema_version",
+    "evidence_id",
+    "transformation_id",
+    "stage",
+    "producer_id",
+    "evaluator_id",
+    "beneficiary_outcome",
+    "proxy_metrics",
+    "countermetrics",
+    "method",
+    "baseline",
+    "observed",
+    "source_refs"
+  ],
+  "properties": {
+    "contract_type": {
+      "const": "one_to_infinity_evidence"
+    },
+    "schema_version": {
+      "const": "0.2.0-candidate"
+    },
+    "evidence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transformation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stage": {
+      "enum": [
+        "value_proof",
+        "retention_proof",
+        "closure_proof",
+        "economic_scalability_proof",
+        "compounding_proof"
+      ]
+    },
+    "producer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evaluator_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "beneficiary_outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observed",
+        "metric",
+        "value"
+      ],
+      "properties": {
+        "observed": {
+          "type": "boolean"
+        },
+        "metric": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        }
+      }
+    },
+    "proxy_metrics": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "countermetrics": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "metric",
+          "passed"
+        ],
+        "properties": {
+          "metric": {
+            "type": "string",
+            "minLength": 1
+          },
+          "passed": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preregistered",
+        "kind"
+      ],
+      "properties": {
+        "preregistered": {
+          "type": "boolean"
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "baseline": {
+      "type": "number"
+    },
+    "observed": {
+      "type": "number"
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "economics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseline_human_minutes_per_outcome",
+        "observed_human_minutes_per_outcome",
+        "baseline_cost_per_outcome",
+        "observed_cost_per_outcome",
+        "active_constraint_measured"
+      ],
+      "properties": {
+        "baseline_human_minutes_per_outcome": {
+          "type": "number",
+          "minimum": 0
+        },
+        "observed_human_minutes_per_outcome": {
+          "type": "number",
+          "minimum": 0
+        },
+        "baseline_cost_per_outcome": {
+          "type": "number",
+          "minimum": 0
+        },
+        "observed_cost_per_outcome": {
+          "type": "number",
+          "minimum": 0
+        },
+        "active_constraint_measured": {
+          "type": "boolean"
+        }
+      }
+    },
+    "compounding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "treatment_run",
+        "control_run",
+        "retained_state_used",
+        "delta",
+        "minimum_delta"
+      ],
+      "properties": {
+        "treatment_run": {
+          "type": "string",
+          "minLength": 1
+        },
+        "control_run": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retained_state_used": {
+          "type": "boolean"
+        },
+        "delta": {
+          "type": "number"
+        },
+        "minimum_delta": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "economic_scalability_proof"
+          }
+        },
+        "required": [
+          "stage"
+        ]
+      },
+      "then": {
+        "required": [
+          "economics"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "compounding_proof"
+          }
+        },
+        "required": [
+          "stage"
+        ]
+      },
+      "then": {
+        "required": [
+          "compounding"
+        ]
+      }
+    }
+  ]
+}
