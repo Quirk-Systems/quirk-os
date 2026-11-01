@@ -1,0 +1,30 @@
+{
+  "name": "quirk-five-m",
+  "version": "0.1.0-candidate",
+  "status": "candidate-only",
+  "source_owner": "Quirk-Systems/quirk-os",
+  "lenses": [
+    "Move",
+    "Money",
+    "Merge",
+    "Monitor",
+    "Machine"
+  ],
+  "human_gate": true,
+  "non_grants": {
+    "runtime": false,
+    "provider_access": false,
+    "spend": false,
+    "auto_merge": false,
+    "outreach": false,
+    "publication": false,
+    "canon_promotion": false,
+    "autonomous_learning": false
+  },
+  "first_proof": "30-minute read-only next-action card; not run",
+  "evidence": "none (design candidate)",
+  "dependencies": [
+    "existing One-to-Infinity proof boundary",
+    "exact-head PR and value evidence"
+  ]
+}
