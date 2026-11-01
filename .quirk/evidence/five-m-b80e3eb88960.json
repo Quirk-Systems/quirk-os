@@ -1,0 +1,103 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.five-m.b80e3eb88960",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "80f53905f793751aa47ed4093d5dd035cab608ff",
+    "commit": "b80e3eb889609fa8ecb699eb8f66635a41fc7bb5",
+    "changed_paths": [
+      "programs/five-m/BRIEF.md",
+      "programs/five-m/MANIFEST.json",
+      "programs/five-m/OPERATING_CONTRACT.md",
+      "programs/five-m/PROOF_PLAN.md",
+      "programs/five-m/REVIEW_FIXTURES.md",
+      "programs/five-m/SKILL.md"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.five-m.b80e3eb88960",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Assistant-executed local verification at exact subject b80e3eb889609fa8ecb699eb8f66635a41fc7bb5 in a clean standalone clone, Python 3.12 with pinned requirements-evals.txt dependencies: 460 repository tests ran, 459 passed and one skipped; candidate agent conformance passed; Golden candidate merge checks passed with 16 existing admission holds; git diff --check passed. Inspected all six Five-M source files, manifest JSON, five unique lenses, eight false non-grants and referenced package paths. Initial validation attempts from a linked worktree and incorrect working directory failed due to test-harness/environment assumptions; the successful command ran from this standalone repository with the virtual environment first on PATH. This is package/static verification only. Human comparison trial, independent behavioral evaluation, correction-effort measurement, decision-accuracy benefit and economic value remain NOT_RUN or NOT_PROVEN. Hosted checks are blocked before runner startup by a GitHub account billing lock; no hosted pass, human review, admission, deployment or runtime grant is claimed. User requested fixes and merge when confidently ready; hosted infrastructure gate remains unmet.",
+      "evidence_paths": [
+        "programs/five-m/BRIEF.md",
+        "programs/five-m/MANIFEST.json",
+        "programs/five-m/OPERATING_CONTRACT.md",
+        "programs/five-m/PROOF_PLAN.md",
+        "programs/five-m/REVIEW_FIXTURES.md",
+        "programs/five-m/SKILL.md"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "programs/five-m/BRIEF.md",
+      "state": "present",
+      "git_blob": "5c5455227f44fa137ea56b8b1b8693c64a770f2f",
+      "sha256": "sha256:bba185feac34daf88a78d23e13eebfaa38b112fe108f4b9245f8ffd5ec1a8f2b"
+    },
+    {
+      "path": "programs/five-m/MANIFEST.json",
+      "state": "present",
+      "git_blob": "bbb83a7967aec0ae877e75fc1b3a6a82bb3654ee",
+      "sha256": "sha256:79f444f9f127eba39116ff73ec5fcee3e97bfbc12ca90164c3973cfb751b2be9"
+    },
+    {
+      "path": "programs/five-m/OPERATING_CONTRACT.md",
+      "state": "present",
+      "git_blob": "47a25b8a64ef53afb2ac9cedda175729dc4b34fa",
+      "sha256": "sha256:45cbe0dea8cee9a46048b6b077233e561c43d611254800ef28cf422b9cb52ec5"
+    },
+    {
+      "path": "programs/five-m/PROOF_PLAN.md",
+      "state": "present",
+      "git_blob": "d6d46198902cd7f5e49d5f05c01c91fc8ce41e4f",
+      "sha256": "sha256:344839501ea4f474d0785e2cbab7a5bd9c5b44afd3babb1afede600b43d3d78c"
+    },
+    {
+      "path": "programs/five-m/REVIEW_FIXTURES.md",
+      "state": "present",
+      "git_blob": "b80ba41d936589dc02b6db71e473ac4e6233c6bf",
+      "sha256": "sha256:6b80d34794a8c4ca1e76c72a49eb64f58b2da7d31ba424a10b66adfce86d3fb7"
+    },
+    {
+      "path": "programs/five-m/SKILL.md",
+      "state": "present",
+      "git_blob": "69c4d523324878daefdb940ae4e21c1dc0c906a1",
+      "sha256": "sha256:b9075b9407a1e0e832d691fb86be7c5628fee7624cc5b6df269f48f064dda5f3"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agents.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-11-01T14:13:27.864640Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:07b610429c1714a0fd08bbea0429dba4ec2f940b29e2fb57665b656ab8601762"
+}
