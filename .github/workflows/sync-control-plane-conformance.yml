@@ -2,22 +2,59 @@ name: Sync Control Plane Conformance
 
 on:
   pull_request:
+    # This filter has to cover everything the jobs below actually read, not
+    # just the obviously related paths. Three entries are here for that reason
+    # and are easy to drop by accident:
+    #
+    #   `.claude/skills/verify/SKILL.md` — the drift test treats it as an
+    #     executable dependency, so without it a change to the recipe would not
+    #     run the test written to catch a broken recipe.
+    #   `supabase/migrations/**`, not `*sync_control_plane*` — the
+    #     `database-guard` job applies EVERY migration in filename order, so a
+    #     change to one that does not match that substring (there is one:
+    #     `20260811113009_ship_without_bryan_projection.sql`) would skip the
+    #     only job that proves the sequence still applies to a clean database.
+    #   `docs/sync-control-plane/**` — the digest test asserts the admission
+    #     evidence quotes the tracked artifact's hash, which is an assertion
+    #     about that document.
+    #
+    # `ci_path_filter_covers_job_inputs` asserts all three. That check is an
+    # enumerated list, not a derived one: it cannot know about a dependency
+    # nobody added to it.
     paths:
       - '.github/workflows/sync-control-plane-conformance.yml'
       - 'agents/quirk-sync-steward/**'
-      - 'decisions/ADR-0001-cloudflare-boundary.md'
+      - '.claude/skills/verify/SKILL.md'
+      - 'decisions/**'
       - 'evals/sync-control-plane/**'
       - 'mappings/sync-control-plane.v1.yaml'
       - 'platform/cloudflare.manifest.yaml'
       - 'policies/**'
       - 'programs/quirk-sync-control-plane.yaml'
       - 'requirements-evals.txt'
+      - 'docs/sync-control-plane/**'
       - 'schemas/**'
       - 'scripts/sync_control_plane/**'
       - 'scripts/validate_sync_control_plane.py'
-      - 'supabase/migrations/*sync_control_plane*'
+      - 'scripts/manifest_admission.py'
+      - 'scripts/prove_manifest_boundaries.py'
+      - 'scripts/ingest_github_approval.py'
+      - 'tests/test_github_approval.py'
+      - 'tests/test_skill_runtime.py'
+      - 'supabase/migrations/**'
+      - 'supabase/tests/github_approval_registry.sql'
+      - 'supabase/tests/manifest_activation_guard.cases.sql'
+      - 'supabase/tests/manifest_activation_guard.run.sql'
+      - 'supabase/tests/manifest_verified_projection.sql'
+      - 'supabase/tests/manifest_verified_projection.cutover.sql'
+      - 'supabase/tests/manifest_verified_projection.membership.sql'
+      - 'supabase/tests/manifest_verified_projection.replication.sql'
+      - 'supabase/tests/manifest_activation_guard.service_role.sql'
       - 'supabase/tests/sync_control_plane_hardening.sql'
+      - 'supabase/tests/sync_control_plane_outbox_claim_benchmark.sql'
       - 'tests/test_sync_control_plane.py'
+      - 'tests/test_manifest_admission.py'
+      - 'tests/test_validator_metrics.py'
       - 'workflows/quirk-sync-control-plane.workflow.yaml'
   workflow_dispatch:
 
@@ -33,9 +70,47 @@ jobs:
     name: candidate-conformance
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    # The behavioural database proof runs FIRST and this job depends on it.
+    # These two were parallel, which meant a failing guard still let this job
+    # compute and upload an `ELIGIBLE_FOR_HUMAN_ADMISSION` artifact — the
+    # decision's `migration_hardening_complete` only checks that the job exists
+    # textually, so nothing in the artifact could contradict a database that
+    # refused to enforce anything. Eligibility is now downstream of the proof:
+    # if `database-guard` fails, this job fails and no decision is produced.
+    needs: database-guard
+    # `always()` plus an explicit assertion, not a bare `needs:`. A job whose
+    # dependency failed is reported as *skipped*, and GitHub counts a skipped
+    # required status check as a successful one — so a bare `needs:` would have
+    # turned a red database guard into a green required check, weakening merge
+    # protection in the name of strengthening it. Branch protection is not
+    # readable from here (403), so which check is required cannot be confirmed;
+    # this arrangement is correct either way, because the job always reports a
+    # conclusion and that conclusion is failure when the guard did not pass.
+    if: always()
     steps:
+      - name: Fail if the database guard did not pass
+        env:
+          GUARD_RESULT: ${{ needs.database-guard.result }}
+        run: |
+          echo "database-guard result: ${GUARD_RESULT}"
+          if [ "${GUARD_RESULT}" != "success" ]; then
+            echo "::error::No eligibility decision is produced when the database guard does not pass."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Discard the tracked decision so the upload can only carry this run's
+        # Checkout restores the committed `conformance-results.json`, which
+        # records a passing decision. With the upload on `always()`, a failure
+        # in any step before the validator runs would ship that committed file
+        # as this run's evidence — an `ELIGIBLE_FOR_HUMAN_ADMISSION` artifact
+        # for a red run. Removing it first means the upload either carries a
+        # decision this run computed or fails on `if-no-files-found: error`.
+        run: rm -f evals/sync-control-plane/conformance-results.json
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -55,13 +130,223 @@ jobs:
           python scripts/validate_sync_control_plane.py \
             --repo . \
             --output evals/sync-control-plane/conformance-results.json \
+            --metrics-output evals/sync-control-plane/conformance-metrics.json \
+            --write-step-summary \
             --require-admit
 
+      - name: Reject a committed decision that this run did not reproduce
+        # The doc-digest test compares the committed document to the committed
+        # artifact, so a change that alters the payload while leaving BOTH
+        # untouched compares stale to stale and passes. Verified: altering the
+        # payload and touching neither still passed that test, while this diff
+        # catches it. The regeneration above rewrote the file, so a difference
+        # from the committed blob means the committed evidence of record is not
+        # what this tree produces.
+        run: |
+          if ! git diff --exit-code -- evals/sync-control-plane/conformance-results.json; then
+            echo "::error::The committed conformance result is not what this tree produces. Regenerate it with --output and commit the result."
+            exit 1
+          fi
+
       - name: Upload conformance evidence
+        # `always()` so a REVISE decision is still captured when the validator
+        # itself reports one. It cannot ship a stale decision: the tracked file
+        # was removed above, so this uploads what this run produced or fails.
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: sync-control-plane-conformance
-          path: evals/sync-control-plane/conformance-results.json
+          path: |
+            evals/sync-control-plane/conformance-results.json
+            evals/sync-control-plane/conformance-metrics.json
           if-no-files-found: error
           retention-days: 30
+
+  database-guard:
+    name: database-guard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    # The candidate-conformance job reads the migrations as text. It can
+    # prove a predicate is spelled inside the enforcing definition and nothing
+    # more. This job applies the migrations to a real PostgreSQL and asserts
+    # that the installed trigger refuses each bypass by name, which is the only
+    # evidence that the guard runs.
+    services:
+      postgres:
+        # Tag, not a digest. This environment cannot reach the registry to read
+        # one, and a guessed digest would be a fabricated pin that fails the job
+        # rather than a weak one. The `server version` step records what the
+        # run actually got, so the evidence names a version instead of the
+        # workflow asserting it.
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: quirk_scp
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: quirk_scp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Record the server version this run observed
+        run: psql -v ON_ERROR_STOP=1 -t -A -c "select version()"
+
+      - name: Create the Supabase browser roles the migrations revoke from
+        # The migrations `revoke ... from anon` and `from authenticated`, which
+        # a managed Supabase project supplies and a bare postgres image does
+        # not. Creating them unprivileged keeps the revokes meaningful.
+        #
+        # `service_role` gets BYPASSRLS because Supabase creates it that way,
+        # and the guard cases below write as that role. Without it the inserts
+        # fail on row-level security before the trigger is ever reached, which
+        # would make those cases pass for the wrong reason.
+        run: |
+          psql -v ON_ERROR_STOP=1 -c "create role anon nologin;" \
+                                   -c "create role authenticated nologin;" \
+                                   -c "create role service_role nologin bypassrls;"
+
+      - name: Apply migrations preceding the verified projection cutover
+        # --single-transaction per file, which is what `supabase db push` does.
+        # No migration opens its own transaction: an in-file `commit` would
+        # close the runner's, and 20261003090000's `lock table` is rejected
+        # outside a transaction block, so a runner that fails to wrap the file
+        # fails on that line rather than splitting the audit from the cutover.
+        run: |
+          for migration in $(ls supabase/migrations/*.sql | sort); do
+            if [[ "${migration##*/}" > "20261004140000" ]]; then continue; fi
+            echo "Applying ${migration}"
+            psql -v ON_ERROR_STOP=1 --single-transaction -f "${migration}"
+          done
+
+      - name: Assert the installed guard delegates and holds its privilege lanes
+        # Reads back what is installed, which no static check can see.
+        #
+        # Delegation: a guard that restated the rules would pass every case
+        # below while drifting from the audit.
+        #
+        # Privilege lanes: the guard must be SECURITY DEFINER with pg_temp
+        # pinned last in its search_path, and the rule function must stay
+        # SECURITY INVOKER. This is asserted here, on its own, because the
+        # service_role grant on the rule function masks the guard losing
+        # SECURITY DEFINER — writes keep working through the invoker path — and
+        # a `CREATE OR REPLACE` that omits it resets it silently. Each failure
+        # names the lane that broke.
+        run: |
+          psql -v ON_ERROR_STOP=1 -t -A -c \
+            "select case
+               when pg_get_functiondef('quirk_sync.guard_manifest_activation()'::regprocedure)
+                    not like '%manifest_activation_violation(new)%'
+                 then 'installed guard does not delegate to the rule function'
+               when not g.prosecdef
+                 then 'installed guard is not SECURITY DEFINER'
+               when not exists (select 1 from unnest(g.proconfig) c
+                                where c like 'search_path=%' and c like '%pg_temp')
+                 then 'installed guard does not pin pg_temp last in its search_path'
+               when r.prosecdef
+                 then 'installed rule function is SECURITY DEFINER and should be INVOKER'
+               else 'ok' end
+             from pg_proc g, pg_proc r
+             where g.oid = 'quirk_sync.guard_manifest_activation()'::regprocedure
+               and r.oid = 'quirk_sync.manifest_activation_violation(quirk_sync.manifest_registry)'::regprocedure" \
+            | tee /tmp/delegation.txt
+          grep -qx ok /tmp/delegation.txt
+
+      - name: Run the manifest activation guard cases
+        # The .run.sql driver opens the transaction and rolls it back. Running
+        # the cases file under `--single-transaction` instead would commit on
+        # success, leaving the one admitted manifest behind — which is what the
+        # next step checks for.
+        run: |
+          psql -v ON_ERROR_STOP=1 \
+            -f supabase/tests/manifest_activation_guard.run.sql
+
+      - name: Run the guard cases as the role that writes in production
+        # A separate psql invocation on purpose. `guard_manifest_activation`
+        # calls the rule function, PL/pgSQL caches that call's plan per session,
+        # and EXECUTE on a function is checked when the plan is built — so the
+        # privilege check is session-order dependent. Running these after the
+        # step above would put nine superuser writes in front of them, priming
+        # the plan and making them pass with no grant at all. This session's
+        # first trigger fire is `service_role`, which is what production does.
+        run: |
+          psql -v ON_ERROR_STOP=1 \
+            -f supabase/tests/manifest_activation_guard.service_role.sql
+
+      - name: Assert the cases left no active manifest behind
+        run: |
+          psql -v ON_ERROR_STOP=1 -t -A -c \
+            "select count(*) from quirk_sync.manifest_registry" | tee /tmp/rows.txt
+          grep -qx 0 /tmp/rows.txt
+
+      - name: Refuse cutover when legacy active rows have no human disposition
+        run: |
+          set +e
+          psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_verified_projection.cutover.sql > /tmp/cutover.txt 2>&1
+          result=$?
+          set -e
+          cat /tmp/cutover.txt
+          test "$result" -eq 3
+          grep -q 'legacy active manifests need human disposition' /tmp/cutover.txt
+
+      - name: Refuse verifier membership in either direction before cutover
+        run: |
+          for case in reverse_browser reverse_neutral reverse_transitive inbound_neutral; do
+            set +e
+            psql -v ON_ERROR_STOP=1 \
+              -v reverse_browser=$([ "$case" = reverse_browser ] && echo true || echo false) \
+              -v reverse_neutral=$([ "$case" = reverse_neutral ] && echo true || echo false) \
+              -v reverse_transitive=$([ "$case" = reverse_transitive ] && echo true || echo false) \
+              -f supabase/tests/manifest_verified_projection.membership.sql > /tmp/membership.txt 2>&1
+            result=$?
+            set -e
+            cat /tmp/membership.txt
+            test "$result" -eq 3
+            grep -q 'verifier membership must be separately admitted after cutover' /tmp/membership.txt
+          done
+
+      - name: Refuse replication-enabled verifier roles before cutover
+        run: |
+          set +e
+          psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_verified_projection.replication.sql > /tmp/replication.txt 2>&1
+          result=$?
+          set -e
+          cat /tmp/replication.txt
+          test "$result" -eq 3
+          grep -q 'verifier role has unsupported privileges' /tmp/replication.txt
+
+      - name: Apply the verified projection cutover
+        run: |
+          for migration in $(ls supabase/migrations/*.sql | sort); do
+            if [[ "${migration##*/}" < "20261004140000" ]]; then continue; fi
+            if [[ "${migration##*/}" > "20261004140000_sync_control_plane_verified_projection.sql" ]]; then continue; fi
+            echo "Applying ${migration}"
+            psql -v ON_ERROR_STOP=1 --single-transaction -f "${migration}"
+          done
+
+      - name: Prove protected projection writes and refusals
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_verified_projection.sql
+
+      - name: Apply later migrations in order after projection proof
+        run: |
+          for migration in $(ls supabase/migrations/*.sql | sort); do
+            if [[ "${migration##*/}" < "20261004140000" || "${migration##*/}" == "20261004140000"* ]]; then continue; fi
+            echo "Applying ${migration}"
+            psql -v ON_ERROR_STOP=1 --single-transaction -f "${migration}"
+          done
+
+      - name: Run GitHub approval registry adversarial cases
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/github_approval_registry.sql
+
+      - name: Verify outbox claim index and supported batch size
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/sync_control_plane_outbox_claim_benchmark.sql

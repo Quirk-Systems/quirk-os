@@ -1,0 +1,108 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr140-review-followup.05a220d722fe",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "43127eab3403b8cfb72f06330d3a7da00c3dfed6",
+    "commit": "05a220d722fe866b6500ef22f461c8124a03be09",
+    "changed_paths": [
+      "docs/changes/pr140-review-followup.md",
+      "evals/golden-admission/hold-audit.json",
+      "scripts/admission_workplan.py",
+      "scripts/validate_distill_loop.py",
+      "tests/test_admission_workplan.py",
+      "tests/test_distill_loop.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr140-review-followup.05a220d722fe",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "All three post-merge PR #140 findings independently confirmed on main 43127ea and repaired. Directory audit targets expanded to explicit files with SHA-256 checks; directories now refused. Missing or unsupported queue/audit schema versions refused before Git or field interpretation. Distill fixtures use agent.probe, synthetic in-memory admission and mock registry, exact candidate-only rejection and an admitted positive control; malformed-requester mutation fails conformance. 254 repository tests pass locally, zero failures; focused suite has 62 tests. Distill conformance PASS; Golden candidate structural checks pass; workplan retains 16 holds and zero verified moves. No production runtime implementation changed. Local Python 3.12.14 verification only; hosted successor checks pending. No real approval, grant, admission, deployment, live database verification or established runtime authority.",
+      "evidence_paths": [
+        "docs/changes/pr140-review-followup.md",
+        "evals/golden-admission/hold-audit.json",
+        "scripts/admission_workplan.py",
+        "scripts/validate_distill_loop.py",
+        "tests/test_admission_workplan.py",
+        "tests/test_distill_loop.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/changes/pr140-review-followup.md",
+      "state": "present",
+      "git_blob": "7f9b60b56cc7f8f06b7ef96f9bb6aecf7fbe8c96",
+      "sha256": "sha256:45b1a171a51b58bac9798773d02b6251830ec726932605dacdd6ae801323134f"
+    },
+    {
+      "path": "evals/golden-admission/hold-audit.json",
+      "state": "present",
+      "git_blob": "e9429b2d45342a9cdaf5921a93021bd0e45b9230",
+      "sha256": "sha256:d56ef126ed064cc247e148b63f4c3b96c396c76726a9a6251950ccb8089cc42b"
+    },
+    {
+      "path": "scripts/admission_workplan.py",
+      "state": "present",
+      "git_blob": "20b55a5b81cb1fadf724cc797e94fcb5d433b844",
+      "sha256": "sha256:4eb3d6ddfc0ff6cb135c87e9510dae13559275e130cde01350b04330d117dc10"
+    },
+    {
+      "path": "scripts/validate_distill_loop.py",
+      "state": "present",
+      "git_blob": "c03a6c61ac4b69b1977b600bffbb9640703d3f87",
+      "sha256": "sha256:86b0495e54fe00457edc1cdb163f24fc1ac5b8e92110658c17a13753161b647c"
+    },
+    {
+      "path": "tests/test_admission_workplan.py",
+      "state": "present",
+      "git_blob": "9be80155f30157cd79c3bac8d055fd6c704925ea",
+      "sha256": "sha256:f9b2430f824cf602a9502c64f8df47783c3987444eeaaacb93dfbb63c761004f"
+    },
+    {
+      "path": "tests/test_distill_loop.py",
+      "state": "present",
+      "git_blob": "5d01963c8d3b75e55a39bdc0d8cd526ef35350fe",
+      "sha256": "sha256:a3696c5d02a1330f22fa522de011d1b4d7dd8b2e01fc52f95800aaff21b47abc"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_distill_loop.py --repo . --output /tmp/pr140-distill.json --metrics-output /tmp/pr140-distill-metrics.json --require-pass",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/admission_workplan.py --output /tmp/pr140-workplan.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-06T09:33:29.199127Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:53d03b7a685ca990962d28cdf9ac557f4956cdd28fbd8ed75fcaa5fd0dc3409a"
+}

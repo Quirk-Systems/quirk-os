@@ -2,7 +2,14 @@
 import json, sys, hashlib
 from pathlib import Path
 from jsonschema import Draft202012Validator, FormatChecker
+from emit_ci_receipt import checked_head, ReceiptError
 ROOT=Path(__file__).resolve().parents[1]
+OUT=ROOT/"evidence"/"validation-report.generated.json"
+OUT.unlink(missing_ok=True)
+try:
+    VALIDATED_HEAD=checked_head(ROOT.parents[1])
+except ReceiptError as e:
+    sys.exit(f"VALIDATION_BLOCKED: {e}")
 def load(p): return json.loads(p.read_text())
 def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
 NAMES=("transformation","run","evidence","promotion")
@@ -51,7 +58,8 @@ for f in sorted((ROOT/"fixtures"/"adversarial").glob("*.json")):
     results.append({"fixture":z["fixture_id"],"expected":"reject","expected_rule":z["expected_rule"],"actual":"reject" if issues else "accept","passed":ok,"rules":issues,"sha256":digest(f)})
 positive=[r for r in results if r["expected"]=="accept"]; adversarial=[r for r in results if r["expected"]=="reject"]
 passed=len(positive)==4 and len(adversarial)==11 and all(r["passed"] for r in results)
-report={"status":"pass" if passed else "fail","candidate_only":True,"admission":"NOT_ADMITTED","positive_passing":sum(r["passed"] for r in positive),"adversarial_rejecting_for_intended_rule":sum(r["passed"] for r in adversarial),"validator_sha256":digest(Path(__file__)),"schema_sha256":{n:digest(ROOT/"contracts"/f"{n}.schema.json") for n in NAMES},"results":results,"not_proven":["human review","production value","retention","closure","scalability","compounding"]}
-out=ROOT/"evidence"/"validation-report.generated.json"; out.write_text(json.dumps(report,indent=2)+"\n")
+checked_head(ROOT.parents[1], VALIDATED_HEAD)
+report={"git_head":VALIDATED_HEAD,"status":"pass" if passed else "fail","candidate_only":True,"admission":"NOT_ADMITTED","positive_passing":sum(r["passed"] for r in positive),"adversarial_rejecting_for_intended_rule":sum(r["passed"] for r in adversarial),"validator_sha256":digest(Path(__file__)),"schema_sha256":{n:digest(ROOT/"contracts"/f"{n}.schema.json") for n in NAMES},"results":results,"not_proven":["human review","production value","retention","closure","scalability","compounding"]}
+OUT.write_text(json.dumps(report,indent=2)+"\n")
 print(json.dumps({"status":report["status"],"positive":f"{report['positive_passing']}/4","adversarial_intended":f"{report['adversarial_rejecting_for_intended_rule']}/11"},indent=2))
 sys.exit(0 if passed else 1)

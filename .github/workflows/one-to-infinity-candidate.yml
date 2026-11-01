@@ -31,6 +31,10 @@ jobs:
           python-version: '3.13'
       - name: Install pinned validator
         run: python -m pip install --disable-pip-version-check jsonschema==4.26.0
+      - name: Clear generated evidence before validation
+        run: |
+          rm -f programs/one-to-infinity/evidence/validation-report.generated.json
+          rm -f programs/one-to-infinity/evidence/ci-receipt.json
       - name: Test exact-head receipt guards
         run: python -m unittest discover -s programs/one-to-infinity/tests -p 'test_emit_ci_receipt.py' -v
       - name: Validate candidate pack

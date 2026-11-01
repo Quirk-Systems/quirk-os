@@ -1,20 +1,64 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime, timezone
 from typing import Any
+
+from .approval import authorization_errors
 
 
 def _parse_dt(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
 
 
-def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:
+# Principals are drawn from `^(human|agent|service|system)\.` by
+# schemas/runtime-manifest.schema.json. Only a human principal counts as an
+# independent approver of an activation:
+#
+#   - `agent.` can never be independent. A capability approving an activation
+#     is capability granting authority, which the policy's own
+#     `capability_never_implies_authority` invariant forbids outright.
+#   - `service.` and `system.` are refused rather than assumed, because no
+#     allow-list of authorized service principals exists in this repository.
+#     Add one and this predicate is where it belongs.
+#
+# The whole principal is matched rather than just its prefix, so the gate does
+# not depend on JSON Schema having run first: callers use
+# `validate_manifest_admission` directly, and a bare `"human."` would satisfy a
+# prefix test while naming nobody.
+#
+# Structural checks alone do not prove human approval. Admission below also
+# computes content and uses the trusted host's live GitHub verifier. The
+# separate structural helper exists only for local guard/fixture conformance.
+_INDEPENDENT_APPROVER = re.compile(r"human\.[a-z0-9._-]+")
+
+# Any well-formed principal, mirroring schemas/runtime-manifest.schema.json. The
+# requester's shape is checked for the same reason the approver's whole value is:
+# this function is called directly, so it cannot assume JSON Schema ran. The
+# SQL trigger had no requester check at all, which let `'NOT-A-PRINCIPAL'`
+# activate a manifest; the two surfaces agree now.
+_PRINCIPAL = re.compile(r"(human|agent|service|system)\.[a-z0-9._-]+")
+
+
+def _is_principal(value: Any) -> bool:
+    return isinstance(value, str) and _PRINCIPAL.fullmatch(value) is not None
+
+
+def _is_independent_approver(approved_by: Any) -> bool:
+    return isinstance(approved_by, str) and _INDEPENDENT_APPROVER.fullmatch(approved_by) is not None
+
+
+def validate_manifest_structure(manifest: dict[str, Any]) -> list[str]:
     """Return policy violations that JSON Schema cannot express alone."""
     errors: list[str] = []
+    if not isinstance(manifest, dict):
+        return ["manifest must be an object"]
     if manifest.get("status") != "active":
         return errors
 
     admission = manifest.get("admission") or {}
+    if not isinstance(admission, dict):
+        return ["active manifest admission must be an object"]
     requested_by = admission.get("requested_by")
     approved_by = admission.get("approved_by")
     if not admission:
@@ -28,16 +72,25 @@ def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:
         errors.append("active manifest requires authority grant reference")
     if not admission.get("transition_ref"):
         errors.append("active manifest requires legal transition evidence")
+    if not _is_principal(requested_by):
+        errors.append("manifest requester must be a well-formed principal")
     if requested_by == approved_by:
         errors.append("requester may not approve its own manifest transition")
     if admission.get("evaluated_content_hash") != manifest.get("content_hash"):
         errors.append("evaluated content hash must match manifest content hash")
-    if manifest.get("metadata", {}).get("self_requested") and requested_by == manifest.get("manifest_key"):
-        errors.append("self-requested activation requires independent human or authorized service approval")
+    # Deliberately not read from `metadata.self_requested`. That flag was set
+    # by the same document this gate judges, so omitting it disabled the check;
+    # and a manifest that set it honestly was rejected even when a human had
+    # approved. Who approved is the thing that matters, and it is now checked
+    # for every activation, self-requested or not.
+    if not _is_independent_approver(approved_by):
+        errors.append("activation requires approval by an independent human principal")
 
-    domains = set(manifest.get("domains", []))
+    domains = manifest.get("domains") if isinstance(manifest.get("domains"), list) else []
     if "data_productization" in domains:
         rights = manifest.get("rights_review") or {}
+        if not isinstance(rights, dict):
+            rights = {}
         if not (
             rights.get("outcome") == "approved"
             and rights.get("license_verified") is True
@@ -46,11 +99,60 @@ def validate_manifest_admission(manifest: dict[str, Any]) -> list[str]:
         ):
             errors.append("data productization requires approved rights, license, privacy, and provenance review")
 
-    if manifest.get("manifest_kind") == "orchestrator" and len(manifest.get("skill_refs", [])) > 1:
+    if manifest.get("manifest_kind") == "orchestrator" and isinstance(manifest.get("skill_refs"), list) and len(manifest["skill_refs"]) > 1:
         trigger = manifest.get("trigger_contract") or {}
+        if not isinstance(trigger, dict):
+            trigger = {}
         if trigger.get("collision_behavior") != "block" or not trigger.get("routing_policy"):
             errors.append("multi-skill orchestrator requires fail-closed trigger routing contract")
 
+    return errors
+
+
+def validate_manifest_admission(manifest: dict[str, Any], *, verifier=None, context=None, approval_registry=None) -> list[str]:
+    """Fail closed: shape + computed content + externally resolved human consent.
+
+    verifier/context are installed by the trusted host, never supplied inside
+    the manifest. SQL is a projection of this gate, not another trust root.
+    """
+    from .content import ContentError, manifest_content_hash
+    from .attestation import ApprovalError
+    errors = validate_manifest_structure(manifest)
+    try:
+        digest = manifest_content_hash(manifest)
+    except (ContentError, TypeError, KeyError, RecursionError) as exc:
+        return errors + ["manifest content invalid: " + str(exc)]
+    if manifest.get("content_hash") != digest:
+        errors.append("declared content hash does not match computed content")
+    if manifest.get("status") != "active":
+        return errors
+    if manifest.get("requested_status") != "active":
+        errors.append("active manifest requires requested_status=active")
+    admission = manifest.get("admission") or {}
+    if admission.get("evaluated_content_hash") != digest:
+        errors.append("evaluated content hash does not match computed content")
+    from .github_approval import manifest_contract
+    errors.extend(authorization_errors(
+        approval_registry, grant_id=admission.get("authority_grant_ref"), subject_kind="manifest",
+        subject_id=manifest.get("manifest_key"), subject_version=manifest.get("version"),
+        subject_digest=manifest.get("content_hash"), authority_ceiling=manifest.get("authority_ceiling"),
+        allowed_actions=["activate_manifest"], requested_by=admission.get("requested_by"),
+        approved_by=admission.get("approved_by"), decision_ref=admission.get("decision_ref"),
+        subject_contract=manifest_contract(manifest),
+    ))
+    if verifier is None or context is None:
+        return errors + ["trusted approval verifier and activation context required"]
+    try:
+        record = verifier.verify(manifest, context)
+        expected = {key: record[key] for key in (
+            "decision_ref", "authority_grant_ref", "transition_ref", "approved_by", "decided_at"
+        )}
+        expected.update(decision="approved", requested_by=record["subject"]["requested_by"],
+                        evaluated_content_hash=digest, evidence_refs=record["subject"]["evidence_refs"])
+        if admission != expected:
+            errors.append("admission envelope differs from resolved approval")
+    except ApprovalError as exc:
+        errors.append(str(exc))
     return errors
 
 

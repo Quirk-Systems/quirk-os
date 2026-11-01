@@ -1,0 +1,90 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os-evidence-adoption-squash-rebinding.2026-10-04",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "3099e1c8a156c97828cec7e99d9e61dbc6e36f8f",
+    "commit": "6b2394c3af34e60c9a19b8cc6cefa69337a72cda",
+    "changed_paths": [
+      ".github/workflows/evidence-binding.yml",
+      ".quirk/evidence/2026-08-21-pr-42-zero-delta-correction.json",
+      ".quirk/evidence/2026-08-21-quirk-os-evidence-adoption.json",
+      ".quirk/manifest.json",
+      "docs/evidence/PR_42_CORRECTION.md"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.quirk-os-evidence-adoption-squash-rebinding.2026-10-04",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Explicit provenance rebinding: the original qreceipt.quirk-os-evidence-adoption.2026-08-21 binds d33ddad4dc814ada5b644a3fac662841fc92fea5, which remains retrievable but is not an ancestor of PR 15 head b33954b6b3dd18e36a045d5acefd0c9423a6a867. This new receipt binds the five-file diff of reachable squash 6b2394c3af34e60c9a19b8cc6cefa69337a72cda from its actual parent. Its adoption-receipt artifact preserves the original receipt bytes and historical verification; the other four artifacts are byte-identical to the original adoption subject. Only the newly recorded Git checks are verified here; historical test results are not carried forward. This is not Intent Shaper implementation coverage, evidence that PR 42 introduced implementation, or admission, activation, merge, or release authority.",
+      "evidence_paths": [
+        ".github/workflows/evidence-binding.yml",
+        ".quirk/evidence/2026-08-21-pr-42-zero-delta-correction.json",
+        ".quirk/evidence/2026-08-21-quirk-os-evidence-adoption.json",
+        ".quirk/manifest.json",
+        "docs/evidence/PR_42_CORRECTION.md"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/evidence-binding.yml",
+      "state": "present",
+      "git_blob": "2a84cbe59bbaeabeb7363c16f831818ccf9ef8cf",
+      "sha256": "sha256:b0a2e67e1f93d3ff19b44184968ae812f5d4e7b08cd743927c59c24ff96e7087"
+    },
+    {
+      "path": ".quirk/evidence/2026-08-21-pr-42-zero-delta-correction.json",
+      "state": "present",
+      "git_blob": "e2136a6109db2cda6bfac433bd05d684d70c751a",
+      "sha256": "sha256:a48a6d5f4f7995cbd3148e35ad47f173548e5aabd935640a42825b146a3b698a"
+    },
+    {
+      "path": ".quirk/evidence/2026-08-21-quirk-os-evidence-adoption.json",
+      "state": "present",
+      "git_blob": "518c46bb8ad2546c4703098df96696036c4f0662",
+      "sha256": "sha256:722f62f0be6c8e6d4d7c4f6371dbaaeceea5e0d651b4218b622dc51ff49e34a1"
+    },
+    {
+      "path": ".quirk/manifest.json",
+      "state": "present",
+      "git_blob": "e8daa5f8189c35049a8973255734017537bc1f6a",
+      "sha256": "sha256:765e295a47adbdafd21a85b5817eb3f1b9c8b6128a24f0ec377739a9ddfee6f3"
+    },
+    {
+      "path": "docs/evidence/PR_42_CORRECTION.md",
+      "state": "present",
+      "git_blob": "3ee24cb48fdcf2c12e8fe5bcc1e1bbfd36da88da",
+      "sha256": "sha256:8215d1fe62c0e10127e1b119d6585b4165d4567a4859f1fff01bae531b48e5a8"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "git diff --check 3099e1c8a156c97828cec7e99d9e61dbc6e36f8f..6b2394c3af34e60c9a19b8cc6cefa69337a72cda",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor 3099e1c8a156c97828cec7e99d9e61dbc6e36f8f 6b2394c3af34e60c9a19b8cc6cefa69337a72cda",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor 6b2394c3af34e60c9a19b8cc6cefa69337a72cda b33954b6b3dd18e36a045d5acefd0c9423a6a867",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T03:34:22Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:47bc8dd85937ccd55fe7d4e7d67f00dee6ded99e8cebf447f84040499bc1c949"
+}

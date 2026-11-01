@@ -1,0 +1,148 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os.pr117-integration.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "a1e52c78093c8e47078f9813d00edc45d32fb1ca",
+    "commit": "d1b368cd51242bd3cec61088ec393b1148da90f5",
+    "changed_paths": [
+      ".github/workflows/validate-agents.yml",
+      ".quirk/evidence/2026-10-07-pr117-agent-repair.json",
+      "README.md",
+      "agents/README.md",
+      "agents/registry.json",
+      "docs/changelog/PR-117.md",
+      "proposed-moves/agents/qpm_agent_contract_layer.json",
+      "schemas/agent-manifest.schema.json",
+      "schemas/agent-registry.schema.json",
+      "scripts/validate_agents.py",
+      "tests/test_agent_manifest.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.quirk-os.pr117-integration.2026-10-07",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Integrates the candidate-only agent contract layer with current main: pinned v0.4 static policy checks, explicit observability schema, current candidate registry digests, exception-safe reference resolution, and accurate absence diagnostics. 347 tests ran with 346 passing and one Windows-only test skipped on Linux; includes 36 agent tests. Agent, Golden structural and Sync conformance passed; all 16 Golden admission holds remain. These checks do not verify live approval authenticity or grant admission, activation, projection, or runtime authority. Hosted checks and independent review remain separate.",
+      "evidence_paths": [
+        ".github/workflows/validate-agents.yml",
+        ".quirk/evidence/2026-10-07-pr117-agent-repair.json",
+        "README.md",
+        "agents/README.md",
+        "agents/registry.json",
+        "docs/changelog/PR-117.md",
+        "proposed-moves/agents/qpm_agent_contract_layer.json",
+        "schemas/agent-manifest.schema.json",
+        "schemas/agent-registry.schema.json",
+        "scripts/validate_agents.py",
+        "tests/test_agent_manifest.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/validate-agents.yml",
+      "state": "present",
+      "git_blob": "b8a7a8548fc5206837af36f7abe7bab6bb2b771e",
+      "sha256": "sha256:aaf6d571af7f540c3c6c7ed6d9dd8fb572151a77b80e94d497e83d7eacd7e2df"
+    },
+    {
+      "path": ".quirk/evidence/2026-10-07-pr117-agent-repair.json",
+      "state": "present",
+      "git_blob": "d2f077adfb9abdea2f90e4b34924bd1396fb408b",
+      "sha256": "sha256:078a142f534bbf7f6bce828eefe27a6d105f1df3abf521824875c1be271fdf5d"
+    },
+    {
+      "path": "README.md",
+      "state": "present",
+      "git_blob": "2a27937bdb52c6b4f84f519d3c2b98de3ff97e8e",
+      "sha256": "sha256:7fd7ba324f1ea27e2154623b024c7d4841b78e7635566e4924d9a208b2c3f4fe"
+    },
+    {
+      "path": "agents/README.md",
+      "state": "present",
+      "git_blob": "2aee2a9ae567187c7a6e390bdf1d4f0d9bf12998",
+      "sha256": "sha256:bfd6218ca9296cc1cd39c998a2634173c2ed2f5f0b8109a45218b8c1b58a8804"
+    },
+    {
+      "path": "agents/registry.json",
+      "state": "present",
+      "git_blob": "554127d49eb28998782deaaa7818c8d25c80cd44",
+      "sha256": "sha256:70f491624b4d8c660fe8b6f1a8aaa9c31fe605fd468d22f71cc4d599c3bdfb09"
+    },
+    {
+      "path": "docs/changelog/PR-117.md",
+      "state": "present",
+      "git_blob": "823c0b3112e281048ec72ea064a49fcb90b99bd9",
+      "sha256": "sha256:507e0659425bdfd3b045e923092f314fed1ff50475634e6c3d9e8d893b976dcf"
+    },
+    {
+      "path": "proposed-moves/agents/qpm_agent_contract_layer.json",
+      "state": "present",
+      "git_blob": "8d4c8979d1deab43206f6d588ad334e48b37b53a",
+      "sha256": "sha256:9e29b45c87187c9c14be282440888acf07d10aa49afa59eabe0ca3c667bb11d1"
+    },
+    {
+      "path": "schemas/agent-manifest.schema.json",
+      "state": "present",
+      "git_blob": "c459ccaa4e20be1b10a139fde9f7b666518efb36",
+      "sha256": "sha256:0049b12ed60c62f0fa331b71983f91d28c5020583252d21a615c56ea137c7938"
+    },
+    {
+      "path": "schemas/agent-registry.schema.json",
+      "state": "present",
+      "git_blob": "438f3374134019c213e821eb60b6b8d3b1610296",
+      "sha256": "sha256:97d6cb897942b898bd781895f9974ae4407e194a1c648dfe396e105f11157e22"
+    },
+    {
+      "path": "scripts/validate_agents.py",
+      "state": "present",
+      "git_blob": "760e2ebe83886ab0356ad9f9576a380e8659e613",
+      "sha256": "sha256:2dc42ee37731609ae977cf22be813f56095e055d36e702c101dffc033d8997f9"
+    },
+    {
+      "path": "tests/test_agent_manifest.py",
+      "state": "present",
+      "git_blob": "4e97692f4c38b82ca3df5e9ab39e19cdf7ab2efc",
+      "sha256": "sha256:3e8cd69275f96709b6e0b9f555e20ef27f7145436e357a797d4fd5a41396be87"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py' -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agents.py --repo . --output /tmp/117-subject-agents.json --metrics-output /tmp/117-subject-metrics.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --repo . --output /tmp/117-subject-sync.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T15:49:00.366161Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:eb209e5ecfea3b6cadab2cb07663f7614f2d385bd298af1412a14c800dc29ee4"
+}

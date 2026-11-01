@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -38,22 +39,31 @@ def fail_if(condition: bool, reason: str) -> None:
         raise ReceiptError(reason)
 
 
+def checked_head(repo: Path, expected_head: str | None = None) -> str:
+    head = git(repo, "rev-parse", "HEAD")
+    if expected_head is not None:
+        fail_if(not re.fullmatch(r"[0-9a-f]{40}", expected_head),
+                "expected_head must be an exact lowercase 40-hex commit SHA")
+        fail_if(head != expected_head, "checked-out HEAD differs from expected PR head")
+    fail_if(bool(git(repo, "status", "--porcelain", "--untracked-files=no")),
+            "tracked source files are dirty")
+    fail_if(bool(git(repo, "ls-files", "--others", "--exclude-standard", "--",
+                     "programs/one-to-infinity/tests",
+                     "programs/one-to-infinity/contracts",
+                     "programs/one-to-infinity/fixtures")),
+            "untracked candidate source files are present")
+    return head
+
+
 def make_receipt(repo: Path, expected_head: str) -> dict:
     repo = repo.resolve()
-    head = git(repo, "rev-parse", "HEAD")
-    fail_if(
-        not expected_head or len(expected_head) != 40,
-        "expected_head must be an exact 40-character commit SHA",
-    )
-    fail_if(head != expected_head, "checked-out HEAD differs from expected PR head")
-    fail_if(
-        bool(git(repo, "status", "--porcelain", "--untracked-files=no")),
-        "tracked source files are dirty",
-    )
+    head = checked_head(repo, expected_head)
 
     root = repo / "programs" / "one-to-infinity"
     report_path = root / "evidence" / "validation-report.generated.json"
     report = json.loads(report_path.read_text(encoding="utf-8"))
+    fail_if(report.get("git_head") != head, "validation report head differs from checked-out HEAD")
+    fail_if(report.get("candidate_only") is not True, "report is not candidate-only")
     fail_if(report.get("status") != "pass", "validator status is not pass")
     fail_if(
         report.get("admission") != "NOT_ADMITTED",
@@ -112,6 +122,7 @@ def make_receipt(repo: Path, expected_head: str) -> dict:
         "fixture inventory changed after validation",
     )
 
+    checked_head(repo, expected_head)
     manifest = root / "MANIFEST.json"
     return {
         "receipt_type": "one-to-infinity-candidate-ci-binding",
@@ -148,19 +159,23 @@ def main() -> int:
     parser.add_argument("--expected-head", required=True)
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
+    dest = args.out or args.repo_root / "programs" / "one-to-infinity" / "evidence" / "ci-receipt.json"
     try:
+        fail_if(dest.is_symlink(), "receipt output must not be a symlink")
+        # Never overwrite a tracked source file, even when --out is explicit.
+        try:
+            relative = dest.resolve().relative_to(args.repo_root.resolve()).as_posix()
+        except ValueError:
+            relative = None
+        if relative:
+            fail_if(bool(git(args.repo_root, "ls-files", "--", ":(literal)" + relative)),
+                    "receipt output is tracked source")
+        # Artifact upload runs even after failure; remove an earlier success first.
+        dest.unlink(missing_ok=True)
         result = make_receipt(args.repo_root, args.expected_head)
-    except (ReceiptError, FileNotFoundError, KeyError, json.JSONDecodeError) as e:
+    except (ReceiptError, OSError, KeyError, TypeError, ValueError) as e:
         print(f"RECEIPT_BLOCKED: {e}", file=sys.stderr)
         return 1
-    dest = (
-        args.out
-        or args.repo_root
-        / "programs"
-        / "one-to-infinity"
-        / "evidence"
-        / "ci-receipt.json"
-    )
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",

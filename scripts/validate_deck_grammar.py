@@ -4,6 +4,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 import json
+import os
+import time
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
 from referencing import Registry, Resource
@@ -16,6 +18,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Validate the Quirk Deck Grammar candidate pack.')
     parser.add_argument('--repo', type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument('--output', type=Path)
+    parser.add_argument('--metrics-output', type=Path, help='Optional JSON output path for performance/workload metrics.')
+    parser.add_argument('--write-step-summary', action='store_true', help='Append metrics to GitHub step summary when available.')
     parser.add_argument('--require-pass', action='store_true')
     return parser.parse_args()
 
@@ -38,6 +42,7 @@ def record_validation(results: list[dict[str, Any]], *, name: str, instance: Any
 def main() -> int:
     args = parse_args()
     repo = args.repo.resolve()
+    started = time.perf_counter()
     schemas = {filename: load_json(repo / 'schemas' / filename) for filename in SCHEMA_FILES}
     registry = make_registry(schemas)
     checks: list[dict[str, Any]] = []
@@ -61,6 +66,39 @@ def main() -> int:
     examples = {'affordance.contract-diff.json': 'affordance.schema.json', 'artifact.live-proof-report.json': 'artifact.schema.json', 'asset.evidence-pack.json': 'asset.schema.json', 'art.two-hands.json': 'art.schema.json', 'aesthetic.premium-chaos.json': 'aesthetic-contract.schema.json'}
     for filename, schema_name in examples.items():
         passed &= record_validation(checks, name=filename, instance=load_json(repo / 'examples/deck-grammar' / filename), schema_name=schema_name, schemas=schemas, registry=registry)
+    # Every example artifact manifest that names a `content_ref` must record
+    # that file's actual canonical hash. Nothing checked this, so bumping
+    # `compiler_version` in the live proof silently invalidated the accepted
+    # evaluation report's binding: the report still recorded the pre-bump
+    # `828dc88d…` while the proof hashed to `9f633bea…`. A reference whose
+    # digest no longer matches the bytes is worse than no reference, because it
+    # reads as a verification that happened.
+    for filename, schema_name in examples.items():
+        manifest = load_json(repo / 'examples/deck-grammar' / filename)
+        content_ref = manifest.get('content_ref')
+        recorded = manifest.get('content_hash')
+        if not content_ref or not recorded:
+            continue
+        referenced = repo / content_ref
+        if not referenced.is_file():
+            checks.append({'name': f'content-ref-exists:{filename}', 'passed': False, 'errors': [f'{content_ref} does not exist']})
+            passed = False
+            continue
+        actual = content_hash(load_json(referenced))
+        bound = actual == recorded
+        # The verified digest is part of the emitted result, not just the
+        # verdict. Without it this check appended an identical passing object
+        # whichever proof it had verified, so a legitimate proof change with a
+        # correctly rebound report left this artifact byte-for-byte unchanged:
+        # reproduced by recompiling with compiler 0.2.1 — the proof hash moved
+        # 9f633bea -> ae7f50e9 and this file's digest stayed ffdfd6d9. The
+        # staleness gate and the admission-doc digest test then accepted
+        # evidence that did not identify the proof evaluated. Carrying the
+        # digest means changing the bound proof necessarily changes the
+        # evidence of record.
+        checks.append({'name': f'content-hash-binds:{filename}', 'passed': bound, 'content_ref': content_ref, 'content_hash': actual, 'errors': [] if bound else [f'{content_ref} hashes to {actual}, manifest records {recorded}']})
+        passed &= bound
+
     fixture_manifest = load_json(repo / 'evals/deck-grammar/fixtures.json')
     as_of_text = fixture_manifest['as_of']
     as_of = datetime.fromisoformat(as_of_text.replace('Z', '+00:00'))
@@ -95,6 +133,33 @@ def main() -> int:
         target = args.output if args.output.is_absolute() else repo / args.output
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(serialized, encoding='utf-8')
+    metrics = {
+        'validator': 'validate_deck_grammar.py',
+        'elapsed_seconds': time.perf_counter() - started,
+        'schema_count': len(SCHEMA_FILES),
+        'schema_check_count': len(checks),
+        'adversarial_case_count': len(adversarial_results),
+        'passed': passed,
+    }
+    if args.metrics_output:
+        metrics_target = args.metrics_output if args.metrics_output.is_absolute() else repo / args.metrics_output
+        metrics_target.parent.mkdir(parents=True, exist_ok=True)
+        metrics_target.write_text(json.dumps(metrics, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+    if args.write_step_summary and os.environ.get('GITHUB_STEP_SUMMARY'):
+        summary_lines = [
+            '## validate_deck_grammar performance',
+            '',
+            '| metric | value |',
+            '| --- | ---: |',
+            f"| elapsed_seconds | {metrics['elapsed_seconds']:.6f} |",
+            f"| schema_count | {metrics['schema_count']} |",
+            f"| schema_check_count | {metrics['schema_check_count']} |",
+            f"| adversarial_case_count | {metrics['adversarial_case_count']} |",
+            f"| passed | {str(metrics['passed']).lower()} |",
+            '',
+        ]
+        with Path(os.environ['GITHUB_STEP_SUMMARY']).open('a', encoding='utf-8') as handle:
+            handle.write('\n'.join(summary_lines))
     print(serialized, end='')
     return 0 if passed else 1
 if __name__ == '__main__':

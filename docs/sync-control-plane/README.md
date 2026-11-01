@@ -53,10 +53,16 @@ GitHub candidate/canon
 ```bash
 python -m pip install -r requirements-evals.txt
 python -m unittest discover -s tests -p 'test_*.py' -v
-python scripts/validate_sync_control_plane.py --repo . --require-admit
+python scripts/validate_sync_control_plane.py \
+  --repo . \
+  --output evals/sync-control-plane/conformance-results.json \
+  --metrics-output evals/sync-control-plane/conformance-metrics.json \
+  --require-admit
 ```
 
 A successful run means **eligible for a human admission decision**. It does not activate the candidate.
+
+`conformance-metrics.json` provides CI-trend telemetry (`elapsed_seconds`, fixture/schema counts, migration file count, and eligibility) without introducing brittle hard timing gates.
 
 ## Database proof
 
@@ -66,10 +72,14 @@ Apply the candidate migration, then execute the transactional proof script:
 supabase/migrations/20260812030000_sync_control_plane_contracts.sql
 supabase/migrations/20260812030001_sync_control_plane_evidence.sql
 supabase/migrations/20260812030002_sync_control_plane_delivery.sql
+supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql
 supabase/tests/sync_control_plane_hardening.sql
+supabase/tests/sync_control_plane_outbox_claim_benchmark.sql
 ```
 
 The proof transaction rolls back all test data while asserting valid activation, self-promotion rejection, rights blocking, trigger collision blocking, duplicate identity rejection, idempotent receipts, append-only history, deferred Cloudflare representation, dead-letter exhaustion, drift-to-Proposed-Move behavior, and projection reconstruction.
+
+The outbox benchmark fixture runs an in-transaction `EXPLAIN` plan-shape assertion for the claim predicate over a mixed queue state population (including claim-path index usage) and documents a local `EXPLAIN (ANALYZE, BUFFERS)` command for deeper timing/buffer inspection without introducing flaky CI gates.
 
 ## Admission checklist
 

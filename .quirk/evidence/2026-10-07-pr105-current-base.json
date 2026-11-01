@@ -1,0 +1,111 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr105-current-base-reconciliation.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "eb4243c00c00e6c046304850d1cbea27963ad9e2",
+    "commit": "d839ab67e70994a4c413b7d2f83ed0d9ac1520ad",
+    "changed_paths": [
+      ".github/workflows/distill-loop-conformance.yml",
+      ".quirk/evidence/2026-10-03-pr105-export-completeness.json",
+      "docs/changelog/2026-10-07-pr105-evidence-reconciliation.md",
+      "docs/distill-loop/README.md",
+      "scripts/distill_loop/__main__.py",
+      "scripts/distill_loop/common.py",
+      "tests/test_distill_loop.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr105-current-base-reconciliation.2026-10-07",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Integrated PR 105 with current main, inheriting its existing adoption-receipt squash rebinding without weakening the evidence validator. Post-approval commits 802ee32 and 51f11ff have zero net tree delta from approved 39f9e41. Local integrated suite ran 311 tests: 310 passed and one native Windows test skipped on Linux. Distill conformance and Golden candidate gates pass with 16 existing admission holds. This receipt binds current integrated bytes; it does not claim hosted CI, Windows execution, fresh human approval, merge readiness, or runtime admission. The earlier PR receipt is retained as historical evidence.",
+      "evidence_paths": [
+        ".github/workflows/distill-loop-conformance.yml",
+        ".quirk/evidence/2026-10-03-pr105-export-completeness.json",
+        "docs/changelog/2026-10-07-pr105-evidence-reconciliation.md",
+        "docs/distill-loop/README.md",
+        "scripts/distill_loop/__main__.py",
+        "scripts/distill_loop/common.py",
+        "tests/test_distill_loop.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/distill-loop-conformance.yml",
+      "state": "present",
+      "git_blob": "6dcba8fa182c023e42ff43f73106e3372243652b",
+      "sha256": "sha256:6fbb7711a2b68247df9b0b9c61a76a80cfb3de9d3c73b5eaa83628cde6540532"
+    },
+    {
+      "path": ".quirk/evidence/2026-10-03-pr105-export-completeness.json",
+      "state": "present",
+      "git_blob": "0cf7a442eb83715fee6d2d325d8a3c92b52194b6",
+      "sha256": "sha256:66110ef30e6890eae7ffe48538a46d6ba4c2570e6959d1a7d6d0820031783826"
+    },
+    {
+      "path": "docs/changelog/2026-10-07-pr105-evidence-reconciliation.md",
+      "state": "present",
+      "git_blob": "50944bf3c3569fc0ef02c587703bd19b737cd541",
+      "sha256": "sha256:dc61b2d2189d36010f4f3ede90b8d14c1fe39d81b8136f9ed2a0c111f4c2ef60"
+    },
+    {
+      "path": "docs/distill-loop/README.md",
+      "state": "present",
+      "git_blob": "ae2e4acd360f8504f6a0039d7c28a0be28312fee",
+      "sha256": "sha256:de908904f4363649664430f523bab8746ecc16c4d2b6e32547d74dff4d78d3bc"
+    },
+    {
+      "path": "scripts/distill_loop/__main__.py",
+      "state": "present",
+      "git_blob": "30fd0c26c4ce66af429449abbcc92cd3d7539336",
+      "sha256": "sha256:9fbcd7903cae3b68407e950fed42013bec23d658b9ec79cb96dc99a0f596a3dd"
+    },
+    {
+      "path": "scripts/distill_loop/common.py",
+      "state": "present",
+      "git_blob": "228ff3516c21962e24b34a062b9061bd6ace9e88",
+      "sha256": "sha256:8ade4160e036ab76800c8138329952dd50f5ec11411cfc74405427de49903b1d"
+    },
+    {
+      "path": "tests/test_distill_loop.py",
+      "state": "present",
+      "git_blob": "7f911593fcbd67668cc8ec6cf134cad71e5ad3c7",
+      "sha256": "sha256:af663779db8aeb550e0cfd6cd80993e147ad967a3729a0c1dded495852238570"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python scripts/validate_distill_loop.py --repo . --output ../pr105-distill.json --require-pass",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check origin/main..HEAD",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T13:05:04Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:6c7bd55737176eb43cde90df9b57bdd142564786a7b677253c322be4e5775381"
+}

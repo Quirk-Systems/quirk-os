@@ -1,0 +1,48 @@
+schema_version: quirk.quirkverse-receipt/0.1
+receipt_id: receipt.activation.example.signal-to-proof
+activation_ref: activation.example.signal-to-proof
+recorded_at: 2026-08-28T00:00:00-05:00
+result_state: CANDIDATE
+
+origin:
+  signal_refs:
+    - source.example
+  initiator: Bryan
+  conversation_ref:
+
+authority:
+  grant_ref: grant.example.candidate-analysis
+  effect_class: PREPARE
+  scope_fingerprint: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  scope_delta_state: UNCHANGED
+  reauthorization_ref:
+
+execution:
+  artifact_refs:
+    - artifact.example
+  actions_taken: []
+  stop_conditions_triggered: []
+  runtime_receipt_refs: []
+
+independent_proof:
+  reviewer: ""
+  rubric_ref: rubric.quirkverse-activation-v0.1
+  fixture_results:
+    - fixture_ref: fixture.spectacle-without-substance
+      result: NOT_RUN
+      evidence_ref:
+  claims_withheld:
+    - no runtime authority
+    - no Canon promotion
+
+outcome:
+  real_world_change: none
+  value_evidence: []
+  harm_or_externality: []
+  admitted_work: false
+
+disposition: CANDIDATE
+continuity_delta_ref: delta.world.example.signal-to-proof
+final_human_owner: Bryan
+authority_effect: candidate_only
+notes: []

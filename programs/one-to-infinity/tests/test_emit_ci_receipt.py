@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -44,6 +45,7 @@ class ReceiptTest(unittest.TestCase):
         self.validator.write_text("# fixture validator\n")
         report = {
             "status": "pass",
+            "candidate_only": True,
             "admission": "NOT_ADMITTED",
             "positive_passing": 4,
             "adversarial_rejecting_for_intended_rule": 11,
@@ -78,15 +80,16 @@ class ReceiptTest(unittest.TestCase):
             )
         report["validator_sha256"] = digest(self.validator)
         write(self.root / "MANIFEST.json", {"pack": "candidate"})
-        write(self.root / "evidence" / "validation-report.generated.json", report)
         git(self.repo, "add", ".")
         git(self.repo, "commit", "-qm", "sample commit")
         self.head = git(self.repo, "rev-parse", "HEAD")
+        report["git_head"] = self.head
+        write(self.root / "evidence" / "validation-report.generated.json", report)
 
     def run_cli(self, head=None):
         return subprocess.run(
             [
-                "python3",
+                sys.executable,
                 str(SCRIPT),
                 "--repo-root",
                 str(self.repo),
@@ -126,18 +129,45 @@ class ReceiptTest(unittest.TestCase):
         new_head = git(self.repo, "rev-parse", "HEAD")
         r = self.run_cli(new_head)
         self.assertNotEqual(r.returncode, 0)
-        self.assertIn("fixture changed", r.stderr)
+        self.assertIn("report head", r.stderr)
 
     def test_reject_report_inventing_approval(self):
         rpath = self.root / "evidence" / "validation-report.generated.json"
         data = json.loads(rpath.read_text())
         data["admission"] = "CANON"
         write(rpath, data)
-        git(self.repo, "add", str(rpath))
-        git(self.repo, "commit", "-qm", "forge report")
-        r = self.run_cli(git(self.repo, "rev-parse", "HEAD"))
+        r = self.run_cli()
         self.assertNotEqual(r.returncode, 0)
         self.assertIn("admission", r.stderr)
+
+    def test_blocked_run_removes_prior_success_receipt(self):
+        self.assertEqual(self.run_cli().returncode, 0)
+        r = self.run_cli("0" * 40)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertFalse((self.root / "evidence" / "ci-receipt.json").exists())
+
+    def test_report_cannot_be_relabelled_after_new_commit(self):
+        (self.repo / "notes.md").write_text("unrelated change\n")
+        git(self.repo, "add", "notes.md")
+        git(self.repo, "commit", "-qm", "new head")
+        r = self.run_cli(git(self.repo, "rev-parse", "HEAD"))
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("report head", r.stderr)
+
+    def test_reject_non_candidate_report(self):
+        path = self.root / "evidence" / "validation-report.generated.json"
+        report = json.loads(path.read_text())
+        report["candidate_only"] = False
+        write(path, report)
+        r = self.run_cli()
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("candidate-only", r.stderr)
+
+    def test_reject_untracked_validator_dependency(self):
+        (self.root / "tests" / "jsonschema.py").write_text("# shadow dependency\n")
+        r = self.run_cli()
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("untracked", r.stderr)
 
 
 if __name__ == "__main__":

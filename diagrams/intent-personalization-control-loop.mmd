@@ -1,0 +1,25 @@
+flowchart LR
+    U["Current request<br/>explicit instructions"] --> I["Intent Resolver"]
+    X["Goal · stakes · audience<br/>destination · evidence"] --> I
+    P["Purpose-scoped<br/>Preference Graph"] --> C["Context Compiler"]
+    S["Settings · consent<br/>authority"] --> C
+    I --> C
+    C --> H["Persona Hand Selector"]
+    H --> V["Voice · Tone · Aesthetic<br/>Constitution Compiler"]
+    V --> A["Platform Affect Resolver"]
+    A --> F["Task Affordance Synthesizer"]
+    F --> G["Candidate Experience Generator"]
+    G --> T{"Alignment Tribunal"}
+    T -->|"revise"| G
+    T -->|"pass"| O["Adaptive Output / UI"]
+    O --> R["Feedback Receipt"]
+    R --> D{"Signal diagnosis"}
+    D -->|"task or platform mismatch"| C
+    D -->|"preference evidence"| Q["Adaptation Proposal"]
+    Q --> Z{"Human admission"}
+    Z -->|"accept / scope / expire"| P
+    Z -->|"reject"| B["Boneyard with reason"]
+
+    K["Never #0001<br/>capability ≠ authority"] -.-> C
+    K -.-> T
+    K -.-> Z

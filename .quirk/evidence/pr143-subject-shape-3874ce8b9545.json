@@ -1,0 +1,116 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr143-subject-shape.3874ce8b9545",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "8bba2187603d381495c753c5639db3f165cf3d7d",
+    "commit": "3874ce8b954572a0d8960aac5ee260073bb263b1",
+    "changed_paths": [
+      ".quirk/evidence/pr141-approval-followup-37cd879d233b.json",
+      ".quirk/evidence/pr143-request-shape-7622b5fb5b1f.json",
+      "docs/changes/pr141-approval-followup.md",
+      "docs/runbooks/github-runtime-approval.md",
+      "requirements-evals.txt",
+      "scripts/sync_control_plane/github_approval.py",
+      "tests/test_github_approval.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr143-subject-shape.3874ce8b9545",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Complete skill-package and runtime-manifest schemas and formats are validated before subject policy or digest binding. Missing format dependencies fail closed. Malformed subjects cannot write either timestamp and later recovery remains possible; well-formed policy violations retain sticky revocation. 269 repository tests pass at subject commit, including 28 approval methods; three malformed-subject methods fail against the preceding implementation. Integrated with main 8bba2187603d381495c753c5639db3f165cf3d7d in a standalone checkout: 433 tests pass with one skip. Sync conformance byte-identical in both checkouts; Golden structural gates pass with 16 holds. Synthetic fixtures and mocked connections only; hosted checks and fresh review tracked separately. No real grant, admission, deployment or runtime authority. Integrated subject commit rerun passes 433 tests with one skip, conformance byte-identical, Golden candidate gates with 16 holds, and clean diff.",
+      "evidence_paths": [
+        ".quirk/evidence/pr141-approval-followup-37cd879d233b.json",
+        ".quirk/evidence/pr143-request-shape-7622b5fb5b1f.json",
+        "docs/changes/pr141-approval-followup.md",
+        "docs/runbooks/github-runtime-approval.md",
+        "requirements-evals.txt",
+        "scripts/sync_control_plane/github_approval.py",
+        "tests/test_github_approval.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".quirk/evidence/pr141-approval-followup-37cd879d233b.json",
+      "state": "present",
+      "git_blob": "2aabe71a13494c4d70e92315e9f628d007a74a2e",
+      "sha256": "sha256:998186613c0bf2cfa594eb385997259f481c66998269db445c29beedd383416f"
+    },
+    {
+      "path": ".quirk/evidence/pr143-request-shape-7622b5fb5b1f.json",
+      "state": "present",
+      "git_blob": "50f26950559b321e1d55d00f980ca19fd1e4fe62",
+      "sha256": "sha256:360881dc856222d3d02fb17fb9a447c439eeab868f809415db4219998850f02c"
+    },
+    {
+      "path": "docs/changes/pr141-approval-followup.md",
+      "state": "present",
+      "git_blob": "2dc1ef2f63375e7c6ea7126d98697249a2e0e160",
+      "sha256": "sha256:e367623325ef8e4ddae2816abd84cbc6782c2ec52c2d31c09089ebc1842f7ee1"
+    },
+    {
+      "path": "docs/runbooks/github-runtime-approval.md",
+      "state": "present",
+      "git_blob": "77551fa8997c95cf065d69e4f2a740eabc20326a",
+      "sha256": "sha256:213a625853a571c939540e86448083dd7c66345b049377b0b78e782ad6687f45"
+    },
+    {
+      "path": "requirements-evals.txt",
+      "state": "present",
+      "git_blob": "76c1b92313453eddb010453daedd556c3f837a95",
+      "sha256": "sha256:e30e9302141c7055fefb0371a3280431d1e8ebd47546288ebb2c4fdbcbed4017"
+    },
+    {
+      "path": "scripts/sync_control_plane/github_approval.py",
+      "state": "present",
+      "git_blob": "3893862dea66fd655129bd148190e041538879f0",
+      "sha256": "sha256:b3a5e7030d0031740d1b1108cf1ff99eee61a8b1a7e3c35919488d3f985d9bbe"
+    },
+    {
+      "path": "tests/test_github_approval.py",
+      "state": "present",
+      "git_blob": "a3c394476c2f1fc8bc03781c1b5e1f511b32f0a2",
+      "sha256": "sha256:4dceee7f8555d000394183e4ac8edd12cfcdf226fd1acd54170699344728b7cc"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p test_*.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --repo . --output /tmp/pr143-integrated-conformance.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "cmp evals/sync-control-plane/conformance-results.json /tmp/pr143-integrated-conformance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T23:03:32.076390Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:22d0e9da789f2a77eac639f989b20d7fcb9298f2ecbb560bf4d705e5f29eafd1"
+}

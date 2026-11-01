@@ -1,0 +1,92 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr141-approval-followup.37cd879d233b",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "9dfb4ffa95ce954b689233e3fdc989936f789242",
+    "commit": "37cd879d233b8f310349bc242bccd04c18b4d345",
+    "changed_paths": [
+      "docs/changes/pr141-approval-followup.md",
+      "docs/runbooks/github-runtime-approval.md",
+      "scripts/sync_control_plane/github_approval.py",
+      "tests/test_github_approval.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr141-approval-followup.37cd879d233b",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Both live PR 141 findings confirmed and repaired. Mutable base metadata excluded; repository identity, base ref and SHA remain bound. Only PolicyInvalidation or changed original grant/head/review binding can create sticky revocation. Malformed or truncated API responses propagate without either timestamp write; recovery and true revocation covered. 261 repository tests pass locally, including 20 approval methods; three new methods fail against original implementation. Sync Control Plane conformance and Golden candidate structural checks pass. 16 holds preserved. Synthetic fixture and mocked connection tests only; hosted PostgreSQL verification pending. No real grant, admission, deployment or established runtime authority.",
+      "evidence_paths": [
+        "docs/changes/pr141-approval-followup.md",
+        "docs/runbooks/github-runtime-approval.md",
+        "scripts/sync_control_plane/github_approval.py",
+        "tests/test_github_approval.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/changes/pr141-approval-followup.md",
+      "state": "present",
+      "git_blob": "1e6a9c7dccb02e08374c96e95453e9c5a4d27f7e",
+      "sha256": "sha256:71b6c24109d95d95d2e36953f0a4022364280acfe50f9f538f7ba39ce95a96d6"
+    },
+    {
+      "path": "docs/runbooks/github-runtime-approval.md",
+      "state": "present",
+      "git_blob": "55d40fe813ec5fcd0130e3f82eca60b8b701459a",
+      "sha256": "sha256:1b168d61be4786a7e9cb757f2b8aeaae3fe6e773baf2c7aa57beb27370cb544e"
+    },
+    {
+      "path": "scripts/sync_control_plane/github_approval.py",
+      "state": "present",
+      "git_blob": "b7cadc0e59edc1ede7d1f5e64f7519605882166f",
+      "sha256": "sha256:49d25dda0c618372b2f06ced75d9e4180b8d21edd08d628e2ed657872a9de4ee"
+    },
+    {
+      "path": "tests/test_github_approval.py",
+      "state": "present",
+      "git_blob": "9c1b156cf7e7464a1438c74e2f0f13fe714a7234",
+      "sha256": "sha256:4ded903a0e8f82017f968ffb8e5014f42d71af78be680f7cde69eb954feb602f"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p test_*.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --repo . --output /tmp/pr141-exact-conformance.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "cmp evals/sync-control-plane/conformance-results.json /tmp/pr141-exact-conformance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /tmp/pr141-exact-golden.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-06T16:23:37.455923Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:eedd9cb4a6caf14aca271435eca94faeb372881e68d6a5514650e9e1166f92e8"
+}

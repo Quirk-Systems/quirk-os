@@ -1,0 +1,90 @@
+{
+  "hash_profile": "runtime-manifest-content.v1",
+  "python_profile": "CPython 3.13",
+  "authority_effect": "none",
+  "vectors": [
+    {
+      "id": "unicode-and-numbers",
+      "manifest": {
+        "schema_version": "runtime-manifest.v2",
+        "manifest_key": "agent.valid",
+        "manifest_kind": "agent",
+        "version": "1.0.0",
+        "status": "candidate",
+        "requested_status": "candidate",
+        "canonical_uri": "https://github.com/Quirk-Systems/quirk-os/blob/main/agents/valid.yaml",
+        "content_hash": "d42991f54e5234415fd24bbc4268f4e6d99b660f047031aff39f17c564ba7554",
+        "authority_ceiling": "propose",
+        "domains": [
+          "sync"
+        ],
+        "tools": [],
+        "inputs_schema_ref": "schemas/source-binding.schema.json",
+        "outputs_schema_ref": "schemas/sync-run-receipt.schema.json",
+        "eval_refs": [
+          "eval.valid"
+        ],
+        "stop_conditions": [
+          "missing_authority"
+        ],
+        "admission": null,
+        "metadata": {
+          "unicode": "café",
+          "numbers": [
+            1,
+            1.0,
+            0.0,
+            -0.0
+          ],
+          "nested": {
+            "z": false,
+            "a": null
+          }
+        }
+      },
+      "preimage_utf8": "{\"authority_ceiling\":\"propose\",\"canonical_uri\":\"https://github.com/Quirk-Systems/quirk-os/blob/main/agents/valid.yaml\",\"domains\":[\"sync\"],\"eval_refs\":[\"eval.valid\"],\"inputs_schema_ref\":\"schemas/source-binding.schema.json\",\"manifest_key\":\"agent.valid\",\"manifest_kind\":\"agent\",\"metadata\":{\"nested\":{\"a\":null,\"z\":false},\"numbers\":[1,1.0,0.0,-0.0],\"unicode\":\"café\"},\"outputs_schema_ref\":\"schemas/sync-run-receipt.schema.json\",\"schema_version\":\"runtime-manifest.v2\",\"stop_conditions\":[\"missing_authority\"],\"tools\":[],\"version\":\"1.0.0\"}",
+      "sha256": "d42991f54e5234415fd24bbc4268f4e6d99b660f047031aff39f17c564ba7554"
+    },
+    {
+      "id": "optional-absent",
+      "manifest": {
+        "schema_version": "runtime-manifest.v2",
+        "manifest_key": "agent.valid",
+        "manifest_kind": "agent",
+        "version": "1.0.0",
+        "status": "candidate",
+        "requested_status": "candidate",
+        "canonical_uri": "https://github.com/Quirk-Systems/quirk-os/blob/main/agents/valid.yaml",
+        "content_hash": "38f575480a2ff65b0227e5f07be10ba21ac6124f1a3b1249f75796dc88646fab",
+        "authority_ceiling": "propose",
+        "domains": [
+          "sync"
+        ],
+        "inputs_schema_ref": "schemas/source-binding.schema.json",
+        "outputs_schema_ref": "schemas/sync-run-receipt.schema.json",
+        "eval_refs": [
+          "eval.valid"
+        ],
+        "stop_conditions": [
+          "missing_authority"
+        ],
+        "admission": null,
+        "metadata": {
+          "unicode": "café",
+          "numbers": [
+            1,
+            1.0,
+            0.0,
+            -0.0
+          ],
+          "nested": {
+            "z": false,
+            "a": null
+          }
+        }
+      },
+      "preimage_utf8": "{\"authority_ceiling\":\"propose\",\"canonical_uri\":\"https://github.com/Quirk-Systems/quirk-os/blob/main/agents/valid.yaml\",\"domains\":[\"sync\"],\"eval_refs\":[\"eval.valid\"],\"inputs_schema_ref\":\"schemas/source-binding.schema.json\",\"manifest_key\":\"agent.valid\",\"manifest_kind\":\"agent\",\"metadata\":{\"nested\":{\"a\":null,\"z\":false},\"numbers\":[1,1.0,0.0,-0.0],\"unicode\":\"café\"},\"outputs_schema_ref\":\"schemas/sync-run-receipt.schema.json\",\"schema_version\":\"runtime-manifest.v2\",\"stop_conditions\":[\"missing_authority\"],\"version\":\"1.0.0\"}",
+      "sha256": "38f575480a2ff65b0227e5f07be10ba21ac6124f1a3b1249f75796dc88646fab"
+    }
+  ]
+}

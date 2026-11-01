@@ -1,0 +1,32 @@
+{
+  "receipt_id": "receipt.quirk-distillation-synthesizer.trial.0007",
+  "skill_id": "quirk-distillation-synthesizer",
+  "skill_version": "0.2.0",
+  "skill_manifest_sha256": "eb3b41048844dba81b0dbed6cd4647fd7bab64332ad8fce9274e475e49ffab48",
+  "grant_id": "grant.quirk-distillation-synthesizer.trial.0007",
+  "status": "completed",
+  "started_at": "2026-09-18T14:00:00Z",
+  "finished_at": "2026-09-18T14:26:40Z",
+  "input_refs": [
+    "source-pack.research-currentizer.2026-09-18",
+    "decision-scope.roadmap-q4-adoption"
+  ],
+  "output_refs": [
+    "asset.synthesis-pack.roadmap-q4-adoption.0007",
+    "qpm_distill_trial_0007_adoption_brief"
+  ],
+  "evidence_refs": [
+    "eval.QSK-021",
+    "ledger.evidence.trial-0007.sources",
+    "ledger.evidence.trial-0007.claims",
+    "ledger.evidence.trial-0007.contradictions"
+  ],
+  "finding_codes": [
+    "CLAIMS_TRACEABLE",
+    "DECISIVE_NUANCE_PRESERVED"
+  ],
+  "proposed_mutations": [],
+  "authority_ceiling_observed": "infer",
+  "no_authority_escalation": true,
+  "immutable": true
+}

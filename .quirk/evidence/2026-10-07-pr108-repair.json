@@ -1,0 +1,169 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os.pr108-repair.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "38ba6b9b6a3ddd2ee34807bfde5cf5be4673691f",
+    "commit": "7ae8d085789b32adb73f2ec80086c272499cf773",
+    "changed_paths": [
+      ".github/workflows/agent-reliability.yml",
+      "docs/changelog/PR-108.md",
+      "evals/agent-reliability/v0.1.1/README.md",
+      "evals/agent-reliability/v0.1.1/fixtures.json",
+      "evals/agent-reliability/v0.1.1/verification-receipt.json",
+      "evals/agent-reliability/v0.1.2/README.md",
+      "evals/agent-reliability/v0.1.2/fixtures.json",
+      "evals/agent-reliability/v0.1.2/verification-receipt.json",
+      "scripts/agent_reliability/__init__.py",
+      "scripts/agent_reliability/pack.py",
+      "scripts/agent_reliability/runner.py",
+      "scripts/validate_agent_reliability.py",
+      "tests/test_agent_reliability.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.quirk-os.pr108-repair.2026-10-07",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Candidate reliability repair integrated current main. 56 focused tests pass. Standalone integrated checkout: 416 tests run, 415 passed and one Windows-only skip. Golden candidate gates pass with 16 admission holds. Validator passes synthetic fixtures, NO_OBSERVATIONS, effects_executed=0. Initial worktree-only full-suite failure is documented in changelog. Hosted proof and external review are pending; no runtime safety, provenance authentication, admission, activation, or authority is claimed.",
+      "evidence_paths": [
+        ".github/workflows/agent-reliability.yml",
+        "docs/changelog/PR-108.md",
+        "evals/agent-reliability/v0.1.1/README.md",
+        "evals/agent-reliability/v0.1.1/fixtures.json",
+        "evals/agent-reliability/v0.1.1/verification-receipt.json",
+        "evals/agent-reliability/v0.1.2/README.md",
+        "evals/agent-reliability/v0.1.2/fixtures.json",
+        "evals/agent-reliability/v0.1.2/verification-receipt.json",
+        "scripts/agent_reliability/__init__.py",
+        "scripts/agent_reliability/pack.py",
+        "scripts/agent_reliability/runner.py",
+        "scripts/validate_agent_reliability.py",
+        "tests/test_agent_reliability.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/agent-reliability.yml",
+      "state": "present",
+      "git_blob": "9f1f3fe0854024c24ab621555053276b72e996c0",
+      "sha256": "sha256:b23388050db7aabf415f16ff69c82015aeaefe45366167114591b32619d746db"
+    },
+    {
+      "path": "docs/changelog/PR-108.md",
+      "state": "present",
+      "git_blob": "aa33c276abd255710101cd4b49a1b26cc2a0877b",
+      "sha256": "sha256:ebf0651b2bbb65396c236d69a465928a8a08b1bde7e46e7fb9c609ffa6493e8c"
+    },
+    {
+      "path": "evals/agent-reliability/v0.1.1/README.md",
+      "state": "present",
+      "git_blob": "601b66f0b0a27a74f3a1b517804eed0d34c643d8",
+      "sha256": "sha256:f74015140c93af5d699e8ae7f693b8985d988d3bedf55976868b09c034d89eaf"
+    },
+    {
+      "path": "evals/agent-reliability/v0.1.1/fixtures.json",
+      "state": "present",
+      "git_blob": "a58c5dc83e20601fbfb27c65491e34b978459915",
+      "sha256": "sha256:39b8bd75980f74bc9293e3c02a84110742799538c9dbd686ab3c750ab5f396dd"
+    },
+    {
+      "path": "evals/agent-reliability/v0.1.1/verification-receipt.json",
+      "state": "present",
+      "git_blob": "1092cd2ded652f4e8e01540b32575710ff0444d3",
+      "sha256": "sha256:14ef2e4904d706ec755c55fe5964f3ca3a5555e1aad7cdf64b2f2bb823c1dd8e"
+    },
+    {
+      "path": "evals/agent-reliability/v0.1.2/README.md",
+      "state": "present",
+      "git_blob": "87288ef686b427a8c241f4d09e221ba6c46dad3c",
+      "sha256": "sha256:a5cfaf66ad16f3dbf2f3d2a1a2efafe7b645987182a9cd06219affa9f87fc4e6"
+    },
+    {
+      "path": "evals/agent-reliability/v0.1.2/fixtures.json",
+      "state": "present",
+      "git_blob": "725dacaaa48ec570a4a4c03bdccb39d1576263a8",
+      "sha256": "sha256:dc3dbac23fba63a04f346f7859c447a92efd88a87b377d99e25d6cbcf3da8f4c"
+    },
+    {
+      "path": "evals/agent-reliability/v0.1.2/verification-receipt.json",
+      "state": "present",
+      "git_blob": "b86b8d285ef2e8edcf66f713d6f181c4a235343d",
+      "sha256": "sha256:241530cf9a355e34f58480a4cf7673c38818d0fc0dabafde25b1ab42fe2f935a"
+    },
+    {
+      "path": "scripts/agent_reliability/__init__.py",
+      "state": "present",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "scripts/agent_reliability/pack.py",
+      "state": "present",
+      "git_blob": "b26377fdf8b46a0a4a00b72a4576db417002a5dc",
+      "sha256": "sha256:0305aee0797767a45d3b38318e1828b28fecedabc0941dc20931141f6bd77232"
+    },
+    {
+      "path": "scripts/agent_reliability/runner.py",
+      "state": "present",
+      "git_blob": "fffad05f7ea34246e5870705ff97984280a5df1c",
+      "sha256": "sha256:a8fd408184a814889749150a04bcaa1b4dcf63b34c8d5e038cdaee5d8055f7bd"
+    },
+    {
+      "path": "scripts/validate_agent_reliability.py",
+      "state": "present",
+      "git_blob": "4a71700298bd541abbc9c641466fc95614a7c791",
+      "sha256": "sha256:0a3048a12365cbf58500c85bdf6c95ad05000de30f664c1d2ff0594bcb799952"
+    },
+    {
+      "path": "tests/test_agent_reliability.py",
+      "state": "present",
+      "git_blob": "ed56bd3b244dfdd057d3dc36a5e841423225ffbb",
+      "sha256": "sha256:e59efdef897f0e037276571e1fae142430c1f60ba61b91470238a35e6a0ade2c"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest tests/test_agent_reliability.py -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -q (standalone checkout of 9b05a3b8377a77e5d64993c9b9d48f9b95d7240e)",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agent_reliability.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/admission_workplan.py --output /tmp/pr108-admission.json (standalone checkout)",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T18:45:13.751530Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:ed796d55d494b5744c47a066e46a884d2b1c4a2acfdc920ce62308e29fe469d5"
+}

@@ -1,0 +1,807 @@
+{
+  "cases": [
+    {
+      "id": "case-001-success",
+      "kind": "positive",
+      "description": "Fully consented, anonymized, load-bearing synthetic fixture that should reach a Song Brief.",
+      "request": {
+        "batch_id": "batch.case-001-success",
+        "provenance": {
+          "f_tier": "F2",
+          "adult_confirmed": true,
+          "consent_to_intimacy": true,
+          "consent_to_store": true,
+          "consent_to_publish": false,
+          "anonymized": true,
+          "identity_risk": "low",
+          "source_provenance": "wholly synthetic composite fixture; no real persons, no identifying or ambiguous-age details"
+        },
+        "assets": [
+          {
+            "asset_id": "shard.synthetic-001",
+            "asset_type": "reality_shard",
+            "parent_ids": [],
+            "text": "A synthetic narrator stands at the kitchen counter at 2am, phone face-down, describing what almost got said."
+          },
+          {
+            "asset_id": "wrp.synthetic-001",
+            "asset_type": "want_resistance_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "want": "wants to say it plainly",
+            "resistance": "keeps circling the block instead"
+          },
+          {
+            "asset_id": "pv.synthetic-001",
+            "asset_type": "power_vector",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "holder": "the narrator",
+            "target": "the unsent text",
+            "direction": "the narrator holds and withholds power over what gets sent"
+          },
+          {
+            "asset_id": "cb.synthetic-001",
+            "asset_type": "consent_beat",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "beat": "the hook names the exact in-story moment permission was asked and given"
+          },
+          {
+            "asset_id": "st.synthetic-001",
+            "asset_type": "sensory_triad",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "sight": "the phone screen throws blue light across the counter",
+            "sound": "the refrigerator hums under the silence",
+            "touch": "the counter edge is cold under both palms"
+          },
+          {
+            "asset_id": "cp.synthetic-001",
+            "asset_type": "contradiction_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "a": "wants to be found",
+            "b": "keeps the door locked"
+          },
+          {
+            "asset_id": "pa.synthetic-001",
+            "asset_type": "phrase_atom",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "text": "unsent text, sent anyway, in the chorus"
+          },
+          {
+            "asset_id": "ht.synthetic-001",
+            "asset_type": "hook_thesis",
+            "parent_ids": [
+              "pa.synthetic-001"
+            ],
+            "text": "the whole song is the sentence that almost got typed"
+          },
+          {
+            "asset_id": "sc.synthetic-001",
+            "asset_type": "sonic_cell",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "tempo_feel": "unhurried, 2am pulse",
+            "texture": "warm low synth pad under dry vocal",
+            "space": "close mono verse opening into wide chorus reverb"
+          }
+        ],
+        "furniture": {
+          "bodies_position": "standing at the counter, shoulder against the cabinet, facing the dark window",
+          "objects_obstruction": "the counter and a half-empty mug sit between them and the door",
+          "distance_movement": "three steps from the counter to the door, never taken",
+          "temperature": "the tile floor is cold enough to feel through socks",
+          "acoustics": "the fridge hum swallows most of the room's quiet",
+          "geography": "a small apartment kitchen after midnight",
+          "privacy_pressure": "the roommate's door is shut but the walls stay thin"
+        },
+        "next_bounded_experiment": "re-run with Furniture specificity halved to see if GRIP Grounded drops and the gate flips",
+        "compiled_at": "2026-01-01T00:00:00Z"
+      },
+      "expected": {
+        "decision": "FINALIZE",
+        "refusal_codes": []
+      }
+    },
+    {
+      "id": "case-002-adult-consent-ambiguous",
+      "kind": "negative",
+      "description": "adult_confirmed is null (ambiguous) -- must refuse closed, not assume adult.",
+      "request": {
+        "batch_id": "batch.case-002-adult-consent-ambiguous",
+        "provenance": {
+          "f_tier": "F2",
+          "adult_confirmed": null,
+          "consent_to_intimacy": true,
+          "consent_to_store": true,
+          "consent_to_publish": false,
+          "anonymized": true,
+          "identity_risk": "low",
+          "source_provenance": "wholly synthetic composite fixture; no real persons, no identifying or ambiguous-age details"
+        },
+        "assets": [
+          {
+            "asset_id": "shard.synthetic-001",
+            "asset_type": "reality_shard",
+            "parent_ids": [],
+            "text": "A synthetic narrator stands at the kitchen counter at 2am, phone face-down, describing what almost got said."
+          },
+          {
+            "asset_id": "wrp.synthetic-001",
+            "asset_type": "want_resistance_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "want": "wants to say it plainly",
+            "resistance": "keeps circling the block instead"
+          },
+          {
+            "asset_id": "pv.synthetic-001",
+            "asset_type": "power_vector",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "holder": "the narrator",
+            "target": "the unsent text",
+            "direction": "the narrator holds and withholds power over what gets sent"
+          },
+          {
+            "asset_id": "cb.synthetic-001",
+            "asset_type": "consent_beat",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "beat": "the hook names the exact in-story moment permission was asked and given"
+          },
+          {
+            "asset_id": "st.synthetic-001",
+            "asset_type": "sensory_triad",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "sight": "the phone screen throws blue light across the counter",
+            "sound": "the refrigerator hums under the silence",
+            "touch": "the counter edge is cold under both palms"
+          },
+          {
+            "asset_id": "cp.synthetic-001",
+            "asset_type": "contradiction_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "a": "wants to be found",
+            "b": "keeps the door locked"
+          },
+          {
+            "asset_id": "pa.synthetic-001",
+            "asset_type": "phrase_atom",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "text": "unsent text, sent anyway, in the chorus"
+          },
+          {
+            "asset_id": "ht.synthetic-001",
+            "asset_type": "hook_thesis",
+            "parent_ids": [
+              "pa.synthetic-001"
+            ],
+            "text": "the whole song is the sentence that almost got typed"
+          },
+          {
+            "asset_id": "sc.synthetic-001",
+            "asset_type": "sonic_cell",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "tempo_feel": "unhurried, 2am pulse",
+            "texture": "warm low synth pad under dry vocal",
+            "space": "close mono verse opening into wide chorus reverb"
+          }
+        ],
+        "furniture": {
+          "bodies_position": "standing at the counter, shoulder against the cabinet, facing the dark window",
+          "objects_obstruction": "the counter and a half-empty mug sit between them and the door",
+          "distance_movement": "three steps from the counter to the door, never taken",
+          "temperature": "the tile floor is cold enough to feel through socks",
+          "acoustics": "the fridge hum swallows most of the room's quiet",
+          "geography": "a small apartment kitchen after midnight",
+          "privacy_pressure": "the roommate's door is shut but the walls stay thin"
+        },
+        "next_bounded_experiment": "re-run with Furniture specificity halved to see if GRIP Grounded drops and the gate flips",
+        "compiled_at": "2026-01-01T00:00:00Z"
+      },
+      "expected": {
+        "decision": "FLOP",
+        "refusal_codes": [
+          "ADULT_CONSENT_MISSING_OR_AMBIGUOUS"
+        ]
+      }
+    },
+    {
+      "id": "case-003-storage-permission-missing",
+      "kind": "negative",
+      "description": "consent_to_intimacy is true but consent_to_store is false -- intimacy consent must never imply storage permission.",
+      "request": {
+        "batch_id": "batch.case-003-storage-permission-missing",
+        "provenance": {
+          "f_tier": "F2",
+          "adult_confirmed": true,
+          "consent_to_intimacy": true,
+          "consent_to_store": false,
+          "consent_to_publish": false,
+          "anonymized": true,
+          "identity_risk": "low",
+          "source_provenance": "wholly synthetic composite fixture; no real persons, no identifying or ambiguous-age details"
+        },
+        "assets": [
+          {
+            "asset_id": "shard.synthetic-001",
+            "asset_type": "reality_shard",
+            "parent_ids": [],
+            "text": "A synthetic narrator stands at the kitchen counter at 2am, phone face-down, describing what almost got said."
+          },
+          {
+            "asset_id": "wrp.synthetic-001",
+            "asset_type": "want_resistance_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "want": "wants to say it plainly",
+            "resistance": "keeps circling the block instead"
+          },
+          {
+            "asset_id": "pv.synthetic-001",
+            "asset_type": "power_vector",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "holder": "the narrator",
+            "target": "the unsent text",
+            "direction": "the narrator holds and withholds power over what gets sent"
+          },
+          {
+            "asset_id": "cb.synthetic-001",
+            "asset_type": "consent_beat",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "beat": "the hook names the exact in-story moment permission was asked and given"
+          },
+          {
+            "asset_id": "st.synthetic-001",
+            "asset_type": "sensory_triad",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "sight": "the phone screen throws blue light across the counter",
+            "sound": "the refrigerator hums under the silence",
+            "touch": "the counter edge is cold under both palms"
+          },
+          {
+            "asset_id": "cp.synthetic-001",
+            "asset_type": "contradiction_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "a": "wants to be found",
+            "b": "keeps the door locked"
+          },
+          {
+            "asset_id": "pa.synthetic-001",
+            "asset_type": "phrase_atom",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "text": "unsent text, sent anyway, in the chorus"
+          },
+          {
+            "asset_id": "ht.synthetic-001",
+            "asset_type": "hook_thesis",
+            "parent_ids": [
+              "pa.synthetic-001"
+            ],
+            "text": "the whole song is the sentence that almost got typed"
+          },
+          {
+            "asset_id": "sc.synthetic-001",
+            "asset_type": "sonic_cell",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "tempo_feel": "unhurried, 2am pulse",
+            "texture": "warm low synth pad under dry vocal",
+            "space": "close mono verse opening into wide chorus reverb"
+          }
+        ],
+        "furniture": {
+          "bodies_position": "standing at the counter, shoulder against the cabinet, facing the dark window",
+          "objects_obstruction": "the counter and a half-empty mug sit between them and the door",
+          "distance_movement": "three steps from the counter to the door, never taken",
+          "temperature": "the tile floor is cold enough to feel through socks",
+          "acoustics": "the fridge hum swallows most of the room's quiet",
+          "geography": "a small apartment kitchen after midnight",
+          "privacy_pressure": "the roommate's door is shut but the walls stay thin"
+        },
+        "next_bounded_experiment": "re-run with Furniture specificity halved to see if GRIP Grounded drops and the gate flips",
+        "compiled_at": "2026-01-01T00:00:00Z"
+      },
+      "expected": {
+        "decision": "FLOP",
+        "refusal_codes": [
+          "STORAGE_OR_CONTENT_PERMISSION_MISSING"
+        ]
+      }
+    },
+    {
+      "id": "case-004-identity-risk",
+      "kind": "negative",
+      "description": "identity_risk is medium (not none/low) -- must refuse even though anonymized is true.",
+      "request": {
+        "batch_id": "batch.case-004-identity-risk",
+        "provenance": {
+          "f_tier": "F2",
+          "adult_confirmed": true,
+          "consent_to_intimacy": true,
+          "consent_to_store": true,
+          "consent_to_publish": false,
+          "anonymized": true,
+          "identity_risk": "medium",
+          "source_provenance": "wholly synthetic composite fixture; no real persons, no identifying or ambiguous-age details"
+        },
+        "assets": [
+          {
+            "asset_id": "shard.synthetic-001",
+            "asset_type": "reality_shard",
+            "parent_ids": [],
+            "text": "A synthetic narrator stands at the kitchen counter at 2am, phone face-down, describing what almost got said."
+          },
+          {
+            "asset_id": "wrp.synthetic-001",
+            "asset_type": "want_resistance_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "want": "wants to say it plainly",
+            "resistance": "keeps circling the block instead"
+          },
+          {
+            "asset_id": "pv.synthetic-001",
+            "asset_type": "power_vector",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "holder": "the narrator",
+            "target": "the unsent text",
+            "direction": "the narrator holds and withholds power over what gets sent"
+          },
+          {
+            "asset_id": "cb.synthetic-001",
+            "asset_type": "consent_beat",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "beat": "the hook names the exact in-story moment permission was asked and given"
+          },
+          {
+            "asset_id": "st.synthetic-001",
+            "asset_type": "sensory_triad",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "sight": "the phone screen throws blue light across the counter",
+            "sound": "the refrigerator hums under the silence",
+            "touch": "the counter edge is cold under both palms"
+          },
+          {
+            "asset_id": "cp.synthetic-001",
+            "asset_type": "contradiction_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "a": "wants to be found",
+            "b": "keeps the door locked"
+          },
+          {
+            "asset_id": "pa.synthetic-001",
+            "asset_type": "phrase_atom",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "text": "unsent text, sent anyway, in the chorus"
+          },
+          {
+            "asset_id": "ht.synthetic-001",
+            "asset_type": "hook_thesis",
+            "parent_ids": [
+              "pa.synthetic-001"
+            ],
+            "text": "the whole song is the sentence that almost got typed"
+          },
+          {
+            "asset_id": "sc.synthetic-001",
+            "asset_type": "sonic_cell",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "tempo_feel": "unhurried, 2am pulse",
+            "texture": "warm low synth pad under dry vocal",
+            "space": "close mono verse opening into wide chorus reverb"
+          }
+        ],
+        "furniture": {
+          "bodies_position": "standing at the counter, shoulder against the cabinet, facing the dark window",
+          "objects_obstruction": "the counter and a half-empty mug sit between them and the door",
+          "distance_movement": "three steps from the counter to the door, never taken",
+          "temperature": "the tile floor is cold enough to feel through socks",
+          "acoustics": "the fridge hum swallows most of the room's quiet",
+          "geography": "a small apartment kitchen after midnight",
+          "privacy_pressure": "the roommate's door is shut but the walls stay thin"
+        },
+        "next_bounded_experiment": "re-run with Furniture specificity halved to see if GRIP Grounded drops and the gate flips",
+        "compiled_at": "2026-01-01T00:00:00Z"
+      },
+      "expected": {
+        "decision": "FLOP",
+        "refusal_codes": [
+          "IDENTITY_RISK_UNACCEPTABLE"
+        ]
+      }
+    },
+    {
+      "id": "case-005-furniture-decorative",
+      "kind": "negative",
+      "description": "Furniture is present but decorative (n/a/none/tbd) on every dimension -- fails the block-and-mix test.",
+      "request": {
+        "batch_id": "batch.case-005-furniture-decorative",
+        "provenance": {
+          "f_tier": "F2",
+          "adult_confirmed": true,
+          "consent_to_intimacy": true,
+          "consent_to_store": true,
+          "consent_to_publish": false,
+          "anonymized": true,
+          "identity_risk": "low",
+          "source_provenance": "wholly synthetic composite fixture; no real persons, no identifying or ambiguous-age details"
+        },
+        "assets": [
+          {
+            "asset_id": "shard.synthetic-001",
+            "asset_type": "reality_shard",
+            "parent_ids": [],
+            "text": "A synthetic narrator stands at the kitchen counter at 2am, phone face-down, describing what almost got said."
+          },
+          {
+            "asset_id": "wrp.synthetic-001",
+            "asset_type": "want_resistance_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "want": "wants to say it plainly",
+            "resistance": "keeps circling the block instead"
+          },
+          {
+            "asset_id": "pv.synthetic-001",
+            "asset_type": "power_vector",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "holder": "the narrator",
+            "target": "the unsent text",
+            "direction": "the narrator holds and withholds power over what gets sent"
+          },
+          {
+            "asset_id": "cb.synthetic-001",
+            "asset_type": "consent_beat",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "beat": "the hook names the exact in-story moment permission was asked and given"
+          },
+          {
+            "asset_id": "st.synthetic-001",
+            "asset_type": "sensory_triad",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "sight": "the phone screen throws blue light across the counter",
+            "sound": "the refrigerator hums under the silence",
+            "touch": "the counter edge is cold under both palms"
+          },
+          {
+            "asset_id": "cp.synthetic-001",
+            "asset_type": "contradiction_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "a": "wants to be found",
+            "b": "keeps the door locked"
+          },
+          {
+            "asset_id": "pa.synthetic-001",
+            "asset_type": "phrase_atom",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "text": "unsent text, sent anyway, in the chorus"
+          },
+          {
+            "asset_id": "ht.synthetic-001",
+            "asset_type": "hook_thesis",
+            "parent_ids": [
+              "pa.synthetic-001"
+            ],
+            "text": "the whole song is the sentence that almost got typed"
+          },
+          {
+            "asset_id": "sc.synthetic-001",
+            "asset_type": "sonic_cell",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "tempo_feel": "unhurried, 2am pulse",
+            "texture": "warm low synth pad under dry vocal",
+            "space": "close mono verse opening into wide chorus reverb"
+          }
+        ],
+        "furniture": {
+          "bodies_position": "n/a",
+          "objects_obstruction": "none",
+          "distance_movement": "unspecified",
+          "temperature": "n/a",
+          "acoustics": "tbd",
+          "geography": "a room",
+          "privacy_pressure": "none"
+        },
+        "next_bounded_experiment": "re-run with Furniture specificity halved to see if GRIP Grounded drops and the gate flips",
+        "compiled_at": "2026-01-01T00:00:00Z"
+      },
+      "expected": {
+        "decision": "FLOP",
+        "refusal_codes": [
+          "FURNITURE_NOT_LOAD_BEARING"
+        ]
+      }
+    },
+    {
+      "id": "case-006-grip-below-threshold",
+      "kind": "negative",
+      "description": "Furniture and consent both pass, but want==resistance and phrase_atom is cliche, dropping GRIP to 6/8.",
+      "request": {
+        "batch_id": "batch.case-006-grip-below-threshold",
+        "provenance": {
+          "f_tier": "F2",
+          "adult_confirmed": true,
+          "consent_to_intimacy": true,
+          "consent_to_store": true,
+          "consent_to_publish": false,
+          "anonymized": true,
+          "identity_risk": "low",
+          "source_provenance": "wholly synthetic composite fixture; no real persons, no identifying or ambiguous-age details"
+        },
+        "assets": [
+          {
+            "asset_id": "shard.synthetic-001",
+            "asset_type": "reality_shard",
+            "parent_ids": [],
+            "text": "A synthetic narrator stands at the kitchen counter at 2am, phone face-down, describing what almost got said."
+          },
+          {
+            "asset_id": "wrp.synthetic-001",
+            "asset_type": "want_resistance_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "want": "wants to leave",
+            "resistance": "wants to leave"
+          },
+          {
+            "asset_id": "pv.synthetic-001",
+            "asset_type": "power_vector",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "holder": "the narrator",
+            "target": "the unsent text",
+            "direction": "the narrator holds and withholds power over what gets sent"
+          },
+          {
+            "asset_id": "cb.synthetic-001",
+            "asset_type": "consent_beat",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "beat": "the hook names the exact in-story moment permission was asked and given"
+          },
+          {
+            "asset_id": "st.synthetic-001",
+            "asset_type": "sensory_triad",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "sight": "the phone screen throws blue light across the counter",
+            "sound": "the refrigerator hums under the silence",
+            "touch": "the counter edge is cold under both palms"
+          },
+          {
+            "asset_id": "cp.synthetic-001",
+            "asset_type": "contradiction_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "a": "wants to be found",
+            "b": "keeps the door locked"
+          },
+          {
+            "asset_id": "pa.synthetic-001",
+            "asset_type": "phrase_atom",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "text": "broken heart, tears fall again"
+          },
+          {
+            "asset_id": "ht.synthetic-001",
+            "asset_type": "hook_thesis",
+            "parent_ids": [
+              "pa.synthetic-001"
+            ],
+            "text": "the whole song is the sentence that almost got typed"
+          },
+          {
+            "asset_id": "sc.synthetic-001",
+            "asset_type": "sonic_cell",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "tempo_feel": "unhurried, 2am pulse",
+            "texture": "warm low synth pad under dry vocal",
+            "space": "close mono verse opening into wide chorus reverb"
+          }
+        ],
+        "furniture": {
+          "bodies_position": "standing at the counter, shoulder against the cabinet, facing the dark window",
+          "objects_obstruction": "the counter and a half-empty mug sit between them and the door",
+          "distance_movement": "three steps from the counter to the door, never taken",
+          "temperature": "the tile floor is cold enough to feel through socks",
+          "acoustics": "the fridge hum swallows most of the room's quiet",
+          "geography": "a small apartment kitchen after midnight",
+          "privacy_pressure": "the roommate's door is shut but the walls stay thin"
+        },
+        "next_bounded_experiment": "re-run with Furniture specificity halved to see if GRIP Grounded drops and the gate flips",
+        "compiled_at": "2026-01-01T00:00:00Z"
+      },
+      "expected": {
+        "decision": "FLOP",
+        "refusal_codes": [
+          "GRIP_BELOW_THRESHOLD"
+        ]
+      }
+    },
+    {
+      "id": "case-007-invalid-lineage",
+      "kind": "negative",
+      "description": "sensory_triad references a parent_id that does not exist in the batch.",
+      "request": {
+        "batch_id": "batch.case-007-invalid-lineage",
+        "provenance": {
+          "f_tier": "F2",
+          "adult_confirmed": true,
+          "consent_to_intimacy": true,
+          "consent_to_store": true,
+          "consent_to_publish": false,
+          "anonymized": true,
+          "identity_risk": "low",
+          "source_provenance": "wholly synthetic composite fixture; no real persons, no identifying or ambiguous-age details"
+        },
+        "assets": [
+          {
+            "asset_id": "shard.synthetic-001",
+            "asset_type": "reality_shard",
+            "parent_ids": [],
+            "text": "A synthetic narrator stands at the kitchen counter at 2am, phone face-down, describing what almost got said."
+          },
+          {
+            "asset_id": "wrp.synthetic-001",
+            "asset_type": "want_resistance_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "want": "wants to say it plainly",
+            "resistance": "keeps circling the block instead"
+          },
+          {
+            "asset_id": "pv.synthetic-001",
+            "asset_type": "power_vector",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "holder": "the narrator",
+            "target": "the unsent text",
+            "direction": "the narrator holds and withholds power over what gets sent"
+          },
+          {
+            "asset_id": "cb.synthetic-001",
+            "asset_type": "consent_beat",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "beat": "the hook names the exact in-story moment permission was asked and given"
+          },
+          {
+            "asset_id": "st.synthetic-001",
+            "asset_type": "sensory_triad",
+            "parent_ids": [
+              "shard.does-not-exist"
+            ],
+            "sight": "the phone screen throws blue light across the counter",
+            "sound": "the refrigerator hums under the silence",
+            "touch": "the counter edge is cold under both palms"
+          },
+          {
+            "asset_id": "cp.synthetic-001",
+            "asset_type": "contradiction_pair",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "a": "wants to be found",
+            "b": "keeps the door locked"
+          },
+          {
+            "asset_id": "pa.synthetic-001",
+            "asset_type": "phrase_atom",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "text": "unsent text, sent anyway, in the chorus"
+          },
+          {
+            "asset_id": "ht.synthetic-001",
+            "asset_type": "hook_thesis",
+            "parent_ids": [
+              "pa.synthetic-001"
+            ],
+            "text": "the whole song is the sentence that almost got typed"
+          },
+          {
+            "asset_id": "sc.synthetic-001",
+            "asset_type": "sonic_cell",
+            "parent_ids": [
+              "shard.synthetic-001"
+            ],
+            "tempo_feel": "unhurried, 2am pulse",
+            "texture": "warm low synth pad under dry vocal",
+            "space": "close mono verse opening into wide chorus reverb"
+          }
+        ],
+        "furniture": {
+          "bodies_position": "standing at the counter, shoulder against the cabinet, facing the dark window",
+          "objects_obstruction": "the counter and a half-empty mug sit between them and the door",
+          "distance_movement": "three steps from the counter to the door, never taken",
+          "temperature": "the tile floor is cold enough to feel through socks",
+          "acoustics": "the fridge hum swallows most of the room's quiet",
+          "geography": "a small apartment kitchen after midnight",
+          "privacy_pressure": "the roommate's door is shut but the walls stay thin"
+        },
+        "next_bounded_experiment": "re-run with Furniture specificity halved to see if GRIP Grounded drops and the gate flips",
+        "compiled_at": "2026-01-01T00:00:00Z"
+      },
+      "expected": {
+        "decision": "FLOP",
+        "refusal_codes": [
+          "LINEAGE_INVALID"
+        ]
+      }
+    }
+  ]
+}

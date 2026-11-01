@@ -1,0 +1,84 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os.pr117-rights-principal.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "141e700825e3ad1f356841260cb6d9c9d1453a6e",
+    "commit": "c96252b911d7672feb74bc7cca92b885a2465f92",
+    "changed_paths": [
+      "docs/changelog/PR-117.md",
+      "schemas/agent-manifest.schema.json",
+      "tests/test_agent_manifest.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.quirk-os.pr117-rights-principal.2026-10-07",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Rejects line breaks in inherited rights-review principal identifiers for required and optional rights reviews, with a valid-identity positive control. 360 tests ran: 359 passed, one Windows-only test skipped on Linux, including 49 passing agent tests. Agent, Golden structural and Sync pass; 16 admission holds remain. Shared runtime schema and runtime approval verification are unchanged. No admission, activation or runtime authority is granted.",
+      "evidence_paths": [
+        "docs/changelog/PR-117.md",
+        "schemas/agent-manifest.schema.json",
+        "tests/test_agent_manifest.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/changelog/PR-117.md",
+      "state": "present",
+      "git_blob": "d621ee83fbdbf39a4ec45a95b58c5cb3e6600ad4",
+      "sha256": "sha256:562ad22cd174f44e5cdba96b148e198f0190e4d5c68826d0eb0efee59e5eb640"
+    },
+    {
+      "path": "schemas/agent-manifest.schema.json",
+      "state": "present",
+      "git_blob": "5331a9a4c0bf7637fad3eb513149684f8b8a79a4",
+      "sha256": "sha256:44551a62de284ba91591226ffbb8bd0ebe8da52a58007ed7ba96aa99efb074ed"
+    },
+    {
+      "path": "tests/test_agent_manifest.py",
+      "state": "present",
+      "git_blob": "13752b98ef54bc8928e6ad56d05c5352202397b3",
+      "sha256": "sha256:e8b021b64d795a32955e3bf8dcb4c8ea3eb779aacaf5cab0b4151a08eaef09e2"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py' -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agents.py --repo . --output /tmp/117-r4-agent.json --metrics-output /tmp/117-r4-metrics.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --repo . --output /tmp/117-r4-sync.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T16:31:57.041437Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:6eda6a4d0b61d95f943dbb857a1911d68691279edd48aedbdac243c55083e4fb"
+}

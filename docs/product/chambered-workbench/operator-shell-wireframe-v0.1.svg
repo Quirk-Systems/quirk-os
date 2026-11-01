@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">Chambered Workbench Operator Shell Wireframe v0.1</title>
+  <desc id="desc">Low fidelity wireframe showing one object moving through Aperture, Foundry, Constellation, and Gallery with persistent evidence, authority, and transition ledger regions.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f7f7f5}.panel{fill:#fff;stroke:#1d1d1f;stroke-width:2}.soft{fill:#f0f0ed;stroke:#1d1d1f;stroke-width:1.5}.text{font-family:Arial, Helvetica, sans-serif;fill:#161616}.tiny{font-size:16px}.small{font-size:20px}.med{font-size:26px;font-weight:700}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.muted{fill:#666}.blocked{fill:#fff2f2;stroke:#a33;stroke-width:2}.ok{fill:#f3fff3;stroke:#26823a;stroke-width:2}.candidate{fill:#f7f1ff;stroke:#6a3fa0;stroke-width:2}.receipt{fill:#fff9e8;stroke:#9a6a00;stroke-width:2}.line{stroke:#222;stroke-width:2;fill:none}.dash{stroke:#555;stroke-width:2;stroke-dasharray:8 8;fill:none}.arrow{marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222"/></marker>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1400" height="900"/>
+
+  <rect class="panel" x="40" y="30" width="1320" height="90" rx="10"/>
+  <text class="text med" x="70" y="70">Chambered Workbench / object.demo.intake-to-lineage.v0.1</text>
+  <text class="text small mono muted" x="70" y="102">State: candidate · Authority: inspect + propose · Canon: no · Runtime: none · Publication: blocked</text>
+
+  <rect class="panel" x="40" y="140" width="210" height="610" rx="10"/>
+  <text class="text med" x="70" y="180">Chambers</text>
+  <rect class="candidate" x="65" y="210" width="160" height="58" rx="8"/><text class="text small" x="88" y="246">Aperture</text>
+  <rect class="soft" x="65" y="285" width="160" height="58" rx="8"/><text class="text small" x="96" y="321">Foundry</text>
+  <rect class="soft" x="65" y="360" width="160" height="58" rx="8"/><text class="text small" x="82" y="396">Constellation</text>
+  <rect class="soft" x="65" y="435" width="160" height="58" rx="8"/><text class="text small" x="102" y="471">Gallery</text>
+  <path class="dash" d="M145 510 V595"/>
+  <rect class="soft" x="65" y="610" width="160" height="58" rx="8"/><text class="text small" x="89" y="646">+ future n</text>
+  <text class="text tiny muted" x="64" y="710">Future chambers require</text>
+  <text class="text tiny muted" x="64" y="733">nomination + review.</text>
+
+  <rect class="panel" x="270" y="140" width="760" height="610" rx="10"/>
+  <text class="text med" x="300" y="180">Active object journey</text>
+  <text class="text small mono muted" x="300" y="212">source → signal → candidate → decision candidate → receipt → lineage</text>
+
+  <rect class="soft" x="300" y="255" width="150" height="110" rx="10"/>
+  <text class="text small" x="324" y="295">Source</text>
+  <text class="text tiny mono muted" x="318" y="325">admitted</text>
+  <text class="text tiny mono muted" x="318" y="348">not inferred</text>
+
+  <path class="line arrow" d="M455 310 H525"/>
+  <rect class="soft" x="530" y="255" width="150" height="110" rx="10"/>
+  <text class="text small" x="555" y="295">Signal</text>
+  <text class="text tiny mono muted" x="548" y="325">extracted</text>
+  <text class="text tiny mono muted" x="548" y="348">debt visible</text>
+
+  <path class="line arrow" d="M685 310 H755"/>
+  <rect class="candidate" x="760" y="255" width="200" height="110" rx="10"/>
+  <text class="text small" x="795" y="295">Candidate</text>
+  <text class="text tiny mono muted" x="786" y="325">operator shell v0.1</text>
+  <text class="text tiny mono muted" x="786" y="348">canon: no</text>
+
+  <rect class="candidate" x="390" y="455" width="210" height="120" rx="10"/>
+  <text class="text small" x="415" y="497">Decision candidate</text>
+  <text class="text tiny mono muted" x="415" y="527">review required</text>
+  <text class="text tiny mono muted" x="415" y="550">authority ceiling: propose</text>
+
+  <path class="line arrow" d="M860 370 C860 440 670 510 610 515"/>
+  <path class="line arrow" d="M605 515 H695"/>
+  <rect class="receipt" x="705" y="455" width="210" height="120" rx="10"/>
+  <text class="text small" x="746" y="497">Receipt</text>
+  <text class="text tiny mono muted" x="730" y="527">prior → proposed</text>
+  <text class="text tiny mono muted" x="730" y="550">exact scope recorded</text>
+
+  <path class="line arrow" d="M810 580 C760 645 510 645 455 585"/>
+  <text class="text small mono muted" x="430" y="655">Gallery preserves lineage without promoting the object.</text>
+
+  <rect class="panel" x="1050" y="140" width="310" height="610" rx="10"/>
+  <text class="text med" x="1080" y="180">Evidence + Authority</text>
+  <rect class="ok" x="1080" y="220" width="250" height="70" rx="8"/><text class="text tiny mono" x="1100" y="250">source: uploaded</text><text class="text tiny mono" x="1100" y="275">status: admitted</text>
+  <rect class="soft" x="1080" y="305" width="250" height="70" rx="8"/><text class="text tiny mono" x="1100" y="335">claim: shell required</text><text class="text tiny mono" x="1100" y="360">confidence: useful</text>
+  <rect class="blocked" x="1080" y="390" width="250" height="92" rx="8"/><text class="text tiny mono" x="1100" y="420">canon: blocked</text><text class="text tiny mono" x="1100" y="445">provider: blocked</text><text class="text tiny mono" x="1100" y="470">publication: blocked</text>
+  <rect class="receipt" x="1080" y="500" width="250" height="92" rx="8"/><text class="text tiny mono" x="1100" y="530">receipt schema visible</text><text class="text tiny mono" x="1100" y="555">mutation: no silent edit</text><text class="text tiny mono" x="1100" y="580">graph update: human only</text>
+  <rect class="soft" x="1080" y="615" width="250" height="86" rx="8"/><text class="text tiny mono" x="1100" y="645">why blocked?</text><text class="text tiny mono" x="1100" y="670">missing exact review</text><text class="text tiny mono" x="1100" y="693">no runtime grant</text>
+
+  <rect class="panel" x="40" y="770" width="1320" height="100" rx="10"/>
+  <text class="text med" x="70" y="810">Transition ledger</text>
+  <text class="text small mono" x="70" y="845">raw source → admitted source + signal → candidate artifact → decision candidate → receipt → preserved lineage</text>
+</svg>

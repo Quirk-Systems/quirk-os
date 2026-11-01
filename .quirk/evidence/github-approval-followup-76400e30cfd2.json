@@ -1,0 +1,97 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.github-approval-followup.76400e30cfd2",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "7fe895d79d00defbf897f75a0a347eccacc78146",
+    "commit": "76400e30cfd257e162947e32d695870103de0007",
+    "changed_paths": [
+      "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+      "evals/sync-control-plane/conformance-results.json",
+      "supabase/migrations/20261006043743_github_approval_registry.sql",
+      "supabase/tests/github_approval_registry.sql"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.github-approval-followup.76400e30cfd2",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Exact follow-up implementation verification: all 250 repository tests pass locally; all 45 QIS/Intent Shaper tests pass. Regenerated sync conformance output matches its committed bytes and updated named document digest. SQL registry ceilings now discriminate skills (including execute_bounded) from manifest ceilings, with SQL positive and rejection cases written. Prior head 7fe895d passed hosted database-guard; hosted validation for this follow-up remains pending. Golden candidate merge gates retain all 16 admission holds. No live database mutation, real approval, grant, admission or established runtime authority.",
+      "evidence_paths": [
+        "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+        "evals/sync-control-plane/conformance-results.json",
+        "supabase/migrations/20261006043743_github_approval_registry.sql",
+        "supabase/tests/github_approval_registry.sql"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+      "state": "present",
+      "git_blob": "eaebebd12cfbb39e8945d2b6d004615bc2abac3e",
+      "sha256": "sha256:8615bde591cdc61c3f23425c2651af10aa210e816d7771e1191eb7eb888a6729"
+    },
+    {
+      "path": "evals/sync-control-plane/conformance-results.json",
+      "state": "present",
+      "git_blob": "912835c7458abc8e3ef5f84a5fe1398e63fb122b",
+      "sha256": "sha256:d6f4c16e511b638b06e2325365911d48d58a27fb241e042654849f85dd79d398"
+    },
+    {
+      "path": "supabase/migrations/20261006043743_github_approval_registry.sql",
+      "state": "present",
+      "git_blob": "306b65318784cc914ec6aeddf9c35cfdcdf20428",
+      "sha256": "sha256:a2b9b19502c33a98f10204bcdf5cd17ec1424bc6fba7ec1b3b751c31e80d1438"
+    },
+    {
+      "path": "supabase/tests/github_approval_registry.sql",
+      "state": "present",
+      "git_blob": "bb2f3d825019a4a20e29c37b11efef950ee6c56e",
+      "sha256": "sha256:2ca844779c10b3e7b07df019801bb664b56eb4b49b84f7689ee6f623dec6ad19"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --exit-code -- evals/sync-control-plane/conformance-results.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest tests.test_qis_harness tests.test_intent_shaper -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-06T04:52:35Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:cc66e44944aa4584c899418c36311e3fa193bdcb7ecfea4e122c766ba20f96b3"
+}

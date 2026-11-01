@@ -39,9 +39,19 @@ def is_active_entitlement(entitlement: dict[str, Any], as_of: datetime) -> bool:
         return False
     return entitlement.get('authority_effect') == 'none'
 
-def wildcard_match(values: Iterable[str], candidate: str) -> bool:
+def wildcard_match(values: Iterable[str] | None, candidate: str) -> bool:
+    """True when `candidate` is permitted by `values`, used as an allow-list.
+
+    `None` means the dimension is unconstrained, which is how an absent
+    optional key reads. An explicitly empty collection means the opposite: the
+    card or preset declares no compatible value, so nothing matches. Treating
+    empty as a wildcard made an under-specified card universally eligible,
+    which is a check that cannot fail. `'*'` remains the explicit wildcard.
+    """
+    if values is None:
+        return True
     materialized = set(values)
-    return not materialized or '*' in materialized or candidate in materialized
+    return '*' in materialized or candidate in materialized
 
 def authority_not_above(card_ceiling: str, external_ceiling: str) -> bool:
     return AUTHORITY_ORDER[card_ceiling] <= AUTHORITY_ORDER[external_ceiling]

@@ -1,0 +1,61 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os.pr108-ci-history.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "897d697e9f4a97f2a9123d24806ca5d3f929ef51",
+    "commit": "295379b0033c1f7b0a21966a054e8ebfa9f00d5d",
+    "changed_paths": [
+      ".github/workflows/agent-reliability.yml",
+      "docs/changelog/PR-108.md"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.quirk-os.pr108-ci-history.2026-10-07",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Reliability workflow now fetches full Git history and checks the exact PR head with credentials disabled. YAML checkout configuration assertions and diff whitespace validation pass locally. This addresses observed shallow-history hosted failures at 897d697. Hosted rerun pending; no hosted pass or authority is claimed.",
+      "evidence_paths": [
+        ".github/workflows/agent-reliability.yml",
+        "docs/changelog/PR-108.md"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/agent-reliability.yml",
+      "state": "present",
+      "git_blob": "43ec67af80e23dd95074f570e84a8f64b364ea2c",
+      "sha256": "sha256:32283da5f47842137347f999aa466fd97ac78e652ff4380ebdbec1afd378b32c"
+    },
+    {
+      "path": "docs/changelog/PR-108.md",
+      "state": "present",
+      "git_blob": "b6e01b8a9e775aaa4849fbdf73a940a4f5aa7878",
+      "sha256": "sha256:ee6abd560015da12fa2bd84b0b2ac783cc19b0fc4114a220114c92e276c33ec2"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python: parse agent-reliability workflow YAML and assert full history, exact PR head ref, and persist-credentials false",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check HEAD^ HEAD",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T18:50:53.257537Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:7b93443986525b86434dded621518f14b16d2bc8d07425fdd010c4cbb39f5f8f"
+}

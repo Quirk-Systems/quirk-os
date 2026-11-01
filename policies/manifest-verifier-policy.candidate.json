@@ -1,0 +1,19 @@
+{
+  "schema_version": "manifest-verifier-policy.v1",
+  "status": "candidate",
+  "enabled": false,
+  "protection_verified": false,
+  "repository": "Quirk-Systems/quirk-os",
+  "base_branch": "main",
+  "human_principals": {
+    "207279": "human.bryan"
+  },
+  "human_logins": {
+    "207279": "bryansayler"
+  },
+  "codeowners_sha256": "be4079c5cd614b633b7529082b2fad58cb017db388cf266145dfc58d73f2f1c0",
+  "environments": [
+    "production"
+  ],
+  "revoked_review_ids": []
+}

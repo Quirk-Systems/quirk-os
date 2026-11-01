@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.quirk.systems/distill-ledger.schema.json",
+  "title": "Quirk Distill Ledger",
+  "description": "Append-only, hash-chained record of every distill trigger decision and every promotion or rejection of a distilled candidate. The ledger is evidence and projection; it admits nothing and activates nothing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "kind",
+    "status",
+    "trigger_actor",
+    "authority",
+    "entries",
+    "ledger_sha256"
+  ],
+  "properties": {
+    "api_version": {
+      "const": "quirk.dev/distill-ledger/v1alpha1"
+    },
+    "kind": {
+      "const": "DistillLedger"
+    },
+    "status": {
+      "const": "candidate"
+    },
+    "trigger_actor": {
+      "const": "agent.distill-loop"
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_authority",
+        "runtime_authority",
+        "canon_promotion",
+        "admission_effect",
+        "projection_only"
+      ],
+      "properties": {
+        "semantic_authority": {
+          "const": false
+        },
+        "runtime_authority": {
+          "const": false
+        },
+        "canon_promotion": {
+          "const": false
+        },
+        "admission_effect": {
+          "const": "none"
+        },
+        "projection_only": {
+          "const": true
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    },
+    "ledger_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_id",
+        "kind",
+        "recorded_at",
+        "actor",
+        "candidate_id",
+        "source_receipt_id",
+        "source_skill_id",
+        "source_skill_version",
+        "finding_codes",
+        "refs",
+        "prev_entry_sha256",
+        "entry_sha256"
+      ],
+      "properties": {
+        "entry_id": {
+          "type": "string",
+          "pattern": "^dl\\.[0-9]{6}$"
+        },
+        "kind": {
+          "enum": [
+            "distilled",
+            "abstained",
+            "promoted",
+            "rejected"
+          ]
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 2
+        },
+        "candidate_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^quirk-distilled-[a-z0-9-]+$"
+        },
+        "source_receipt_id": {
+          "type": "string",
+          "pattern": "^receipt\\.[a-z0-9._-]+$"
+        },
+        "source_skill_id": {
+          "type": "string",
+          "pattern": "^quirk-[a-z0-9-]+$"
+        },
+        "source_skill_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "finding_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$"
+          }
+        },
+        "refs": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "trace_id": {
+              "type": "string",
+              "pattern": "^trace\\.[a-z0-9._-]+$"
+            },
+            "manifest_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "source_blob_sha": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "eval_suite_ref": {
+              "type": "string",
+              "pattern": "^evals/skills/distilled/.+\\.json$"
+            },
+            "eval_suite_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "source_manifest_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "promotion_receipt_ref": {
+              "type": "string",
+              "pattern": "^receipt\\.distill-promotion\\.[a-z0-9._-]+$"
+            },
+            "excluded_moves": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_]+$"
+              }
+            }
+          }
+        },
+        "prev_entry_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "entry_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "distilled"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "candidate_id": {
+                "type": "string"
+              },
+              "refs": {
+                "required": [
+                  "manifest_sha256",
+                  "source_blob_sha",
+                  "source_manifest_sha256",
+                  "eval_suite_ref"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

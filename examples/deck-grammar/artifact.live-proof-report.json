@@ -10,7 +10,7 @@
   "rights": {"status": "clear", "owner_ref": "human.bryan", "license_ref": null, "provenance_complete": true},
   "status": "accepted",
   "content_ref": "examples/deck-grammar/live-proof.json",
-  "content_hash": "828dc88ddc4817fb58636aaea85368e10a04c521796935039a50aeb7fbb12551",
+  "content_hash": "9f633beaf672efa9044895f0e13467dea04e4dd6724c8709b3285510b33e1c38",
   "evaluation": {"suite_ref": "eval.deck-grammar.v0.1", "verdict": "pass"},
   "metadata": {}
 }

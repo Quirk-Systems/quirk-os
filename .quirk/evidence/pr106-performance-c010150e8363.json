@@ -1,0 +1,279 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr106.performance.c010150e8363",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "2347cb050bd4fda1c0cb70b10fb907be20e20974",
+    "commit": "c010150e83630f893959678034230959fefa32dc",
+    "changed_paths": [
+      ".github/workflows/applause-gate-conformance.yml",
+      ".github/workflows/applause-gate-fixtures.yml",
+      ".github/workflows/deck-grammar-conformance.yml",
+      ".github/workflows/distill-loop-conformance.yml",
+      ".github/workflows/golden-gates.yml",
+      ".github/workflows/sync-control-plane-conformance.yml",
+      ".github/workflows/validate-skills.yml",
+      "agents/quirk-sync-steward/agent.yaml",
+      "diagrams/admission-gauntlet.mmd",
+      "docs/deck-grammar/README.md",
+      "docs/golden-project-pack/README.md",
+      "docs/product/chambered-workbench/N-CHAMBER-GRAMMAR.md",
+      "docs/product/chambered-workbench/OPERATOR-SHELL-WIREFRAME-v0.1.md",
+      "docs/sync-control-plane/README.md",
+      "scripts/deck_grammar/access.py",
+      "scripts/deck_grammar/perf_benchmarks.py",
+      "scripts/validate_applause_gate.py",
+      "scripts/validate_applause_gate_fixtures.py",
+      "scripts/validate_deck_grammar.py",
+      "scripts/validate_distill_loop.py",
+      "scripts/validate_golden_pack.py",
+      "scripts/validate_skills.py",
+      "scripts/validate_sync_control_plane.py",
+      "skills/README.md",
+      "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
+      "supabase/tests/sync_control_plane_outbox_claim_benchmark.sql",
+      "tests/test_deck_grammar.py",
+      "tests/test_validator_metrics.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr106.performance-repairs",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Inclusive interpolated p95 and single-sample fallback pass deterministic regression; resolved metrics output is excluded from repeated relative and absolute path scans. Combined outbox index matches production status/attempt predicate. SQL benchmark uses the supported 100-row limit and is now executed by database-guard. Local PostgreSQL 18.3 via PGlite 0.5.8 passes the fixture and fails the missing-index negative control; fixture leaves zero outbox rows. Hosted PostgreSQL 16, hosted CI success, review approval, and merge are not established. Artifact bindings also cover the pre-existing PR instrumentation and documentation diff; no additional performance gain is claimed.",
+      "evidence_paths": [
+        ".github/workflows/applause-gate-conformance.yml",
+        ".github/workflows/applause-gate-fixtures.yml",
+        ".github/workflows/deck-grammar-conformance.yml",
+        ".github/workflows/distill-loop-conformance.yml",
+        ".github/workflows/golden-gates.yml",
+        ".github/workflows/sync-control-plane-conformance.yml",
+        ".github/workflows/validate-skills.yml",
+        "agents/quirk-sync-steward/agent.yaml",
+        "diagrams/admission-gauntlet.mmd",
+        "docs/deck-grammar/README.md",
+        "docs/golden-project-pack/README.md",
+        "docs/product/chambered-workbench/N-CHAMBER-GRAMMAR.md",
+        "docs/product/chambered-workbench/OPERATOR-SHELL-WIREFRAME-v0.1.md",
+        "docs/sync-control-plane/README.md",
+        "scripts/deck_grammar/access.py",
+        "scripts/deck_grammar/perf_benchmarks.py",
+        "scripts/validate_applause_gate.py",
+        "scripts/validate_applause_gate_fixtures.py",
+        "scripts/validate_deck_grammar.py",
+        "scripts/validate_distill_loop.py",
+        "scripts/validate_golden_pack.py",
+        "scripts/validate_skills.py",
+        "scripts/validate_sync_control_plane.py",
+        "skills/README.md",
+        "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
+        "supabase/tests/sync_control_plane_outbox_claim_benchmark.sql",
+        "tests/test_deck_grammar.py",
+        "tests/test_validator_metrics.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/applause-gate-conformance.yml",
+      "state": "present",
+      "git_blob": "326dc72579f8e0db909d005eb5dd51a1cd98e450",
+      "sha256": "sha256:ae36d7c54ecddd2b9df61b8c0f32feeb5ddbe050d1ff5db7ca7ba5f410764bb0"
+    },
+    {
+      "path": ".github/workflows/applause-gate-fixtures.yml",
+      "state": "present",
+      "git_blob": "759ad9bbe63b263498096bc642155bb61c614d6d",
+      "sha256": "sha256:4cdf1071971bfff033f8143ee1f5d242b8159d103d8270480e188485ebb7ac3d"
+    },
+    {
+      "path": ".github/workflows/deck-grammar-conformance.yml",
+      "state": "present",
+      "git_blob": "688694704225d803387f7bf1b223fa5451ad201f",
+      "sha256": "sha256:990eb96018e605158e91a2450fa5be9bea4256c01b2dfaf91b31bca0cfe19532"
+    },
+    {
+      "path": ".github/workflows/distill-loop-conformance.yml",
+      "state": "present",
+      "git_blob": "999e2246484978c2ff9494fd0f7b4fefc2804de8",
+      "sha256": "sha256:709f75f836944196a0e8b95547bcae35ec6e3c22ee5ff8844d8d57411b319355"
+    },
+    {
+      "path": ".github/workflows/golden-gates.yml",
+      "state": "present",
+      "git_blob": "ff99706f3e3135190df77895ad840fe022796af0",
+      "sha256": "sha256:b21e9f41ef2bb3bcdc3f5dabaa5ce0b49a23e2e5b8a591ad7b01b2117c3af0b2"
+    },
+    {
+      "path": ".github/workflows/sync-control-plane-conformance.yml",
+      "state": "present",
+      "git_blob": "62e0e5f472d979d86d3e8290a2e929ffdd519b7c",
+      "sha256": "sha256:307b8644991c950844ccfa1da0fbe2a68ecaa3ae49a0bd669c0972092cd3c461"
+    },
+    {
+      "path": ".github/workflows/validate-skills.yml",
+      "state": "present",
+      "git_blob": "d8dbfa812d81714acd4c833ca9e085ddf6ece5ef",
+      "sha256": "sha256:b84f270c4a80123b074ef38ff1b8749d7f28b724b08f63408a3622815c9c2907"
+    },
+    {
+      "path": "agents/quirk-sync-steward/agent.yaml",
+      "state": "present",
+      "git_blob": "87d703353b5a24b4d66461ecccc78638e9f0226c",
+      "sha256": "sha256:bf415f59d257057960872e688c1f2d2d63058639375c6819b3fe385056a187bf"
+    },
+    {
+      "path": "diagrams/admission-gauntlet.mmd",
+      "state": "present",
+      "git_blob": "a746209e82fd5dd8208b37fc8db2ce2cb5d1808d",
+      "sha256": "sha256:7d7c93196a0f0b2d440c32ea6adc2738c705ad672fa1e365cdc4ab6beecf2385"
+    },
+    {
+      "path": "docs/deck-grammar/README.md",
+      "state": "present",
+      "git_blob": "57cf1ddcd61f48638e9a1085f04d613c973cc5e1",
+      "sha256": "sha256:7a014b440013b526b1df0a1b6326f75de778a3cb4cba5625009589ded91c2d93"
+    },
+    {
+      "path": "docs/golden-project-pack/README.md",
+      "state": "present",
+      "git_blob": "c76b5266a4e8b03242816a6cec1d9c08a37f47b2",
+      "sha256": "sha256:95c89299740b5f341d2e57148fc8ebe3879f850092cff0ae7f5b1c0e104c2b05"
+    },
+    {
+      "path": "docs/product/chambered-workbench/N-CHAMBER-GRAMMAR.md",
+      "state": "present",
+      "git_blob": "04b4e323d57ec877a97a9c048e6b0d0d8ec76d37",
+      "sha256": "sha256:9d3b0c643ac5925f2ec08bc61313422112466f30012716b9d3aaadccc662593e"
+    },
+    {
+      "path": "docs/product/chambered-workbench/OPERATOR-SHELL-WIREFRAME-v0.1.md",
+      "state": "present",
+      "git_blob": "ad706ee31c7a90f4791e473d5b8ab89b002b3c30",
+      "sha256": "sha256:55453369857cc3dbf013ab006faaf6ebd3fbe0f5ec137b0c8431c28a8cdcd5de"
+    },
+    {
+      "path": "docs/sync-control-plane/README.md",
+      "state": "present",
+      "git_blob": "56684e231e4a434af03b3289471a3b42bb1f22e9",
+      "sha256": "sha256:ad985cce600a9f29cf97d74d3991ad8e0773af1254758ca62963a4e6727b5389"
+    },
+    {
+      "path": "scripts/deck_grammar/access.py",
+      "state": "present",
+      "git_blob": "8dd6d9c13105e25696f8de6f86a48d04dab3f47f",
+      "sha256": "sha256:694fd64181ceba1189f39fbe32a8182ec0ba813647b634aec19832f69804e416"
+    },
+    {
+      "path": "scripts/deck_grammar/perf_benchmarks.py",
+      "state": "present",
+      "git_blob": "1c55a32275068c56f49d8637c0cd1f43c4c7a428",
+      "sha256": "sha256:fcdc5b20d6bd36e38e23a03ba9ae6e7dc18ccd621af34cb4f8c0ffc827c0190b"
+    },
+    {
+      "path": "scripts/validate_applause_gate.py",
+      "state": "present",
+      "git_blob": "bbb211d261f305a1412c26479abb4ba77593f2a1",
+      "sha256": "sha256:78941d850fba399d3150ef6a0263fdfbe5ab6ce8b860f5f94e9430986d4e0d27"
+    },
+    {
+      "path": "scripts/validate_applause_gate_fixtures.py",
+      "state": "present",
+      "git_blob": "4dfbb960d88511920d762de8453994e604def09a",
+      "sha256": "sha256:09f0f9c931f03394f831585329134e37abab98cf23ba9499f185951359540ac3"
+    },
+    {
+      "path": "scripts/validate_deck_grammar.py",
+      "state": "present",
+      "git_blob": "d453880f5503f901f4d7b2703ae0129ceca72bba",
+      "sha256": "sha256:d85278d5dc627f66d2cd1a03336b55ad9620d54ccd6c9a04c66466c4be5d2cc5"
+    },
+    {
+      "path": "scripts/validate_distill_loop.py",
+      "state": "present",
+      "git_blob": "60f887d8d9498290d23a77ca71461452cd655355",
+      "sha256": "sha256:bfd696a78593e21f0b6e95c6966c354cbb794bb787b4458ad4f68513a83802c7"
+    },
+    {
+      "path": "scripts/validate_golden_pack.py",
+      "state": "present",
+      "git_blob": "dcb0a0366ec21d3771e7becf48f5a8bcc3bbc1b8",
+      "sha256": "sha256:e692ef2238741b686a12b2ca56aa4212793b4a202ace3bbd601f61fbfa9100b1"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "9e99e59df9f433bf14c2cd761e267b1f3700e1ea",
+      "sha256": "sha256:31f49db54fa0ea7efaf3ed83c550710d5658df9d98d6db8850dc8b90bb993d23"
+    },
+    {
+      "path": "scripts/validate_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "0c5bbe0e1a46d9d07428aef277b9a88d51362c2a",
+      "sha256": "sha256:914ff106e0b8abb2747f1fb739912034270ca5fecea5a31c233878b6e07cc382"
+    },
+    {
+      "path": "skills/README.md",
+      "state": "present",
+      "git_blob": "3295f01938577fef8f933a9eb0d93b910c8eaa42",
+      "sha256": "sha256:784de61dcaaf22c75aac19ed96b705c826e6868a34ac570172c51113822d36b3"
+    },
+    {
+      "path": "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
+      "state": "present",
+      "git_blob": "455959daeedb3fd856131f210d2387c221b5aa9c",
+      "sha256": "sha256:a4f9e03a165a9e8a2362de2acd556c11e862409b08a2fe115d92a14db300cd4c"
+    },
+    {
+      "path": "supabase/tests/sync_control_plane_outbox_claim_benchmark.sql",
+      "state": "present",
+      "git_blob": "075f76b2d4cd4c6cdaf26f5b123baa6569cfcca1",
+      "sha256": "sha256:f642809d8b4e9ea38383bdeccb5557dd417b53278f2187ab5074d74701722505"
+    },
+    {
+      "path": "tests/test_deck_grammar.py",
+      "state": "present",
+      "git_blob": "77b218af5259ca1c674b2f6df4c0a8c4b8fb4f44",
+      "sha256": "sha256:8eb63a1ba014e81bdf39dbb97690714c8c3d2c918548437cc1a5120de17d410e"
+    },
+    {
+      "path": "tests/test_validator_metrics.py",
+      "state": "present",
+      "git_blob": "b7d513a68f8ec114a3c6ac5ef78c714f3e1c93c1",
+      "sha256": "sha256:c611b5cc06ac463c3d72883825a0bd4ed6fec33bb5c958e0dd0b47d6809fb91a"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PYTHONPATH=scripts uv run --python 3.13 --with-requirements requirements-evals.txt -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PGlite 0.5.8: apply all migrations transactionally; execute supabase/tests/sync_control_plane_outbox_claim_benchmark.sql; drop claim index; assert fixture failure; rollback",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T11:14:31Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:ac6a6499407cb5f0f5c3ecb58d8baf8d073f7f7715fa3a608afa4467562cafcd"
+}
