@@ -1,0 +1,278 @@
+{
+  "schema_version": "object-pack-creation-evidence.v1",
+  "status": "candidate",
+  "quality_decision": "Constrain",
+  "owner_system": "Quirk-Systems/quirk-os",
+  "base_commit": "499f94b8d12e29dd7804cc9b537fd70f6a8048d8",
+  "observed_at": "2026-09-10T02:29:09.724089+00:00",
+  "actor": "Codex implementation agent",
+  "review": "Implementation and source review by the same agent; no independent human review claimed.",
+  "runtime": {
+    "python": "3.12.13",
+    "platform": "Linux",
+    "PyYAML": "6.0.3",
+    "jsonschema": "4.26.0"
+  },
+  "source_sha256": {
+    ".github/workflows/deck-grammar-conformance.yml": "9dd788a61e99d33885a4ed96ebb212891c89ce2c1db47049887a3705f4a03cf8",
+    "diagrams/quirk-object-pack-scaffolder.mmd": "60071dfccb73b611eeabe53d924f979ff0a7b7687148e8346eab7a75a862f830",
+    "docs/deck-grammar/OBJECT-PACK-CREATION.md": "bae914fe8cdb06f71762d235999f4a47d317662aa21eeea19e1e6e51ca894a67",
+    "examples/deck-grammar/object-pack-input.json": "14d6045f65e937f277e7a34bd8775ccec9be9d26ec35181b90e188d5e5ad38f6",
+    "schemas/object-pack-creation.schema.json": "cd19dd972b2f4ea0ce049f6edc10551e76de33ccf92163a0204901f4cfdcb76c",
+    "scripts/object_pack.py": "4ffed4f8aef133ef561a3a9d5a262253ce0b2b9aada0062d30bce70728534daf",
+    "scripts/scaffold_quirk_object_pack.py": "f28025c6e09ac17d6acc6cf80a5231761dc09c3cf760c514e6acbdc673854ef1",
+    "templates/quirk-object-pack/README.md": "84d4e291f128364c40b21da28feee817ff460c3c09f78cbf91cb7d86417b4c00",
+    "tests/test_deck_grammar.py": "1359369e784c5d70db4f5a71bdb7d8694092eb7037c04ebbe4a5d40c9b9d80b0",
+    "tests/test_object_pack.py": "3476a5a9950761e38aa73626d1a6a5e34cde48a9ff154e35a502588c4678a409"
+  },
+  "baseline_script_sha256": "d802d8efc5324478098b56c14ff3cd9bed427bcc79952b56fc37f859e74bdb8d",
+  "checks": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_object_pack.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 5.4101,
+      "stdout": "",
+      "stderr": "test_all_kinds_and_aliases_compile_with_stable_identity (test_object_pack.ObjectPackTests.test_all_kinds_and_aliases_compile_with_stable_identity) ... ok\ntest_documented_example_compiles (test_object_pack.ObjectPackTests.test_documented_example_compiles) ... ok\ntest_existing_empty_directory_is_supported (test_object_pack.ObjectPackTests.test_existing_empty_directory_is_supported) ... ok\ntest_incomplete_pack_cannot_be_published (test_object_pack.ObjectPackTests.test_incomplete_pack_cannot_be_published) ... ok\ntest_invalid_input_never_silently_falls_back (test_object_pack.ObjectPackTests.test_invalid_input_never_silently_falls_back) ... ok\ntest_newly_populated_destination_is_not_overwritten (test_object_pack.ObjectPackTests.test_newly_populated_destination_is_not_overwritten) ... ok\ntest_nonempty_file_and_symlink_destinations_are_preserved (test_object_pack.ObjectPackTests.test_nonempty_file_and_symlink_destinations_are_preserved) ... ok\ntest_owner_is_required_at_cli_boundary (test_object_pack.ObjectPackTests.test_owner_is_required_at_cli_boundary) ... ok\ntest_preview_writes_nothing_and_bound_write_matches_every_hash (test_object_pack.ObjectPackTests.test_preview_writes_nothing_and_bound_write_matches_every_hash) ... ok\ntest_recompilation_and_alias_preserve_content_digest (test_object_pack.ObjectPackTests.test_recompilation_and_alias_preserve_content_digest) ... ok\ntest_remote_schema_dependency_is_refused (test_object_pack.ObjectPackTests.test_remote_schema_dependency_is_refused) ... ok\ntest_rename_failure_preserves_existing_output_and_cleans_stage (test_object_pack.ObjectPackTests.test_rename_failure_preserves_existing_output_and_cleans_stage) ... ok\ntest_report_write_failure_does_not_claim_pack_was_not_published (test_object_pack.ObjectPackTests.test_report_write_failure_does_not_claim_pack_was_not_published) ... ok\ntest_source_cannot_silently_promote_or_detach_the_pack (test_object_pack.ObjectPackTests.test_source_cannot_silently_promote_or_detach_the_pack) ... ok\ntest_source_or_input_drift_blocks_old_preview (test_object_pack.ObjectPackTests.test_source_or_input_drift_blocks_old_preview) ... ok\ntest_stage_write_failure_leaves_no_partial_pack (test_object_pack.ObjectPackTests.test_stage_write_failure_leaves_no_partial_pack) ... ok\ntest_template_errors_are_refused_before_writes (test_object_pack.ObjectPackTests.test_template_errors_are_refused_before_writes) ... ok\ntest_titles_remain_literal_yaml_and_front_matter_data (test_object_pack.ObjectPackTests.test_titles_remain_literal_yaml_and_front_matter_data) ... ok\ntest_unknown_kind_is_explained_without_traceback_or_output (test_object_pack.ObjectPackTests.test_unknown_kind_is_explained_without_traceback_or_output) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 5.248s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_deck_grammar.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.8197,
+      "stdout": "",
+      "stderr": "test_aesthetic_guard_rejects_price_or_accessibility_hiding (test_deck_grammar.DeckGrammarTests.test_aesthetic_guard_rejects_price_or_accessibility_hiding) ... ok\ntest_all_adversarial_cases_pass (test_deck_grammar.DeckGrammarTests.test_all_adversarial_cases_pass) ... ok\ntest_asset_requires_clear_rights (test_deck_grammar.DeckGrammarTests.test_asset_requires_clear_rights) ... ok\ntest_exactly_fifteen_schemas (test_deck_grammar.DeckGrammarTests.test_exactly_fifteen_schemas) ... ok\ntest_hands_use_different_cards (test_deck_grammar.DeckGrammarTests.test_hands_use_different_cards) ... ok\ntest_non_ephemeral_hand_requires_consent (test_deck_grammar.DeckGrammarTests.test_non_ephemeral_hand_requires_consent) ... ok\ntest_owned_collection_is_unchanged_by_entitlements (test_deck_grammar.DeckGrammarTests.test_owned_collection_is_unchanged_by_entitlements) ... ok\ntest_persisted_live_proof_is_reproducible (test_deck_grammar.DeckGrammarTests.test_persisted_live_proof_is_reproducible) ... ok\ntest_premium_access_is_not_ownership (test_deck_grammar.DeckGrammarTests.test_premium_access_is_not_ownership) ... ok\ntest_same_goal_two_presets_preserve_invariants (test_deck_grammar.DeckGrammarTests.test_same_goal_two_presets_preserve_invariants) ... ok\ntest_scaffolder_generates_full_pack (test_deck_grammar.DeckGrammarTests.test_scaffolder_generates_full_pack) ... ok\ntest_scaffolder_supports_non_agent_object_families (test_deck_grammar.DeckGrammarTests.test_scaffolder_supports_non_agent_object_families) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 0.697s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python",
+        "scripts/validate_deck_grammar.py",
+        "--repo",
+        ".",
+        "--output",
+        "/workspace/scratch/773bb77ebb02/research-work/emitter-conformance.json",
+        "--require-pass"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.1909,
+      "stdout": "{\n  \"suite_id\": \"eval.deck-grammar.v0.1\",\n  \"generated_at\": \"2026-08-12T05:00:00Z\",\n  \"status\": \"passed\",\n  \"schema_count\": 15,\n  \"schema_checks\": [\n    {\n      \"name\": \"card.persona.brayn\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.persona.bryan\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.persona.brayk\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.persona.bryminn\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.aesthetic.structural-clarity\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.aesthetic.premium-chaos\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.aesthetic.lyric-nonce\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.aesthetic.performance-pressure\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.affordance.source-authority-census\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.affordance.contract-diff\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.affordance.tribunal-docket\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.affordance.section-map\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.affordance.vocal-mechanics\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.affordance.narrative-progression\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.asset.evidence-pack\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"card.asset.creative-reference-bank\",\n      \"schema\": \"card-definition.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"collection.bryan.deck-grammar-proof\",\n      \"schema\": \"collection.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"entitlement.premium.deck-grammar-proof\",\n      \"schema\": \"entitlement-grant.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"area.quirk-architecture\",\n      \"schema\": \"area.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"goal.deck-grammar.candidate-pack\",\n      \"schema\": \"goal.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"intention.deck-grammar.preserve-invariants\",\n      \"schema\": \"intention.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"preset.canon-architect\",\n      \"schema\": \"hand-preset.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"preset.bryminn-studio\",\n      \"schema\": \"hand-preset.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"affordance.contract-diff.json\",\n      \"schema\": \"affordance.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"artifact.live-proof-report.json\",\n      \"schema\": \"artifact.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"asset.evidence-pack.json\",\n      \"schema\": \"asset.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"art.two-hands.json\",\n      \"schema\": \"art.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"aesthetic.premium-chaos.json\",\n      \"schema\": \"aesthetic-contract.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"same-goal-live-proof-reproducible\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"live-proof-deck\",\n      \"schema\": \"eligible-deck.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"hand.deck-grammar.candidate-pack.canon-architect.b8822e9663\",\n      \"schema\": \"active-hand.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"hand.deck-grammar.candidate-pack.bryminn-studio.36828fbfa6\",\n      \"schema\": \"active-hand.schema.json\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"same-goal-two-presets-invariants\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"quirk-object-type-registry-complete\",\n      \"passed\": true,\n      \"errors\": []\n    },\n    {\n      \"name\": \"canonical-template-module-set\",\n      \"passed\": true,\n      \"errors\": []\n    }\n  ],\n  \"adversarial_cases\": [\n    {\n      \"case_id\": \"QDG-001\",\n      \"attack\": \"premium_authority_escalation\",\n      \"decision\": \"reject\",\n      \"reason\": \"entitlements may alter access, never authority\",\n      \"expected\": \"reject\",\n      \"passed\": true\n    },\n    {\n      \"case_id\": \"QDG-002\",\n      \"attack\": \"borrowed_claimed_owned\",\n      \"decision\": \"reject\",\n      \"reason\": \"borrowed access cannot be represented as ownership\",\n      \"expected\": \"reject\",\n      \"passed\": true\n    },\n    {\n      \"case_id\": \"QDG-003\",\n      \"attack\": \"expired_entitlement_in_deck\",\n      \"decision\": \"exclude\",\n      \"reason\": \"expired access is removed from the eligible Deck\",\n      \"expected\": \"exclude\",\n      \"passed\": true\n    },\n    {\n      \"case_id\": \"QDG-004\",\n      \"attack\": \"persona_permanent_identity\",\n      \"decision\": \"reject\",\n      \"reason\": \"a Persona card is a temporary functional lens\",\n      \"expected\": \"reject\",\n      \"passed\": true\n    },\n    {\n      \"case_id\": \"QDG-005\",\n      \"attack\": \"aesthetic_hides_evidence\",\n      \"decision\": \"reject\",\n      \"reason\": \"aesthetic may not hide evidence, uncertainty, authority, risk, price, or accessibility\",\n      \"expected\": \"reject\",\n      \"passed\": true\n    },\n    {\n      \"case_id\": \"QDG-006\",\n      \"attack\": \"area_preference_leak\",\n      \"decision\": \"exclude\",\n      \"reason\": \"purpose and Area partitions prevent preference leakage\",\n      \"expected\": \"exclude\",\n      \"passed\": true\n    },\n    {\n      \"case_id\": \"QDG-007\",\n      \"attack\": \"artifact_promoted_without_rights\",\n      \"decision\": \"reject\",\n      \"reason\": \"Asset promotion requires clear rights and provenance\",\n      \"expected\": \"reject\",\n      \"passed\": true\n    },\n    {\n      \"case_id\": \"QDG-008\",\n      \"attack\": \"owned_card_removed_with_subscription\",\n      \"decision\": \"preserve_owned\",\n      \"reason\": \"subscription cancellation cannot remove independently owned cards\",\n      \"expected\": \"preserve_owned\",\n      \"passed\": true\n    },\n    {\n      \"case_id\": \"QDG-009\",\n      \"attack\": \"rarity_used_as_quality\",\n      \"decision\": \"reject\",\n      \"reason\": \"rarity and quality are independent dimensions\",\n      \"expected\": \"reject\",\n      \"passed\": true\n    },\n    {\n      \"case_id\": \"QDG-010\",\n      \"attack\": \"discard_deletes_history\",\n      \"decision\": \"reject\",\n      \"reason\": \"discard removes a card from the Hand, not from history\",\n      \"expected\": \"reject\",\n      \"passed\": true\n    },\n    {\n      \"case_id\": \"QDG-011\",\n      \"attack\": \"hand_persists_without_consent\",\n      \"decision\": \"require_consent\",\n      \"reason\": \"non-ephemeral Hands require explicit consent\",\n      \"expected\": \"require_consent\",\n      \"passed\": true\n    }\n  ],\n  \"live_proof\": {\n    \"proof_id\": \"proof.deck-grammar.same-goal-two-presets.v0.1\",\n    \"verdict\": \"PASS\",\n    \"invariants\": {\n      \"same_goal_ref\": true,\n      \"same_truth_snapshot\": true,\n      \"same_ownership_snapshot\": true,\n      \"same_authority\": true,\n      \"different_active_cards\": true,\n      \"different_approach\": true\n    },\n    \"preset_refs\": [\n      \"preset.canon-architect\",\n      \"preset.bryminn-studio\"\n    ],\n    \"truth_snapshot\": {\n      \"goal_hash\": \"0cff451d234961102fe3c2327419408d5d72849a2480a937e989cbc34a8dea44\",\n      \"facts_hash\": \"bbbcd7384241336a31d61e469618ba457a6f5961f90cad98cb3ffb355a9536ee\"\n    },\n    \"ownership_snapshot\": {\n      \"collection_hash\": \"234866f9ccdea2614185e62b7647ea7354b0e8260886f47afa4b7dee8220ff6d\",\n      \"owned_instance_ids\": [\n        \"card-instance.owned.aesthetic-lyric-nonce\",\n        \"card-instance.owned.aesthetic-performance-pressure\",\n        \"card-instance.owned.aesthetic-premium-chaos\",\n        \"card-instance.owned.aesthetic-structural-clarity\",\n        \"card-instance.owned.affordance-contract-diff\",\n        \"card-instance.owned.affordance-narrative-progression\",\n        \"card-instance.owned.affordance-section-map\",\n        \"card-instance.owned.affordance-source-authority-census\",\n        \"card-instance.owned.asset-creative-reference-bank\",\n        \"card-instance.owned.asset-evidence-pack\",\n        \"card-instance.owned.persona-brayk\",\n        \"card-instance.owned.persona-brayn\",\n        \"card-instance.owned.persona-bryan\",\n        \"card-instance.owned.persona-bryminn\"\n      ]\n    },\n    \"authority_snapshot\": {\n      \"ceiling\": \"propose\",\n      \"grant_ref\": \"authority.human.deck-grammar-candidate\",\n      \"cards_cannot_expand_authority\": true\n    }\n  },\n  \"protected_actions\": {\n    \"manifest_activation\": 0,\n    \"canon_promotions\": 0,\n    \"ownership_mutations\": 0,\n    \"authority_expansions\": 0,\n    \"production_deployments\": 0,\n    \"persistent_hands_without_consent\": 0\n  },\n  \"content_hash\": \"efc7b28456076c06caac8fcc31d82662a521e5fc2d874274e9c6e17e067fa20a\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python",
+        "scripts/validate_golden_pack.py"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.0605,
+      "stdout": "HOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_system_identity_topology\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_canonical_vocabulary_strange_intact\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_operator_personalization_boundaries\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_authority_approval_manifest\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_executable_vertical_slice_bootstrap\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_complete_contracts_queue_semantics\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_eval_threat_model_tribunal_harness\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_google_drive_workplane_manifest\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_supabase_projection_contract\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_supabase_security_reconciliation\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_vercel_deployment_decision\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_cloudflare_edge_decision\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_research_top_minds_evidence\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_multimedia_rights_accessibility_provenance\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_release_migrations_supply_chain\nHOLD: Golden admission blocked by unresolved Proposed Move: qpm_pr3_merge_blocking_receipt_outcome_gate\nCandidate merge gates passed with 16 Golden-admission hold(s). No admission, activation, canonization, or runtime authority is implied.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.0035,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "before_after": [
+    {
+      "case": "ordinary_control",
+      "input_title": "Example Agent",
+      "owner_supplied": true,
+      "extra_arguments": [],
+      "before": {
+        "exit_code": 0,
+        "output_exists": true,
+        "file_count": 11,
+        "manifest_parses": true,
+        "title_preserved": true,
+        "owner_ref": "human.bryan",
+        "status": "candidate",
+        "authority_ceiling": "propose"
+      },
+      "after": {
+        "exit_code": 0,
+        "output_exists": true,
+        "file_count": 11,
+        "manifest_parses": true,
+        "title_preserved": true,
+        "owner_ref": "human.bryan",
+        "status": "candidate",
+        "authority_ceiling": "propose"
+      }
+    },
+    {
+      "case": "quoted_multiline_title",
+      "input_title": "A: \"quoted\" title\n---\nauthority: execute_protected",
+      "owner_supplied": true,
+      "extra_arguments": [],
+      "before": {
+        "exit_code": 0,
+        "output_exists": true,
+        "file_count": 11,
+        "manifest_parses": false
+      },
+      "after": {
+        "exit_code": 0,
+        "output_exists": true,
+        "file_count": 11,
+        "manifest_parses": true,
+        "title_preserved": true,
+        "owner_ref": "human.bryan",
+        "status": "candidate",
+        "authority_ceiling": "propose"
+      }
+    },
+    {
+      "case": "literal_variable_token",
+      "input_title": "{{OWNER_REF}}",
+      "owner_supplied": true,
+      "extra_arguments": [],
+      "before": {
+        "exit_code": 0,
+        "output_exists": true,
+        "file_count": 11,
+        "manifest_parses": true,
+        "title_preserved": false,
+        "owner_ref": "human.bryan",
+        "status": "candidate",
+        "authority_ceiling": "propose"
+      },
+      "after": {
+        "exit_code": 0,
+        "output_exists": true,
+        "file_count": 11,
+        "manifest_parses": true,
+        "title_preserved": true,
+        "owner_ref": "human.bryan",
+        "status": "candidate",
+        "authority_ceiling": "propose"
+      }
+    },
+    {
+      "case": "omitted_owner",
+      "input_title": "Example Agent",
+      "owner_supplied": false,
+      "extra_arguments": [],
+      "before": {
+        "exit_code": 0,
+        "output_exists": true,
+        "file_count": 11,
+        "manifest_parses": true,
+        "title_preserved": true,
+        "owner_ref": "human.bryan",
+        "status": "candidate",
+        "authority_ceiling": "propose"
+      },
+      "after": {
+        "exit_code": 2,
+        "output_exists": false
+      }
+    },
+    {
+      "case": "active_status",
+      "input_title": "Example Agent",
+      "owner_supplied": true,
+      "extra_arguments": [
+        "--status",
+        "active"
+      ],
+      "before": {
+        "exit_code": 0,
+        "output_exists": true,
+        "file_count": 11,
+        "manifest_parses": true,
+        "title_preserved": true,
+        "owner_ref": "human.bryan",
+        "status": "active",
+        "authority_ceiling": "propose"
+      },
+      "after": {
+        "exit_code": 2,
+        "output_exists": false
+      }
+    },
+    {
+      "case": "executable_ceiling",
+      "input_title": "Example Agent",
+      "owner_supplied": true,
+      "extra_arguments": [
+        "--authority-ceiling",
+        "execute_protected"
+      ],
+      "before": {
+        "exit_code": 0,
+        "output_exists": true,
+        "file_count": 11,
+        "manifest_parses": true,
+        "title_preserved": true,
+        "owner_ref": "human.bryan",
+        "status": "candidate",
+        "authority_ceiling": "execute_protected"
+      },
+      "after": {
+        "exit_code": 2,
+        "output_exists": false
+      }
+    }
+  ],
+  "repair_history": [
+    {
+      "stage": "first focused test run",
+      "result": "18 tests, one error in the test front-matter extractor",
+      "repair": "Changed the test to recognize a column-zero document delimiter; substring splitting had incorrectly split quoted multiline data. Compiler behavior was not relaxed."
+    },
+    {
+      "stage": "first repository structural check",
+      "result": "new schema missing required root type",
+      "repair": "Added root type object; validator itself unchanged."
+    }
+  ],
+  "authority": {
+    "artifact_admission": "not_performed",
+    "runtime_effects": "none",
+    "golden_admission": "held_by_16_existing_proposed_moves",
+    "human_review": "open"
+  },
+  "outcome": {
+    "produced": "validated candidate pack compiler integrated into existing CLI",
+    "human_benefit": "not_measured",
+    "cross_system_reuse": "pure compiler and CLI share one implementation; no second-system deployment demonstrated"
+  },
+  "limits": [
+    "Local tests ran on Python 3.12; CI Python 3.13 is separate evidence.",
+    "No host installation, runtime authorization, Preference Graph application, or deployment.",
+    "POSIX directory-finalization behavior tested; crash durability, Windows empty-directory replacement, network filesystems, hostile parent replacement and independent user experience remain unproved.",
+    "Report digests are unsigned local content identifiers, not RFC 8785 or identity evidence."
+  ],
+  "system_dividend": {
+    "reusable_api": "scripts/object_pack.py:compile_pack(repo, inputs)",
+    "shared_contract": "schemas/object-pack-creation.schema.json",
+    "consumer": "scripts/scaffold_quirk_object_pack.py",
+    "next_move": "Thin Quirk Now caller using real explicit inputs, followed by export/reopen and helpfulness judgment."
+  }
+}

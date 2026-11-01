@@ -1,0 +1,686 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quirk.systems/schemas/object-pack-creation.v1alpha1.json",
+  "title": "Quirk candidate object-pack creation contract",
+  "$comment": "Candidate creation only. Structural validity is not runtime permission, complete authoring, installation, or admission. Fixed defaults require an intentional schema change. Cross-document identity and equal-ceiling checks also run in the compiler.",
+  "$ref": "#/$defs/generated",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*(?:\\.[a-z0-9_-]+)+$",
+      "maxLength": 160,
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "kind_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "maxLength": 80,
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]+$",
+      "allOf": [
+        {
+          "pattern": "\\S"
+        }
+      ]
+    },
+    "ceiling": {
+      "enum": [
+        "observe",
+        "infer",
+        "propose"
+      ]
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "object_id",
+        "title",
+        "owner",
+        "authority_ceiling",
+        "status"
+      ],
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/kind_name"
+        },
+        "object_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/title"
+        },
+        "owner": {
+          "$ref": "#/$defs/identifier"
+        },
+        "authority_ceiling": {
+          "$ref": "#/$defs/ceiling"
+        },
+        "status": {
+          "const": "candidate"
+        }
+      }
+    },
+    "registry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "api_version",
+        "kind",
+        "metadata",
+        "aliases",
+        "modules",
+        "object_types",
+        "invariants"
+      ],
+      "properties": {
+        "api_version": {
+          "const": "quirk.dev/format-registry/v1alpha1"
+        },
+        "kind": {
+          "const": "ObjectTypeRegistry"
+        },
+        "metadata": {
+          "type": "object"
+        },
+        "aliases": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$",
+            "maxLength": 80
+          },
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$",
+            "maxLength": 80
+          }
+        },
+        "modules": {
+          "const": [
+            "MANIFEST.yaml",
+            "README.md",
+            "REPO-MANAGEMENT.md",
+            "SYSTEM-PROMPT.md",
+            "CUSTOM-INSTRUCTIONS.md",
+            "SETTINGS.yaml",
+            "PROJECT-INSTRUCTIONS.md",
+            "REFERENCES.md",
+            "SKILL.md",
+            "EVALS.yaml",
+            "OPERATING-WORKFLOW.yaml"
+          ]
+        },
+        "object_types": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "purpose"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$",
+                "maxLength": 80
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "invariants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "generated": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "MANIFEST.yaml",
+        "SETTINGS.yaml",
+        "EVALS.yaml",
+        "OPERATING-WORKFLOW.yaml",
+        "skill_front_matter"
+      ],
+      "properties": {
+        "MANIFEST.yaml": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "api_version",
+            "kind",
+            "metadata",
+            "authority",
+            "contracts",
+            "lifecycle",
+            "prohibited"
+          ],
+          "properties": {
+            "api_version": {
+              "const": "quirk.dev/object-pack/v1alpha1"
+            },
+            "kind": {
+              "$ref": "#/$defs/kind_name"
+            },
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "title",
+                "version",
+                "status",
+                "owner_ref"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/$defs/identifier"
+                },
+                "title": {
+                  "$ref": "#/$defs/title"
+                },
+                "version": {
+                  "const": "0.1.0"
+                },
+                "status": {
+                  "const": "candidate"
+                },
+                "owner_ref": {
+                  "$ref": "#/$defs/identifier"
+                }
+              }
+            },
+            "authority": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "ceiling",
+                "capability_does_not_imply_authority",
+                "human_admission_required"
+              ],
+              "properties": {
+                "ceiling": {
+                  "$ref": "#/$defs/ceiling"
+                },
+                "capability_does_not_imply_authority": {
+                  "const": true
+                },
+                "human_admission_required": {
+                  "const": true
+                }
+              }
+            },
+            "contracts": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "inputs",
+                "outputs",
+                "interfaces",
+                "evidence_refs",
+                "eval_refs"
+              ],
+              "properties": {
+                "inputs": {
+                  "const": []
+                },
+                "outputs": {
+                  "const": []
+                },
+                "interfaces": {
+                  "const": []
+                },
+                "evidence_refs": {
+                  "const": []
+                },
+                "eval_refs": {
+                  "const": []
+                }
+              }
+            },
+            "lifecycle": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "current",
+                "legal_transitions"
+              ],
+              "properties": {
+                "current": {
+                  "const": "candidate"
+                },
+                "legal_transitions": {
+                  "const": [
+                    {
+                      "from": "candidate",
+                      "to": "evaluated",
+                      "authority_required": "authority.evaluation"
+                    },
+                    {
+                      "from": "evaluated",
+                      "to": "admitted",
+                      "authority_required": "authority.human.admission"
+                    }
+                  ]
+                }
+              }
+            },
+            "prohibited": {
+              "const": [
+                "self_activation",
+                "silent_canon_promotion",
+                "destructive_history_rewrite",
+                "hidden_authority_expansion"
+              ]
+            }
+          }
+        },
+        "SETTINGS.yaml": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "api_version",
+            "kind",
+            "metadata",
+            "precedence",
+            "personalization",
+            "expression",
+            "authority",
+            "observability"
+          ],
+          "properties": {
+            "api_version": {
+              "const": "quirk.dev/settings/v1alpha1"
+            },
+            "kind": {
+              "const": "Settings"
+            },
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "owner_ref",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "owner_ref": {
+                  "$ref": "#/$defs/identifier"
+                },
+                "status": {
+                  "const": "candidate"
+                }
+              }
+            },
+            "precedence": {
+              "const": [
+                "explicit_current",
+                "purpose_scoped",
+                "admitted_project",
+                "admitted_global",
+                "default"
+              ]
+            },
+            "personalization": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "enabled",
+                "adaptation_mode",
+                "memory_scope",
+                "implicit_signal_use",
+                "show_used_preferences",
+                "allow_generated_ui",
+                "allow_exploration"
+              ],
+              "properties": {
+                "enabled": {
+                  "const": true
+                },
+                "adaptation_mode": {
+                  "const": "propose_only"
+                },
+                "memory_scope": {
+                  "const": "purpose_partitioned"
+                },
+                "implicit_signal_use": {
+                  "const": "limited"
+                },
+                "show_used_preferences": {
+                  "const": "on_request"
+                },
+                "allow_generated_ui": {
+                  "const": "task_gated"
+                },
+                "allow_exploration": {
+                  "const": "reversible_low_stakes_only"
+                }
+              }
+            },
+            "expression": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "verbosity",
+                "directness",
+                "challenge_level",
+                "novelty",
+                "evidence_density"
+              ],
+              "properties": {
+                "verbosity": {
+                  "const": "balanced"
+                },
+                "directness": {
+                  "const": "high"
+                },
+                "challenge_level": {
+                  "const": "context_sensitive"
+                },
+                "novelty": {
+                  "const": "bounded"
+                },
+                "evidence_density": {
+                  "const": "high"
+                }
+              }
+            },
+            "authority": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "ceiling",
+                "update_memory",
+                "change_settings",
+                "protected_actions",
+                "impersonation"
+              ],
+              "properties": {
+                "ceiling": {
+                  "$ref": "#/$defs/ceiling"
+                },
+                "update_memory": {
+                  "const": "human_required"
+                },
+                "change_settings": {
+                  "const": "human_required"
+                },
+                "protected_actions": {
+                  "const": "human_required"
+                },
+                "impersonation": {
+                  "const": "prohibited"
+                }
+              }
+            },
+            "observability": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "receipts_required",
+                "trace_level",
+                "redact_sensitive_data"
+              ],
+              "properties": {
+                "receipts_required": {
+                  "const": true
+                },
+                "trace_level": {
+                  "const": "consequential"
+                },
+                "redact_sensitive_data": {
+                  "const": true
+                }
+              }
+            }
+          }
+        },
+        "EVALS.yaml": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "api_version",
+            "kind",
+            "metadata",
+            "subject_ref",
+            "dimensions",
+            "fixtures",
+            "admission"
+          ],
+          "properties": {
+            "api_version": {
+              "const": "quirk.dev/eval-suite/v1alpha1"
+            },
+            "kind": {
+              "const": "EvaluationSuite"
+            },
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "version",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "version": {
+                  "const": "0.1.0"
+                },
+                "status": {
+                  "const": "candidate"
+                }
+              }
+            },
+            "subject_ref": {
+              "$ref": "#/$defs/identifier"
+            },
+            "dimensions": {
+              "const": [
+                "intent_fit",
+                "contract_conformance",
+                "authority_compliance",
+                "evidence_quality",
+                "failure_safety",
+                "accessibility",
+                "independent_reusability"
+              ]
+            },
+            "fixtures": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "positive",
+                "adversarial",
+                "regression"
+              ],
+              "properties": {
+                "positive": {
+                  "const": []
+                },
+                "adversarial": {
+                  "const": []
+                },
+                "regression": {
+                  "const": []
+                }
+              }
+            },
+            "admission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "human_required",
+                "minimum_evidence",
+                "blocking_failures"
+              ],
+              "properties": {
+                "human_required": {
+                  "const": true
+                },
+                "minimum_evidence": {
+                  "const": []
+                },
+                "blocking_failures": {
+                  "const": [
+                    "self_authorization",
+                    "history_rewrite",
+                    "hidden_sensitive_inference",
+                    "protected_action_without_grant"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "OPERATING-WORKFLOW.yaml": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "api_version",
+            "kind",
+            "metadata",
+            "trigger",
+            "authority_ceiling",
+            "default_failure_posture",
+            "steps",
+            "protected_actions_require_human"
+          ],
+          "properties": {
+            "api_version": {
+              "const": "quirk.dev/workflow/v1alpha1"
+            },
+            "kind": {
+              "const": "Workflow"
+            },
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "version",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/$defs/identifier"
+                },
+                "version": {
+                  "const": "0.1.0"
+                },
+                "status": {
+                  "const": "candidate"
+                }
+              }
+            },
+            "trigger": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allowed",
+                "scheduled"
+              ],
+              "properties": {
+                "allowed": {
+                  "const": [
+                    "manual",
+                    "admitted_proposed_move"
+                  ]
+                },
+                "scheduled": {
+                  "const": false
+                }
+              }
+            },
+            "authority_ceiling": {
+              "$ref": "#/$defs/ceiling"
+            },
+            "default_failure_posture": {
+              "const": "fail_closed"
+            },
+            "steps": {
+              "const": [
+                {
+                  "id": "resolve_intent",
+                  "action": "resolve_current_intent"
+                },
+                {
+                  "id": "resolve_authority",
+                  "action": "resolve_external_authority"
+                },
+                {
+                  "id": "validate_inputs",
+                  "action": "validate_contracts"
+                },
+                {
+                  "id": "execute_candidate",
+                  "action": "run_bounded_work"
+                },
+                {
+                  "id": "evaluate",
+                  "action": "run_positive_and_adversarial_evals"
+                },
+                {
+                  "id": "emit_receipt",
+                  "action": "persist_immutable_evidence"
+                },
+                {
+                  "id": "propose_next_move",
+                  "action": "create_proposed_move"
+                }
+              ]
+            },
+            "protected_actions_require_human": {
+              "const": true
+            }
+          }
+        },
+        "skill_front_matter": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "description"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/$defs/identifier"
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object"
+}
