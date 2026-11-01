@@ -1,0 +1,61 @@
+{
+  "fixture_set": "one-to-infinity-adversarial-fixtures",
+  "expected_result": "reject",
+  "fixtures": [
+    {
+      "fixture_id": "circular-diagram-is-not-loop",
+      "target_contract": "transformation",
+      "rejects": "a circular diagram with no retained state, reinvestment edge, constraint, balancer, or delay"
+    },
+    {
+      "fixture_id": "automation-is-not-scale",
+      "target_contract": "evidence",
+      "rejects": "an economic scalability claim supported only by an automated run completing"
+    },
+    {
+      "fixture_id": "retention-without-reinvestment",
+      "target_contract": "transformation",
+      "rejects": "state that persists but never alters a future cycle"
+    },
+    {
+      "fixture_id": "repetition-without-improvement",
+      "target_contract": "evidence",
+      "rejects": "a second run mislabeled as compounding without measured improvement"
+    },
+    {
+      "fixture_id": "benchmark-gaming",
+      "target_contract": "evidence",
+      "rejects": "benchmark movement presented as beneficiary value without counter-metrics or outcome evidence"
+    },
+    {
+      "fixture_id": "self-certified-value",
+      "target_contract": "evidence",
+      "rejects": "the same agent or worker certifying the value of its own output"
+    },
+    {
+      "fixture_id": "learning-self-promotes",
+      "target_contract": "promotion",
+      "rejects": "a learning update promoting itself because confidence or score improved"
+    },
+    {
+      "fixture_id": "proxy-success-laundered-as-beneficiary-value",
+      "target_contract": "evidence",
+      "rejects": "clicks, scores, impressions, or model preference treated as value without beneficiary outcome"
+    },
+    {
+      "fixture_id": "constraint-ignored-while-scaling",
+      "target_contract": "transformation",
+      "rejects": "scale claims that omit the active bottleneck or scarce resource"
+    },
+    {
+      "fixture_id": "delayed-feedback-overcorrection",
+      "target_contract": "run",
+      "rejects": "learning updates attributed before the declared feedback delay has matured"
+    },
+    {
+      "fixture_id": "provider-runtime-authority-creep",
+      "target_contract": "run",
+      "rejects": "workflow, hosting, model, or analytics provider execution treated as semantic authority"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "fixture_id": "automation-is-not-scale",
+  "target_contract": "evidence",
+  "expected_rule": "OTI-E-001",
+  "payload": {
+    "contract_type": "one_to_infinity_evidence",
+    "schema_version": "0.2.0-candidate",
+    "evidence_id": "evidence-one",
+    "transformation_id": "oti-example",
+    "stage": "economic_scalability_proof",
+    "producer_id": "worker",
+    "evaluator_id": "reviewer",
+    "beneficiary_outcome": {
+      "observed": true,
+      "metric": "accepted assets",
+      "value": 0.7
+    },
+    "proxy_metrics": [
+      "likes"
+    ],
+    "countermetrics": [
+      {
+        "metric": "error rate",
+        "passed": true
+      }
+    ],
+    "method": {
+      "preregistered": true,
+      "kind": "paired comparison"
+    },
+    "baseline": 0.5,
+    "observed": 0.7,
+    "source_refs": [
+      "fixture-source"
+    ],
+    "economics": {
+      "baseline_human_minutes_per_outcome": 10,
+      "observed_human_minutes_per_outcome": 10,
+      "baseline_cost_per_outcome": 2,
+      "observed_cost_per_outcome": 2,
+      "active_constraint_measured": true
+    }
+  }
+}

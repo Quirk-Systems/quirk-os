@@ -1,0 +1,36 @@
+{
+  "fixture_id": "delayed-feedback-overcorrection",
+  "target_contract": "run",
+  "expected_rule": "OTI-R-001",
+  "payload": {
+    "contract_type": "one_to_infinity_run",
+    "schema_version": "0.2.0-candidate",
+    "run_id": "run-one",
+    "transformation_id": "oti-example",
+    "cycle_index": 2,
+    "provider_receipt": {
+      "provider": "offline fixture",
+      "execution_id": "fixture-one",
+      "claims_authority": false
+    },
+    "delay": {
+      "minimum_hours": 24,
+      "elapsed_hours": 1,
+      "feedback_matured": false
+    },
+    "learning_updates": [
+      {
+        "id": "learn-one",
+        "applied_next_cycle": true,
+        "human_approved": false
+      }
+    ],
+    "receipts": [
+      "fixture-output"
+    ],
+    "authority": {
+      "may_promote": false,
+      "may_deploy": false
+    }
+  }
+}

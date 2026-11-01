@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0-candidate",
+  "minimum_compounding_delta": 0.1,
+  "max_marginal_human_effort_ratio": 0.95,
+  "require_preregistered_compounding_test": true,
+  "boundary": {
+    "runtime": false,
+    "canon": false,
+    "provider_access": false,
+    "publication": false
+  }
+}

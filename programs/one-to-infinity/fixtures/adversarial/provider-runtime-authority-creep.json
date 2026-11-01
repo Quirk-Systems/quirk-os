@@ -1,0 +1,36 @@
+{
+  "fixture_id": "provider-runtime-authority-creep",
+  "target_contract": "run",
+  "expected_rule": "OTI-R-002",
+  "payload": {
+    "contract_type": "one_to_infinity_run",
+    "schema_version": "0.2.0-candidate",
+    "run_id": "run-one",
+    "transformation_id": "oti-example",
+    "cycle_index": 2,
+    "provider_receipt": {
+      "provider": "offline fixture",
+      "execution_id": "fixture-one",
+      "claims_authority": true
+    },
+    "delay": {
+      "minimum_hours": 24,
+      "elapsed_hours": 24,
+      "feedback_matured": true
+    },
+    "learning_updates": [
+      {
+        "id": "learn-one",
+        "applied_next_cycle": false,
+        "human_approved": false
+      }
+    ],
+    "receipts": [
+      "fixture-output"
+    ],
+    "authority": {
+      "may_promote": false,
+      "may_deploy": false
+    }
+  }
+}

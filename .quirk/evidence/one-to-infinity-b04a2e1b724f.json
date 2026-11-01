@@ -1,0 +1,334 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.one-to-infinity.b04a2e1b724f",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "80f53905f793751aa47ed4093d5dd035cab608ff",
+    "commit": "b04a2e1b724faed558b1cbdd68188ec6c7fee2f7",
+    "changed_paths": [
+      ".github/workflows/one-to-infinity-candidate.yml",
+      "programs/one-to-infinity/BOUNDARY.md",
+      "programs/one-to-infinity/MANIFEST.json",
+      "programs/one-to-infinity/README.md",
+      "programs/one-to-infinity/SKILL.md",
+      "programs/one-to-infinity/config/admission.config.json",
+      "programs/one-to-infinity/contracts/CONTRACTS.md",
+      "programs/one-to-infinity/contracts/evidence.schema.json",
+      "programs/one-to-infinity/contracts/promotion.schema.json",
+      "programs/one-to-infinity/contracts/run.schema.json",
+      "programs/one-to-infinity/contracts/transformation.schema.json",
+      "programs/one-to-infinity/evidence/validation-report.json",
+      "programs/one-to-infinity/fixtures/adversarial-fixtures.json",
+      "programs/one-to-infinity/fixtures/adversarial/automation-is-not-scale.json",
+      "programs/one-to-infinity/fixtures/adversarial/benchmark-gaming.json",
+      "programs/one-to-infinity/fixtures/adversarial/circular-diagram-is-not-loop.json",
+      "programs/one-to-infinity/fixtures/adversarial/constraint-ignored-while-scaling.json",
+      "programs/one-to-infinity/fixtures/adversarial/delayed-feedback-overcorrection.json",
+      "programs/one-to-infinity/fixtures/adversarial/learning-self-promotes.json",
+      "programs/one-to-infinity/fixtures/adversarial/provider-runtime-authority-creep.json",
+      "programs/one-to-infinity/fixtures/adversarial/proxy-success-laundered-as-beneficiary-value.json",
+      "programs/one-to-infinity/fixtures/adversarial/repetition-without-improvement.json",
+      "programs/one-to-infinity/fixtures/adversarial/retention-without-reinvestment.json",
+      "programs/one-to-infinity/fixtures/adversarial/self-certified-value.json",
+      "programs/one-to-infinity/fixtures/positive-fixtures.json",
+      "programs/one-to-infinity/fixtures/positive/evidence.valid.json",
+      "programs/one-to-infinity/fixtures/positive/promotion.valid.json",
+      "programs/one-to-infinity/fixtures/positive/run.valid.json",
+      "programs/one-to-infinity/fixtures/positive/transformation.valid.json",
+      "programs/one-to-infinity/tests/VALIDATION.md",
+      "programs/one-to-infinity/tests/emit_ci_receipt.py",
+      "programs/one-to-infinity/tests/test_emit_ci_receipt.py",
+      "programs/one-to-infinity/tests/validate_contracts.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.one-to-infinity.b04a2e1b724f",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Assistant-executed local verification at exact subject b04a2e1b724faed558b1cbdd68188ec6c7fee2f7, tree fb645fc0a63c5029a2bcf1dc12b5dc5f8d3e6652, in a clean standalone clone with Python 3.12 and pinned requirements-evals.txt dependencies. Source integrates main 80f53905f793751aa47ed4093d5dd035cab608ff. Full repository discovery ran 460 tests, 459 passed and one skipped; all 9 receipt guard tests passed; 4/4 positive fixtures accepted and 11/11 adversarial fixtures rejected for intended rules. Generated validation report SHA-256 7e9f889ab6f502c0b7f9f99c658ce550734ab06c40bcddba58691e5ea2031962 and generated CI-style binding both name this exact execution head. Candidate agent conformance and Golden candidate merge checks passed; the 16 existing admission holds remain unresolved. Four regression tests demonstrated prior-head report relabelling, leftover success after a blocked invocation, acceptance of a non-candidate report and untracked candidate source on original code, then passed with the fix. Generated outputs were untracked execution artifacts; tracked source remained clean. Initial environment lacked jsonschema; dependencies were installed before successful fixture runs. Report/receipt digests are provenance bindings, not authenticated independent review. No hosted CI pass: retry of old-head workflow 41298767527 attempt 2 job 124871775406 failed with runner_id=0, no steps and account-billing-lock annotation. Hosted infrastructure gate and required-check/protection confirmation remain unmet. Human approval, beneficiary value, retention, closure, scalability, compounding, runtime and Canon admission are not established.",
+      "evidence_paths": [
+        ".github/workflows/one-to-infinity-candidate.yml",
+        "programs/one-to-infinity/BOUNDARY.md",
+        "programs/one-to-infinity/MANIFEST.json",
+        "programs/one-to-infinity/README.md",
+        "programs/one-to-infinity/SKILL.md",
+        "programs/one-to-infinity/config/admission.config.json",
+        "programs/one-to-infinity/contracts/CONTRACTS.md",
+        "programs/one-to-infinity/contracts/evidence.schema.json",
+        "programs/one-to-infinity/contracts/promotion.schema.json",
+        "programs/one-to-infinity/contracts/run.schema.json",
+        "programs/one-to-infinity/contracts/transformation.schema.json",
+        "programs/one-to-infinity/evidence/validation-report.json",
+        "programs/one-to-infinity/fixtures/adversarial-fixtures.json",
+        "programs/one-to-infinity/fixtures/adversarial/automation-is-not-scale.json",
+        "programs/one-to-infinity/fixtures/adversarial/benchmark-gaming.json",
+        "programs/one-to-infinity/fixtures/adversarial/circular-diagram-is-not-loop.json",
+        "programs/one-to-infinity/fixtures/adversarial/constraint-ignored-while-scaling.json",
+        "programs/one-to-infinity/fixtures/adversarial/delayed-feedback-overcorrection.json",
+        "programs/one-to-infinity/fixtures/adversarial/learning-self-promotes.json",
+        "programs/one-to-infinity/fixtures/adversarial/provider-runtime-authority-creep.json",
+        "programs/one-to-infinity/fixtures/adversarial/proxy-success-laundered-as-beneficiary-value.json",
+        "programs/one-to-infinity/fixtures/adversarial/repetition-without-improvement.json",
+        "programs/one-to-infinity/fixtures/adversarial/retention-without-reinvestment.json",
+        "programs/one-to-infinity/fixtures/adversarial/self-certified-value.json",
+        "programs/one-to-infinity/fixtures/positive-fixtures.json",
+        "programs/one-to-infinity/fixtures/positive/evidence.valid.json",
+        "programs/one-to-infinity/fixtures/positive/promotion.valid.json",
+        "programs/one-to-infinity/fixtures/positive/run.valid.json",
+        "programs/one-to-infinity/fixtures/positive/transformation.valid.json",
+        "programs/one-to-infinity/tests/VALIDATION.md",
+        "programs/one-to-infinity/tests/emit_ci_receipt.py",
+        "programs/one-to-infinity/tests/test_emit_ci_receipt.py",
+        "programs/one-to-infinity/tests/validate_contracts.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/one-to-infinity-candidate.yml",
+      "state": "present",
+      "git_blob": "7865c116643072a308c05c6a2d4202147ed9249d",
+      "sha256": "sha256:e0a1688a2cddacc30888c02ca7ac52e1b573e1ee5ac2c5d76ed25aeeeea01204"
+    },
+    {
+      "path": "programs/one-to-infinity/BOUNDARY.md",
+      "state": "present",
+      "git_blob": "b15f187f782c6290afda7e3698688dd27f4a7925",
+      "sha256": "sha256:ce991e3abaeca7a8acd88b0f17e7136a6d9ec1a30d40f2cc6de0376efbfc99e7"
+    },
+    {
+      "path": "programs/one-to-infinity/MANIFEST.json",
+      "state": "present",
+      "git_blob": "803c482522f251e76ed8d385486677adfa01326d",
+      "sha256": "sha256:9aaf45b15a1c8ec1004d0050cc8dc8a2e1a1f1ca8fb27c35cb840ba6b3b9c12f"
+    },
+    {
+      "path": "programs/one-to-infinity/README.md",
+      "state": "present",
+      "git_blob": "6d97701734d895d7b104b16e9cbacdfcda37bd7a",
+      "sha256": "sha256:5d79c40c3f1948a55533ce5a944dd3902b61bf683ab884dbd1826f34a2a3c102"
+    },
+    {
+      "path": "programs/one-to-infinity/SKILL.md",
+      "state": "present",
+      "git_blob": "0d4fcfa57ce6800ec66ef9fe0f990ecc5fb79e0e",
+      "sha256": "sha256:dc7edbfc56ca234993f09937503e85ddf506e8694bcb3e9d9604df803f392291"
+    },
+    {
+      "path": "programs/one-to-infinity/config/admission.config.json",
+      "state": "present",
+      "git_blob": "154c2f6fd796a18640624236259eae636eb224e4",
+      "sha256": "sha256:b92f16dcd47bff071cf15dfb1d9d95542eeb95289d827a2f9c467f70c70faf68"
+    },
+    {
+      "path": "programs/one-to-infinity/contracts/CONTRACTS.md",
+      "state": "present",
+      "git_blob": "fb2859a9372b79e602cb169c2e3e535f707650a2",
+      "sha256": "sha256:f83aad77113717b6324873fac8a5beeb0953652bf78bc41c19c7dc5400846d4e"
+    },
+    {
+      "path": "programs/one-to-infinity/contracts/evidence.schema.json",
+      "state": "present",
+      "git_blob": "563bf43a88442fd02c6dc9efc38158322ca32d63",
+      "sha256": "sha256:6f895d5524ffadd1153836c408c871f65b5fca086589ea462b19fcedf9c332fe"
+    },
+    {
+      "path": "programs/one-to-infinity/contracts/promotion.schema.json",
+      "state": "present",
+      "git_blob": "83735b2061a5539180c8569af05c4981beb27552",
+      "sha256": "sha256:976444202311e2076789e956a80c7c863b927e42297cdc8baf4d764b81c0e9f2"
+    },
+    {
+      "path": "programs/one-to-infinity/contracts/run.schema.json",
+      "state": "present",
+      "git_blob": "86943bf314e3447034b1b533a5264e5264df9116",
+      "sha256": "sha256:40fa1fdaf6b386de682b3959465165c15188759393b5b0ee1eb70ef7864216b8"
+    },
+    {
+      "path": "programs/one-to-infinity/contracts/transformation.schema.json",
+      "state": "present",
+      "git_blob": "c5da654dda5c3d879cc49c54861c8a7babc709e1",
+      "sha256": "sha256:1754bd45ecdeb43774aeea6b50682fce59f2399d3361a9470e281661d9551391"
+    },
+    {
+      "path": "programs/one-to-infinity/evidence/validation-report.json",
+      "state": "present",
+      "git_blob": "100d7d7b3d2d3e1c99361b39ea5bd4b4559c8a40",
+      "sha256": "sha256:527bd21130b14f5695c1598bfb56d74a48f6847686290d8e924ed42e623935c6"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial-fixtures.json",
+      "state": "present",
+      "git_blob": "339232806dc8b4beef920b4bd720e001740b0435",
+      "sha256": "sha256:31bacb66f7caf2fa516523ca85dd00f51192e52a1a704483228ed66e191420da"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/automation-is-not-scale.json",
+      "state": "present",
+      "git_blob": "939070938543404b71147b535238fb648a0b370b",
+      "sha256": "sha256:ef852edc583d4cfb963228cb428061410f76b195236ee9f1aa21a86963af873f"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/benchmark-gaming.json",
+      "state": "present",
+      "git_blob": "2eb031b976b2fa431e5010be982a41b780fa812e",
+      "sha256": "sha256:1b346c78aef62ab25616749c67f091224165c368e8170ce4e6a5c5342802f361"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/circular-diagram-is-not-loop.json",
+      "state": "present",
+      "git_blob": "1ad1028dae8e10571227d703546329eb305c5d2f",
+      "sha256": "sha256:49f11f0c9aa6b96d4b2d014e42c4c924b1265da2d7c0ec9e6c6e2a5addc599e7"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/constraint-ignored-while-scaling.json",
+      "state": "present",
+      "git_blob": "a2f1cf715c29a47ad9bfdb2fb74201d2fa4dedc1",
+      "sha256": "sha256:ed1c362d8a60aee4563f3c90af04f5f87fdb1e3571d28c1f9dfad330f67cf229"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/delayed-feedback-overcorrection.json",
+      "state": "present",
+      "git_blob": "214eb4a9610bd9d1bfb7da319c0ca68e76b66bbc",
+      "sha256": "sha256:563d34647f6912ef5b2b5ce6f0f8ba92a8e04bf2428beaae686588e7f8adae9a"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/learning-self-promotes.json",
+      "state": "present",
+      "git_blob": "7aa515f85e824cf95b70d2fc7501fee0040c4dbe",
+      "sha256": "sha256:19d103ee90fbacb65d8b94e0583daa7833e5e050e4e478747360bbb7069554d6"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/provider-runtime-authority-creep.json",
+      "state": "present",
+      "git_blob": "97e09651c281d97d7058fa0fe5676bbb77821758",
+      "sha256": "sha256:57e37c8c2c59d069e9c511b75167adefb3dcab5275a2681bc2a4fe112f7934aa"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/proxy-success-laundered-as-beneficiary-value.json",
+      "state": "present",
+      "git_blob": "bfb64ff9f85ea32e9a23c2dcf3367c0915f1d7c5",
+      "sha256": "sha256:d728cd60dbc1f0985b65186e7055a98ab160b170a06352492a1dbeb66ef21c88"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/repetition-without-improvement.json",
+      "state": "present",
+      "git_blob": "27e8f984135be416f4e25258ffc0fafd06f64fd2",
+      "sha256": "sha256:bcb691d0a9b03bca49e5b3160b775f29d910059a54bf273b590a78cfbabf3297"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/retention-without-reinvestment.json",
+      "state": "present",
+      "git_blob": "09351e31dac8bf91a186243ca5f5b8c252312f5a",
+      "sha256": "sha256:da98b5f3fd54357b0357f8e2451af6e13484677d5aba1aa157a0ced04ae1b36a"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/adversarial/self-certified-value.json",
+      "state": "present",
+      "git_blob": "7251921986156031797f380ee732c4ac9f28c916",
+      "sha256": "sha256:00415f5bca53fe4f15ef7167262fbdf8d0e9b505c285543fb1eda337ca441e02"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/positive-fixtures.json",
+      "state": "present",
+      "git_blob": "d3e5fe05ffab1828059c7da43be54791bb16dcca",
+      "sha256": "sha256:cf72a581e20acb48d16bc8c55a4d9d2cfd78a219730e746722629de8463a0a7a"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/positive/evidence.valid.json",
+      "state": "present",
+      "git_blob": "7db2368e66866371a926e85c5fb49e53a1f1d715",
+      "sha256": "sha256:088617b570a5aaa99b6d250bd9262973a49cb31506aa58ed9f101d5c9d7b1e7d"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/positive/promotion.valid.json",
+      "state": "present",
+      "git_blob": "8f58eb3bc78ce246a603b813c48f69ce9d1aced1",
+      "sha256": "sha256:0b11c63f39421e3aa8dd488fc55aa08aa93bd0d607f3a2ca391bf7ad93b5db27"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/positive/run.valid.json",
+      "state": "present",
+      "git_blob": "11836c364b814872dd0eab4231a2818e3ad1a9a3",
+      "sha256": "sha256:41337a5e343c21127c554657559ba5330086dec9a5682228ce8fc0c248fec6f5"
+    },
+    {
+      "path": "programs/one-to-infinity/fixtures/positive/transformation.valid.json",
+      "state": "present",
+      "git_blob": "7ba7f313851177e02b4b81d00d7cc44e468750e2",
+      "sha256": "sha256:bc26ca35b88549c63d107987354c1b1884c31260d9e8d6e4f79bcaccc15bc076"
+    },
+    {
+      "path": "programs/one-to-infinity/tests/VALIDATION.md",
+      "state": "present",
+      "git_blob": "0f47242e4cd876bffc6ba16975ca5cb6ed5e37ee",
+      "sha256": "sha256:7f8aacba8227bca5220bb8da6746180d94ef0767a85f794d19bb9eea087df912"
+    },
+    {
+      "path": "programs/one-to-infinity/tests/emit_ci_receipt.py",
+      "state": "present",
+      "git_blob": "5d2a3ca2c8ebbbdb2d920d984a102b23f251bbcb",
+      "sha256": "sha256:4a13a4a894541b5aff5db5f1290e1f5c1a09e344e0f2e45f620b6a4cebf52ec6"
+    },
+    {
+      "path": "programs/one-to-infinity/tests/test_emit_ci_receipt.py",
+      "state": "present",
+      "git_blob": "1816f9f5d7ed17dcd658d43aaab305b74eaa6708",
+      "sha256": "sha256:3fab9f36a14e38dac6aed9eab78bbefc8feca7c08b549c83a8dd8f7ea70664f4"
+    },
+    {
+      "path": "programs/one-to-infinity/tests/validate_contracts.py",
+      "state": "present",
+      "git_blob": "ce413484ce900df33d73ea53bb3749c9798663de",
+      "sha256": "sha256:a5f3a4ae63eab6dce84afba9c17b31ea2d77798dd9ed514702503a925c9613ec"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s programs/one-to-infinity/tests -p 'test_emit_ci_receipt.py' -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python programs/one-to-infinity/tests/validate_contracts.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python programs/one-to-infinity/tests/emit_ci_receipt.py --expected-head b04a2e1b724faed558b1cbdd68188ec6c7fee2f7",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agents.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-11-01T14:15:01.910864Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:36ad6493724cffb7678fb807ea7132d8825e20c7fdf45b179144403c89733ef5"
+}

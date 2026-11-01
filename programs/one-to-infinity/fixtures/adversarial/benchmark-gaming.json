@@ -1,0 +1,37 @@
+{
+  "fixture_id": "benchmark-gaming",
+  "target_contract": "evidence",
+  "expected_rule": "OTI-E-003",
+  "payload": {
+    "contract_type": "one_to_infinity_evidence",
+    "schema_version": "0.2.0-candidate",
+    "evidence_id": "evidence-one",
+    "transformation_id": "oti-example",
+    "stage": "value_proof",
+    "producer_id": "worker",
+    "evaluator_id": "reviewer",
+    "beneficiary_outcome": {
+      "observed": false,
+      "metric": "accepted assets",
+      "value": 0.7
+    },
+    "proxy_metrics": [
+      "benchmark"
+    ],
+    "countermetrics": [
+      {
+        "metric": "error rate",
+        "passed": true
+      }
+    ],
+    "method": {
+      "preregistered": true,
+      "kind": "paired comparison"
+    },
+    "baseline": 0.5,
+    "observed": 0.7,
+    "source_refs": [
+      "fixture-source"
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "fixture_id": "retention-without-reinvestment",
+  "target_contract": "transformation",
+  "expected_rule": "OTI-T-002",
+  "payload": {
+    "contract_type": "one_to_infinity_transformation",
+    "schema_version": "0.2.0-candidate",
+    "transformation_id": "oti-example",
+    "status": "candidate",
+    "boundaries": {
+      "runtime": false,
+      "canon": false,
+      "provider_access": false,
+      "publication": false
+    },
+    "value_contract": {
+      "beneficiary": "creator",
+      "metric": "accepted assets",
+      "minimum_effect": 0.1
+    },
+    "mechanism": {
+      "trigger": "new fragment",
+      "observable_output": "candidate asset",
+      "retained_state": {
+        "state_id": "state-one",
+        "from_output": "candidate asset",
+        "used_next_cycle": true
+      },
+      "reinvestment": {
+        "source_state_id": "state-one",
+        "target_next_input": "approved context",
+        "connected": false
+      },
+      "constraints": [
+        "human review"
+      ],
+      "balancers": [
+        "quality guardrail"
+      ],
+      "delays": [
+        "24 hours"
+      ]
+    },
+    "economics": {
+      "human_minutes_per_outcome": 10,
+      "cost_per_outcome": 2,
+      "active_constraint": "human review"
+    },
+    "governance": {
+      "human_gate": true,
+      "auto_promote": false
+    }
+  }
+}

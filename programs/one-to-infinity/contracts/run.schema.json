@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "One-to-Infinity run candidate contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_type",
+    "schema_version",
+    "run_id",
+    "transformation_id",
+    "cycle_index",
+    "provider_receipt",
+    "delay",
+    "learning_updates",
+    "receipts",
+    "authority"
+  ],
+  "properties": {
+    "contract_type": {
+      "const": "one_to_infinity_run"
+    },
+    "schema_version": {
+      "const": "0.2.0-candidate"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transformation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cycle_index": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "provider_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "execution_id",
+        "claims_authority"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "execution_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claims_authority": {
+          "type": "boolean"
+        }
+      }
+    },
+    "delay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_hours",
+        "elapsed_hours",
+        "feedback_matured"
+      ],
+      "properties": {
+        "minimum_hours": {
+          "type": "number",
+          "minimum": 0
+        },
+        "elapsed_hours": {
+          "type": "number",
+          "minimum": 0
+        },
+        "feedback_matured": {
+          "type": "boolean"
+        }
+      }
+    },
+    "learning_updates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "applied_next_cycle",
+          "human_approved"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "applied_next_cycle": {
+            "type": "boolean"
+          },
+          "human_approved": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "receipts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_promote",
+        "may_deploy"
+      ],
+      "properties": {
+        "may_promote": {
+          "const": false
+        },
+        "may_deploy": {
+          "const": false
+        }
+      }
+    }
+  }
+}
