@@ -1,0 +1,13 @@
+{
+  "object_key": "fixture.projection-adapter-v0-2",
+  "git_state": {
+    "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "commit_sha": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+    "source_ref": "github://Quirk-Systems/quirk-os/fixtures/fixture.projection-adapter-v0-2"
+  },
+  "supabase_state": {
+    "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "row_id": "fixture-projection-adapter-v0-2",
+    "source_ref": "supabase://quirk-os/source_bindings/fixture.projection-adapter-v0-2"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "idempotency_key": "projection:fixture.projection-adapter-v0-2:deliver:0002",
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "failed",
+      "error": "connection_timeout",
+      "attempted_at": "2026-08-12T01:00:00Z"
+    },
+    {
+      "attempt": 2,
+      "status": "failed",
+      "error": "connection_timeout",
+      "attempted_at": "2026-08-12T01:01:00Z"
+    },
+    {
+      "attempt": 3,
+      "status": "failed",
+      "error": "connection_timeout",
+      "attempted_at": "2026-08-12T01:02:00Z"
+    },
+    {
+      "attempt": 4,
+      "status": "failed",
+      "error": "connection_timeout",
+      "attempted_at": "2026-08-12T01:03:00Z"
+    },
+    {
+      "attempt": 5,
+      "status": "failed",
+      "error": "connection_timeout",
+      "attempted_at": "2026-08-12T01:04:00Z"
+    }
+  ]
+}
