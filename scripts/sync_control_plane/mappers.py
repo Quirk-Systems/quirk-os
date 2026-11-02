@@ -109,3 +109,55 @@ def receipt_canonical_to_runtime(receipt: dict[str, Any]) -> dict[str, Any]:
         "correction_reason": receipt.get("correction_reason"),
         "outcome": receipt.get("outcome") or {},
     }
+
+
+# ---------------------------------------------------------------------------
+# Projection Envelope  (schema: projection-envelope.v1)
+#
+# The projection envelope has no separate runtime-column remapping: all fields
+# are canonical-side identifiers.  The mapper pair is provided so that every
+# admitted object family can be tested in a round-trip.
+# ---------------------------------------------------------------------------
+
+
+def envelope_canonical_to_runtime(envelope: dict[str, Any]) -> dict[str, Any]:
+    """Pass canonical projection envelope fields through to runtime storage.
+
+    All fields are already canonical.  source_bindings within the envelope are
+    stored as-is; no UUID column injection is permitted.
+    """
+    return {
+        "schema_version": envelope["schema_version"],
+        "object_key": envelope["object_key"],
+        "kind": envelope["kind"],
+        "canonical_uri": envelope.get("canonical_uri"),
+        "canonical_version": envelope.get("canonical_version"),
+        "content_hash": envelope.get("content_hash"),
+        "authority_class": envelope["authority_class"],
+        "projection": envelope.get("projection") or {},
+        "source_bindings": envelope.get("source_bindings") or [],
+        "generated_at": envelope["generated_at"],
+        "generator_ref": envelope["generator_ref"],
+    }
+
+
+def envelope_runtime_to_canonical(row: dict[str, Any]) -> dict[str, Any]:
+    """Reconstruct a canonical projection envelope from a runtime row.
+
+    No runtime-UUID columns may appear in the output.  object_key and every
+    binding_id within source_bindings must already be stable Quirk identifiers.
+    """
+    return {
+        "schema_version": row.get("schema_version", "projection-envelope.v1"),
+        "object_key": row["object_key"],
+        "kind": row["kind"],
+        "canonical_uri": row.get("canonical_uri"),
+        "canonical_version": row.get("canonical_version"),
+        "content_hash": row.get("content_hash"),
+        "authority_class": "projection",
+        "projection": row.get("projection") or {},
+        "source_bindings": row.get("source_bindings") or [],
+        "generated_at": _iso(row["generated_at"]),
+        "generator_ref": row["generator_ref"],
+    }
+
