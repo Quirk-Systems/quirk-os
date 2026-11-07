@@ -1,0 +1,93 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.qis-valid-provenance-pins.c667e7dd80f5",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "6f3c05035eaba6c64bc0dd3ab5938f4920351b3b",
+    "commit": "c667e7dd80f5b9cacec72a56b63cc47af0098d3a",
+    "changed_paths": [
+      "evals/qis-agent-harness/receipt.valid-provenance.json"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.qis-valid-provenance-pins.c667e7dd80f5",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Fresh successor evidence for applying PR #133 to current PR #124: subject c667e7dd80f5b9cacec72a56b63cc47af0098d3a has the single parent 6f3c05035eaba6c64bc0dd3ab5938f4920351b3b and changes only evals/qis-agent-harness/receipt.valid-provenance.json. The corrected fixture bytes are identical to PR #133 head 78d18d4241fcc5609ab861a28dd295c6af5d2600 (Git blob 0562504b825f0f6fed8fbbcf1c043893894335cd, SHA-256 c3b937d3954ebdb47682b8e9844a37191ef536ad7e475d65fce4b2f4f5da0306); no stale PR #133 branch commits are added to the subject ancestry. All five material pins match the current subject bytes and the canonical fixture receipt_hash recomputes to 7f56cde8159d241d00230de617b3fe4b5fd9abf226a0dec70f5ae29cdbd7a8b0. Recorded local checks on Python 3.12.14 passed: 49 focused Intent Shaper and harness tests, fixture validation with zero errors, 36/36 Intent Shaper conformance fixtures, Golden candidate structural gates with 16 pre-existing Golden-admission holds, the exact skill-candidate-conformance workflow unit-test command (235 tests OK), and skill conformance for 12 candidate skills, 12 immutable manifests, 4 schemas and 48 executable cases. This fresh receipt replaces the need to copy PR #133 evidence qreceipt.qis-valid-provenance-pins.dd28fdb43b77, whose subject belongs to the stale branch. Historical evidence is preserved separately. The fixture command counts, environment and historical repository SHAs remain synthetic fixture data and are not fresh runtime evidence. This receipt does not claim hosted CI results, all negative fixture freshness, or admission, merge, activation, deployment, persistence or Canon authority.",
+      "evidence_paths": [
+        "evals/qis-agent-harness/receipt.valid-provenance.json"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "evals/qis-agent-harness/receipt.valid-provenance.json",
+      "state": "present",
+      "git_blob": "0562504b825f0f6fed8fbbcf1c043893894335cd",
+      "sha256": "sha256:c3b937d3954ebdb47682b8e9844a37191ef536ad7e475d65fce4b2f4f5da0306"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "git diff --check 6f3c05035eaba6c64bc0dd3ab5938f4920351b3b c667e7dd80f5b9cacec72a56b63cc47af0098d3a",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor 6f3c05035eaba6c64bc0dd3ab5938f4920351b3b c667e7dd80f5b9cacec72a56b63cc47af0098d3a",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor f5effa3d6da3e5879e10007492aeff39a1c643be c667e7dd80f5b9cacec72a56b63cc47af0098d3a",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --exit-code 78d18d4241fcc5609ab861a28dd295c6af5d2600 c667e7dd80f5b9cacec72a56b63cc47af0098d3a -- evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /workspace/scratch/ed33aa16e15b/pr133-verification/golden-metrics.json --write-step-summary",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py' -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /workspace/scratch/ed33aa16e15b/pr133-verification/skills-conformance.json --metrics-output /workspace/scratch/ed33aa16e15b/pr133-verification/skills-metrics.json --write-step-summary",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-05T06:31:04Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:c5b7c958f88cef9f23fbb5af199f7a0205e6d81b7bb43dc0ff8f799b31ed0f28"
+}

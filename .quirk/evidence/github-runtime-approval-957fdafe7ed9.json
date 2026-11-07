@@ -1,0 +1,196 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.github-runtime-approval.957fdafe7ed9",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "da00624fdebf16d0a0f5bbf068a83eeb73a8264a",
+    "commit": "957fdafe7ed98fb4c0d814c7d685c85f67975237",
+    "changed_paths": [
+      ".github/workflows/qis-agent-harness.yml",
+      ".github/workflows/sync-control-plane-conformance.yml",
+      "docs/briefs/2026-10-06-github-runtime-approval.md",
+      "docs/runbooks/github-runtime-approval.md",
+      "scripts/ingest_github_approval.py",
+      "scripts/sync_control_plane/approval.py",
+      "scripts/sync_control_plane/github_approval.py",
+      "scripts/sync_control_plane/policy.py",
+      "scripts/sync_control_plane/skill_runtime.py",
+      "scripts/validate_sync_control_plane.py",
+      "supabase/migrations/20261006043743_github_approval_registry.sql",
+      "supabase/tests/github_approval_registry.sql",
+      "supabase/tests/manifest_activation_guard.cases.sql",
+      "supabase/tests/manifest_activation_guard.service_role.sql",
+      "tests/test_github_approval.py",
+      "tests/test_skill_runtime.py",
+      "tests/test_sync_control_plane.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.github-runtime-approval.957fdafe7ed9",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Exact implementation commit local verification: all 250 repository tests pass on Python 3.12, including 13 approval tests; all 45 QIS and Intent Shaper tests pass. Golden candidate gates pass with 16 existing admission holds. Protected database approval binding, isolated GitHub review ingestion, per-use runtime lookup, inline execution-contract binding, stale expiry and sticky revocation are implemented as candidates. SQL tests are written but local PostgreSQL execution is unavailable. Hosted validation is pending. No live migration, real human review, grant, admission, worker deployment or runtime authority is asserted; live migration drift and executor wiring remain open. Independent agent review found no P1 bypass.",
+      "evidence_paths": [
+        ".github/workflows/qis-agent-harness.yml",
+        ".github/workflows/sync-control-plane-conformance.yml",
+        "docs/briefs/2026-10-06-github-runtime-approval.md",
+        "docs/runbooks/github-runtime-approval.md",
+        "scripts/ingest_github_approval.py",
+        "scripts/sync_control_plane/approval.py",
+        "scripts/sync_control_plane/github_approval.py",
+        "scripts/sync_control_plane/policy.py",
+        "scripts/sync_control_plane/skill_runtime.py",
+        "scripts/validate_sync_control_plane.py",
+        "supabase/migrations/20261006043743_github_approval_registry.sql",
+        "supabase/tests/github_approval_registry.sql",
+        "supabase/tests/manifest_activation_guard.cases.sql",
+        "supabase/tests/manifest_activation_guard.service_role.sql",
+        "tests/test_github_approval.py",
+        "tests/test_skill_runtime.py",
+        "tests/test_sync_control_plane.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/qis-agent-harness.yml",
+      "state": "present",
+      "git_blob": "8a7d50e43437a29066bd072bffcea69d1b44b433",
+      "sha256": "sha256:00fe883e2dc6ff3844485ac55f999a2628f9e087ff521a585a08259d6d260929"
+    },
+    {
+      "path": ".github/workflows/sync-control-plane-conformance.yml",
+      "state": "present",
+      "git_blob": "d1c267ab1d2a0e69fec42c733410f3b952b8aad8",
+      "sha256": "sha256:ef8c1ca46a510636bd149ecaca72ebf9e1547f582ac290a96b1ada38e9ca9d7c"
+    },
+    {
+      "path": "docs/briefs/2026-10-06-github-runtime-approval.md",
+      "state": "present",
+      "git_blob": "9540fb8428cdf4c2102cab57e3e5030f7ab51464",
+      "sha256": "sha256:9f4a9a3fa31c599516370330f68161256018e0e017e2645d3a7a5618023dfa57"
+    },
+    {
+      "path": "docs/runbooks/github-runtime-approval.md",
+      "state": "present",
+      "git_blob": "42f14b488f4dd6bfca521cbb9b5aabb98fd0acb8",
+      "sha256": "sha256:441a94efedbde0c5df8e320fa80bf11f80d77d2717ac48627611303f3c25f454"
+    },
+    {
+      "path": "scripts/ingest_github_approval.py",
+      "state": "present",
+      "git_blob": "20ce077c551d9731d034ba2f4ae5ecf913645b82",
+      "sha256": "sha256:099f53c9600076a237e2c05f1dcb9f147de8df27bfd644581691762cee4b576f"
+    },
+    {
+      "path": "scripts/sync_control_plane/approval.py",
+      "state": "present",
+      "git_blob": "b64b22f6e52b55a33676035509107c72e2c032c3",
+      "sha256": "sha256:82ba27305f52aefa0c4ca20f20cb5e61923b38792dd9afbaa8974147f8b41433"
+    },
+    {
+      "path": "scripts/sync_control_plane/github_approval.py",
+      "state": "present",
+      "git_blob": "3fa7cb0aad8e02ba4a5d0f2cc0732d7e394bf8b5",
+      "sha256": "sha256:b1bae85ae5df1eeb3ea689a83cdb729f435be6bf3a67b5088165b001afb14f49"
+    },
+    {
+      "path": "scripts/sync_control_plane/policy.py",
+      "state": "present",
+      "git_blob": "7a8d5c801445a28ecfe8fa03306f778bb2298503",
+      "sha256": "sha256:5782ebfaad858861448d95576aa046669eb1f19a32878ba1187a29057540e818"
+    },
+    {
+      "path": "scripts/sync_control_plane/skill_runtime.py",
+      "state": "present",
+      "git_blob": "9681b894d0054115e721751ca325255ba2776ce6",
+      "sha256": "sha256:c0277aa52cfd67688e8875baee9ecd1a04dd25b6173b1ecf2e63bb60e9d6e173"
+    },
+    {
+      "path": "scripts/validate_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "8ce5d76f0107c372eb5b4a1183d65a630faca64b",
+      "sha256": "sha256:68eb197c3d2704f81b089ad204c4f6dafd401a7ea74c2e687a61f9f8cc6343e5"
+    },
+    {
+      "path": "supabase/migrations/20261006043743_github_approval_registry.sql",
+      "state": "present",
+      "git_blob": "7b9fba68e1c2b177b3030e9cef6f1a884f70cb48",
+      "sha256": "sha256:483ab10b3f93b3907dc05dde9efc202ca42123ae36cf99e9d7a4fd242924ff91"
+    },
+    {
+      "path": "supabase/tests/github_approval_registry.sql",
+      "state": "present",
+      "git_blob": "3c4466dc8340db025431d25abc790db3017ea6d9",
+      "sha256": "sha256:a1a9b34e127e7f61f903275e0f973678bf3b6d6112b229c20b7fb1327e9c067f"
+    },
+    {
+      "path": "supabase/tests/manifest_activation_guard.cases.sql",
+      "state": "present",
+      "git_blob": "284d8e9c842f3c3cf0880d1a5e182dcf8d491b15",
+      "sha256": "sha256:1699724dd045c3e3cee079ce022dc4e92a55653439de0466e41261c55ef4112e"
+    },
+    {
+      "path": "supabase/tests/manifest_activation_guard.service_role.sql",
+      "state": "present",
+      "git_blob": "64abc42a88e82d0853867d40c0f81cbd860f69dd",
+      "sha256": "sha256:3ce7be469aa23edf281c08ca35d16853e07753af8e5d81b0986a8250a69c1453"
+    },
+    {
+      "path": "tests/test_github_approval.py",
+      "state": "present",
+      "git_blob": "bb10737882c5ca353322f06d10561ad6e4ae23f9",
+      "sha256": "sha256:c8d33e9200101b51cb0abc624afe7ac5d7113d61f19ba5cff37fa5646b96fc82"
+    },
+    {
+      "path": "tests/test_skill_runtime.py",
+      "state": "present",
+      "git_blob": "6c83d203290b8dcddf4744f7e7989797aed2141d",
+      "sha256": "sha256:b49e18f896c0e5fb64ef8dc27b75d1f9b0a7f713b916ed4bb6877cebf2c41c04"
+    },
+    {
+      "path": "tests/test_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "d6ba07214d303aeab56e68689913469d611db448",
+      "sha256": "sha256:b94c2b1332772c1308afccf83392a8220e3976481949c837a1bfb623751eadb0"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest tests.test_qis_harness tests.test_intent_shaper -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/admission_workplan.py --output /tmp/quirk-approval-workplan.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-06T04:48:47.893935Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:08991bda2026b0eb80725d8302f384825f05b6296b118b83a888021f4ebf5319"
+}

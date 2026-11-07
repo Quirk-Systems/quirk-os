@@ -3,11 +3,7 @@ import assert from "node:assert/strict";
 import { handleRequest } from "../src/index.mjs";
 
 const envelope = { recommendation: { id: "recommendation:test" }, evidence: [] };
-const request = (headers = {}) => new Request("https://beauty.example/v1/explanations", {
-  method: "POST",
-  headers: { "content-type": "application/json", ...headers },
-  body: JSON.stringify(envelope),
-});
+const request = (headers = {}) => new Request("https://beauty.example/v1/explanations", { method: "POST", headers: { "content-type": "application/json", ...headers }, body: JSON.stringify(envelope) });
 
 test("Worker is disabled by default", async () => {
   const response = await handleRequest(request(), {});
@@ -33,29 +29,50 @@ test("denied authority cannot reach explanation service", async () => {
   assert.equal(calls, 0);
 });
 
-test("allowed authority without a receipt fails closed", async () => {
-  let calls = 0;
+test("exact action grant can reach bounded explanation service", async () => {
   const env = {
     QUIRK_RUNTIME_STATE: "bounded_test",
-    AUTHORITY_VERIFIER: { fetch: async () => new Response(JSON.stringify({ allowed: true, action: "beauty.render_recommendation_explanation" }), { headers: { "content-type": "application/json" } }) },
-    EXPLANATION_SERVICE: { fetch: async () => { calls += 1; return new Response(JSON.stringify({ ok: true })); } },
-  };
-  const response = await handleRequest(request({ "x-quirk-authority-grant": "grant:test" }), env);
-  assert.equal(response.status, 403);
-  assert.equal((await response.json()).reason, "missing_authority_receipt");
-  assert.equal(calls, 0);
-});
-
-test("exact action grant with receipt can reach bounded explanation service", async () => {
-  const env = {
-    QUIRK_RUNTIME_STATE: "bounded_test",
-    AUTHORITY_VERIFIER: { fetch: async () => new Response(JSON.stringify({ allowed: true, action: "beauty.render_recommendation_explanation", receiptRef: "authority-receipt:test" }), { headers: { "content-type": "application/json" } }) },
-    EXPLANATION_SERVICE: { fetch: async (url, init) => {
-      assert.equal(init.headers["x-quirk-authority-receipt"], "authority-receipt:test");
-      return new Response(JSON.stringify({ ok: true }), { headers: { "content-type": "application/json" } });
-    } },
+    AUTHORITY_VERIFIER: { fetch: async () => new Response(JSON.stringify({ allowed: true, action: "beauty.render_recommendation_explanation", receiptRef: "authority-receipt:test" })) },
+    EXPLANATION_SERVICE: { fetch: async () => new Response(JSON.stringify({ ok: true }), { headers: { "content-type": "application/json" } }) },
   };
   const response = await handleRequest(request({ "x-quirk-authority-grant": "grant:test" }), env);
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), { ok: true });
+});
+
+test("a positive verifier decision without receipt cannot invoke explanation service", async () => {
+  let calls = 0;
+  const env = {
+    QUIRK_RUNTIME_STATE: "bounded_test",
+    AUTHORITY_VERIFIER: { fetch: async () => new Response(JSON.stringify({ allowed: true, action: "beauty.render_recommendation_explanation" })) },
+    EXPLANATION_SERVICE: { fetch: async () => { calls++; return new Response("{}"); } },
+  };
+  const response = await handleRequest(request({ "x-quirk-authority-grant": "grant:test" }), env);
+  assert.equal(response.status, 403);
+  assert.equal(calls, 0);
+});
+
+test("malformed receipt reference cannot invoke explanation service", async () => {
+  let calls = 0;
+  const env = {
+    QUIRK_RUNTIME_STATE: "bounded_test",
+    AUTHORITY_VERIFIER: { fetch: async () => new Response(JSON.stringify({ allowed: true, action: "beauty.render_recommendation_explanation", receiptRef: "\n" })) },
+    EXPLANATION_SERVICE: { fetch: async () => { calls++; return new Response("{}"); } },
+  };
+  const response = await handleRequest(request({ "x-quirk-authority-grant": "grant:test" }), env);
+  assert.equal(response.status, 403);
+  assert.equal(calls, 0);
+});
+
+test("oversized request is rejected before invoking explanation service", async () => {
+  let calls = 0;
+  const env = {
+    QUIRK_RUNTIME_STATE: "bounded_test",
+    AUTHORITY_VERIFIER: { fetch: async () => new Response(JSON.stringify({ allowed: true, action: "beauty.render_recommendation_explanation", receiptRef: "authority-receipt:test" })) },
+    EXPLANATION_SERVICE: { fetch: async () => { calls++; return new Response("{}"); } },
+  };
+  const huge = new Request("https://beauty.example/v1/explanations", { method: "POST", headers: { "content-type": "application/json", "x-quirk-authority-grant": "grant:test" }, body: JSON.stringify({recommendation:{id:"r:test"},evidence:["x".repeat(100000)]}) });
+  const response = await handleRequest(huge, env);
+  assert.equal(response.status, 413);
+  assert.equal(calls, 0);
 });

@@ -1,0 +1,85 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr143-request-shape.7622b5fb5b1f",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "30924bafff62d27b4f09fbc1b802242c8988033f",
+    "commit": "7622b5fb5b1f56bb151b84d0ddc483a27232924e",
+    "changed_paths": [
+      "docs/changes/pr141-approval-followup.md",
+      "scripts/sync_control_plane/github_approval.py",
+      "tests/test_github_approval.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr143-request-shape.7622b5fb5b1f",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Complete approval request shape validated before request policy. Null and wrong-typed required values, malformed principals/digest/path/actions/timestamps propagate as ordinary errors with no timestamp writes and recovery possible. Well-formed policy invalidation remains sticky. 264 repository tests pass at subject commit, including 23 approval methods; two new malformed-request regression methods fail against original implementation. Sync conformance byte-identical; Golden structural checks pass with 16 holds. Synthetic fixtures and mocked connections only. No real grant, admission, deployment or runtime authority.",
+      "evidence_paths": [
+        "docs/changes/pr141-approval-followup.md",
+        "scripts/sync_control_plane/github_approval.py",
+        "tests/test_github_approval.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/changes/pr141-approval-followup.md",
+      "state": "present",
+      "git_blob": "48f3bf5ffcb82b2e3dd9af6c38b6a78990e879fc",
+      "sha256": "sha256:01a179b212b6aa4afcf4d60646facb30a693be4d5a9e30cef0f0ed3be033b107"
+    },
+    {
+      "path": "scripts/sync_control_plane/github_approval.py",
+      "state": "present",
+      "git_blob": "3ee3d7a1236c551c996c554646aee476003260cd",
+      "sha256": "sha256:48f056761d1ca333a56651b999075ea7620fbece75373b30db55467bf7244532"
+    },
+    {
+      "path": "tests/test_github_approval.py",
+      "state": "present",
+      "git_blob": "bf1cf48bf9eadbc616af4e351a7871859c62164d",
+      "sha256": "sha256:d01e8e72714607512ea4300102c9939bce991ff82d85441a214813e221454410"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p test_*.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --repo . --output /tmp/pr143-exact-conformance.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "cmp evals/sync-control-plane/conformance-results.json /tmp/pr143-exact-conformance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-06T23:41:38.079287Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:4230d21e902e1a494833f3d13a9a3bf4d6416bf71e3e0ccec10eac6a87436e68"
+}
+

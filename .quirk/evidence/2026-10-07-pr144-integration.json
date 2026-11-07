@@ -1,0 +1,108 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.quirk-os.pr144-integration.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "b425c864fa54d0103e5ae858aa4f340236b1885d",
+    "commit": "8579ca083f27514a4a0fc00af826e03e8bb88b96",
+    "changed_paths": [
+      ".quirk/evidence/2026-10-07-pr117-source-binding.json",
+      "docs/changelog/PR-117.md",
+      "schemas/agent-manifest.schema.json",
+      "schemas/agent-registry.schema.json",
+      "scripts/validate_agents.py",
+      "tests/test_agent_manifest.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.quirk-os.pr144-integration.2026-10-07",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Integrates the three final PR117 review repairs against its actual merged main base. Registry identity, line-break version, and symlink-source regressions pass. 359 tests ran: 358 passed, one Windows-only test skipped on Linux, including 48 passing agent tests. Agent, Golden structural and Sync pass with 16 admission holds. No admission, activation or runtime authority is granted.",
+      "evidence_paths": [
+        ".quirk/evidence/2026-10-07-pr117-source-binding.json",
+        "docs/changelog/PR-117.md",
+        "schemas/agent-manifest.schema.json",
+        "schemas/agent-registry.schema.json",
+        "scripts/validate_agents.py",
+        "tests/test_agent_manifest.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".quirk/evidence/2026-10-07-pr117-source-binding.json",
+      "state": "present",
+      "git_blob": "40c9baab41fb0617203b1157c1ce2540eaa6bf4b",
+      "sha256": "sha256:20dd8c5f7352566fb8472056bcb192a0d17b6dd6e5a7252da18983e3250efd8f"
+    },
+    {
+      "path": "docs/changelog/PR-117.md",
+      "state": "present",
+      "git_blob": "29239f2a4c24478ff11cda6bd695e18c81e14c84",
+      "sha256": "sha256:f56bd9d20ee3d4a99c9be6d8031839363c025bd7108b022956a1cf9b77ad5cc1"
+    },
+    {
+      "path": "schemas/agent-manifest.schema.json",
+      "state": "present",
+      "git_blob": "d4568e25d7686c19c4a91caabeb9acdf3b63e742",
+      "sha256": "sha256:1794b36999cadc775e569063c157f40fcfd75f6dd39847585d80b3a0a5449c7b"
+    },
+    {
+      "path": "schemas/agent-registry.schema.json",
+      "state": "present",
+      "git_blob": "2fd51be741ce12991707f56c02bdd3c8ea89f4d1",
+      "sha256": "sha256:ee61b10950866035513fe63c415cbd067a4cac3a6ddb7cbc438676efb6af16bf"
+    },
+    {
+      "path": "scripts/validate_agents.py",
+      "state": "present",
+      "git_blob": "bb089b9ea432c3296e0536cbc49db98bb9eeab5e",
+      "sha256": "sha256:1d377cf974c17ba69dad95a6fdae33ad3cdad04ffcfb17d3d768452079060ade"
+    },
+    {
+      "path": "tests/test_agent_manifest.py",
+      "state": "present",
+      "git_blob": "9780827772e56bbdf6f2a66b86caab5a44c7c132",
+      "sha256": "sha256:200626c1431bffaa1c10d8a22bbe765831f01e6f6a5c2cccce22e51e69602e00"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py' -q",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_agents.py --repo . --output /tmp/144-agent.json --metrics-output /tmp/144-metrics.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --repo . --output /tmp/144-sync.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-07T16:24:29.142899Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:8d016d4e168d1591f0774f6ebe0e14a7b7b510e452d76f443446670f175ca614"
+}

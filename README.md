@@ -21,6 +21,12 @@ The first project pack defines the accountable machinery beneath Quirk Core:
 
 Start here: [`docs/golden-project-pack/README.md`](docs/golden-project-pack/README.md)
 
+### Quirk Agents
+
+Agent manifests under `agents/` are candidate contracts validated by `scripts/validate_agents.py` against `schemas/agent-manifest.schema.json` and the sealed `agents/registry.json`. Validation is evidence only; it admits and activates nothing.
+
+Start here: [`agents/README.md`](agents/README.md)
+
 ## Core laws
 
 - Every consequential mutation owes a receipt.

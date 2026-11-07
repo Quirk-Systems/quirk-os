@@ -1,0 +1,30 @@
+{
+  "$schema": "https://quirk.systems/generated-ui/component-manifest.v1.json",
+  "component_id": "component.generated-ui.issue-intake-form",
+  "version": "1.2.3",
+  "content_type": "generated_ui_component_manifest",
+  "data_bindings": [
+    {
+      "binding_id": "binding.intent.summary",
+      "source_ref": "intent.summary",
+      "required": true
+    }
+  ],
+  "state_bindings": [
+    {
+      "binding_id": "state.issue.selection",
+      "source_ref": "state.selection",
+      "required": true
+    }
+  ],
+  "user_actions": [
+    {
+      "action_id": "action.request.review",
+      "label": "Request review",
+      "kind": "request_review",
+      "effect_ref": "effect.review.request",
+      "authority_effect": "propose_reversible"
+    }
+  ],
+  "semantic_fallback_ref": "affordance.plain_answer"
+}

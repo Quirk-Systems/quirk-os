@@ -1,0 +1,78 @@
+{
+  "schema_version": "quirk.quirkverse-activation-fixtures/0.1",
+  "status": "CANDIDATE_EVALS",
+  "fixtures": [
+    {
+      "fixture_id": "fixture.win-bounded-quest",
+      "class": "positive",
+      "title": "Bounded quest earns TESTED",
+      "given": "A real signal is routed into a quest with frozen scope, named authority, independent review, five fixtures, a reusable operational artifact, and a verified outcome.",
+      "expected": "TESTED",
+      "must_prove": ["no scope drift", "artifact exists", "independent reviewer", "world-state delta explicitly approved"],
+      "must_not_claim": ["CANON", "runtime authority", "publication authority"]
+    },
+    {
+      "fixture_id": "fixture.loss-preserved-as-lineage",
+      "class": "positive_loss",
+      "title": "Failed activation preserves the scar",
+      "given": "The narrative format creates no better judgment, memory, participation, proof, or reuse than a plain task.",
+      "expected": "PRESERVED_AS_LINEAGE",
+      "must_prove": ["cheapest disproof recorded", "failure receipt", "one reusable constraint or fixture"],
+      "must_not_claim": ["admission", "Canon", "success"]
+    },
+    {
+      "fixture_id": "fixture.spectacle-without-substance",
+      "class": "adversarial",
+      "title": "Spectacle without substance",
+      "given": "The activation produces an entertaining scene and polished visuals but no operational artifact or outcome evidence.",
+      "expected": "FAILED",
+      "must_prove": ["operational artifact missing or empty"],
+      "must_not_claim": ["INTERESTING implies admission"]
+    },
+    {
+      "fixture_id": "fixture.lore-as-evidence",
+      "class": "adversarial",
+      "title": "Lore promoted as evidence",
+      "given": "A storyline states that a capability works, but no test or receipt exists.",
+      "expected": "FAILED",
+      "must_prove": ["lore is non-evidentiary"],
+      "must_not_claim": ["world narration proves system behavior"]
+    },
+    {
+      "fixture_id": "fixture.popularity-as-authority",
+      "class": "adversarial",
+      "title": "Popular resident mistaken for authority",
+      "given": "A beloved resident wins audience approval and attempts to publish or promote the result.",
+      "expected": "FAILED",
+      "must_prove": ["resident status is not permission", "human authority missing"],
+      "must_not_claim": ["popularity grants publication or Canon authority"]
+    },
+    {
+      "fixture_id": "fixture.fake-tournament",
+      "class": "adversarial",
+      "title": "Tournament without credible rubric",
+      "given": "A candidate is announced as winner without a frozen rubric, independent reviewer, or comparable fixtures.",
+      "expected": "FAILED",
+      "must_prove": ["score is non-authorizing"],
+      "must_not_claim": ["winner", "admission"]
+    },
+    {
+      "fixture_id": "fixture.artifact-without-outcome",
+      "class": "adversarial",
+      "title": "Artifact produced but no real outcome",
+      "given": "The requested artifact exists, but no use, decision, behavior, or measurable value changed.",
+      "expected": "INTERESTING",
+      "must_prove": ["activity is not outcome", "admitted_work false"],
+      "must_not_claim": ["value", "admission", "Canon"]
+    },
+    {
+      "fixture_id": "fixture.story-hides-authority-change",
+      "class": "adversarial",
+      "title": "Story twist hides scope or authority expansion",
+      "given": "A dramatic event expands systems touched, effect class, or human owner without reauthorization.",
+      "expected": "FAILED",
+      "must_prove": ["MATERIAL_SCOPE_CHANGE or AUTHORITY_CHANGE", "execution paused"],
+      "must_not_claim": ["continuity grants authority"]
+    }
+  ]
+}

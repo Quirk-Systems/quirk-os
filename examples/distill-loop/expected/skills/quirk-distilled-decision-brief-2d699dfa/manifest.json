@@ -1,0 +1,200 @@
+{
+  "$schema": "../../schemas/skill-package.schema.json",
+  "api_version": "quirk.dev/skill/v1alpha1",
+  "kind": "SkillPackage",
+  "id": "quirk-distilled-decision-brief-2d699dfa",
+  "title": "Distilled decision brief replay of Quirk Distillation Synthesizer",
+  "version": "0.1.0",
+  "status": "candidate",
+  "family": "distill",
+  "purpose": "Replay the move sequence that completed run receipt.quirk-distillation-synthesizer.trial.0007 of quirk-distillation-synthesizer 0.2.0 for decision brief work (read_sources, normalize_claims, map_contradictions, emit_synthesis_pack). Auto-distilled and unreviewed; a distill promotion receipt is required before any run may load it.",
+  "authority": {
+    "ceiling": "infer",
+    "capability_does_not_imply_authority": true,
+    "requires_external_grant": true,
+    "requires_independent_approval_for_active": true,
+    "self_activation": false,
+    "self_escalation": false,
+    "canon_promotion": false,
+    "irreversible_write": false
+  },
+  "triggers": {
+    "when_to_use": [
+      "Use when a decision brief task presents the observed routing signals: claim extraction, contradiction matrix, decision brief."
+    ],
+    "when_not_to_use": [
+      "Do not use before a distill promotion receipt exists for this exact candidate digest.",
+      "Do not use when a trigger collision with quirk-distillation-synthesizer or any admitted skill remains unresolved.",
+      "Do not use when the external authority grant for the source skill cannot be established."
+    ],
+    "routing_signals": [
+      "claim extraction",
+      "contradiction matrix",
+      "decision brief"
+    ],
+    "collision_behavior": "block"
+  },
+  "contract": {
+    "inputs": [
+      {
+        "name": "source_refs",
+        "type": "array",
+        "required": true
+      },
+      {
+        "name": "decision_scope",
+        "type": "string",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "synthesis_pack",
+        "type": "object",
+        "required": true
+      },
+      {
+        "name": "claim_lineage",
+        "type": "array",
+        "required": true
+      }
+    ],
+    "invariants": [
+      "every_claim_traceable",
+      "contradictions_preserved",
+      "compression_preserves_decisive_nuance",
+      "derived_from_immutable_receipt",
+      "never_exceeds_source_ceiling",
+      "unloadable_until_promotion_receipt"
+    ],
+    "failure_conditions": [
+      "missing_provenance",
+      "unsupported_combined_claim",
+      "rights_restrict_derivative",
+      "source_receipt_missing",
+      "promotion_receipt_missing"
+    ],
+    "stop_conditions": [
+      "missing_provenance",
+      "unsupported_combined_claim",
+      "rights_restrict_derivative",
+      "authority_grant_missing",
+      "self_promotion_attempt",
+      "promotion_receipt_missing"
+    ]
+  },
+  "method": {
+    "moves": [
+      "read_sources",
+      "normalize_claims",
+      "map_contradictions",
+      "emit_synthesis_pack"
+    ],
+    "sequence": [
+      "Confirm a distill promotion receipt binds this candidate digest before loading this procedure.",
+      "Resolve purpose, source authority, scope, and external grant before work begins.",
+      "Replay read_sources as evidenced by ledger.evidence.trial-0007.sources.",
+      "Replay normalize_claims as evidenced by ledger.evidence.trial-0007.claims.",
+      "Replay map_contradictions as evidenced by ledger.evidence.trial-0007.contradictions.",
+      "Replay emit_synthesis_pack as evidenced by asset.synthesis-pack.roadmap-q4-adoption.0007.",
+      "Emit an attributable receipt and route improvements as Proposed Moves against the source skill."
+    ],
+    "decision_points": [
+      "Does the current task match the observed routing signals without a trigger collision?",
+      "Would the next move exceed the distilled authority ceiling or the source skill grant?",
+      "Did every replayed move produce evidence comparable to the source run?"
+    ],
+    "approval_gates": [
+      "A distill promotion receipt with distinct requester and approver is required before this candidate enters any run context.",
+      "External admission is required before runtime loading.",
+      "A separate scoped grant is required for every consequential execution."
+    ]
+  },
+  "resources": [
+    {
+      "resource_type": "source_pack",
+      "access": "read",
+      "required": true,
+      "constraints": [
+        "bounded_scope",
+        "provenance_required"
+      ]
+    },
+    {
+      "resource_type": "evidence_ledger",
+      "access": "reference",
+      "required": true,
+      "constraints": [
+        "host_owned_append_only_write",
+        "receipt_required",
+        "no_status_promotion"
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "name": "quirk_runtime",
+      "actions": [
+        "read_sources",
+        "normalize_claims",
+        "map_contradictions",
+        "emit_synthesis_pack"
+      ],
+      "required": true
+    },
+    {
+      "name": "human_review",
+      "actions": [
+        "request_review",
+        "attach_review_evidence"
+      ],
+      "required": false
+    }
+  ],
+  "quality": {
+    "eval_suite_ref": "evals/skills/distilled/quirk-distilled-decision-brief-2d699dfa.json",
+    "required_case_kinds": [
+      "positive",
+      "adversarial",
+      "regression",
+      "authority"
+    ],
+    "minimum_score": 1.0,
+    "regression_required": true,
+    "anti_patterns": [
+      "unreviewed_candidate_treated_as_canon",
+      "replay_without_evidence",
+      "longer_summary_called_synthesis",
+      "source_replacement",
+      "uncertainty_erasure"
+    ]
+  },
+  "learning": {
+    "mutation_mode": "propose_only",
+    "historical_rewrite": false,
+    "promotion_requires_external_admission": true,
+    "feedback_capture": "append_only_receipt"
+  },
+  "compatibility": {
+    "mapping_ref": "mappings/skill-package.v1.yaml",
+    "runtime_manifest_ref": "schemas/runtime-manifest.schema.json",
+    "minimum_runtime_contract": "0.2.0"
+  },
+  "provenance": {
+    "source_path": "skills/quirk-distilled-decision-brief-2d699dfa/SKILL.md",
+    "derived_from": [
+      "receipt:receipt.quirk-distillation-synthesizer.trial.0007",
+      "trace:trace.quirk-distillation-synthesizer.trial.0007",
+      "skill:quirk-distillation-synthesizer@0.2.0",
+      "source-manifest-sha256:eb3b41048844dba81b0dbed6cd4647fd7bab64332ad8fce9274e475e49ffab48"
+    ],
+    "steward": "unassigned-pending-promotion",
+    "created_at": "2026-09-18T14:26:40Z"
+  },
+  "integrity": {
+    "source_algorithm": "git-blob-sha1",
+    "source_blob_sha": "4136bfb2806e9a0e75aec3a913f7824f03044a4e",
+    "manifest_algorithm": "sha256-canonical-json-v1",
+    "manifest_sha256": "d5cdc2b0480dc07624b635d7a9c3d904056570912b0f9089b2b51f1f785aa5a1"
+  }
+}

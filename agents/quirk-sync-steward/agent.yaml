@@ -71,3 +71,17 @@ stop_conditions:
   - retry_budget_exhausted
   - rights_review_missing
 receipt_required: true
+observability:
+  ci_metrics_refs:
+    - evals/sync-control-plane/conformance-metrics.json
+    - evals/golden-pack/validate-golden-pack-metrics.json
+  benchmark_refs:
+    - supabase/tests/sync_control_plane_outbox_claim_benchmark.sql
+  required_reporting:
+    - elapsed_seconds
+    - fixture_count
+    - migration_file_count
+    - eligible
+  forbidden_shortcuts:
+    - skip_receipt_on_failure
+    - derive_authority_from_confidence

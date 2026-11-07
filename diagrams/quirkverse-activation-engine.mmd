@@ -1,0 +1,43 @@
+flowchart TD
+    S["Outside Signal"] --> R["World Router"]
+    R --> C["Cast Residents"]
+    R --> L["Select Location"]
+    R --> F["Choose Activation Format"]
+    C --> P["Story Pressure"]
+    L --> P
+    F --> P
+    P --> Q["Capability Pursuit"]
+    Q --> G{"Scope, Authority<br>and Effect-Class Gates"}
+    G -- "Fail / change" --> PAUSE["PAUSE<br>Re-authorize / Split / Reject"]
+    G -- "Pass" --> M["Governed Move"]
+    M --> A["Artifact Stack"]
+    A --> E["Independent Evidence Receipt"]
+    E --> D{"Disposition"}
+    D -->|FAILED| LOSS["Loss / Scar"]
+    D -->|INTERESTING| OPEN["Open World / Watch"]
+    D -->|CANDIDATE| CAND["Candidate"]
+    D -->|TESTED| TEST["Tested"]
+    D -->|ADMITTED| ADMIT["Admitted"]
+    D -->|CANON| CANON["Canon — explicit human authority"]
+    D -->|BONEYARD| BONE["Boneyard"]
+    D -->|PRESERVED AS LINEAGE| LINE["Museum / Lineage"]
+    LOSS --> W["World-State Delta or Explicit No-Change"]
+    OPEN --> W
+    CAND --> W
+    TEST --> W
+    ADMIT --> W
+    CANON --> W
+    BONE --> W
+    LINE --> W
+    W --> CTX["Context Window Refresh"]
+    CTX --> S
+
+    classDef gate fill:#fff4cc,stroke:#8a6d00,stroke-width:2px;
+    classDef proof fill:#e8f4ff,stroke:#1c5d99,stroke-width:2px;
+    classDef danger fill:#ffe9e9,stroke:#9d2a2a,stroke-width:2px;
+    classDef canon fill:#eaf8e8,stroke:#277a32,stroke-width:2px;
+
+    class G,D gate;
+    class A,E,W,CTX proof;
+    class PAUSE,LOSS danger;
+    class CANON canon;

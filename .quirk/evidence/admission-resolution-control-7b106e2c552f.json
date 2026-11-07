@@ -1,0 +1,111 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.admission-resolution-control.7b106e2c552f",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "017d7f700982b63b31d3a24f3886d89898277c49",
+    "commit": "7b106e2c552f899bb9cc6c617443a7a0237d1db1",
+    "changed_paths": [
+      ".github/workflows/golden-gates.yml",
+      "docs/runbooks/admission-resolution.md",
+      "evals/golden-admission/hold-audit.json",
+      "scripts/admission_workplan.py",
+      "scripts/sync_control_plane/skill_runtime.py",
+      "tests/test_admission_workplan.py",
+      "tests/test_skill_runtime.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.admission-resolution-control.7b106e2c552f",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Fresh local verification of structural runtime-grant hardening and read-only admission-work inspection. All 237 repository tests pass on Python 3.12, including malformed-grant/nonhuman-approval adversarial tests and workplan criteria/coverage/self-verification/path-containment tests. Golden candidate structural gates pass with all 16 existing admission holds. The workplan covers the 16 original moves with current artifact hashes, every unassessed acceptance criterion, dependencies, authority IDs, human/external evidence needs and stop conditions. The audit is explicitly local and version-bound. CI gets full history to verify audit ancestry. No move is disposed or verified, no actual admission or grant is created, no provider is mutated. Human-name authenticity, real revocation registry, scoped approval trust-root choice, independent PostgreSQL enforcement and outsider/provider evidence remain unestablished. Unknown revoked fields are schema-rejected, which is not a revocation service. Hosted checks are pending at evidence creation.",
+      "evidence_paths": [
+        ".github/workflows/golden-gates.yml",
+        "docs/runbooks/admission-resolution.md",
+        "evals/golden-admission/hold-audit.json",
+        "scripts/admission_workplan.py",
+        "scripts/sync_control_plane/skill_runtime.py",
+        "tests/test_admission_workplan.py",
+        "tests/test_skill_runtime.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/golden-gates.yml",
+      "state": "present",
+      "git_blob": "ca22395993bc7b5fd695d1138f47b3f1b921f809",
+      "sha256": "sha256:a9fed1a1b873027d7a27d84381f3e33ebb0840b3ee74406693e97a3a2f1abf5d"
+    },
+    {
+      "path": "docs/runbooks/admission-resolution.md",
+      "state": "present",
+      "git_blob": "b1aa84bfdffacf62eb6d963de0afe4325e16c8dc",
+      "sha256": "sha256:466198f282cce2843a6cbc61ebbae73754017d7fe3f63739aeda9e156ead29d3"
+    },
+    {
+      "path": "evals/golden-admission/hold-audit.json",
+      "state": "present",
+      "git_blob": "455c13132572031b7eb7b7bd69ab1f33978ea9eb",
+      "sha256": "sha256:bf5640d91ee04a8d7d6ca7fa8f6746d3638085d15667504de7f44ecd31e2ef71"
+    },
+    {
+      "path": "scripts/admission_workplan.py",
+      "state": "present",
+      "git_blob": "bd732f164a7ee86293a7240866abe322fc9a2913",
+      "sha256": "sha256:e63ecf8df33235e944fcd229ea9c399841e4b20bb0200b52e8f3ad183edae58c"
+    },
+    {
+      "path": "scripts/sync_control_plane/skill_runtime.py",
+      "state": "present",
+      "git_blob": "ab8ad8f54804a048e59a45b88636d481362c0b21",
+      "sha256": "sha256:055d1bcc32291999c0ea3fbce4d644bb901b7b7d2a3c4b1a6160138b0c860ea6"
+    },
+    {
+      "path": "tests/test_admission_workplan.py",
+      "state": "present",
+      "git_blob": "36c0a733b3beccb6c8e820590645341a5adc1e3c",
+      "sha256": "sha256:f54f22abf9632c7200e47b767405090b860daca17f04d74d8275ff5c4bbf905a"
+    },
+    {
+      "path": "tests/test_skill_runtime.py",
+      "state": "present",
+      "git_blob": "3fcad4a3c6302257fb66caa341713f95b9d6a4a3",
+      "sha256": "sha256:41a385ebe95d7c78ff0319c3e3c47436e9238b266c1bfef457eed00e33b13ab8"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/admission_workplan.py --output /workspace/scratch/6437804403fa/admission-workplan.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check 017d7f700982b63b31d3a24f3886d89898277c49 7b106e2c552f899bb9cc6c617443a7a0237d1db1",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-06T01:38:53Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:2c6dd9ee770a2bc6fac9113770fb5f892b1e1531089fca7714a442571fa59e49"
+}

@@ -12,6 +12,8 @@ A chamber is not a page, vibe, room, or brand flourish. A chamber is an operator
 Chamber = Purpose + Inputs + Allowed transformations + Required evidence + Authority ceiling + Output contract + Failure states
 ```
 
+Telemetry is evidence attached to a chamber context, not a chamber authority source.
+
 ## Initial chamber set
 
 ```text
@@ -76,6 +78,7 @@ A chamber candidate is blocked when it:
 - turns an aesthetic metaphor into a governing rule;
 - cannot explain why a transition is blocked;
 - cannot distinguish source, signal, candidate, decision, receipt, and outcome.
+- treats performance telemetry as authority to execute, publish, or promote.
 
 ## Candidate future chambers
 

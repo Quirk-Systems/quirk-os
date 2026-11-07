@@ -1,0 +1,23 @@
+flowchart TB
+    T["Task Class"] --> D{"What must the user do next?"}
+
+    D -->|choose| C1["Decision Card<br/>Ranked Pair<br/>Tradeoff Matrix"]
+    D -->|understand| C2["Map<br/>Claim Graph<br/>Progressive Explanation"]
+    D -->|change code or state| C3["Diff<br/>Patch<br/>Preview<br/>Tests"]
+    D -->|review many items| C4["Batch Review<br/>Filters<br/>Duplicate Clusters"]
+    D -->|explore possibilities| C5["Cards<br/>Gacha<br/>Simulation<br/>Fog of War"]
+    D -->|send or publish| C6["Channel-native Draft<br/>Audience/Risk Preview"]
+
+    P["Platform Affect"] --> G{"Affordance Gate"}
+    S["Stakes · authority<br/>privacy · accessibility"] --> G
+    C1 --> G
+    C2 --> G
+    C3 --> G
+    C4 --> G
+    C5 --> G
+    C6 --> G
+
+    G -->|"interaction adds leverage"| UI["Generate admitted interface plan"]
+    G -->|"plain form is superior"| TXT["Use prose / checklist / code only"]
+    UI --> E["Explain why selected<br/>provide plain fallback"]
+    TXT --> E

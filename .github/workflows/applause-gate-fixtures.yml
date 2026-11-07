@@ -40,6 +40,8 @@ jobs:
           python scripts/validate_applause_gate_fixtures.py \
             --repo . \
             --output evals/applause-gate/fixture-validation.json \
+            --metrics-output evals/applause-gate/fixture-validation-metrics.json \
+            --write-step-summary \
             --require-pass
 
       - name: Upload candidate fixture evidence
@@ -47,6 +49,8 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: applause-gate-fixture-validation-${{ github.sha }}
-          path: evals/applause-gate/fixture-validation.json
+          path: |
+            evals/applause-gate/fixture-validation.json
+            evals/applause-gate/fixture-validation-metrics.json
           if-no-files-found: error
           retention-days: 30

@@ -1,0 +1,291 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.sync-control-plane-independent-approval.7e3817000c0c",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "c4bc0f0bdff10ccc217c8115035bd918129fe4b0",
+    "commit": "7e3817000c0cb79a59c07c0dea975f531d5d473d",
+    "changed_paths": [
+      ".claude/skills/verify/SKILL.md",
+      ".github/workflows/deck-grammar-conformance.yml",
+      ".github/workflows/sync-control-plane-conformance.yml",
+      "docs/briefs/2026-10-03-approval-attestation.md",
+      "docs/briefs/2026-10-03-manifest-content-hash-preimage.md",
+      "docs/deck-grammar/ADMISSION-EVALUATION.md",
+      "docs/deck-grammar/README.md",
+      "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+      "evals/deck-grammar/conformance-results.json",
+      "evals/sync-control-plane/conformance-results.json",
+      "examples/deck-grammar/artifact.live-proof-report.json",
+      "examples/deck-grammar/live-proof.json",
+      "policies/manifest-admission-policy.yaml",
+      "schemas/eligible-deck.schema.json",
+      "scripts/deck_grammar/access.py",
+      "scripts/deck_grammar/common.py",
+      "scripts/deck_grammar/hand.py",
+      "scripts/sync_control_plane/policy.py",
+      "scripts/validate_deck_grammar.py",
+      "scripts/validate_sync_control_plane.py",
+      "supabase/migrations/20261003090000_sync_control_plane_independent_approval.sql",
+      "supabase/tests/manifest_activation_guard.cases.sql",
+      "supabase/tests/manifest_activation_guard.run.sql",
+      "supabase/tests/manifest_activation_guard.service_role.sql",
+      "supabase/tests/sync_control_plane_hardening.sql",
+      "tests/test_deck_grammar.py",
+      "tests/test_sync_control_plane.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.sync-control-plane-independent-approval.7e3817000c0c",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Adds the Sync Control Plane v0.2 independent-approval migration (SECURITY DEFINER activation guard delegating to a SECURITY INVOKER rule function, service_role EXECUTE grant), its SQL guard cases and drivers, the database-guard CI job and its static checks, Deck Grammar content-hash binding, and regenerated conformance artifacts with the documents that quote their digests. Observed on this tree: 203 unit tests pass, both conformance validators exit 0 with tracked artifacts unchanged, and on a throwaway PostgreSQL 16 cluster all migrations apply and both guard-case drivers exit 0 leaving no rows. Not established: behavior on a managed Supabase project, the Supabase linter, the approval trust root and content-hash preimage (open briefs), that database-guard is a required check, and merge approval.",
+      "evidence_paths": [
+        ".claude/skills/verify/SKILL.md",
+        ".github/workflows/deck-grammar-conformance.yml",
+        ".github/workflows/sync-control-plane-conformance.yml",
+        "docs/briefs/2026-10-03-approval-attestation.md",
+        "docs/briefs/2026-10-03-manifest-content-hash-preimage.md",
+        "docs/deck-grammar/ADMISSION-EVALUATION.md",
+        "docs/deck-grammar/README.md",
+        "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+        "evals/deck-grammar/conformance-results.json",
+        "evals/sync-control-plane/conformance-results.json",
+        "examples/deck-grammar/artifact.live-proof-report.json",
+        "examples/deck-grammar/live-proof.json",
+        "policies/manifest-admission-policy.yaml",
+        "schemas/eligible-deck.schema.json",
+        "scripts/deck_grammar/access.py",
+        "scripts/deck_grammar/common.py",
+        "scripts/deck_grammar/hand.py",
+        "scripts/sync_control_plane/policy.py",
+        "scripts/validate_deck_grammar.py",
+        "scripts/validate_sync_control_plane.py",
+        "supabase/migrations/20261003090000_sync_control_plane_independent_approval.sql",
+        "supabase/tests/manifest_activation_guard.cases.sql",
+        "supabase/tests/manifest_activation_guard.run.sql",
+        "supabase/tests/manifest_activation_guard.service_role.sql",
+        "supabase/tests/sync_control_plane_hardening.sql",
+        "tests/test_deck_grammar.py",
+        "tests/test_sync_control_plane.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".claude/skills/verify/SKILL.md",
+      "state": "present",
+      "git_blob": "14b7cf452ca0b386961bdd2d954f788cb6370c79",
+      "sha256": "sha256:1d4540abd3d2e25e9679aebac2f5a6403d03926c30f03802d288a2d08e3c8c47"
+    },
+    {
+      "path": ".github/workflows/deck-grammar-conformance.yml",
+      "state": "present",
+      "git_blob": "91c4892b315bb309767b6a49061cfcfdfd06bcc4",
+      "sha256": "sha256:ccc3ebebb14825cd3d7a0bb06c160eee74d70c32f73f6ecc6ff949acead7a665"
+    },
+    {
+      "path": ".github/workflows/sync-control-plane-conformance.yml",
+      "state": "present",
+      "git_blob": "0b5e8a0b74019d1babfee85951b1c335a783d392",
+      "sha256": "sha256:fdc860f40f7c9b159daeb0f24a29a9b5f2743168f6c22c306acfee7024d57103"
+    },
+    {
+      "path": "docs/briefs/2026-10-03-approval-attestation.md",
+      "state": "present",
+      "git_blob": "27f4eed28b6bee2bd47a84fcecbf9eeabf995850",
+      "sha256": "sha256:15441352426cc5bb852117af0494d29ec1e3c0188db35534564c6022c0588e64"
+    },
+    {
+      "path": "docs/briefs/2026-10-03-manifest-content-hash-preimage.md",
+      "state": "present",
+      "git_blob": "9e2c8dee868d0fce8b97fbf90af9c927ab7fdf6f",
+      "sha256": "sha256:4a39425547fff5274c9bcb8a81d7d4db0f7f5b3bb541f952b0a23525b55b871f"
+    },
+    {
+      "path": "docs/deck-grammar/ADMISSION-EVALUATION.md",
+      "state": "present",
+      "git_blob": "5d8ac15f32296a27fbd0fd2f361f72870acfb75e",
+      "sha256": "sha256:f0e8e07e1987f5d422ef681ce3b32e1615700c3e03654aba377eb1e6dc7d2f8d"
+    },
+    {
+      "path": "docs/deck-grammar/README.md",
+      "state": "present",
+      "git_blob": "3f2fc086c12c9cf6dc86599e26b5542b558c09d1",
+      "sha256": "sha256:571b1755fbad358b88aaa061b022dbcb49ad6c63bcd57c6e1d31ac30c1e5486d"
+    },
+    {
+      "path": "docs/sync-control-plane/ADMISSION-EVIDENCE-V0.2.md",
+      "state": "present",
+      "git_blob": "3fd975386f264a1292cf394e6be72eefe5701f2d",
+      "sha256": "sha256:bb27dc1f8fb420d76dbecf25ab71859318455847147fb5ed1fc3d9fc331e8da4"
+    },
+    {
+      "path": "evals/deck-grammar/conformance-results.json",
+      "state": "present",
+      "git_blob": "ef197bc675abf6e5d9bd029c41567f168107c34e",
+      "sha256": "sha256:3dd9462007eaed9ff164851ac0f9f4b301dd70d4c2cd6b1d191ff5442c583d0d"
+    },
+    {
+      "path": "evals/sync-control-plane/conformance-results.json",
+      "state": "present",
+      "git_blob": "437e6b4d9e7eaeb87c1cbdba3aec23425258abbb",
+      "sha256": "sha256:368a6728458b78b4d1096be16adc315cab3b8c4184449fe299995db81452c4df"
+    },
+    {
+      "path": "examples/deck-grammar/artifact.live-proof-report.json",
+      "state": "present",
+      "git_blob": "42fb4a67979ce89a024ea89539da6fc111f9b87b",
+      "sha256": "sha256:70b08a51d782a6a0ed933e2cf2028520f7fed062b02234d0618f22809b7bd550"
+    },
+    {
+      "path": "examples/deck-grammar/live-proof.json",
+      "state": "present",
+      "git_blob": "52762983f7c1c5f2cc4c8b367a73bae0a8969f2c",
+      "sha256": "sha256:a850b202302cc76793f5edb916333a0b4646ab9ff9d3642c074b1bbdd22a04df"
+    },
+    {
+      "path": "policies/manifest-admission-policy.yaml",
+      "state": "present",
+      "git_blob": "2686a28bf10ab4ab4994f248d2a1e58172be159d",
+      "sha256": "sha256:584eed63c7f35583ac3feac51ed2fdceea2a012117f8088c067f588c11dd18e0"
+    },
+    {
+      "path": "schemas/eligible-deck.schema.json",
+      "state": "present",
+      "git_blob": "d22010b549c8d770d54ff8e37b8df4795747e112",
+      "sha256": "sha256:06c403aaa7eb43554124eaeba4c4550caae884a23f015c232f6b616c014363ef"
+    },
+    {
+      "path": "scripts/deck_grammar/access.py",
+      "state": "present",
+      "git_blob": "d67e3e490940885b1c7c2f546c1c6ead7c36cf6a",
+      "sha256": "sha256:da0d958f97bde802f5c5ae3ccf1367af706d73e771dd65e2769e7ec1871a0753"
+    },
+    {
+      "path": "scripts/deck_grammar/common.py",
+      "state": "present",
+      "git_blob": "911d756db99dc57169d2e814d4a1752019baab0b",
+      "sha256": "sha256:e3554d41394ef1c8abeb11cb6733b94ff8c50305ef87704fb4ab579dde983c81"
+    },
+    {
+      "path": "scripts/deck_grammar/hand.py",
+      "state": "present",
+      "git_blob": "46cb202495a310a2f4f87a1d4b20607d64ce4f0a",
+      "sha256": "sha256:bf04b31cbf1d36d91f1ffdd3731c7b75f424d104d6bef761cf3ca5691170f346"
+    },
+    {
+      "path": "scripts/sync_control_plane/policy.py",
+      "state": "present",
+      "git_blob": "cabbeb66672f4b8f04da59f5a8123f81af1dc476",
+      "sha256": "sha256:6c8b0b62b41f8ea0d995187214a8da91eefc8a262c6161fe81a5e70b5c3d3f0c"
+    },
+    {
+      "path": "scripts/validate_deck_grammar.py",
+      "state": "present",
+      "git_blob": "65d1699824a4e119c116bd82f6d61d4fdb85e5d1",
+      "sha256": "sha256:dd50c3dc008fc121a71f406cb4453dbf115d6076f456fa3ad1d2e60d03da505b"
+    },
+    {
+      "path": "scripts/validate_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "4780f1f9447a125b6f7b66426ba62f21c8b70ed6",
+      "sha256": "sha256:3d0e9d13506c2283181d5b361d244e2f643f84576deaf2ce50dab1d05322c0d3"
+    },
+    {
+      "path": "supabase/migrations/20261003090000_sync_control_plane_independent_approval.sql",
+      "state": "present",
+      "git_blob": "4f9a82b9f6c9bb0f47b0a75cf0a39ca627e86751",
+      "sha256": "sha256:bf3608439334cab04c71c379b51799afaaa4b15eeac84ec4670d044d8dacdd95"
+    },
+    {
+      "path": "supabase/tests/manifest_activation_guard.cases.sql",
+      "state": "present",
+      "git_blob": "05d36d7ba8422b329f9d5362e38bcb918195a225",
+      "sha256": "sha256:86a8c449745ea2864b013b322ef39592cbc995c5babec74a3f1016e0a691d37c"
+    },
+    {
+      "path": "supabase/tests/manifest_activation_guard.run.sql",
+      "state": "present",
+      "git_blob": "59eb010196a7efc4d6a06acb0912944262682131",
+      "sha256": "sha256:ae5d81159e08b963b4cecd57f5dfbcda21075404de563e14922b40f250b49c89"
+    },
+    {
+      "path": "supabase/tests/manifest_activation_guard.service_role.sql",
+      "state": "present",
+      "git_blob": "3166655b2e552bd56713980bf6179343e0d10cf1",
+      "sha256": "sha256:39649577c4c9ea726cba8526dd18526a027172f5c8bd50f5be4b823637d8ac5b"
+    },
+    {
+      "path": "supabase/tests/sync_control_plane_hardening.sql",
+      "state": "present",
+      "git_blob": "1548998fb2213c477ac78f89329a368087d107de",
+      "sha256": "sha256:38a488b2d329cfdf232037ca5406a62d5d2f99907ecee4e982d528b44c7436d4"
+    },
+    {
+      "path": "tests/test_deck_grammar.py",
+      "state": "present",
+      "git_blob": "cc9ba9f9fafea50cfde997026193b8a1df3dfa04",
+      "sha256": "sha256:f2d93d0320d6f9d1dddb8dbcfa874eb19437285b2ebeb7c5390dbdf067d79019"
+    },
+    {
+      "path": "tests/test_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "8b94bdabaca52a1a9e31ea7420fce257b9b9ca74",
+      "sha256": "sha256:8f1034f7fdc9e6892ea8ced12d74104dcb6c28c132d415a4b870d0076e8663fa"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "/tmp/claude-0/-home-user/05f9e6ef-8af2-5604-9927-21ef7807c7fd/scratchpad/qos-venv/bin/python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "/tmp/claude-0/-home-user/05f9e6ef-8af2-5604-9927-21ef7807c7fd/scratchpad/qos-venv/bin/python scripts/validate_sync_control_plane.py --repo . --output evals/sync-control-plane/conformance-results.json --require-admit",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PYTHONPATH=scripts /tmp/claude-0/-home-user/05f9e6ef-8af2-5604-9927-21ef7807c7fd/scratchpad/qos-venv/bin/python scripts/validate_deck_grammar.py --repo . --output evals/deck-grammar/conformance-results.json --require-pass",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --exit-code --stat -- evals/",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PGHOST=/tmp PGPORT=5437 PGUSER=postgres; for m in $(ls supabase/migrations/*.sql | sort); do psql -q -v ON_ERROR_STOP=1 --single-transaction -f \"$m\"; done",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PGHOST=/tmp PGPORT=5437 PGUSER=postgres psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_activation_guard.run.sql",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PGHOST=/tmp PGPORT=5437 PGUSER=postgres psql -v ON_ERROR_STOP=1 -f supabase/tests/manifest_activation_guard.service_role.sql",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PGHOST=/tmp PGPORT=5437 PGUSER=postgres psql -t -A -c \"select count(*) from quirk_sync.manifest_registry\"",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T10:22:46Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:b4da952c392c67be5102e9312d25e22e4073517f371ac35f26c45d89eeb7eeab"
+}

@@ -3,7 +3,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
+import time
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,7 +30,10 @@ CORE_SKILLS = {
 }
 EXTENSION_SKILLS = {"quirk-applause-gate"}
 EXPECTED_SKILLS = CORE_SKILLS | EXTENSION_SKILLS
-DRAFT_CANDIDATE_SKILLS = {"quirk-deck-compiler"}
+# Draft packages remain source-visible but cannot join the manifested runtime
+# registry until their separate admission dockets pass.
+DRAFT_CANDIDATE_SKILLS = {"quirk-deck-compiler", "quirk-intent-shaper"}
+DISTILLED_PREFIX = "quirk-distilled-"
 REQUIRED_KINDS = {"positive", "adversarial", "regression", "authority"}
 PLACEHOLDER_MARKERS = ("TO" + "DO", "FIX" + "ME", "T" + "BD", "X" + "XX")
 
@@ -66,9 +71,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Validate the Quirk Skills candidate registry.")
     parser.add_argument("--repo", default=".", help="Repository root.")
     parser.add_argument("--output", help="Write a JSON conformance report.")
+    parser.add_argument("--metrics-output", help="Write validator performance/workload metrics as JSON.")
+    parser.add_argument("--write-step-summary", action="store_true", help="Append metrics to GitHub step summary when available.")
     args = parser.parse_args()
 
     root = Path(args.repo).resolve()
+    started = time.perf_counter()
     sys.path.insert(0, str(root / "scripts"))
     from applause_gate.skill_conformance import evaluate_shared_skill_case  # pylint: disable=import-outside-toplevel
     from sync_control_plane.skill_runtime import (  # pylint: disable=import-outside-toplevel
@@ -100,7 +108,11 @@ def main() -> int:
 
     skill_dirs = {path.parent.name for path in (root / "skills").glob("*/SKILL.md")}
     draft_dirs = skill_dirs & DRAFT_CANDIDATE_SKILLS
-    manifested_dirs = skill_dirs - DRAFT_CANDIDATE_SKILLS
+    # Auto-distilled candidates live in their own namespace and are governed by
+    # scripts/validate_distill_loop.py and skills/distill-ledger.json. They never
+    # join the manifested registry, so they are carved out of the drift check here.
+    distilled_dirs = {name for name in skill_dirs if name.startswith(DISTILLED_PREFIX)}
+    manifested_dirs = skill_dirs - DRAFT_CANDIDATE_SKILLS - distilled_dirs
     if manifested_dirs != EXPECTED_SKILLS:
         fail("SKILL_SET_DRIFT", f"expected {sorted(EXPECTED_SKILLS)}, found {sorted(manifested_dirs)}")
 
@@ -269,6 +281,9 @@ def main() -> int:
         by_id = {entry.get("id"): entry for entry in entries}
         if set(by_id) != EXPECTED_SKILLS or len(entries) != 12:
             fail("REGISTRY_SKILL_DRIFT", "registry must contain exactly the expected 12 skills")
+        leaked = sorted(skill_id for skill_id in by_id if str(skill_id).startswith(DISTILLED_PREFIX))
+        if leaked:
+            fail("REGISTRY_DISTILLED_LEAK", f"auto-distilled candidates may not join the registry: {leaked}")
         for skill_id, manifest in manifests.items():
             entry = by_id.get(skill_id, {})
             checks = {
@@ -328,6 +343,37 @@ def main() -> int:
         output = root / args.output
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    metrics = {
+        "validator": "validate_skills.py",
+        "elapsed_seconds": time.perf_counter() - started,
+        "manifest_count": len(manifests),
+        "combined_case_count": len(cases),
+        "finding_count": len(findings),
+        "passed_case_count": passed_cases,
+        "status": report["status"],
+    }
+    if args.metrics_output:
+        metrics_output = Path(args.metrics_output)
+        if not metrics_output.is_absolute():
+            metrics_output = root / metrics_output
+        metrics_output.parent.mkdir(parents=True, exist_ok=True)
+        metrics_output.write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
+    if args.write_step_summary and os.environ.get("GITHUB_STEP_SUMMARY"):
+        summary_lines = [
+            "## validate_skills performance",
+            "",
+            "| metric | value |",
+            "| --- | ---: |",
+            f"| elapsed_seconds | {metrics['elapsed_seconds']:.6f} |",
+            f"| manifest_count | {metrics['manifest_count']} |",
+            f"| combined_case_count | {metrics['combined_case_count']} |",
+            f"| passed_case_count | {metrics['passed_case_count']} |",
+            f"| finding_count | {metrics['finding_count']} |",
+            f"| status | {metrics['status']} |",
+            "",
+        ]
+        with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as handle:
+            handle.write("\n".join(summary_lines))
 
     if findings:
         for finding in findings:

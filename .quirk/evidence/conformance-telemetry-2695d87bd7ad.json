@@ -1,0 +1,315 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.conformance-telemetry-2695d87",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "3e67c819dc009bbf634747ada9091c60a218fe51",
+    "commit": "2695d87bd7ad8b55a62d97a60026108b6ad36025",
+    "changed_paths": [
+      ".github/workflows/applause-gate-conformance.yml",
+      ".github/workflows/applause-gate-fixtures.yml",
+      ".github/workflows/deck-grammar-conformance.yml",
+      ".github/workflows/distill-loop-conformance.yml",
+      ".github/workflows/golden-gates.yml",
+      ".github/workflows/sync-control-plane-conformance.yml",
+      ".github/workflows/validate-skills.yml",
+      "agents/quirk-sync-steward/agent.yaml",
+      "diagrams/admission-gauntlet.mmd",
+      "docs/deck-grammar/README.md",
+      "docs/golden-project-pack/README.md",
+      "docs/product/chambered-workbench/N-CHAMBER-GRAMMAR.md",
+      "docs/product/chambered-workbench/OPERATOR-SHELL-WIREFRAME-v0.1.md",
+      "docs/sync-control-plane/README.md",
+      "scripts/deck_grammar/access.py",
+      "scripts/deck_grammar/perf_benchmarks.py",
+      "scripts/validate_applause_gate.py",
+      "scripts/validate_applause_gate_fixtures.py",
+      "scripts/validate_deck_grammar.py",
+      "scripts/validate_distill_loop.py",
+      "scripts/validate_golden_pack.py",
+      "scripts/validate_skills.py",
+      "scripts/validate_sync_control_plane.py",
+      "skills/README.md",
+      "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
+      "supabase/tests/sync_control_plane_outbox_claim_benchmark.sql",
+      "tests/test_deck_grammar.py",
+      "tests/test_validator_metrics.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.conformance-telemetry-2695d87.implementation",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Conformance validators emit metrics artifacts and step summaries; adds deck grammar perf benchmarks and an outbox claim index migration with benchmark SQL.",
+      "evidence_paths": [
+        ".github/workflows/applause-gate-conformance.yml",
+        ".github/workflows/applause-gate-fixtures.yml",
+        ".github/workflows/deck-grammar-conformance.yml",
+        ".github/workflows/distill-loop-conformance.yml",
+        ".github/workflows/golden-gates.yml",
+        ".github/workflows/sync-control-plane-conformance.yml",
+        ".github/workflows/validate-skills.yml",
+        "agents/quirk-sync-steward/agent.yaml",
+        "scripts/deck_grammar/access.py",
+        "scripts/deck_grammar/perf_benchmarks.py",
+        "scripts/validate_applause_gate.py",
+        "scripts/validate_applause_gate_fixtures.py",
+        "scripts/validate_deck_grammar.py",
+        "scripts/validate_distill_loop.py",
+        "scripts/validate_golden_pack.py",
+        "scripts/validate_skills.py",
+        "scripts/validate_sync_control_plane.py",
+        "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
+        "supabase/tests/sync_control_plane_outbox_claim_benchmark.sql"
+      ]
+    },
+    {
+      "claim_id": "qclaim.conformance-telemetry-2695d87.test",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Unit tests cover validator metrics output and deck grammar changes; the full unittest suite passes at the subject commit.",
+      "evidence_paths": [
+        "tests/test_deck_grammar.py",
+        "tests/test_validator_metrics.py"
+      ]
+    },
+    {
+      "claim_id": "qclaim.conformance-telemetry-2695d87.documentation",
+      "claim_type": "documentation",
+      "authority_effect": "none",
+      "statement": "Documentation and diagrams describe the conformance telemetry, CI metrics artifacts, and observability posture.",
+      "evidence_paths": [
+        "diagrams/admission-gauntlet.mmd",
+        "docs/deck-grammar/README.md",
+        "docs/golden-project-pack/README.md",
+        "docs/product/chambered-workbench/N-CHAMBER-GRAMMAR.md",
+        "docs/product/chambered-workbench/OPERATOR-SHELL-WIREFRAME-v0.1.md",
+        "docs/sync-control-plane/README.md",
+        "skills/README.md"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/applause-gate-conformance.yml",
+      "state": "present",
+      "git_blob": "326dc72579f8e0db909d005eb5dd51a1cd98e450",
+      "sha256": "sha256:ae36d7c54ecddd2b9df61b8c0f32feeb5ddbe050d1ff5db7ca7ba5f410764bb0"
+    },
+    {
+      "path": ".github/workflows/applause-gate-fixtures.yml",
+      "state": "present",
+      "git_blob": "759ad9bbe63b263498096bc642155bb61c614d6d",
+      "sha256": "sha256:4cdf1071971bfff033f8143ee1f5d242b8159d103d8270480e188485ebb7ac3d"
+    },
+    {
+      "path": ".github/workflows/deck-grammar-conformance.yml",
+      "state": "present",
+      "git_blob": "6e5e76c31dfa6ec5deb17be76c196cfae1e33376",
+      "sha256": "sha256:ca93cf59f196a5ff14b72f67a1f095dcca5b7ba75ccefb28b62f1450ab509a85"
+    },
+    {
+      "path": ".github/workflows/distill-loop-conformance.yml",
+      "state": "present",
+      "git_blob": "999e2246484978c2ff9494fd0f7b4fefc2804de8",
+      "sha256": "sha256:709f75f836944196a0e8b95547bcae35ec6e3c22ee5ff8844d8d57411b319355"
+    },
+    {
+      "path": ".github/workflows/golden-gates.yml",
+      "state": "present",
+      "git_blob": "ff99706f3e3135190df77895ad840fe022796af0",
+      "sha256": "sha256:b21e9f41ef2bb3bcdc3f5dabaa5ce0b49a23e2e5b8a591ad7b01b2117c3af0b2"
+    },
+    {
+      "path": ".github/workflows/sync-control-plane-conformance.yml",
+      "state": "present",
+      "git_blob": "4372789f3051d8b147542646535f573538343722",
+      "sha256": "sha256:a7155262c19eead51ad9db659a64127ad01d9812cea901b98e38c95a551c4c61"
+    },
+    {
+      "path": ".github/workflows/validate-skills.yml",
+      "state": "present",
+      "git_blob": "d8dbfa812d81714acd4c833ca9e085ddf6ece5ef",
+      "sha256": "sha256:b84f270c4a80123b074ef38ff1b8749d7f28b724b08f63408a3622815c9c2907"
+    },
+    {
+      "path": "agents/quirk-sync-steward/agent.yaml",
+      "state": "present",
+      "git_blob": "87d703353b5a24b4d66461ecccc78638e9f0226c",
+      "sha256": "sha256:bf415f59d257057960872e688c1f2d2d63058639375c6819b3fe385056a187bf"
+    },
+    {
+      "path": "diagrams/admission-gauntlet.mmd",
+      "state": "present",
+      "git_blob": "a746209e82fd5dd8208b37fc8db2ce2cb5d1808d",
+      "sha256": "sha256:7d7c93196a0f0b2d440c32ea6adc2738c705ad672fa1e365cdc4ab6beecf2385"
+    },
+    {
+      "path": "docs/deck-grammar/README.md",
+      "state": "present",
+      "git_blob": "3ba084e283a77c879d22ff30c3935e4fcbb6ccc1",
+      "sha256": "sha256:34f889eedeba99ef01c463d40cdda1d5288078ca6b8f683c6eca27e3288cb1c7"
+    },
+    {
+      "path": "docs/golden-project-pack/README.md",
+      "state": "present",
+      "git_blob": "c76b5266a4e8b03242816a6cec1d9c08a37f47b2",
+      "sha256": "sha256:95c89299740b5f341d2e57148fc8ebe3879f850092cff0ae7f5b1c0e104c2b05"
+    },
+    {
+      "path": "docs/product/chambered-workbench/N-CHAMBER-GRAMMAR.md",
+      "state": "present",
+      "git_blob": "04b4e323d57ec877a97a9c048e6b0d0d8ec76d37",
+      "sha256": "sha256:9d3b0c643ac5925f2ec08bc61313422112466f30012716b9d3aaadccc662593e"
+    },
+    {
+      "path": "docs/product/chambered-workbench/OPERATOR-SHELL-WIREFRAME-v0.1.md",
+      "state": "present",
+      "git_blob": "ad706ee31c7a90f4791e473d5b8ab89b002b3c30",
+      "sha256": "sha256:55453369857cc3dbf013ab006faaf6ebd3fbe0f5ec137b0c8431c28a8cdcd5de"
+    },
+    {
+      "path": "docs/sync-control-plane/README.md",
+      "state": "present",
+      "git_blob": "56684e231e4a434af03b3289471a3b42bb1f22e9",
+      "sha256": "sha256:ad985cce600a9f29cf97d74d3991ad8e0773af1254758ca62963a4e6727b5389"
+    },
+    {
+      "path": "scripts/deck_grammar/access.py",
+      "state": "present",
+      "git_blob": "d980b13b7b2b3e273bee1ee24a9485385f78adb7",
+      "sha256": "sha256:b7782e1a127263675daedb1a8372605084269fe2d45073e178c8e59d2a354be0"
+    },
+    {
+      "path": "scripts/deck_grammar/perf_benchmarks.py",
+      "state": "present",
+      "git_blob": "07cfcde4f1e42d6bb7e5235cb7d557b8ee15c324",
+      "sha256": "sha256:6bc5c00a761b8df31771e870ce20c0d03653f87e6c7e7a94f0a27822abda9269"
+    },
+    {
+      "path": "scripts/validate_applause_gate.py",
+      "state": "present",
+      "git_blob": "bbb211d261f305a1412c26479abb4ba77593f2a1",
+      "sha256": "sha256:78941d850fba399d3150ef6a0263fdfbe5ab6ce8b860f5f94e9430986d4e0d27"
+    },
+    {
+      "path": "scripts/validate_applause_gate_fixtures.py",
+      "state": "present",
+      "git_blob": "4dfbb960d88511920d762de8453994e604def09a",
+      "sha256": "sha256:09f0f9c931f03394f831585329134e37abab98cf23ba9499f185951359540ac3"
+    },
+    {
+      "path": "scripts/validate_deck_grammar.py",
+      "state": "present",
+      "git_blob": "80a74ec8f4a96e8d20b8da57b03c28604eb1fc7f",
+      "sha256": "sha256:4145c6e3d9fdf4d16a43760dd3a6a683a5e02cf3f6400e4b7ad3616931d3cfe0"
+    },
+    {
+      "path": "scripts/validate_distill_loop.py",
+      "state": "present",
+      "git_blob": "93d809259495985b0d015cdc9140af9a054aaf17",
+      "sha256": "sha256:fd0fbae715c022899d68837143cc6358928c489e7e13ee8a2710ceebc21b8ec9"
+    },
+    {
+      "path": "scripts/validate_golden_pack.py",
+      "state": "present",
+      "git_blob": "87e6306474f7e164a49783b042ef5521fd36aa4d",
+      "sha256": "sha256:23b08b6eff9797fd705624cd9ff9ec2b26b5de84aa5ffb17c666e579a0fa889e"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "8f6632bb505eccf354d7ead4852843b31ecb886b",
+      "sha256": "sha256:105ec179d7e56f7fde79e8f232c4e4a25017afc797bf75df8ed8e14eb9603a36"
+    },
+    {
+      "path": "scripts/validate_sync_control_plane.py",
+      "state": "present",
+      "git_blob": "be8566a4d21970e6de1592e6664ffb263b9ddfa0",
+      "sha256": "sha256:27076468b1495d8bebb1a7cb159b176f31d03d6a1da6a6a241e97a295e8cb995"
+    },
+    {
+      "path": "skills/README.md",
+      "state": "present",
+      "git_blob": "fe1aa181b5d34be6084202c0c6a1c98ee912124a",
+      "sha256": "sha256:0491a1189c08b33eb3a6ae162f6e5f324dfbc2210609f1c8b83e6b4b252bf114"
+    },
+    {
+      "path": "supabase/migrations/20260920205500_sync_control_plane_outbox_claim_index.sql",
+      "state": "present",
+      "git_blob": "fbab1b9b31b77f5069026f4bd5515e2b438e7b77",
+      "sha256": "sha256:971a5c9c7c4dd6f5df05b71ebcc2800de903ae417ddd7df953cb623cb20eaba7"
+    },
+    {
+      "path": "supabase/tests/sync_control_plane_outbox_claim_benchmark.sql",
+      "state": "present",
+      "git_blob": "eb6bdfeb901caee16c599d91e6feae91193268b0",
+      "sha256": "sha256:7664f7982feda6260a08082398f8495c38b09cf1677b9857ad51654240f5be31"
+    },
+    {
+      "path": "tests/test_deck_grammar.py",
+      "state": "present",
+      "git_blob": "68746862fd82cd46dca58a35b582a4a15e549944",
+      "sha256": "sha256:4b0a3b10b96abf3eef45c91a5cdda0e2466ca84405308c3e286f58097970b2b3"
+    },
+    {
+      "path": "tests/test_validator_metrics.py",
+      "state": "present",
+      "git_blob": "ac93174335775663e6e8d5169e38ad8403b3e798",
+      "sha256": "sha256:05a4ac8c374ddb7999305537c389aecfbcd744e32000b1a4c743574477fcffa6"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_applause_gate.py --repo .",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_applause_gate_fixtures.py --repo .",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_deck_grammar.py --repo .",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_distill_loop.py --repo .",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo .",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --repo .",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T11:03:23Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:d4e903fc7ea36cdb290fdc34acc114f344f1e4485dc14cd02c5f19a5efa3aed5"
+}

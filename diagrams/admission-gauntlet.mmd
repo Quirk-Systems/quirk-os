@@ -25,6 +25,10 @@ flowchart TD
     B --> VE["Vercel: inventory only"]
     B --> CF["Cloudflare: DEFER — unbound and overlap unresolved"]
 
+    GH --> TM["Conformance metrics artifacts + step summaries"]
+    SB --> TM
+    TM --> V
+
     CF --> H["Hardening pack QH-001…QH-010"]
     GH --> H
     SB --> H

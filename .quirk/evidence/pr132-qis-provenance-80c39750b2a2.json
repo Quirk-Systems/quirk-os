@@ -1,0 +1,76 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr132-qis-provenance-80c39750b2a2",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "747fe5c0da34286952893d60787a41ea5c91824b",
+    "commit": "80c39750b2a2cc0cde316332c24d54bfec2d062d",
+    "changed_paths": [
+      "evals/qis-agent-harness/receipt.valid-pr132-provenance.json",
+      "tests/test_qis_harness.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr132-qis-provenance-80c39750b2a2",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Supersede stale synthetic QIS provenance with current material hashes; preserve historical fixture and digest refusal checks. After integrating main, all 277 Python tests, local conformance reproduction and Golden candidate gates pass. Synthetic command counts are test data; no runtime activation or merge authority is implied.",
+      "evidence_paths": [
+        "evals/qis-agent-harness/receipt.valid-pr132-provenance.json",
+        "tests/test_qis_harness.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "evals/qis-agent-harness/receipt.valid-pr132-provenance.json",
+      "state": "present",
+      "git_blob": "0d91c545d9cb16c7b5518b31c51e3245919b608e",
+      "sha256": "sha256:93f984396f8502c2f8b4a1595c66deef513bb25544d07e6c55c87df72b0e2239"
+    },
+    {
+      "path": "tests/test_qis_harness.py",
+      "state": "present",
+      "git_blob": "6255901fe4ba31d40f21649fe6d1e788128ab00a",
+      "sha256": "sha256:d3f8aa6b3a7545527eb07b8a813544c1e8432c1e1ff21aff1260ab0d9578c0d2"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s tests",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_sync_control_plane.py --output /tmp/pr132-renewed-conformance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "cmp evals/sync-control-plane/conformance-results.json /tmp/pr132-renewed-conformance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-04T23:10:41Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:4e2eb131e631eb868fb0e31cc6b4612f3bba1720145f899fc54e8d29e7877f16"
+}

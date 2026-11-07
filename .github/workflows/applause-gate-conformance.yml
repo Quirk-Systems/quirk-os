@@ -65,6 +65,8 @@ jobs:
           python scripts/validate_applause_gate.py \
             --repo . \
             --output evals/applause-gate/conformance-results.json \
+            --metrics-output evals/applause-gate/conformance-metrics.json \
+            --write-step-summary \
             --require-pass
 
       - name: Upload Applause Gate evidence
@@ -72,6 +74,8 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: applause-gate-conformance-${{ github.sha }}
-          path: evals/applause-gate/conformance-results.json
+          path: |
+            evals/applause-gate/conformance-results.json
+            evals/applause-gate/conformance-metrics.json
           if-no-files-found: error
           retention-days: 30

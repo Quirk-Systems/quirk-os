@@ -1,0 +1,258 @@
+{
+  "schema_version": "candidate-ci-proof.v1",
+  "authority_effect": "none",
+  "decision": "Constrain",
+  "source": {
+    "repository": "Quirk-Systems/quirk-os",
+    "pr": 132,
+    "head_sha": "d30ab0c54d7e25c02a467f5ed0b3c11532a90223",
+    "base_sha": "31a3fc56c71f55351f0c2be2bc18ad80a3007d08",
+    "checkout_merge_sha": "e8413df64fb48ce0b7d8095a97ac305f0239cfd2",
+    "merge_tree_matches_head": true
+  },
+  "workflow": {
+    "url": "https://github.com/Quirk-Systems/quirk-os/actions/runs/37214405969",
+    "run_id": 37214405969,
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 111471911257,
+        "name": "database-guard",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 37214405969,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Initialize containers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Checkout",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Record the server version this run observed",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Create the Supabase browser roles the migrations revoke from",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Apply migrations preceding the verified projection cutover",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Assert the installed guard delegates and holds its privilege lanes",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Run the manifest activation guard cases",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run the guard cases as the role that writes in production",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Assert the cases left no active manifest behind",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Refuse cutover when legacy active rows have no human disposition",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Apply the verified projection cutover and later migrations",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Prove protected projection writes and refusals",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          },
+          {
+            "name": "Verify outbox claim index and supported batch size",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Post Checkout",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 27
+          },
+          {
+            "name": "Stop containers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 28
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 29
+          }
+        ]
+      },
+      {
+        "id": 111471975825,
+        "name": "candidate-conformance",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 37214405969,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Fail if the database guard did not pass",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Checkout",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Discard the tracked decision so the upload can only carry this run's",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Set up Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Install evaluation dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run unit and adversarial tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Run admission conformance",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Reject a committed decision that this run did not reproduce",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Upload conformance evidence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Post Set up Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          },
+          {
+            "name": "Post Checkout",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 20
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 21
+          }
+        ]
+      }
+    ]
+  },
+  "golden": {
+    "url": "https://github.com/Quirk-Systems/quirk-os/actions/runs/37214405941",
+    "conclusion": "success",
+    "human_admission_holds_retained": 16
+  },
+  "observed": {
+    "postgresql": "16.15",
+    "cpython": "3.13.15",
+    "python_tests": 252,
+    "sql_named_refusals": 22,
+    "legacy_active_cutover": "refused with expected exit 3",
+    "valid_projection": "passed",
+    "exact_retry": "zero extra receipts or transitions",
+    "stop_resume_renewal": "passed",
+    "synthetic_rows": "rolled back",
+    "review_time": "A precomposed requested start is accepted, but authority cannot start before the actual provider submission time; future provider submission is refused."
+  },
+  "earlier_runs": [
+    {
+      "run_id": 37212208296,
+      "conclusion": "failure",
+      "cause": "Administrator session invalidated role-membership probe; missing schema identifier was separately caught by Golden Gates."
+    },
+    {
+      "run_id": 37212697638,
+      "conclusion": "failure",
+      "cause": "SQL operator precedence in advisory-lock identity expression."
+    }
+  ],
+  "limits": [
+    "Synthetic GitHub approvals only; no authentic positive activation review tested.",
+    "PostgreSQL is a projection, not an independent attestation/hash verifier.",
+    "No production host, credentials, protection change, migration deployment or admission.",
+    "Continuing consumer authority and multi-session contention proof remain outside this slice.",
+    "Passing candidate gates does not resolve deliberate trust-gap findings."
+  ],
+  "collected_at": "2026-10-04T15:54:51.666Z",
+  "preceding_proof": "evals/sync-control-plane/manifest-verifier-ci-44052ab52255.json"
+}

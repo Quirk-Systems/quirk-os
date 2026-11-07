@@ -1,0 +1,125 @@
+{
+  "agent_failure_rate": null,
+  "answer_grader_audit": {
+    "authority_effect": false,
+    "calls": 72,
+    "controls_digest": "7fd522af5aabe91c4dae91f60df52d97a8a780d5768b7964e6eadf109fa9c115",
+    "failures": [],
+    "passed": true
+  },
+  "authenticated_accepted_pairs": 0,
+  "authority_effect": false,
+  "eligible_asserted_pairs": 0,
+  "errors": [],
+  "invalid_test_rate": null,
+  "observation_status": "NO_LIVE_MODEL_OBSERVATIONS",
+  "pack_digest": "73d5bb09c8ff883d44f8b23a6db50aff0ae242849ae0850403c3e76a09df0a50",
+  "pairs": [
+    {
+      "agent_outcome": "NOT_RUN",
+      "contract_gate": {
+        "authority_effect": false,
+        "reasons": [
+          "invalid_contract"
+        ],
+        "status": "INVALID_PAIR"
+      },
+      "expected_digest": "068a53132bc57dd407695f082685fe60fe27c641a1e4e9e4a79f212e278aa0ce",
+      "id": "RT01",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "variant_digests": {
+        "a": "e0c25d3ef5998bdd07125b07f3dbd3a7e9e08a5bcb5e2b5c381b6896e9ea59bd",
+        "b": "5ff7c6799b8f7d4c2a3e6f3136fbca2493556194d21015a32ce76f70c3047d77"
+      }
+    },
+    {
+      "agent_outcome": "NOT_RUN",
+      "contract_gate": {
+        "authority_effect": false,
+        "reasons": [
+          "invalid_contract"
+        ],
+        "status": "INVALID_PAIR"
+      },
+      "expected_digest": "a0d3371d0089ff36d324c2fc63f2e8c45cfed63ca75b8f3775b17ff3600ca286",
+      "id": "RT02",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "variant_digests": {
+        "a": "73bddac7658472cfe865074127568ec241fa2c2eba65afb6b755ecca7544c9e4",
+        "b": "115e9122cae3cf9f9e1e840a0c704e9d55313248c54ce6bd1a95984068af31cf"
+      }
+    },
+    {
+      "agent_outcome": "NOT_RUN",
+      "contract_gate": {
+        "authority_effect": false,
+        "reasons": [
+          "invalid_contract"
+        ],
+        "status": "INVALID_PAIR"
+      },
+      "expected_digest": "3363194c87bc6e021c34874a9e6d552383d3875bb4df8ce06666eeb1e5148995",
+      "id": "RT03",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "variant_digests": {
+        "a": "a3a09c0f9b5c5317f978d07df0eae9ea55b73c972f30916900fc7a89768b09fd",
+        "b": "4847db8247a46df760cadc6085eee38c37dc9618fbfe01ec484c7e85fae701c7"
+      }
+    },
+    {
+      "agent_outcome": "NOT_RUN",
+      "contract_gate": {
+        "authority_effect": false,
+        "reasons": [
+          "invalid_contract"
+        ],
+        "status": "INVALID_PAIR"
+      },
+      "expected_digest": "d5054c329887378a31e39ff0f322c5a90f6980cc20ff540f8a70a9584a4590c4",
+      "id": "RT04",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "variant_digests": {
+        "a": "7088a98b1709252aae98733dc5c9b4e264c8b1a283368d2daa27bcdb9c40b47c",
+        "b": "a9dad98db334efb2a5d152b0a9d3b0ed1d1a0e6819748da071366877f98dc63c"
+      }
+    },
+    {
+      "agent_outcome": "NOT_RUN",
+      "contract_gate": {
+        "authority_effect": false,
+        "reasons": [
+          "invalid_contract"
+        ],
+        "status": "INVALID_PAIR"
+      },
+      "expected_digest": "9d7eaf803eed58dd802f7d60e9fddd874a13a58a9f036b02ae0f0a5d02b15ccc",
+      "id": "RT05",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "variant_digests": {
+        "a": "742981a1f1feb33c722499f22d15c655885b3d048a04f0b76066357d2a49a1c4",
+        "b": "9bac60341acdc108892eab198d335bd94427cec434c63b182e28bb8a66e7a14c"
+      }
+    },
+    {
+      "agent_outcome": "NOT_RUN",
+      "contract_gate": {
+        "authority_effect": false,
+        "reasons": [
+          "invalid_contract"
+        ],
+        "status": "INVALID_PAIR"
+      },
+      "expected_digest": "1f61c06690ef80bac3aea6f365a71df7a3987d0ba5912c337c85a91c089c5b55",
+      "id": "RT06",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "variant_digests": {
+        "a": "3201c7154b46b80fa3ee717cccece0b799203a4ef744668f102809caf81c644b",
+        "b": "a10fda2e031f3cd8e6847e0f5e75153771fdcad00678fe2c1c160520646b6791"
+      }
+    }
+  ],
+  "reference_tasks_executed": 6,
+  "source_files": 7,
+  "structural_checks_passed": true,
+  "version": "agent-assurance-real-tasks.v0.1.0"
+}

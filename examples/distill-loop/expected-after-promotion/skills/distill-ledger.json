@@ -1,0 +1,71 @@
+{
+  "api_version": "quirk.dev/distill-ledger/v1alpha1",
+  "kind": "DistillLedger",
+  "status": "candidate",
+  "trigger_actor": "agent.distill-loop",
+  "authority": {
+    "semantic_authority": false,
+    "runtime_authority": false,
+    "canon_promotion": false,
+    "admission_effect": "none",
+    "projection_only": true
+  },
+  "entries": [
+    {
+      "entry_id": "dl.000001",
+      "kind": "distilled",
+      "recorded_at": "2026-09-18T14:26:40Z",
+      "actor": "agent.distill-loop",
+      "candidate_id": "quirk-distilled-decision-brief-2d699dfa",
+      "source_receipt_id": "receipt.quirk-distillation-synthesizer.trial.0007",
+      "source_skill_id": "quirk-distillation-synthesizer",
+      "source_skill_version": "0.2.0",
+      "finding_codes": [
+        "DISTILLED_CANDIDATE_WRITTEN",
+        "EVAL_KINDS_INCOMPLETE",
+        "PROMOTION_REQUIRED",
+        "UNDECLARED_MOVE_EXCLUDED"
+      ],
+      "refs": {
+        "eval_suite_ref": "evals/skills/distilled/quirk-distilled-decision-brief-2d699dfa.json",
+        "eval_suite_sha256": "201b3210b7179c4f12b12f9ba1ab1311f7670d91d9da539c53e382cf94105ce3",
+        "excluded_moves": [
+          "cache_sources",
+          "emit_proposed_move"
+        ],
+        "manifest_sha256": "d5cdc2b0480dc07624b635d7a9c3d904056570912b0f9089b2b51f1f785aa5a1",
+        "source_blob_sha": "4136bfb2806e9a0e75aec3a913f7824f03044a4e",
+        "source_manifest_sha256": "eb3b41048844dba81b0dbed6cd4647fd7bab64332ad8fce9274e475e49ffab48",
+        "trace_id": "trace.quirk-distillation-synthesizer.trial.0007"
+      },
+      "prev_entry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "entry_sha256": "8673b0ada36221fa7703f610645cc258517520572acf526ae166678dd837591b"
+    },
+    {
+      "entry_id": "dl.000002",
+      "kind": "promoted",
+      "recorded_at": "2026-09-19T09:15:00Z",
+      "actor": "human.bryan",
+      "candidate_id": "quirk-distilled-decision-brief-2d699dfa",
+      "source_receipt_id": "receipt.quirk-distillation-synthesizer.trial.0007",
+      "source_skill_id": "quirk-distillation-synthesizer",
+      "source_skill_version": "0.2.0",
+      "finding_codes": [
+        "ADMISSION_EFFECT_NONE",
+        "CANON_EFFECT_NONE",
+        "PROMOTED_TO_REVIEWED_CANDIDATE",
+        "RUNTIME_EFFECT_NONE"
+      ],
+      "refs": {
+        "eval_suite_ref": "evals/skills/distilled/quirk-distilled-decision-brief-2d699dfa.json",
+        "eval_suite_sha256": "2553c5e29912497bf025fdb005bbe701e180b4412d410fa362c695153b4b772d",
+        "manifest_sha256": "d5cdc2b0480dc07624b635d7a9c3d904056570912b0f9089b2b51f1f785aa5a1",
+        "promotion_receipt_ref": "receipt.distill-promotion.quirk-distilled-decision-brief-2d699dfa.0001",
+        "source_blob_sha": "4136bfb2806e9a0e75aec3a913f7824f03044a4e"
+      },
+      "prev_entry_sha256": "8673b0ada36221fa7703f610645cc258517520572acf526ae166678dd837591b",
+      "entry_sha256": "40171e5d992875a35303da992b677e8559e561c8bf682e96fd571295c18cd38c"
+    }
+  ],
+  "ledger_sha256": "551cff73feed92e1d02063918d05b2e09cbbd5bed2a37bdf1582ada6e206adb8"
+}

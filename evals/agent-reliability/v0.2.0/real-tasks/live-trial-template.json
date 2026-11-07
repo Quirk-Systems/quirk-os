@@ -1,0 +1,40 @@
+{
+  "status": "NOT_RUN",
+  "pack_digest": "73d5bb09c8ff883d44f8b23a6db50aff0ae242849ae0850403c3e76a09df0a50",
+  "authorization_record": null,
+  "independent_review_evidence": [],
+  "provider": null,
+  "model_exact_version": null,
+  "endpoint": null,
+  "system_and_tool_schema_digests": null,
+  "sampling_and_seed_configuration": null,
+  "token_limits": null,
+  "isolation_and_access_enforcement": null,
+  "retry_timeout_policy": null,
+  "cost_limit": null,
+  "order_and_randomization_record": null,
+  "runtime_and_dependency_versions": null,
+  "observations": [],
+  "required_observation_fields": [
+    "task_id",
+    "register",
+    "variant_digest",
+    "pack_digest",
+    "source_identities",
+    "configuration_digest",
+    "started_at_utc",
+    "ended_at_utc",
+    "raw_request_path_and_sha256",
+    "raw_response_path_and_sha256",
+    "tool_trace_path_and_sha256",
+    "tool_delivery_status",
+    "usage",
+    "termination_reason",
+    "attempt_number",
+    "classification",
+    "review_evidence"
+  ],
+  "limitations": [
+    "Template only; no model configured, human review performed, or live observation recorded."
+  ]
+}
