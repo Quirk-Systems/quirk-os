@@ -36,3 +36,11 @@ Name the typed output and its evidence.
 ## Stop conditions
 
 Stop for missing authority, conflicting Canon, unsafe mutation, privacy or rights uncertainty, or unverifiable claims.
+
+## Context continuity
+
+Inherit the receiving repository context profile or declare a scoped difference.
+Preserve exact originals, useful alternatives, quiet participation, and untried
+possibilities. Scope and allow preference bypass or withdrawal; trace evidence to
+its origins. Record actual delivery, host loading, behavior checks, and human
+burden separately. A candidate instruction cannot admit itself.

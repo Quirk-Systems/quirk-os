@@ -1,0 +1,88 @@
+{
+  "records": [
+    {
+      "revision": "r1",
+      "origin": "synthetic-example",
+      "owner": "fixture",
+      "purpose": "create",
+      "audiences": [
+        "local"
+      ],
+      "domains": [
+        "creative"
+      ],
+      "derived_from": [],
+      "state": "untried",
+      "freshness": "historical",
+      "id": "core",
+      "kind": "instruction",
+      "original": "Quirk is a creative medium, capability ecosystem, and participatory world. Preserve untried possibilities, exact originals, quiet participation, and useful differences."
+    },
+    {
+      "revision": "r1",
+      "origin": "synthetic-example",
+      "owner": "fixture",
+      "purpose": "create",
+      "audiences": [
+        "local"
+      ],
+      "domains": [
+        "creative"
+      ],
+      "derived_from": [],
+      "state": "untried",
+      "freshness": "historical",
+      "id": "older-idea",
+      "kind": "opportunity",
+      "original": "Try a private remix without requiring a public post."
+    },
+    {
+      "revision": "r1",
+      "origin": "synthetic-example",
+      "owner": "fixture",
+      "purpose": "create",
+      "audiences": [
+        "local"
+      ],
+      "domains": [
+        "creative"
+      ],
+      "derived_from": [],
+      "state": "untried",
+      "freshness": "historical",
+      "id": "raw-fragment",
+      "kind": "reference",
+      "original": "lurkers shine loss after never trying?"
+    },
+    {
+      "revision": "r1",
+      "origin": "synthetic-example",
+      "owner": "fixture",
+      "purpose": "create",
+      "audiences": [
+        "local"
+      ],
+      "domains": [
+        "creative"
+      ],
+      "derived_from": [],
+      "state": "untried",
+      "freshness": "historical",
+      "id": "quiet-participant",
+      "kind": "reference",
+      "original": "No activity or preference has been reported. Observation is a valid path; outcome unknown."
+    }
+  ],
+  "release": "synthetic-candidate-1",
+  "audience": "local",
+  "purpose": "create",
+  "domains": [
+    "creative"
+  ],
+  "as_of": "2026-10-14T00:00:00Z",
+  "admitted_instruction_ids": [
+    "core"
+  ],
+  "budget_chars": 2000,
+  "exploration_slots": 1
+}
