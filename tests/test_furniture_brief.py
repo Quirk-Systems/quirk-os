@@ -57,6 +57,15 @@ class FurnitureBriefFixtureCorpusTests(unittest.TestCase):
         finalized = [r for r in summary["results"] if r["actual_decision"] == "FINALIZE"]
         self.assertEqual([r["case_id"] for r in finalized], ["case-001-success"])
 
+    def test_decode_autopsy_is_schema_valid_for_every_case(self) -> None:
+        """Decode Autopsy is one of the twelve asset types; every batch -- FINALIZE
+        or FLOP -- must produce one that conforms to #/$defs/decode_autopsy."""
+        summary = self.run_validator()
+        for result in summary["results"]:
+            self.assertEqual(
+                result["decode_autopsy_schema_errors"], [], msg=result["case_id"]
+            )
+
 
 class ReceiptChainIntegrityTests(unittest.TestCase):
     """The receipt chain must be append-only and hash-linked: any tamper is detected."""
