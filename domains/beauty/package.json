@@ -1,0 +1,23 @@
+{
+  "name": "@quirk/domain-beauty",
+  "version": "0.1.1",
+  "private": true,
+  "type": "module",
+  "description": "Candidate Taste Engine vertical slice beneath the canonical Quirk Beauty domain boundary.",
+  "engines": { "node": ">=22 <25" },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs cloudflare/test/*.test.mjs",
+    "validate": "node scripts/validate-pack.mjs",
+    "proof:synthetic": "node scripts/run-synthetic-proof.mjs",
+    "proof:verify": "node scripts/verify-real-proof.mjs",
+    "ci": "npm test && npm run validate && npm run proof:synthetic"
+  },
+  "quirk": {
+    "canonicalNode": 24,
+    "compatibilityEvidence": [22, 24],
+    "canonicalArtifact": "../../docs/canon/QUIRK-BEAUTY-DOMAIN-BOUNDARY.yaml",
+    "candidateCeiling": true,
+    "canonicalPayload": "../../docs/canon/QUIRK-BEAUTY-DOMAIN-BOUNDARY.payload.json",
+    "canonicalContentHash": "sha256:264c636c364db2caa08b2d4370eb10618c721d74f2588f8359546d8a9b45fb21"
+  }
+}

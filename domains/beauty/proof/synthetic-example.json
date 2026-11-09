@@ -1,0 +1,262 @@
+{
+  "proofId": "qb-taste-proof-synthetic-001",
+  "domainBoundaryRef": "quirk.products.beauty",
+  "synthetic": true,
+  "participantConsent": false,
+  "purpose": "personal_beauty_recommendation",
+  "actorId": "human:proof-participant",
+  "startedAt": "2026-08-21T12:00:00.000Z",
+  "completedAt": "2026-08-21T14:03:00.000Z",
+  "choice": {
+    "id": "choice:001",
+    "sessionId": "session:001",
+    "actorId": "human:proof-participant",
+    "context": {
+      "id": "context:everyday-lip:daylight",
+      "realm": "beauty",
+      "purpose": "personal_beauty_recommendation",
+      "attributes": {
+        "occasion": "everyday",
+        "lighting": "daylight",
+        "budget_ceiling_usd": 25
+      }
+    },
+    "presentedOptionIds": [
+      "option:soft-satin-rose",
+      "option:flat-matte-cherry"
+    ],
+    "selectedOptionId": "option:soft-satin-rose",
+    "abstained": false,
+    "sourceType": "explicit_human_choice",
+    "capturedAt": "2026-08-21T12:00:00.000Z"
+  },
+  "preferenceEvidence": [
+    {
+      "id": "evidence:choice:001:option:flat-matte-cherry:chroma",
+      "actorId": "human:proof-participant",
+      "purpose": "personal_beauty_recommendation",
+      "contextId": "context:everyday-lip:daylight",
+      "preferredFeature": "chroma=muted",
+      "contrastedFeature": "chroma=vivid",
+      "sourceChoiceId": "choice:001",
+      "sourceType": "explicit_human_choice",
+      "weight": 0.25,
+      "confidence": 0.7,
+      "truthStatus": "candidate",
+      "recordedAt": "2026-08-21T12:00:00.000Z"
+    },
+    {
+      "id": "evidence:choice:001:option:flat-matte-cherry:effort_minutes",
+      "actorId": "human:proof-participant",
+      "purpose": "personal_beauty_recommendation",
+      "contextId": "context:everyday-lip:daylight",
+      "preferredFeature": "effort_minutes=5",
+      "contrastedFeature": "effort_minutes=10",
+      "sourceChoiceId": "choice:001",
+      "sourceType": "explicit_human_choice",
+      "weight": 0.25,
+      "confidence": 0.7,
+      "truthStatus": "candidate",
+      "recordedAt": "2026-08-21T12:00:00.000Z"
+    },
+    {
+      "id": "evidence:choice:001:option:flat-matte-cherry:finish",
+      "actorId": "human:proof-participant",
+      "purpose": "personal_beauty_recommendation",
+      "contextId": "context:everyday-lip:daylight",
+      "preferredFeature": "finish=satin",
+      "contrastedFeature": "finish=matte",
+      "sourceChoiceId": "choice:001",
+      "sourceType": "explicit_human_choice",
+      "weight": 0.25,
+      "confidence": 0.7,
+      "truthStatus": "candidate",
+      "recordedAt": "2026-08-21T12:00:00.000Z"
+    },
+    {
+      "id": "evidence:choice:001:option:flat-matte-cherry:fragrance",
+      "actorId": "human:proof-participant",
+      "purpose": "personal_beauty_recommendation",
+      "contextId": "context:everyday-lip:daylight",
+      "preferredFeature": "fragrance=low",
+      "contrastedFeature": "fragrance=high",
+      "sourceChoiceId": "choice:001",
+      "sourceType": "explicit_human_choice",
+      "weight": 0.25,
+      "confidence": 0.7,
+      "truthStatus": "candidate",
+      "recordedAt": "2026-08-21T12:00:00.000Z"
+    }
+  ],
+  "recommendation": {
+    "id": "recommendation:94ed6ffbe93f8d10",
+    "actorId": "human:proof-participant",
+    "purpose": "personal_beauty_recommendation",
+    "optionId": "option:satin-mauve",
+    "score": 0.75,
+    "confidence": 0.65,
+    "evidenceIds": [
+      "evidence:choice:001:option:flat-matte-cherry:chroma",
+      "evidence:choice:001:option:flat-matte-cherry:finish",
+      "evidence:choice:001:option:flat-matte-cherry:fragrance"
+    ],
+    "factors": [
+      {
+        "feature": "chroma=muted",
+        "contribution": 0.25,
+        "evidenceIds": [
+          "evidence:choice:001:option:flat-matte-cherry:chroma"
+        ]
+      },
+      {
+        "feature": "finish=satin",
+        "contribution": 0.25,
+        "evidenceIds": [
+          "evidence:choice:001:option:flat-matte-cherry:finish"
+        ]
+      },
+      {
+        "feature": "fragrance=low",
+        "contribution": 0.25,
+        "evidenceIds": [
+          "evidence:choice:001:option:flat-matte-cherry:fragrance"
+        ]
+      }
+    ],
+    "insufficientEvidence": false,
+    "status": "candidate",
+    "generatedAt": "2026-08-21T12:05:00.000Z",
+    "expiresAt": "2026-08-24T12:05:00.000Z"
+  },
+  "realWorldOutcome": {
+    "id": "outcome:180d3fd40a97ac8a",
+    "actorId": "human:proof-participant",
+    "purpose": "personal_beauty_recommendation",
+    "recommendationId": "recommendation:94ed6ffbe93f8d10",
+    "optionId": "option:satin-mauve",
+    "kind": "preferred",
+    "explicit": true,
+    "testedInRealWorld": true,
+    "sourceType": "explicit_human_report",
+    "note": "Synthetic fixture: not a real-world observation.",
+    "observedAt": "2026-08-21T14:00:00.000Z"
+  },
+  "graphUpdateProposal": {
+    "id": "graph-update-proposal:fdd8ff9ab8765fec",
+    "actorId": "human:proof-participant",
+    "purpose": "personal_beauty_recommendation",
+    "expectedGraphRevision": 0,
+    "recommendationId": "recommendation:94ed6ffbe93f8d10",
+    "outcomeId": "outcome:180d3fd40a97ac8a",
+    "deltas": [
+      {
+        "feature": "chroma=muted",
+        "delta": 0.15,
+        "evidenceIds": [
+          "evidence:choice:001:option:flat-matte-cherry:chroma",
+          "outcome:180d3fd40a97ac8a"
+        ]
+      },
+      {
+        "feature": "finish=satin",
+        "delta": 0.15,
+        "evidenceIds": [
+          "evidence:choice:001:option:flat-matte-cherry:finish",
+          "outcome:180d3fd40a97ac8a"
+        ]
+      },
+      {
+        "feature": "fragrance=low",
+        "delta": 0.15,
+        "evidenceIds": [
+          "evidence:choice:001:option:flat-matte-cherry:fragrance",
+          "outcome:180d3fd40a97ac8a"
+        ]
+      }
+    ],
+    "autoApply": false,
+    "truthStatus": "candidate",
+    "proposedAt": "2026-08-21T14:01:00.000Z",
+    "expiresAt": "2026-08-22T14:01:00.000Z"
+  },
+  "humanDecision": {
+    "id": "graph-update-decision:1426418b5460f0ab",
+    "proposalId": "graph-update-proposal:fdd8ff9ab8765fec",
+    "actorId": "human:proof-participant",
+    "purpose": "personal_beauty_recommendation",
+    "decision": "approve",
+    "humanConfirmed": true,
+    "reason": "Synthetic fixture approval for machinery verification only.",
+    "corrections": [],
+    "decidedAt": "2026-08-21T14:02:00.000Z",
+    "expiresAt": "2026-08-21T16:02:00.000Z"
+  },
+  "graphUpdateReceipt": {
+    "kind": "PreferenceGraphUpdateReceipt",
+    "actorId": "human:proof-participant",
+    "purpose": "personal_beauty_recommendation",
+    "proposalId": "graph-update-proposal:fdd8ff9ab8765fec",
+    "decisionId": "graph-update-decision:1426418b5460f0ab",
+    "beforeRevision": 0,
+    "afterRevision": 1,
+    "appliedAt": "2026-08-21T14:03:00.000Z",
+    "evidenceIds": [
+      "evidence:choice:001:option:flat-matte-cherry:chroma",
+      "evidence:choice:001:option:flat-matte-cherry:finish",
+      "evidence:choice:001:option:flat-matte-cherry:fragrance",
+      "outcome:180d3fd40a97ac8a"
+    ],
+    "effect": "bounded_preference_graph_update",
+    "id": "receipt:1313c3f9956d9b60",
+    "actionDigest": "sha256:1313c3f9956d9b60cc306c4d8ccb5124a65fe30330ca11fee0694cdea070f037",
+    "receiptWriter": "candidate-local-adapter; replace with quirk.core.evidence"
+  },
+  "resultingGraph": {
+    "actorId": "human:proof-participant",
+    "purpose": "personal_beauty_recommendation",
+    "revision": 1,
+    "edges": [
+      {
+        "feature": "chroma=muted",
+        "strength": 0.15,
+        "confidence": 0.55,
+        "evidenceIds": [
+          "evidence:choice:001:option:flat-matte-cherry:chroma",
+          "outcome:180d3fd40a97ac8a"
+        ],
+        "lastUpdatedAt": "2026-08-21T14:03:00.000Z"
+      },
+      {
+        "feature": "finish=satin",
+        "strength": 0.15,
+        "confidence": 0.55,
+        "evidenceIds": [
+          "evidence:choice:001:option:flat-matte-cherry:finish",
+          "outcome:180d3fd40a97ac8a"
+        ],
+        "lastUpdatedAt": "2026-08-21T14:03:00.000Z"
+      },
+      {
+        "feature": "fragrance=low",
+        "strength": 0.15,
+        "confidence": 0.55,
+        "evidenceIds": [
+          "evidence:choice:001:option:flat-matte-cherry:fragrance",
+          "outcome:180d3fd40a97ac8a"
+        ],
+        "lastUpdatedAt": "2026-08-21T14:03:00.000Z"
+      }
+    ]
+  },
+  "artifactDigests": {
+    "choice": "sha256:f97130335e7f247450102f3febffed4349ff0c4c96925cd7619cdb52dd49f8ac",
+    "preferenceEvidence": "sha256:ad3eb7d0df87f0cc839c68203a117579c2d92b6e79194bb9ff89771795371b5a",
+    "recommendation": "sha256:c8f3e671864e2e2a7d4771a304a50b4a881c7264dd2c47e6121718ac6d048e57",
+    "realWorldOutcome": "sha256:b9ed7b7d11a327066cad1bbb4360d1dab363ea2dd4befc4bbc395b19aec58082",
+    "graphUpdateProposal": "sha256:6be3835eff4bfac6a2a22430eec2d4571b482babd386917ef921baa7b2dc2d00",
+    "humanDecision": "sha256:db54209a6572c840856dc1657e9a9ceb0a1c95375cdc24c97ff0e96736c5da66",
+    "graphUpdateReceipt": "sha256:5921d63f8db27e13a31e04c47e5a1ceeb2cbb22e290eccff6bd0b68341eb89d6"
+  },
+  "operatorAttestation": "Synthetic fixture generated by the candidate local harness. It is explicitly inadmissible as real-world proof.",
+  "proofStatus": "synthetic_only_not_admissible"
+}

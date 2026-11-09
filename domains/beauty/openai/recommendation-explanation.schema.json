@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quirk://schemas/beauty/openai-recommendation-explanation/0.1.0",
+  "title": "RecommendationExplanation",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "recommendationId": { "type": "string" },
+    "optionId": { "type": "string" },
+    "headline": { "type": "string", "maxLength": 100 },
+    "summary": { "type": "string", "maxLength": 400 },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feature": { "type": "string" },
+          "explanation": { "type": "string", "maxLength": 240 },
+          "evidenceIds": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["feature", "explanation", "evidenceIds"]
+      }
+    },
+    "caveats": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 240 }
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "authorityNotice": {
+      "const": "Recommendation only. No action or Preference Graph change has been authorized."
+    }
+  },
+  "required": [
+    "recommendationId",
+    "optionId",
+    "headline",
+    "summary",
+    "reasons",
+    "caveats",
+    "confidence",
+    "expiresAt",
+    "authorityNotice"
+  ]
+}

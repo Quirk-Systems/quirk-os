@@ -1,0 +1,45 @@
+api_version: quirk.candidate/v1
+kind: CapabilityRegistry
+metadata:
+  domain: quirk.products.beauty
+  version: 0.1.0
+  truth_status: candidate
+capabilities:
+  - id: beauty.choice.present
+    authority_class: A0
+    effect: none
+  - id: beauty.choice.record
+    authority_class: A3
+    effect: reversible_internal_event
+    requires: explicit_user_action
+  - id: beauty.evidence.derive
+    authority_class: A1
+    effect: candidate_only
+  - id: beauty.recommendation.rank
+    authority_class: A2
+    effect: proposal_only
+  - id: beauty.outcome.record
+    authority_class: A3
+    effect: append_only_internal_event
+    requires: explicit_human_report
+  - id: beauty.graph_update.propose
+    authority_class: A2
+    effect: proposal_only
+    auto_apply: false
+  - id: core.preference_graph.update
+    authority_class: A3
+    effect: bounded_internal_mutation
+    owner: quirk.core
+    requires:
+      - explicit_human_decision
+      - matching_actor
+      - matching_purpose
+      - expected_revision
+      - unexpired_scope
+      - evidence_receipt
+forbidden:
+  - beauty.publish
+  - beauty.purchase
+  - beauty.message.send
+  - beauty.graph_update.auto_apply
+  - beauty.canon.promote

@@ -1,0 +1,43 @@
+api_version: quirk.proof/v1
+kind: ProofManifest
+metadata:
+  id: qb-taste-proof-001
+  domain_boundary_ref: quirk.products.beauty
+  version: 0.1.0
+  status: blocked_pending_real_world_run
+  truth_status: candidate
+spec:
+  claim: >-
+    One explicit beauty choice can produce traceable candidate preference
+    evidence, a bounded recommendation, an explicit real-world outcome, and a
+    human-confirmed Preference Graph update.
+  sequence:
+    - choice
+    - preference_evidence
+    - recommendation
+    - real_world_outcome
+    - human_confirmed_graph_update
+  participant:
+    minimum: 1
+    consent_required: true
+    committed_or_paying_test_user: true
+  pass_conditions:
+    - every stage references the prior stage by stable identifier
+    - every artifact remains in one actor and purpose partition
+    - the recommendation cites all evidence used in ranking
+    - the outcome is an explicit human report after real-world testing
+    - no graph mutation occurs before a fresh human decision
+    - the decision is approve or revise, never inferred from silence
+    - the receipt records before and after graph revisions
+    - every proof artifact has a matching SHA-256 digest
+    - the real-proof verifier exits successfully
+  disqualifiers:
+    - synthetic equals true
+    - outcome derived from click, purchase, dwell time, engagement, or silence
+    - missing or stale decision
+    - cross-purpose or cross-actor grant reuse
+    - recommendation altered by an uncited model inference
+    - graph mutation without a receipt
+    - any claim that one run proves generalized recommendation lift
+  required_artifact: proof/evidence/real-proof.json
+  verifier: scripts/verify-real-proof.mjs

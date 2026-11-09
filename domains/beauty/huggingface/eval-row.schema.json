@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quirk://schemas/beauty/hf-eval-row/0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "purpose": { "type": "string" },
+    "choice": { "type": "object" },
+    "evidence": { "type": "array", "items": { "type": "object" } },
+    "candidates": { "type": "array", "minItems": 2, "items": { "type": "object" } },
+    "expectedTopOptionId": { "type": "string" },
+    "failureLabels": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "synthetic": { "const": true }
+  },
+  "required": ["id", "purpose", "choice", "evidence", "candidates", "expectedTopOptionId", "failureLabels", "synthetic"]
+}

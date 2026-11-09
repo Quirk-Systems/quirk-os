@@ -1,0 +1,30 @@
+api_version: quirk.candidate/v1
+kind: DomainPack
+metadata:
+  id: quirk.products.beauty.pack
+  name: Quirk Beauty Domain Pack
+  version: 0.1.0
+  lifecycle_status: structured
+  truth_status: candidate
+  owner: bryan
+  canonical_boundary_ref: quirk.products.beauty
+spec:
+  first_wedge: taste_engine
+  proof_status: blocked_pending_real_world_run
+  candidate_ceiling: true
+  auto_apply: false
+  activation: denied
+  deployment: denied
+  canon_promotion: denied
+  preference_graph_write: human_gate_only
+  required_chain:
+    - choice
+    - preference_evidence
+    - recommendation
+    - real_world_outcome
+    - human_confirmed_graph_update
+  artifacts:
+    objects: candidate/object-registry.yaml
+    capabilities: candidate/capability-registry.yaml
+    architecture: docs/architecture.md
+    proof_manifest: proof/proof-manifest.yaml

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quirk://schemas/canon/domain-boundary/1",
+  "title": "DomainBoundary",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "api_version": {
+      "const": "quirk.canon/v1"
+    },
+    "kind": {
+      "const": "DomainBoundary"
+    }
+  },
+  "required": [
+    "api_version",
+    "kind",
+    "metadata",
+    "spec"
+  ]
+}

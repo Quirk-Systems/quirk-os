@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quirk://schemas/core/preference-graph-receipt/0.1.0",
+  "title": "PreferenceGraphUpdateReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "kind": { "const": "PreferenceGraphUpdateReceipt" },
+    "id": { "type": "string" },
+    "actorId": { "type": "string" },
+    "purpose": { "type": "string" },
+    "proposalId": { "type": "string" },
+    "decisionId": { "type": "string" },
+    "beforeRevision": { "type": "integer", "minimum": 0 },
+    "afterRevision": { "type": "integer", "minimum": 1 },
+    "appliedAt": { "type": "string", "format": "date-time" },
+    "evidenceIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "effect": { "const": "bounded_preference_graph_update" },
+    "actionDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "receiptWriter": { "type": "string" }
+  },
+  "required": ["kind", "id", "actorId", "purpose", "proposalId", "decisionId", "beforeRevision", "afterRevision", "appliedAt", "evidenceIds", "effect", "actionDigest", "receiptWriter"]
+}
