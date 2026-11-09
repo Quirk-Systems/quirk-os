@@ -1,0 +1,278 @@
+{
+  "bundle_version": "0.1.0",
+  "artifact_status": "candidate",
+  "mission": {
+    "outcome": "Prepare a reviewable Quirk Cast concept in GitHub using compound-quirk-systems.",
+    "operating_depth": "census_and_synthetic_design_walkthrough",
+    "owner_ref": "actor.bryan",
+    "actor_ref": "agent.codex",
+    "acceptance": "Source-backed scope, attributable synthetic example, explicit limits, and draft PR; no runtime admission.",
+    "stop_condition": "Stop after draft PR and verification. Runtime implementation and real-source trial remain proposed.",
+    "rollback": "Close draft PR; revert documentation commit if later merged. No private source is placed in Git."
+  },
+  "source_census": {
+    "canonical": [
+      {
+        "source_ref": "https://github.com/Quirk-Systems/quirk-os/blob/03f70e1a790bac09294fe0f31a3c5f0d0fb4418e/README.md",
+        "fingerprint": "git-blob:2a27937bdb52c6b4f84f519d3c2b98de3ff97e8e",
+        "classification_reason": "Current repository statement of its core laws; not runtime admission.",
+        "purpose": "Constrain candidate scope and authority.",
+        "rights": "Read for repository work; no transcript publication rights conveyed."
+      }
+    ],
+    "candidates": [
+      {
+        "source_ref": "https://github.com/Quirk-Systems/quirk-os/blob/03f70e1a790bac09294fe0f31a3c5f0d0fb4418e/docs/narrative-systems/quirkverse-activation-engine.md",
+        "fingerprint": "git-blob:f54f1700a293868eab7e1670047d732fa6a0b734",
+        "classification_reason": "Explicit candidate/inactive activation-engine specification.",
+        "purpose": "Reuse optional authored broadcast and resident perspectives.",
+        "rights": "Candidate reference only; grants no authority."
+      },
+      {
+        "source_ref": "https://github.com/Quirk-Systems/quirk-os/blob/03f70e1a790bac09294fe0f31a3c5f0d0fb4418e/docs/distill-loop/README.md",
+        "fingerprint": "git-blob:ae2e4acd360f8504f6a0039d7c28a0be28312fee",
+        "classification_reason": "Candidate/non-operative documentation; implemented code was not evaluated in this task.",
+        "purpose": "Avoid treating a conversation as completed skill-run evidence.",
+        "rights": "Read/reference only; no promotion."
+      }
+    ],
+    "derived_projections": [
+      {
+        "source_ref": "https://github.com/Quirk-Systems/Quirk/blob/aab729221fcc5b32bf1f6abd9c05e8460ca91a66/README.md",
+        "fingerprint": "git-blob:c686a2018fadb7b33e3feb551435d37662cfe87f",
+        "classification_reason": "Describes current design scaffolds and planned platform; used as an architecture inventory, not authority.",
+        "purpose": "Select the adjacent narrative documentation in quirk-os instead of claiming a new application exists.",
+        "rights": "Read/reference."
+      }
+    ],
+    "superseded": [],
+    "conflicting": [],
+    "unresolved": [
+      {
+        "source_ref": "private-conversation-context:not-exported",
+        "fingerprint": null,
+        "classification_reason": "Real conversational seed has unlabeled speakers and unresolved publication rights; excluded from this public pack.",
+        "purpose": "Context for proposed topic/attribution separation only; no real-source extraction dataset published.",
+        "rights": "Public redistribution not established; raw source remains in original context."
+      }
+    ],
+    "missing": [
+      {
+        "source_ref": "quirk-cast-runtime-and-human-concept-decision",
+        "fingerprint": null,
+        "classification_reason": "No exact-name repository, issue, PR, or code hit found in the bounded searches; this is not proof of global absence.",
+        "purpose": "Keep naming, usefulness, and implementation status open.",
+        "rights": "No runtime grant or admission exists in this pack."
+      }
+    ],
+    "freshness_risks": [
+      "Sources pinned to inspected commit 03f70e1a790bac09294fe0f31a3c5f0d0fb4418e; recheck main before implementation.",
+      "Private repositories may not be fully indexed; inspected Quirk and quirk-os trees were not truncated."
+    ],
+    "authority_decision_refs": [
+      "authority.cast-draft"
+    ]
+  },
+  "authority_decisions": [
+    {
+      "id": "authority.cast-draft",
+      "action": "prepare_candidate_documentation_and_draft_pr",
+      "allowed": true,
+      "explicit_authority": true,
+      "authority_basis": "User requested Quirk Cast through GitHub using compound-quirk-systems; interpreted as a bounded candidate proposal.",
+      "scope": "Three new documentation/evidence files on a new branch and draft PR."
+    },
+    {
+      "action": "data_product_publish",
+      "allowed": false,
+      "explicit_authority": false,
+      "authority_basis": "No authorization to publish the real conversation or participant data."
+    },
+    {
+      "action": "production_release",
+      "allowed": false,
+      "explicit_authority": false,
+      "authority_basis": "Draft documentation is not deployment authority."
+    },
+    {
+      "action": "canon_write",
+      "allowed": false,
+      "explicit_authority": false,
+      "authority_basis": "Human admission remains separate."
+    },
+    {
+      "action": "authority_expand",
+      "allowed": false,
+      "explicit_authority": false,
+      "authority_basis": "No self-promotion."
+    }
+  ],
+  "run_receipt": {
+    "run_id": "run.quirk-cast-census.2026-10-10.v0.1",
+    "trace_id": "trace.quirk-cast-candidate.2026-10-10",
+    "skill_ref": "compound-quirk-systems",
+    "capability_ref": "capability.systems-compounder",
+    "actor_ref": "agent.codex",
+    "authority_ref": "authority.cast-draft",
+    "inputs": {
+      "source_refs": [
+        "README.md@03f70e1",
+        "docs/narrative-systems/quirkverse-activation-engine.md@03f70e1",
+        "docs/distill-loop/README.md@03f70e1"
+      ],
+      "fingerprints": [
+        "git-blob:2a27937bdb52c6b4f84f519d3c2b98de3ff97e8e",
+        "git-blob:f54f1700a293868eab7e1670047d732fa6a0b734",
+        "git-blob:ae2e4acd360f8504f6a0039d7c28a0be28312fee"
+      ]
+    },
+    "execution": {
+      "tools": [
+        "GitHub repository/file/issue/PR search and GET",
+        "skills.read",
+        "apply_patch",
+        "python3"
+      ],
+      "workflow_version": "0.1.0",
+      "started_at": null,
+      "completed_at": null,
+      "prepared_on": "2026-10-10",
+      "phase": "prepared_before_github_write",
+      "timestamp_note": "Exact start not recorded. Commit/PR timestamps provide the later persistence receipt."
+    },
+    "outputs": {
+      "object_refs": [
+        "quirk.cast.candidate-v0.1",
+        "quirk-cast-walkthrough.md"
+      ],
+      "output_hashes": {
+        "quirk-cast.md": "sha256:4f9f82eaf2a7bf7a2820660b12af5373db8dd0b8074f391ae6918bc62675d203",
+        "quirk-cast-walkthrough.md": "sha256:c376cf0110b4269c0301d93272c7eb45f2c7ed48db699b0f0c1a6af90660c2d9"
+      },
+      "self_hash_note": "The evidence bundle is not self-hashed. Its Git blob/commit supplies its persistent fingerprint."
+    },
+    "quality": {
+      "contract_valid": true,
+      "eval_scores": {},
+      "design_review": {
+        "method": "Author walkthrough; not independent runtime evaluation",
+        "compounder_fixtures_considered": 11,
+        "runtime_fixtures_executed": 0,
+        "synthetic_lines_accounted_for": 5,
+        "synthetic_lines_total": 5
+      },
+      "warnings": [
+        "Interpretation of Quirk Cast is inferred, not human-ratified.",
+        "No parser, executable contract, audio, connector, or integration is implemented.",
+        "No current market or personal claims were researched.",
+        "Private original source is withheld and cannot be replayed from this public pack.",
+        "Structural validation cannot establish authority, semantics, or readiness."
+      ]
+    },
+    "economics": {
+      "latency_ms": null,
+      "compute_cost": null,
+      "human_review_minutes": null,
+      "new_paid_services": 0
+    },
+    "outcome": {
+      "accepted": false,
+      "reused": false,
+      "observed_effect": "Candidate documentation and synthetic review example prepared. No demonstrated user benefit or real-source processing."
+    },
+    "lineage": {
+      "parent_run_ids": [],
+      "transformation_refs": [
+        "transform.cast.census.v0.1",
+        "transform.cast.contract-sketch.v0.1",
+        "transform.cast.synthetic-walkthrough.v0.1"
+      ]
+    },
+    "validation": {
+      "status": "passed",
+      "validator_sha256": "9aee33817d58bdcedef8e615ffe140d6f1dba62215279fe083b1067ee4bd9131",
+      "scope": "Compounder bundle shape and authority flags only",
+      "errors": [],
+      "warnings": [],
+      "checked_invariants": [
+        "source_census_shape",
+        "receipt_lineage",
+        "protected_action_authority",
+        "capability_never_implies_authority",
+        "proposed_moves_remain_candidate"
+      ]
+    }
+  },
+  "proposed_moves": [
+    {
+      "id": "proposed_move.cast-first-reviewed-trial",
+      "status": "candidate",
+      "requested_change": "Judge the Cast concept; if selected, authorize one source and one bounded comparison trial.",
+      "target_refs": [
+        "quirk.cast.candidate-v0.1"
+      ],
+      "evidence_refs": [
+        "quirk-cast.md",
+        "quirk-cast-walkthrough.md"
+      ],
+      "authority_required": "Human concept decision plus scoped source-processing permission.",
+      "proposer_maximum_right": "propose",
+      "reversibility": "reversible private drafts",
+      "blast_radius": "one source and review session",
+      "acceptance_criteria": [
+        "Every meaningful source span accounted for.",
+        "No fabricated quotes or identities.",
+        "Interpretations and unsupported claims remain explicit.",
+        "Human selects brief, dispatch, or neither with a reason."
+      ],
+      "rollback_ref": "Discard trial projections under approved retention policy; preserve permitted source and decision history.",
+      "blockers": [
+        "Human concept decision not yet observed.",
+        "Real-source rights/access/retention not yet specified.",
+        "Independent reviewer and runtime behavior untested."
+      ]
+    }
+  ],
+  "system_dividend": {
+    "primary_outcome": "A bounded Quirk Cast candidate adjacent to existing narrative-system work.",
+    "evidence_receipt_ref": "quirk-cast-evidence.json",
+    "structured_data_updates": [
+      "This evidence bundle only; no registries or production data changed."
+    ],
+    "quality_delta": {
+      "baseline": "Mixed conversational context with an unspecified product label.",
+      "produced": "Explicit candidate meaning, source boundaries, worked comparison, next Move.",
+      "measured_improvement": null
+    },
+    "reusable_move_candidates": [
+      "Separate topics before inferring identity or generating a narrative."
+    ],
+    "skill_or_capability_candidates": [
+      "Future conversation-to-review method; not packaged, installed, or admitted."
+    ],
+    "cleanup_or_mapping_proposals": [
+      "Keep real-source storage private; Git carries generic definitions and approved or synthetic examples."
+    ],
+    "next_proposed_moves": [
+      "proposed_move.cast-first-reviewed-trial"
+    ]
+  },
+  "handoff": {
+    "completed": [
+      "Source census",
+      "Candidate contract sketch",
+      "Synthetic example",
+      "Eleven design scenario walkthroughs"
+    ],
+    "open_decisions": [
+      "Meaning of Cast",
+      "Human preference",
+      "Source rights and storage",
+      "Implementation"
+    ],
+    "next_move": "Review concept and select an approved trial.",
+    "stop_condition": "Draft PR verified.",
+    "resume_check": "Read PR head and current main, review human feedback, recheck source permissions before implementing.",
+    "rollback": "Close PR or revert documentation commit; no runtime state affected."
+  }
+}
