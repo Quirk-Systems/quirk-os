@@ -1,0 +1,170 @@
+{
+  "bundle_version": "0.1.0",
+  "source_census": {
+    "canonical": [
+      {
+        "source_ref": "repos/quirk-core/contracts/v0.2/TRANCHE.json",
+        "sha256": "0092a19e9695eae1dc7a9178b8ff688dbe4b8fcaf7b44833dc3e951d49441760",
+        "fingerprint": "0092a19e9695eae1dc7a9178b8ff688dbe4b8fcaf7b44833dc3e951d49441760",
+        "classification_reason": "Frozen Core tranche",
+        "purpose": "contract and local regression evidence",
+        "rights": "local validation"
+      }
+    ],
+    "candidates": [
+      {
+        "source_ref": "repos/quirk-os/experiments/cross_repo/source.json",
+        "sha256": "2e5be3bfcd311cc06e5ed772203c3c2238c4e97471c242f54a667517179b2d17",
+        "fingerprint": "2e5be3bfcd311cc06e5ed772203c3c2238c4e97471c242f54a667517179b2d17",
+        "classification_reason": "existing OS schema or synthetic input",
+        "purpose": "contract and local regression evidence",
+        "rights": "local validation"
+      },
+      {
+        "source_ref": "repos/quirk-os/schemas/projection-envelope.schema.json",
+        "sha256": "d9b435bc19e3ac541a0bd55fa30e3be6830cd4c684d21f4405a3c5986749751b",
+        "fingerprint": "d9b435bc19e3ac541a0bd55fa30e3be6830cd4c684d21f4405a3c5986749751b",
+        "classification_reason": "existing OS schema or synthetic input",
+        "purpose": "contract and local regression evidence",
+        "rights": "local validation"
+      }
+    ],
+    "derived_projections": [],
+    "superseded": [],
+    "conflicting": [],
+    "unresolved": [],
+    "missing": []
+  },
+  "authority_decisions": [
+    {
+      "action": "execute_reversible",
+      "allowed": true,
+      "explicit_authority": true,
+      "authority_basis": "current user request"
+    }
+  ],
+  "run_receipt": {
+    "run_id": "run.cross-repo-20261014",
+    "actor_ref": "coding-assistant",
+    "inputs": {
+      "fingerprints": [
+        {
+          "source_ref": "repos/quirk-os/experiments/cross_repo/source.json",
+          "sha256": "2e5be3bfcd311cc06e5ed772203c3c2238c4e97471c242f54a667517179b2d17"
+        },
+        {
+          "source_ref": "repos/quirk-os/schemas/projection-envelope.schema.json",
+          "sha256": "d9b435bc19e3ac541a0bd55fa30e3be6830cd4c684d21f4405a3c5986749751b"
+        },
+        {
+          "source_ref": "repos/quirk-core/contracts/v0.2/TRANCHE.json",
+          "sha256": "0092a19e9695eae1dc7a9178b8ff688dbe4b8fcaf7b44833dc3e951d49441760"
+        }
+      ]
+    },
+    "execution": {
+      "workflow_version": "0.1.0",
+      "tools": [
+        "Python unittest",
+        "JSON Schema validator",
+        "GitHub connector"
+      ],
+      "review_rounds": 3
+    },
+    "outputs": {
+      "output_hashes": [
+        {
+          "path": "docs/cross-repo/REVIEW.md",
+          "sha256": "96b883d6f24cdcbe07574073a523549be8239d116cd989cbf490ed6b1f438b44"
+        },
+        {
+          "path": "docs/cross-repo/repository-census.json",
+          "sha256": "238a0d928df0e3836b5273df3ee1e72d31c4acc3b3f6b4cf41a8ce488c13b989"
+        },
+        {
+          "path": "docs/cross-repo/IMPROVEMENT-LOOP.md",
+          "sha256": "1ef31cbbb51e65b56788d6f7aa109be7537130f1c1fe1c6ad8d21b781b755436"
+        },
+        {
+          "path": "docs/cross-repo/PLAN.md",
+          "sha256": "31a8c2ff2bc6e58d6cb848cf8c1735987158156d882460d8b2258eaffab4495a"
+        },
+        {
+          "path": "experiments/cross_repo/test_compiler.py",
+          "sha256": "ea17614a99c7a9da7af7514fedf29af9a2d94baf44f5977fadb20fee68d0ad06"
+        },
+        {
+          "path": "experiments/cross_repo/compiler.py",
+          "sha256": "c33062835d66e75173062448b5125bfcffb0e759dfed833b3f33d53f546ef254"
+        },
+        {
+          "path": "experiments/cross_repo/source.json",
+          "sha256": "2e5be3bfcd311cc06e5ed772203c3c2238c4e97471c242f54a667517179b2d17"
+        },
+        {
+          "path": "experiments/cross_repo/capability.json",
+          "sha256": "c94d4a2b0cc5f71bf7d0e1833322af175187c364db4c1f5c0a4da1949cb13a4b"
+        },
+        {
+          "path": ".github/workflows/cross-repo-candidate.yml",
+          "sha256": "32462df4737229ec82f11a3728b6f2453d26fb5e979052dc01a99d79c933003a"
+        }
+      ]
+    },
+    "quality": {
+      "local_test_methods_passed": 10,
+      "core_fixture_outcomes_matched": 36,
+      "full_admission_suite": "NOT_RUN",
+      "warnings": [
+        "Live consumers and human creative grade unverified"
+      ],
+      "hosted_core_conformance": "PASS at 2080ecb5bd2d112eea218f908d27fbb10179b3df",
+      "hosted_crossing": "Check latest PR head; initial setup policy failure repaired with existing repository action pins"
+    },
+    "economics": {
+      "compute_cost": null,
+      "human_review_minutes": null,
+      "latency_ms": null
+    },
+    "outcome": {
+      "accepted": false,
+      "reused": false,
+      "observed_effect": null
+    },
+    "lineage": {
+      "transformation_refs": [
+        "experiments/cross_repo/compiler.py"
+      ],
+      "parent_run_ids": []
+    }
+  },
+  "proposed_moves": [
+    {
+      "id": "move.actual-domain-import",
+      "status": "candidate",
+      "requested_change": "Import one synthetic projection into a receiving repo",
+      "evidence_refs": [
+        "docs/cross-repo/REVIEW.md"
+      ],
+      "blockers": [
+        "current consumer contract and supported loading path"
+      ],
+      "acceptance_criteria": [
+        "retained words, attribution, source revision; behavior evidence"
+      ]
+    }
+  ],
+  "system_dividend": {
+    "primary_outcome": "Tested local crossing and cross-repo program candidate",
+    "evidence_receipt_ref": "docs/cross-repo/REVIEW.md",
+    "quality_delta": {
+      "reproduced_defects_repaired": 1
+    },
+    "structured_data_updates": [
+      "repository-census.json"
+    ],
+    "next_proposed_moves": [
+      "move.actual-domain-import"
+    ]
+  }
+}

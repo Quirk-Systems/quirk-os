@@ -1,0 +1,22 @@
+{
+  "fixture_version": "cross-repo-fixture/0.1",
+  "id": "fragment.synthetic-future-favor",
+  "revision": "0.1.0",
+  "words": "The future owes me a favor.",
+  "attribution": "Assistant-authored illustrative fixture based on conversation context; not a human preference record",
+  "rights": "synthetic-local-only",
+  "visibility": "synthetic",
+  "status": "candidate",
+  "freshness": "fixture-pinned",
+  "conflicts": [],
+  "branches": {
+    "music": "Spend confidence in the verse; let the unpaid consequence answer in the hook.",
+    "arcade": "Borrow one extra action now; lose one action next turn. Fictional debt never charges money.",
+    "town": "The fictional Favor Desk offers voluntary story commitments; residents can decline, revise, or leave."
+  },
+  "extensions": {
+    "protected_tension": "Expectation and obligation remain unresolved",
+    "untried_branch": "A useful service that turns a promised favor into a chosen, cancellable experiment",
+    "unknown_future_field": {"preserve": true}
+  }
+}

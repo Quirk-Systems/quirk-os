@@ -1,0 +1,16 @@
+{
+  "id": "interop.synthetic-projection",
+  "purpose": "Compile a synthetic fragment into three source-preserving local domain projections",
+  "owner": "Bryan; proposed ownership",
+  "inputs": ["cross-repo-fixture/0.1 synthetic source"],
+  "outputs": ["projection-envelope.v1 music, arcade and town", "preserved source pack", "local fixture receipt"],
+  "permissions": ["local candidate output directory only"],
+  "authorityRequirements": ["explicit reversible preparation instruction"],
+  "evidenceRequirements": ["input content hash", "output byte hashes", "local test results"],
+  "sideEffects": ["creates one previously absent local directory"],
+  "reversibility": "reversible",
+  "failureModes": ["invalid or non-synthetic input rejected", "existing output rejected", "delivery failure leaves no pack"],
+  "dependencies": ["Python standard library", "OS projection envelope", "Core capability contract 006 v0.2"],
+  "evaluation": ["test_compiler.py", "Core frozen tranche remains unchanged"],
+  "receiptRequired": true
+}
