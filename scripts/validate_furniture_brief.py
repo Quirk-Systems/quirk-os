@@ -21,6 +21,7 @@ def validate(repo: Path) -> dict[str, Any]:
     request_validator = Draft202012Validator({"$ref": "#/$defs/compile_request", **schema})
     brief_validator = Draft202012Validator({"$ref": "#/$defs/song_brief", **schema})
     receipt_validator = Draft202012Validator({"$ref": "#/$defs/generation_receipt_entry", **schema})
+    decode_autopsy_validator = Draft202012Validator({"$ref": "#/$defs/decode_autopsy", **schema})
 
     chain: list[dict[str, Any]] = []
     results = []
@@ -50,6 +51,11 @@ def validate(repo: Path) -> dict[str, Any]:
         receipt_errors = sorted(e.message for e in receipt_validator.iter_errors(outcome["receipt_entry"]))
         schema_error_count += len(receipt_errors)
 
+        decode_autopsy_errors = sorted(
+            e.message for e in decode_autopsy_validator.iter_errors(outcome["decode_autopsy"])
+        )
+        schema_error_count += len(decode_autopsy_errors)
+
         results.append({
             "case_id": case["id"],
             "kind": case["kind"],
@@ -66,6 +72,7 @@ def validate(repo: Path) -> dict[str, Any]:
             "request_schema_errors": request_errors,
             "brief_schema_errors": brief_errors,
             "receipt_schema_errors": receipt_errors,
+            "decode_autopsy_schema_errors": decode_autopsy_errors,
         })
 
     chain_verdict = verify_chain(chain)

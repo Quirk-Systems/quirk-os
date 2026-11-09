@@ -202,6 +202,39 @@
         }
       }
     },
+    "trace_stage": {
+      "type": "object",
+      "required": ["stage", "status", "detail"],
+      "properties": {
+        "stage": {
+          "enum": ["Find", "Fact", "Furniture", "Fiction", "Freak", "Flex", "Fit", "Freeze"]
+        },
+        "status": { "enum": ["ok", "refused"] },
+        "detail": { "type": "string" }
+      }
+    },
+    "decode_autopsy": {
+      "type": "object",
+      "required": [
+        "asset_type", "batch_id", "decision", "grip", "furniture_assessment",
+        "refusal_codes", "f11_trace"
+      ],
+      "properties": {
+        "asset_type": { "const": "decode_autopsy" },
+        "batch_id": { "type": "string" },
+        "decision": { "enum": ["FINALIZE", "FLOP"] },
+        "grip": { "$ref": "#/$defs/grip_score" },
+        "furniture_assessment": { "type": "object" },
+        "refusal_codes": { "type": "array", "items": { "type": "string" } },
+        "f11_trace": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": { "$ref": "#/$defs/trace_stage" }
+        }
+      },
+      "description": "Inspectable per-batch trace of the F11 stages, the GRIP/Furniture/refusal state that produced the decision, and (on FLOP) the material for a Decode Autopsy / Finagle follow-up. One of the twelve asset types; never schema-validated against `asset` because it is a derived output, not an input a caller submits."
+    },
     "generation_receipt_entry": {
       "type": "object",
       "required": [
