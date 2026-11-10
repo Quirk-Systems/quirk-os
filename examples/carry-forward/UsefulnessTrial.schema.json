@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:quirk:candidate:usefulness-trial:0.1.0",
+  "title": "Candidate Usefulness Trial Spec",
+  "description": "A supplied observation of meaning, one real use, retained value, and total overhead. This spec does not authenticate observations, resolve references, prove benefit, or grant admission. Human disposition records a preference only. The caller resolves reference existence, exact versions, rights, and staleness.",
+  "$comment": "Companion usefulness.js additionally rejects numeric sums that overflow finite JavaScript numbers. Format-aware validation is required for calendar-valid date-time values. Recommendation and candidate/propose authority are derived by the evaluator, never accepted from this input. A delta is derived only after meaning, performed real use, evidence, retained value, comparability, error counts, and observed costs are all complete; otherwise it remains null even when numeric totals can be displayed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task", "meaning", "real_use", "baseline", "assisted", "comparison", "evidence_refs", "carry_forward_refs", "carry_forward_description", "human_disposition"],
+  "properties": {
+    "task": { "type": "string", "pattern": "\\S" },
+    "meaning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matters", "reason"],
+      "properties": {
+        "matters": { "enum": ["yes", "no", "unknown"] },
+        "reason": { "type": "string", "description": "An empty reason is valid incomplete input, never complete evidence." }
+      }
+    },
+    "real_use": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "description", "observed_at"],
+      "properties": {
+        "status": { "enum": ["performed", "not_performed", "unknown"] },
+        "description": { "type": "string" },
+        "observed_at": { "anyOf": [{ "$ref": "#/$defs/timestamp" }, { "type": "null" }] }
+      },
+      "allOf": [{
+        "if": { "properties": { "status": { "const": "performed" } }, "required": ["status"] },
+        "then": { "properties": { "observed_at": { "$ref": "#/$defs/timestamp" } } }
+      }]
+    },
+    "baseline": { "$ref": "#/$defs/cost" },
+    "assisted": { "$ref": "#/$defs/cost" },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["comparable", "baseline_errors", "assisted_errors", "note"],
+      "properties": {
+        "comparable": { "enum": ["yes", "no", "unknown"] },
+        "baseline_errors": { "$ref": "#/$defs/errorCount" },
+        "assisted_errors": { "$ref": "#/$defs/errorCount" },
+        "note": { "type": "string" }
+      }
+    },
+    "evidence_refs": { "$ref": "#/$defs/references" },
+    "carry_forward_refs": { "$ref": "#/$defs/references" },
+    "carry_forward_description": { "type": "string" },
+    "human_disposition": { "enum": ["keep", "mutate", "drop", "undecided"], "description": "Recorded preference only; never permission to execute or promote." }
+  },
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)$"
+    },
+    "minutes": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1.7976931348623157e308,
+      "description": "Minutes, including zero when actually known. An unknown value must remain null. Never infer missing costs as zero."
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["setup", "work", "supervision", "cleanup", "maintenance", "basis", "note"],
+      "properties": {
+        "setup": { "$ref": "#/$defs/minutes" },
+        "work": { "$ref": "#/$defs/minutes" },
+        "supervision": { "$ref": "#/$defs/minutes" },
+        "cleanup": { "$ref": "#/$defs/minutes" },
+        "maintenance": { "$ref": "#/$defs/minutes" },
+        "basis": { "enum": ["observed", "estimated", "unknown"] },
+        "note": { "type": "string" }
+      }
+    },
+    "errorCount": { "type": ["integer", "null"], "minimum": 0, "maximum": 1.7976931348623157e308 },
+    "references": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*@\\d+\\.\\d+\\.\\d+$" },
+      "description": "Exact version pins using the containing candidate workspace's existing grammar. Empty arrays preserve incomplete input. Syntactic validity does not establish that a target exists, is usable, or remains current."
+    }
+  }
+}
