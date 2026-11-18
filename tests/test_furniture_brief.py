@@ -7,6 +7,8 @@ import sys
 import unittest
 from pathlib import Path
 
+from jsonschema import Draft202012Validator
+
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = ROOT / "scripts" / "validate_furniture_brief.py"
 
@@ -65,6 +67,30 @@ class FurnitureBriefFixtureCorpusTests(unittest.TestCase):
             self.assertEqual(
                 result["decode_autopsy_schema_errors"], [], msg=result["case_id"]
             )
+
+
+class DecodeAutopsyTraceTests(unittest.TestCase):
+    def setUp(self) -> None:
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from furniture_brief.compiler import compile_batch
+
+        schema = json.loads((ROOT / "schemas" / "furniture-brief-contract.schema.json").read_text())
+        self.validator = Draft202012Validator({"$ref": "#/$defs/decode_autopsy", **schema})
+        cases = json.loads((ROOT / "evals" / "furniture-brief" / "cases.json").read_text())["cases"]
+        self.autopsy = compile_batch(cases[0]["request"])["decode_autopsy"]
+
+    def test_duplicate_stage_is_rejected(self) -> None:
+        self.autopsy["f11_trace"][1]["stage"] = self.autopsy["f11_trace"][0]["stage"]
+        self.assertFalse(self.validator.is_valid(self.autopsy))
+
+    def test_reordered_stages_are_rejected(self) -> None:
+        trace = self.autopsy["f11_trace"]
+        trace[0], trace[1] = trace[1], trace[0]
+        self.assertFalse(self.validator.is_valid(self.autopsy))
+
+    def test_stage_fields_still_validated(self) -> None:
+        self.autopsy["f11_trace"][0]["status"] = "invented"
+        self.assertFalse(self.validator.is_valid(self.autopsy))
 
 
 class ReceiptChainIntegrityTests(unittest.TestCase):

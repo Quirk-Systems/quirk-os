@@ -230,7 +230,17 @@
           "type": "array",
           "minItems": 8,
           "maxItems": 8,
-          "items": { "$ref": "#/$defs/trace_stage" }
+          "prefixItems": [
+            { "$ref": "#/$defs/trace_stage", "properties": { "stage": { "const": "Find" } } },
+            { "$ref": "#/$defs/trace_stage", "properties": { "stage": { "const": "Fact" } } },
+            { "$ref": "#/$defs/trace_stage", "properties": { "stage": { "const": "Furniture" } } },
+            { "$ref": "#/$defs/trace_stage", "properties": { "stage": { "const": "Fiction" } } },
+            { "$ref": "#/$defs/trace_stage", "properties": { "stage": { "const": "Freak" } } },
+            { "$ref": "#/$defs/trace_stage", "properties": { "stage": { "const": "Flex" } } },
+            { "$ref": "#/$defs/trace_stage", "properties": { "stage": { "const": "Fit" } } },
+            { "$ref": "#/$defs/trace_stage", "properties": { "stage": { "const": "Freeze" } } }
+          ],
+          "items": false
         }
       },
       "description": "Inspectable per-batch trace of the F11 stages, the GRIP/Furniture/refusal state that produced the decision, and (on FLOP) the material for a Decode Autopsy / Finagle follow-up. One of the twelve asset types; never schema-validated against `asset` because it is a derived output, not an input a caller submits."
