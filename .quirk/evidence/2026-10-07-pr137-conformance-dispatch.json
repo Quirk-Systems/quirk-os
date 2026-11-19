@@ -1,0 +1,105 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr137-conformance-dispatch.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "d9becd8545111a363709627d4921d64449c8665c",
+    "commit": "9740804e572d48c1d57076811b7f1ab8f40de91e",
+    "changed_paths": [
+      "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "scripts/intent_shaper/policy.py",
+      "scripts/validate_skills.py",
+      "tests/test_intent_shaper.py",
+      "tests/test_skill_runtime.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr137-conformance-dispatch.2026-10-07",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Address Codex findings 4208375110, 4208375127 and 4208375137. Recognize reference-style, collapsed and shortcut Markdown status labels. Boundary timestamp parsing occurs inside its structured rejection path, including when invoked by evaluate_case. Validate current preference collection shape, required fields, known sources, bounded finite numeric confidence and canonically serializable values before any protected read. Regress malformed as_of through dispatcher and malformed current collections/fields in both modes, including a multi-case conformance run. Same byte-identical local source passed 81 focused tests and 330 repository tests (329 passed, one native Windows test skipped on Linux), 48/48 skill cases, 44/44 Intent Shaper fixtures, valid QIS fixture and Golden candidate gates. Sixteen admission holds remain. No runtime admission, deployment, human approval or hosted validation is claimed.",
+      "evidence_paths": [
+        "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+        "scripts/intent_shaper/policy.py",
+        "scripts/validate_skills.py",
+        "tests/test_intent_shaper.py",
+        "tests/test_skill_runtime.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "state": "present",
+      "git_blob": "30e569ab5ebd76c8d1fc5b644904f88ec3c8e935",
+      "sha256": "sha256:f80cf46555578b92bb3c50660cb4ef17345e6aa7c67141452a0d7a8fa106a823"
+    },
+    {
+      "path": "scripts/intent_shaper/policy.py",
+      "state": "present",
+      "git_blob": "adbd2eb52c40efaf299f5e5117cc80b9a2655923",
+      "sha256": "sha256:4aa90940a7d7632cf3ce37aa230d7193278121182750e6c747460be3be939045"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "30ec2a991486f561d72e0c5ab62c1987fdeea14a",
+      "sha256": "sha256:da9174d42d9e8d15141f912df5ea91fd3994f7aa6c728c98db45e29f0dfa1734"
+    },
+    {
+      "path": "tests/test_intent_shaper.py",
+      "state": "present",
+      "git_blob": "e980f8defd40a03c20724045f64a52ef4f0320aa",
+      "sha256": "sha256:dee666fbd40be233afaee241d1774734e3ff34aaaeaff34cdc93a9938e2c046a"
+    },
+    {
+      "path": "tests/test_skill_runtime.py",
+      "state": "present",
+      "git_blob": "fd03e0b4af1c91987537dd5ea4f6f4a3f18ebfb9",
+      "sha256": "sha256:42580270b81bc301b45ae4b9f305aa58860f5a0ce36ab35f15e753f8251e4171"
+    }
+  ],
+  "verification": {
+    "verified_at": "2026-10-07T14:51:40Z",
+    "commands": [
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_skill_runtime tests.test_qis_harness",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/pr137-dispatch-skills.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /tmp/pr137-dispatch-intent.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /tmp/pr137-dispatch-golden.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ]
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:b61295854075562eb5177a1b0e34f11a25e20cff5a0f32d926ee23b0cab109d2"
+}

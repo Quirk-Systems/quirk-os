@@ -20,24 +20,77 @@
     "is_traceable_descendant": true
   },
   "materials": [
-    {"role": "instruction", "path": ".github/copilot-instructions.md", "sha256": "d2ee9e70d00c3010ec85a9573e1834e81cdd4f5f8aff5accf247366a873c2d77"},
-    {"role": "instruction", "path": ".github/instructions/intent-shaper.instructions.md", "sha256": "34b3a0dbc6de40ae260be6f9fcf41b308aef95de56c5812850b3a101270b1bde"},
-    {"role": "skill", "path": ".github/skills/intent-shaper-admission/SKILL.md", "sha256": "ee7d285cc440d3e02927d668a454f338447bd4e5928e585b745ec153b8adf37b"},
-    {"role": "schema", "path": "schemas/personalization-plan.schema.json", "sha256": "cf7b2d1c1ce019415c623285228d32150b401c89e073a37bce7554accaa3ceeb"},
-    {"role": "fixture", "path": "evals/intent-shaper/cases.json", "sha256": "13d71341e67e873870b9a13b47f2983cc1109a357f8e6cfa35b619a9a8cda9e6"}
+    {
+      "role": "instruction",
+      "path": ".github/copilot-instructions.md",
+      "sha256": "d2ee9e70d00c3010ec85a9573e1834e81cdd4f5f8aff5accf247366a873c2d77"
+    },
+    {
+      "role": "instruction",
+      "path": ".github/instructions/intent-shaper.instructions.md",
+      "sha256": "34b3a0dbc6de40ae260be6f9fcf41b308aef95de56c5812850b3a101270b1bde"
+    },
+    {
+      "role": "skill",
+      "path": ".github/skills/intent-shaper-admission/SKILL.md",
+      "sha256": "ee7d285cc440d3e02927d668a454f338447bd4e5928e585b745ec153b8adf37b"
+    },
+    {
+      "role": "schema",
+      "path": "schemas/personalization-plan.schema.json",
+      "sha256": "cf7b2d1c1ce019415c623285228d32150b401c89e073a37bce7554accaa3ceeb"
+    },
+    {
+      "role": "fixture",
+      "path": "evals/intent-shaper/cases.json",
+      "sha256": "e33d1e9c17760a7e2d762b605e240f01fc579b97867873fd3aa82fde0cb16ef6"
+    }
   ],
   "commands": [
-    {"name": "focused_tests", "kind": "unit_tests", "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v", "status": "passed", "exit_code": 0, "counts": {"passed": 18, "failed": 0, "total": 18}},
-    {"name": "intent_shaper_conformance", "kind": "conformance", "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json", "status": "passed", "exit_code": 0, "counts": {"passed": 11, "failed": 0, "total": 11}}
+    {
+      "name": "focused_tests",
+      "kind": "unit_tests",
+      "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+      "status": "passed",
+      "exit_code": 0,
+      "counts": {
+        "passed": 18,
+        "failed": 0,
+        "total": 18
+      }
+    },
+    {
+      "name": "intent_shaper_conformance",
+      "kind": "conformance",
+      "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json",
+      "status": "passed",
+      "exit_code": 0,
+      "counts": {
+        "passed": 11,
+        "failed": 0,
+        "total": 11
+      }
+    }
   ],
-  "evidence_refs": ["evals/intent-shaper/cases.json", "tests/test_intent_shaper.py", "tests/test_qis_harness.py"],
-  "critical_failures": ["critical failures cannot be averaged away"],
+  "evidence_refs": [
+    "evals/intent-shaper/cases.json",
+    "tests/test_intent_shaper.py",
+    "tests/test_qis_harness.py"
+  ],
+  "critical_failures": [
+    "critical failures cannot be averaged away"
+  ],
   "limitations": [
     "Synthetic validation fixture superseding receipt.valid.json for current material provenance; command counts are test data, not execution evidence.",
     "Candidate-only harness evidence; no admission, merge, deployment, schedule, or persistence authority."
   ],
-  "environment": {"runner_os": "Linux", "python": "3.13.0", "pip": "24.2", "jsonschema": "4.26.0"},
+  "environment": {
+    "runner_os": "Linux",
+    "python": "3.13.0",
+    "pip": "24.2",
+    "jsonschema": "4.26.0"
+  },
   "verdict": "PASS",
   "generated_at": "2026-10-04T12:49:21Z",
-  "receipt_hash": "60d5ff65d2f29e2044b1ea8069101952c6bd5250bbabc44e1f9a6cb31263ecef"
+  "receipt_hash": "62bd242f7f397af4776412818833cf2da80422c8bcdc61725b58dfb2d4ed97e1"
 }

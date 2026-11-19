@@ -48,7 +48,7 @@ class IntentShaperContractTests(unittest.TestCase):
         results = evaluate_cases(self.suite["cases"])
         failures = [result for result in results if not result["passed"]]
         self.assertEqual([], failures)
-        self.assertEqual(36, len(results))
+        self.assertEqual(44, len(results))
 
     def test_malformed_date_time_is_rejected(self) -> None:
         plan = copy.deepcopy(self.sample)
@@ -247,6 +247,296 @@ class IntentShaperContractTests(unittest.TestCase):
         self.assertEqual("blocked_manual", actual["status"])
         self.assertEqual(["MANUAL_EVIDENCE_MISSING"], actual["reason_codes"])
         self.assertEqual("missing", actual["manual_evidence_summary"]["keyboard"])
+
+    def preference_case(self, *, enabled: bool = True) -> dict:
+        return {
+            "id": "scope-regression",
+            "operation": "resolve_preference",
+            "input": {
+                "scope": "security.incident",
+                "as_of": "2026-10-05T08:00:00Z",
+                "personalization_enabled": enabled,
+                "preferences": [],
+            },
+            "expected": {},
+        }
+
+    def preference(self, ref: str, **overrides) -> dict:
+        return {
+            "ref": ref,
+            "dimension": "format",
+            "value": "plain",
+            "source": "explicit_current",
+            "confidence": 1.0,
+            "scope": "security.incident",
+            **overrides,
+        }
+
+    def off_plan(self) -> dict:
+        plan = copy.deepcopy(self.sample)
+        plan["settings"].update(personalization_enabled=False, adaptation_mode="off",
+                                implicit_signal_use="off", generated_ui="off")
+        plan["persona_hand"].update(primary=None, supporting=[])
+        plan["voice"]["profile_ref"] = None
+        plan["aesthetic"]["profile_ref"] = None
+        plan["learning"].update(allowed_updates=[], feedback_evidence=None)
+        return plan
+
+    def test_explicit_current_cannot_cross_purpose_with_personalization_on_or_off(self) -> None:
+        for enabled in (True, False):
+            with self.subTest(enabled=enabled):
+                case = self.preference_case(enabled=enabled)
+                case["input"]["preferences"] = [
+                    self.preference("foreign", scope="music.performance", value="performance"),
+                    self.preference("local"),
+                    self.preference("global", scope="global", dimension="verbosity"),
+                ]
+                actual = evaluate_case(case)["actual"]
+                self.assertEqual(["local", "global"], actual["selected_refs"])
+                self.assertEqual(["foreign"], actual["ignored_refs"])
+                self.assertEqual([], actual["conflicts"])
+                self.assertEqual(enabled, actual["stored_retrieval"])
+
+    def test_off_mode_applies_validity_and_conflict_checks_before_selection(self) -> None:
+        case = self.preference_case(enabled=False)
+        case["input"]["preferences"] = [
+            self.preference("future", valid_from="2026-10-06T00:00:00Z"),
+            self.preference("expired", valid_until="2026-10-04T00:00:00Z"),
+            self.preference("saved", source="explicit_saved"),
+            self.preference("current.high", value="one"),
+            self.preference("current.low", value="three", confidence=0.1),
+        ]
+        actual = evaluate_case(case)["actual"]
+        self.assertEqual([], actual["selected_refs"])
+        self.assertEqual(["format"], actual["conflicts"])
+        self.assertCountEqual(["future", "expired", "saved", "current.high", "current.low"],
+                              actual["ignored_refs"])
+        self.assertFalse(actual["stored_retrieval"])
+
+    def test_current_and_purpose_sources_preserve_precedence_over_confidence(self) -> None:
+        case = self.preference_case()
+        case["input"]["preferences"] = [
+            self.preference("saved", source="explicit_saved"),
+            self.preference("purpose", source="purpose_scoped_setting", confidence=0.1, value="detail"),
+            self.preference("current", confidence=0.0, value="current"),
+        ]
+        self.assertEqual(["current"], evaluate_case(case)["actual"]["selected_refs"])
+        case["input"]["preferences"].pop()
+        self.assertEqual(["purpose"], evaluate_case(case)["actual"]["selected_refs"])
+        plan = copy.deepcopy(self.sample)
+        plan["preferences"][0]["source"] = "purpose_scoped_setting"
+        self.assertEqual([], list(self.validator.iter_errors(plan)))
+
+    def test_validity_endpoints_are_inclusive_for_current_preferences(self) -> None:
+        for enabled in (True, False):
+            with self.subTest(enabled=enabled):
+                case = self.preference_case(enabled=enabled)
+                case["input"]["preferences"] = [self.preference(
+                    "bounded", valid_from=case["input"]["as_of"],
+                    valid_until=case["input"]["as_of"],
+                )]
+                self.assertEqual(["bounded"], evaluate_case(case)["actual"]["selected_refs"])
+
+    def test_off_boundary_filters_current_evidence_without_protected_reads(self) -> None:
+        case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012"))
+        case["input"].update(scope="security.incident", as_of="2026-10-05T08:00:00Z")
+        case["input"]["current_request_preferences"] = [
+            self.preference("foreign", scope="music.performance"),
+            self.preference("future", valid_from="2026-10-06T00:00:00Z"),
+            self.preference("local"),
+        ]
+        actual = evaluate_case(case)["actual"]
+        self.assertEqual("accepted", actual["status"])
+        self.assertEqual([], actual["read_trace"])
+        self.assertEqual([{"dimension": "format", "value": "plain", "source": "explicit_current"}],
+                         actual["protected_projection"]["preferences"])
+
+    def test_off_boundary_blocks_current_conflict_without_protected_reads(self) -> None:
+        case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012"))
+        case["input"]["scope"] = "security.incident"
+        case["input"]["current_request_preferences"] = [
+            self.preference("one", value="one"),
+            self.preference("three", value="three", confidence=0.1),
+        ]
+        actual = evaluate_case(case)["actual"]
+        self.assertEqual("rejected", actual["status"])
+        self.assertEqual("current_instruction_conflict", actual["reason_code"])
+        self.assertEqual([], actual["read_trace"])
+
+    def test_boundary_rejects_invalid_current_timestamps_before_protected_reads(self) -> None:
+        from intent_shaper.policy import evaluate_personalization_boundary, FailOnReadEvidencePort
+
+        base = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012")["input"])
+        for enabled in (False, True):
+            for field in ("valid_from", "valid_until", "as_of"):
+                for value in ("not-a-date", "2026-10-05T08:00:00", "2026-02-30T08:00:00Z",
+                              "2026-10-05X08:00:00+00:00", "20261005T080000+0000",
+                              "2026-10-05T08:00:00+00", 1, [], {}):
+                    with self.subTest(enabled=enabled, field=field, value=value):
+                        payload = copy.deepcopy(base)
+                        payload["settings"]["personalization_enabled"] = enabled
+                        payload["current_request_preferences"] = [self.preference("current")]
+                        target = payload if field == "as_of" else payload["current_request_preferences"][0]
+                        target[field] = value
+                        actual = evaluate_personalization_boundary(payload, FailOnReadEvidencePort())
+                        self.assertEqual("rejected", actual["status"])
+                        self.assertEqual("current_preference_timestamp_invalid", actual["reason_code"])
+                        self.assertEqual([], actual["read_trace"])
+                        wrapped = evaluate_case({
+                            "id": "invalid-boundary-timestamp",
+                            "operation": "personalization_boundary",
+                            "input": payload,
+                            "expected": {"status": "rejected",
+                                         "reason_code": "current_preference_timestamp_invalid",
+                                         "read_trace": []},
+                        })
+                        self.assertTrue(wrapped["passed"])
+
+    def test_boundary_rejects_malformed_current_preferences_through_dispatcher(self) -> None:
+        base = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012"))
+        attacks = [None, {}, [None], [1], ["current"]]
+        for field, values in {
+            "confidence": ("high", None, True, -0.1, 1.1, 10**1000, float("nan"), float("inf"), [], {}),
+            "ref": (None, 1, "", []),
+            "dimension": (None, 1, "", []),
+            "scope": (None, 1, "", []),
+            "source": (None, 1, "", "unknown"),
+            "value": ({"invalid": float("nan")}, {1, 2}, {1: "one", "two": "two"}),
+        }.items():
+            for value in values:
+                item = self.preference("current")
+                item[field] = value
+                attacks.append([item])
+        for field in ("confidence", "ref", "dimension", "scope", "source", "value"):
+            item = self.preference("current")
+            del item[field]
+            attacks.append([item])
+        for enabled in (False, True):
+            for attack in attacks:
+                with self.subTest(enabled=enabled, attack=attack):
+                    case = copy.deepcopy(base)
+                    case["input"]["settings"]["personalization_enabled"] = enabled
+                    case["input"]["current_request_preferences"] = attack
+                    case["expected"] = {"status": "rejected", "reason_code": "current_preference_invalid", "read_trace": []}
+                    self.assertTrue(evaluate_case(case)["passed"])
+        self.assertTrue(all(item["passed"] for item in evaluate_cases([case, base])))
+
+    def test_off_boundary_accepts_null_and_offset_current_validity(self) -> None:
+        case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012"))
+        case["input"].update(scope="security.incident", as_of="2026-10-05T08:00:00Z")
+        case["input"]["current_request_preferences"] = [self.preference(
+            "current", valid_from=None, valid_until="2026-10-05T03:00:00-05:00",
+        )]
+        actual = evaluate_case(case)["actual"]
+        self.assertEqual("accepted", actual["status"])
+        self.assertEqual([], actual["read_trace"])
+
+    def test_off_projection_cannot_reintroduce_foreign_evidence_through_a_duplicate_ref(self) -> None:
+        case = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-012"))
+        case["input"]["scope"] = "security.incident"
+        case["input"]["current_request_preferences"] = [
+            self.preference("shared", scope="music.performance", value="perform"),
+            self.preference("shared", value="plain"),
+        ]
+        actual = evaluate_case(case)["actual"]
+        self.assertEqual("accepted", actual["status"])
+        self.assertEqual([], actual["read_trace"])
+        self.assertEqual([{"dimension": "format", "value": "plain", "source": "explicit_current"}],
+                         actual["protected_projection"]["preferences"])
+
+    def test_off_schema_rejects_each_persisted_source_and_profile(self) -> None:
+        for source in ("purpose_scoped_setting", "explicit_saved", "observed", "inferred", "imported"):
+            with self.subTest(source=source):
+                plan = self.off_plan()
+                plan["preferences"][0]["source"] = source
+                self.assertTrue(list(self.validator.iter_errors(plan)))
+        for field in ("voice", "aesthetic"):
+            with self.subTest(field=field):
+                plan = self.off_plan()
+                plan[field]["profile_ref"] = "profile.persisted"
+                self.assertTrue(list(self.validator.iter_errors(plan)))
+        plan = self.off_plan()
+        plan["settings"]["adaptation_mode"] = "propose_only"
+        self.assertTrue(list(self.validator.iter_errors(plan)))
+
+    def test_plan_validator_rejects_malformed_timestamps_at_every_contract_path(self) -> None:
+        from validate_intent_shaper import validate_plan
+
+        for field in ("created_at", "valid_from", "valid_until"):
+            for value in ("not-a-date", "2026-10-05T08:00:00", "2026-02-30T08:00:00Z"):
+                with self.subTest(field=field, value=value):
+                    plan = copy.deepcopy(self.sample)
+                    target = plan if field == "created_at" else plan["preferences"][0]
+                    target[field] = value
+                    self.assertTrue(any("date-time" in error for error in validate_plan(plan, self.schema)))
+
+    def test_plan_validator_checks_aggregate_persona_weight_instead_of_only_individual_bounds(self) -> None:
+        from validate_intent_shaper import validate_plan
+
+        self.assertEqual([], validate_plan(self.sample, self.schema))
+        self.assertEqual([], validate_plan(self.off_plan(), self.schema))
+        for weights in ((0.0, 0.0), (1.0, 1.0), (0.7, 0.2), (0.7, 0.300001)):
+            with self.subTest(weights=weights):
+                plan = copy.deepcopy(self.sample)
+                plan["persona_hand"]["primary"]["weight"] = weights[0]
+                plan["persona_hand"]["supporting"][0]["weight"] = weights[1]
+                self.assertEqual([], list(self.validator.iter_errors(plan)))
+                self.assertIn("persona_hand:invalid_weight_total", validate_plan(plan, self.schema))
+        plan = copy.deepcopy(self.sample)
+        plan["persona_hand"].update(primary=None, supporting=[])
+        self.assertIn("persona_hand:invalid_weight_total", validate_plan(plan, self.schema))
+
+    def test_plan_validator_rejects_used_preferences_outside_purpose_or_validity(self) -> None:
+        from validate_intent_shaper import validate_plan
+
+        for override in ({"scope": "music.performance"},
+                         {"valid_from": "2027-01-01T00:00:00Z"},
+                         {"valid_until": "2025-01-01T00:00:00Z"}):
+            with self.subTest(override=override):
+                plan = copy.deepcopy(self.sample)
+                plan["preferences"][0].update(override)
+                self.assertTrue(validate_plan(plan, self.schema))
+                plan["preferences"][0]["decision"] = "ignore"
+                self.assertEqual([], validate_plan(plan, self.schema))
+
+    def test_generated_ui_schema_requires_every_modeled_safeguard(self) -> None:
+        valid = copy.deepcopy(next(item for item in self.suite["cases"] if item["id"] == "QIS-GUI-001")
+                              ["input"]["generated_ui_plan"])
+        schema = {"$ref": "#/$defs/GeneratedUiPlan", "$defs": self.schema["$defs"]}
+        validator = Draft202012Validator(schema, format_checker=FormatChecker())
+        self.assertEqual([], list(validator.iter_errors(valid)))
+        for field in ("component_manifests", "authority_effects", "semantic_fallback_ref",
+                      "reconstruction_contract", "accessibility", "freshness"):
+            with self.subTest(field=field):
+                candidate = copy.deepcopy(valid)
+                del candidate[field]
+                self.assertTrue(list(validator.iter_errors(candidate)))
+        for field in ("data_bindings", "state_bindings", "user_actions"):
+            with self.subTest(component_field=field):
+                candidate = copy.deepcopy(valid)
+                del candidate["component_manifests"][0][field]
+                self.assertTrue(list(validator.iter_errors(candidate)))
+
+    def test_plan_validator_accepts_rfc3339_case_offsets_and_null_validity(self) -> None:
+        from validate_intent_shaper import validate_plan
+
+        plan = copy.deepcopy(self.sample)
+        plan["created_at"] = "2026-10-05t08:00:00z"
+        plan["preferences"][0].update(valid_from=None, valid_until="2026-10-05T03:00:00-05:00")
+        self.assertEqual([], validate_plan(plan, self.schema))
+
+    def test_nested_list_regressions_cannot_add_selected_refs_traits_or_affordances(self) -> None:
+        cases = [item for item in self.suite["cases"] if any(
+            isinstance(value, list) and value for value in item["expected"].values()
+        )]
+        for case in cases:
+            for field, expected in case["expected"].items():
+                if not isinstance(expected, list) or not expected:
+                    continue
+                with self.subTest(case=case["id"], field=field):
+                    reduced = copy.deepcopy(case)
+                    reduced["expected"][field] = expected[:-1]
+                    self.assertFalse(evaluate_case(reduced)["passed"])
 
 
 if __name__ == "__main__":

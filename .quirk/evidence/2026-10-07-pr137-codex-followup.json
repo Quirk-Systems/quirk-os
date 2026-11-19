@@ -1,0 +1,105 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr137-codex-followup.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "0018d30c4ffb73ed56e399efa13abea7f2081eb2",
+    "commit": "8e3445e838f3fef9fc063340ab350392b2c7d33f",
+    "changed_paths": [
+      "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "scripts/intent_shaper/policy.py",
+      "scripts/validate_skills.py",
+      "tests/test_intent_shaper.py",
+      "tests/test_skill_runtime.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr137-codex-followup.2026-10-07",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Address Codex findings 4208113000 and 4208113013. Count all Markdown Status bullets and require exactly one canonical candidate declaration. Preflight current preference validity and as_of timestamps before protected reads in both modes; malformed strings, missing offsets, impossible dates and non-string values return structured rejection. Valid null and offset bounds remain accepted. Same byte-identical local source: 80 focused tests; 329 repository tests (328 passed, one native Windows test skipped on Linux), 48/48 skill cases, 44/44 Intent Shaper fixtures, valid QIS fixture and Golden candidate gates passed. Sixteen admission holds remain and no runtime admission, deployment, human approval or hosted validation is claimed.",
+      "evidence_paths": [
+        "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+        "scripts/intent_shaper/policy.py",
+        "scripts/validate_skills.py",
+        "tests/test_intent_shaper.py",
+        "tests/test_skill_runtime.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "state": "present",
+      "git_blob": "de90865f52282afb6e04ac7b4dcc312aff496294",
+      "sha256": "sha256:e8b86eb058607dbbba5eb6df8fe46df1d63ca86b3fa1c48f7aae1b0699db2993"
+    },
+    {
+      "path": "scripts/intent_shaper/policy.py",
+      "state": "present",
+      "git_blob": "d81f136bfa90429d6e48acac89e67479dfc01f1f",
+      "sha256": "sha256:388a6db2399cd6def2882e2ffbf76c8dde0fdad3b03bcdb8f576b236b6f8e90b"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "33fa1d02a7aa52954fa3cb4ad0fd012049c7bb39",
+      "sha256": "sha256:ecd8e428d317726aeeebb7da3d6d68469fe66cf0a257a984f9d10e93b806cd64"
+    },
+    {
+      "path": "tests/test_intent_shaper.py",
+      "state": "present",
+      "git_blob": "5300a27119faff860389d1cb73a5963ffde9b2f9",
+      "sha256": "sha256:880167ad6b3fe661d7b73e892902241639e111e9814240fd786ab288de05a78f"
+    },
+    {
+      "path": "tests/test_skill_runtime.py",
+      "state": "present",
+      "git_blob": "595e0f018af91432735645646cf53c222d42afda",
+      "sha256": "sha256:6550495286914f0687fc81891bef18fe81cee101620bf3e0e5f11950bfe05e09"
+    }
+  ],
+  "verification": {
+    "verified_at": "2026-10-07T14:27:54Z",
+    "commands": [
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_skill_runtime tests.test_qis_harness",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/pr137-codex-skills.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /tmp/pr137-codex-intent.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /tmp/pr137-codex-golden.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ]
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:c3d7e7b88e911a3a45fd2c66bc0b2815af1fc52ea945b23dab80b62ab60561cb"
+}

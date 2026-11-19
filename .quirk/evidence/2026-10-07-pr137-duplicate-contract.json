@@ -1,0 +1,89 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.pr137-duplicate-contract.2026-10-07",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "39e43df95614e6ba092910aefa621a4cf44108d0",
+    "commit": "1f3821862e95319f673de818f0c72c83b03e27c4",
+    "changed_paths": [
+      "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "scripts/validate_skills.py",
+      "tests/test_skill_runtime.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.pr137-duplicate-contract.2026-10-07",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "Address Copilot finding 4208022105: draft conformance requires exactly one contract section and exactly one candidate status. Regress second Contract and Quirk contract active sections and redundant candidate section. Same source bytes tested locally: 19 skill-runtime tests; all 327 repository tests (326 passed and one native Windows test skipped on Linux); 48/48 skills cases and 44/44 Intent Shaper cases; Golden candidate gates retain sixteen holds and QIS provenance fixture validates. No runtime admission, deployment authority, human approval or hosted validation is claimed.",
+      "evidence_paths": [
+        "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+        "scripts/validate_skills.py",
+        "tests/test_skill_runtime.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/changelog/2026-10-07-pr137-base-reconciliation.md",
+      "state": "present",
+      "git_blob": "7ef7dc1a126b99712444a1c3db1da9a28adbf688",
+      "sha256": "sha256:e9d9d8b9b301023ef5fbd6f1a96f38953b3bb36404efa69e3fe37235c954f383"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "29e254c39406ab99a4c0a112792d88cea43a83b3",
+      "sha256": "sha256:3ef152d6780ecc81a486a1575a2a7f03286fbe7759781fd75efd0be43a1afcce"
+    },
+    {
+      "path": "tests/test_skill_runtime.py",
+      "state": "present",
+      "git_blob": "690c5b2c2b53bd1cb67c3e202229dbb8466b9d64",
+      "sha256": "sha256:4b73f1819a36bd6ab73b55043c8a52c944bf8cf8676254a4e610d53fdd28f9f0"
+    }
+  ],
+  "verification": {
+    "verified_at": "2026-10-07T14:19:18Z",
+    "commands": [
+      {
+        "command": "python -m unittest tests.test_skill_runtime -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/pr137-reviewed-skills.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output /tmp/pr137-reviewed-intent.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /tmp/pr137-reviewed-golden.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ]
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:24f98ad502e9f8921cfee7d7616b0aa8bcca2e739adae031671af306bb9c9388"
+}

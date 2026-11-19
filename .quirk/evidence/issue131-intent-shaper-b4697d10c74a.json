@@ -1,0 +1,168 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.issue131.intent-shaper.b4697d10c74a",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "ec10bcc69c1a91d7c9bc4818e2378ea4df2368fb",
+    "commit": "b4697d10c74a179a252781a6f584505a274f2265",
+    "changed_paths": [
+      "CHANGELOG.md",
+      "docs/personalization/ISSUE-131-REPAIR.md",
+      "evals/intent-shaper/cases.json",
+      "evals/qis-agent-harness/receipt.valid-provenance.json",
+      "scripts/intent_shaper/policy.py",
+      "scripts/validate_intent_shaper.py",
+      "scripts/validate_skills.py",
+      "tests/test_intent_shaper.py",
+      "tests/test_skill_runtime.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.issue131.intent-shaper.policy",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Current instructions are purpose/time/conflict filtered in enabled and disabled selection; disabled projections use selected records before any protected read. Complete plans validate normalized persona weights and used-preference scope/validity in addition to schema formats. Draft conformance reads contract status instead of accepting a candidate example.",
+      "evidence_paths": [
+        "scripts/intent_shaper/policy.py",
+        "scripts/validate_intent_shaper.py",
+        "scripts/validate_skills.py"
+      ]
+    },
+    {
+      "claim_id": "qclaim.issue131.intent-shaper.regression",
+      "claim_type": "test",
+      "authority_effect": "none",
+      "statement": "On this implementation subject, 63 focused Intent Shaper/QIS tests and 251 repository tests passed, with 44/44 Intent Shaper fixtures and 48/48 skill cases. The synthetic valid-provenance fixture digest was refreshed; its original test-data counts remain non-execution evidence.",
+      "evidence_paths": [
+        "evals/intent-shaper/cases.json",
+        "evals/qis-agent-harness/receipt.valid-provenance.json",
+        "tests/test_intent_shaper.py",
+        "tests/test_skill_runtime.py"
+      ]
+    },
+    {
+      "claim_id": "qclaim.issue131.intent-shaper.disposition",
+      "claim_type": "documentation",
+      "authority_effect": "none",
+      "statement": "The repair record dispositions all ten issue #131 findings and explains the necessary successor to already merged zero-file PR #134. The changelog records the patch. Local Golden candidate merge gates passed with all 16 pre-existing admission holds retained; no runtime admission, deployment, or merge is claimed.",
+      "evidence_paths": [
+        "CHANGELOG.md",
+        "docs/personalization/ISSUE-131-REPAIR.md"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "CHANGELOG.md",
+      "state": "present",
+      "git_blob": "8928c89d44b3de45ca89b34decd0bd6c8436f826",
+      "sha256": "sha256:c2f8f1e058a174e95668f25cf690412f36e080aa0cdfd207907959fb35794e8e"
+    },
+    {
+      "path": "docs/personalization/ISSUE-131-REPAIR.md",
+      "state": "present",
+      "git_blob": "92a0aabde0a67f737beba09835cf863dd15c6345",
+      "sha256": "sha256:a2c1ed373462025e618589b97a05ad599d9dd8af8f83df7d4dbc73094de99372"
+    },
+    {
+      "path": "evals/intent-shaper/cases.json",
+      "state": "present",
+      "git_blob": "d0ed5a3c142b817f81643373c8a1a5c73984b050",
+      "sha256": "sha256:e33d1e9c17760a7e2d762b605e240f01fc579b97867873fd3aa82fde0cb16ef6"
+    },
+    {
+      "path": "evals/qis-agent-harness/receipt.valid-provenance.json",
+      "state": "present",
+      "git_blob": "302a08fcfd1cedd9c11c6dc977b0289ca59075b7",
+      "sha256": "sha256:e7ce53ea68897b18168ae8788d957e009a5eeba5ffeae697cb6a5b1202339021"
+    },
+    {
+      "path": "scripts/intent_shaper/policy.py",
+      "state": "present",
+      "git_blob": "065a4f0438210707b25c347c21e51423ed1ae514",
+      "sha256": "sha256:3fb97e0254d88f5bdf668295e0ec7878dc41cb38619052d4654b3a2dfb767d53"
+    },
+    {
+      "path": "scripts/validate_intent_shaper.py",
+      "state": "present",
+      "git_blob": "24d48cacb97e565f9dddc8638e59c4699aaf44cd",
+      "sha256": "sha256:6ff1befc8479fbc69676fc11fff61bfa0941b342f06538380fec90c946643358"
+    },
+    {
+      "path": "scripts/validate_skills.py",
+      "state": "present",
+      "git_blob": "d3ab704fed5614e73b3d99b8ab132acaee28c5ba",
+      "sha256": "sha256:47536156928ea64e5fbcb920c8000d140e4cd69d9fbb89620fb0355b648f5a03"
+    },
+    {
+      "path": "tests/test_intent_shaper.py",
+      "state": "present",
+      "git_blob": "8386daf6868a5aae550d6ad746565808d32c677f",
+      "sha256": "sha256:c440ff023ab6ae6518c5b1d151f9b6e06d6b7de01b80cbd5a2b9fd8ccaa2600e"
+    },
+    {
+      "path": "tests/test_skill_runtime.py",
+      "state": "present",
+      "git_blob": "44190211a0f26ee16895248625440636a59753af",
+      "sha256": "sha256:2bc53a312ba2ed1585b9929bd674ba051b805306915823a1b97f3ee6b7a7ed05"
+    }
+  ],
+  "verification": {
+    "verified_at": "2026-10-05T08:32:25Z",
+    "commands": [
+      {
+        "command": "git diff --check ec10bcc69c1a91d7c9bc4818e2378ea4df2368fb b4697d10c74a179a252781a6f584505a274f2265",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor f5effa3d6da3e5879e10007492aeff39a1c643be b4697d10c74a179a252781a6f584505a274f2265",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "git merge-base --is-ancestor 2c9e72102fa86d029a75e0f71588b2278424a7b4 b4697d10c74a179a252781a6f584505a274f2265",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest tests.test_intent_shaper tests.test_qis_harness -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_intent_shaper.py --repo . --output evals/intent-shaper/conformance-results.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_qis_harness.py --repo . --receipt evals/qis-agent-harness/receipt.valid-provenance.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m unittest discover -s tests -p 'test_*.py' -v",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_skills.py --repo . --output /tmp/issue131-remote-subject-skills.json",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/validate_golden_pack.py --metrics-output /tmp/issue131-remote-subject-golden-metrics.json",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ]
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:f49fa3d776a9f63b0f0f8a4d893316e1fff14a0b52151fff3639233187962a4c"
+}

@@ -9,11 +9,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Protocol
+
+from jsonschema import FormatChecker
 
 SOURCE_RANK: dict[str, int] = {
     "explicit_current": 50,
@@ -201,7 +204,9 @@ class FailOnReadEvidencePort(RecordingEvidencePort):
 def _parse_time(value: str | None) -> datetime | None:
     if value is None:
         return None
-    normalized = value.replace("Z", "+00:00")
+    if not isinstance(value, str) or not FormatChecker().conforms(value, "date-time"):
+        raise ValueError("date-time must use RFC 3339 syntax")
+    normalized = value[:-1] + "+00:00" if value.endswith(("Z", "z")) else value
     parsed = datetime.fromisoformat(normalized)
     if parsed.tzinfo is None:
         raise ValueError("date-time must include an RFC 3339 offset")
@@ -229,31 +234,25 @@ def _canonical_value(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
-def _select_preference(
+def _resolve_preferences(
     preferences: Iterable[Mapping[str, Any]],
     *,
     scope: str,
     as_of: datetime,
     personalization_enabled: bool = True,
-) -> dict[str, Any]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str]]:
     all_preferences = [dict(item) for item in preferences]
-    if not personalization_enabled:
-        usable = [item for item in all_preferences if item.get("source") == "explicit_current"]
-        return {
-            "selected_refs": [item["ref"] for item in usable],
-            "ignored_refs": [item["ref"] for item in all_preferences if item not in usable],
-            "stored_retrieval": False,
-            "conflicts": [],
-        }
-
     usable: list[dict[str, Any]] = []
     ignored: list[dict[str, Any]] = []
     for item in all_preferences:
+        if not personalization_enabled and item.get("source") != "explicit_current":
+            ignored.append(item)
+            continue
         if not _is_active(item, as_of=as_of):
             ignored.append(item)
             continue
         item_scope = str(item.get("scope", ""))
-        if item.get("source") != "explicit_current" and item_scope not in {scope, "global"}:
+        if item_scope not in {scope, "global"}:
             ignored.append(item)
             continue
         usable.append(item)
@@ -283,11 +282,25 @@ def _select_preference(
         selected.append(top[0])
         ignored.extend(item for item in candidates if item is not top[0])
 
+    return selected, ignored, sorted(conflicts)
+
+
+def _select_preference(
+    preferences: Iterable[Mapping[str, Any]],
+    *,
+    scope: str,
+    as_of: datetime,
+    personalization_enabled: bool = True,
+) -> dict[str, Any]:
+    selected, ignored, conflicts = _resolve_preferences(
+        preferences, scope=scope, as_of=as_of,
+        personalization_enabled=personalization_enabled,
+    )
     return {
         "selected_refs": [item["ref"] for item in selected],
         "ignored_refs": [item["ref"] for item in ignored],
-        "stored_retrieval": True,
-        "conflicts": sorted(conflicts),
+        "stored_retrieval": personalization_enabled,
+        "conflicts": conflicts,
     }
 
 
@@ -348,6 +361,43 @@ def _persona_rejection_reasons(selection: Mapping[str, Any]) -> list[str]:
     return reasons
 
 
+def _normalized_persona_weights(selections: Iterable[Mapping[str, Any]]) -> bool:
+    weights = [selection.get("weight") for selection in selections]
+    return (
+        bool(weights)
+        and all(type(weight) in {int, float} and 0 <= weight <= 1 for weight in weights)
+        and math.isclose(math.fsum(weights), 1.0, rel_tol=0, abs_tol=1e-9)
+    )
+
+
+def validate_plan_policy(plan: Mapping[str, Any]) -> list[str]:
+    """Check relational invariants after the plan passes its canonical schema.
+
+    JSON Schema validates individual weights and timestamp formats; this policy
+    checks their aggregate and whether selected evidence applies when the plan
+    was created. Disabled plans have an empty hand enforced by the schema.
+    """
+
+    errors: list[str] = []
+    if plan["settings"]["personalization_enabled"]:
+        hand = plan["persona_hand"]
+        primary = hand["primary"]
+        selections = ([primary] if primary is not None else []) + hand["supporting"]
+        if not _normalized_persona_weights(selections):
+            errors.append("persona_hand:invalid_weight_total")
+    as_of = _parse_time(plan["created_at"])
+    scope = plan["purpose_partition"]["scope_key"]
+    excluded_scopes = set(plan["purpose_partition"].get("excluded_scopes", []))
+    for index, preference in enumerate(plan["preferences"]):
+        if preference["decision"] != "use":
+            continue
+        if preference["scope"] not in {scope, "global"} or preference["scope"] in excluded_scopes:
+            errors.append(f"preferences/{index}:purpose_scope_mismatch")
+        if not _is_active(preference, as_of=as_of):
+            errors.append(f"preferences/{index}:inactive_preference")
+    return errors
+
+
 def _feedback_binding(payload: Mapping[str, Any]) -> tuple[bool, str | None]:
     receipt = payload.get("feedback_receipt")
     proposal_ref = payload.get("adaptation_proposal_ref")
@@ -389,7 +439,43 @@ def evaluate_personalization_boundary(
         }
 
     scope = str(payload.get("scope", "global"))
-    current = [dict(item) for item in payload.get("current_request_preferences", [])]
+    current_input = payload.get("current_request_preferences", [])
+    current_valid = isinstance(current_input, list)
+    if current_valid:
+        for item in current_input:
+            if (not isinstance(item, Mapping)
+                    or any(not isinstance(item.get(key), str) or not item[key]
+                           for key in ("ref", "dimension", "scope", "source"))
+                    or item["source"] not in SOURCE_RANK
+                    or type(item.get("confidence")) not in {int, float}
+                    or not 0 <= item["confidence"] <= 1
+                    or not math.isfinite(item["confidence"])
+                    or "value" not in item):
+                current_valid = False
+                break
+            try:
+                json.dumps(item["value"], sort_keys=True, allow_nan=False)
+            except (TypeError, ValueError):
+                current_valid = False
+                break
+    if not current_valid:
+        return {
+            "status": "rejected",
+            "reason_code": "current_preference_invalid",
+            "read_trace": list(evidence_port.trace),
+        }
+    current = [dict(item) for item in current_input]
+    try:
+        as_of = _parse_time(payload.get("as_of")) or datetime.now(timezone.utc)
+        for item in current:
+            _parse_time(item.get("valid_from"))
+            _parse_time(item.get("valid_until"))
+    except (AttributeError, TypeError, ValueError):
+        return {
+            "status": "rejected",
+            "reason_code": "current_preference_timestamp_invalid",
+            "read_trace": list(evidence_port.trace),
+        }
     enabled = enabled_setting
     if not enabled:
         if settings.get("adaptation_mode") != "off" or settings.get("implicit_signal_use") != "off":
@@ -404,6 +490,19 @@ def evaluate_personalization_boundary(
                 "reason_code": "off_mode_noncurrent_evidence",
                 "read_trace": list(evidence_port.trace),
             }
+        selected, ignored, conflicts = _resolve_preferences(
+            current,
+            scope=scope,
+            as_of=as_of,
+            personalization_enabled=False,
+        )
+        if conflicts:
+            return {
+                "status": "rejected",
+                "reason_code": "current_instruction_conflict",
+                "conflicts": conflicts,
+                "read_trace": list(evidence_port.trace),
+            }
         projection = {
             "preferences": [
                 {
@@ -411,7 +510,7 @@ def evaluate_personalization_boundary(
                     "value": item.get("value"),
                     "source": item.get("source"),
                 }
-                for item in current
+                for item in selected
             ],
             "voice_profile_ref": None,
             "aesthetic_profile_ref": None,
@@ -421,6 +520,7 @@ def evaluate_personalization_boundary(
         return {
             "status": "accepted",
             "personalization_enabled": False,
+            "ignored_refs": [item["ref"] for item in ignored],
             "read_trace": list(evidence_port.trace),
             "protected_projection": projection,
         }
@@ -432,7 +532,7 @@ def evaluate_personalization_boundary(
     selection = _select_preference(
         [*current, *saved],
         scope=scope,
-        as_of=_parse_time(payload.get("as_of")) or datetime.now(timezone.utc),
+        as_of=as_of,
         personalization_enabled=True,
     )
     return {
@@ -599,7 +699,10 @@ def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:
 
     operation = str(case["operation"])
     payload = deepcopy(case.get("input", {}))
-    as_of = _parse_time(payload.get("as_of")) or datetime.now(timezone.utc)
+    # The boundary owns timestamp validation and its structured rejection.
+    as_of = None if operation == "personalization_boundary" else (
+        _parse_time(payload.get("as_of")) or datetime.now(timezone.utc)
+    )
 
     if operation == "generated_ui_gate":
         plan = payload.get("generated_ui_plan")
@@ -648,7 +751,7 @@ def evaluate_case(case: Mapping[str, Any]) -> dict[str, Any]:
             for selection in selections
             if type(selection.get("weight")) in {int, float}
         ]
-        if len(weights) != len(selections) or round(sum(weights), 6) != 1.0:
+        if not _normalized_persona_weights(selections):
             rejection_reasons.append("invalid_weight_total")
         if rejection_reasons:
             result = {
