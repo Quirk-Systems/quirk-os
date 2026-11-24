@@ -2,7 +2,7 @@ name: Quirk Beauty Domain Pack v0.1.1
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, candidate/quirk-beauty-domain-pack-v0.1.1-repo-native]
     paths:
       - "docs/canon/QUIRK-BEAUTY-DOMAIN-BOUNDARY.*"
       - "docs/canon/README.md"
@@ -34,14 +34,17 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Bind execution to exact head
         shell: bash
+        env:
+          EXPECTED: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          EXPECTED="${{ github.event.pull_request.head.sha || github.sha }}"
           ACTUAL="$(git -C ../.. rev-parse HEAD)"
           echo "EXPECTED_HEAD=$EXPECTED"
           echo "ACTUAL_HEAD=$ACTUAL"
+          git -C ../.. rev-parse HEAD^{tree}
           test "$ACTUAL" = "$EXPECTED"
 
       - name: Set up Node ${{ matrix.node }}

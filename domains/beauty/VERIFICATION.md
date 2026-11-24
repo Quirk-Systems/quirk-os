@@ -1,89 +1,60 @@
-# Verification Report
+# Verification and evidence limits
 
-**Evidence date:** 2026-08-25
+Updated: 2026-11-24. Candidate only; authority effect: none.
 
-**Local receipt environment:** Node `v24.19.0`, npm `11.9.0`
+The active source for this remediation is repo-native PR #70 at
+`db2726830a26df40c696c148726e57e43a616d5f`, descended from
+`main@80f53905f793751aa47ed4093d5dd035cab608ff`.
+PRs #45/#46 are historical; #68 retains the separate boundary review surface.
+The transport bundle is not available in this checkout. Its recorded SHA and
+mapping in `SOURCE_LINEAGE.md` remain historical provenance, not a fresh bundle
+verification or byte-for-byte import claim.
 
-**Compatibility evidence:** This local receipt is Node 24 only. The pull-request matrix supplies Node 22 compatibility evidence.
+## Reproduced defects
 
-This file records local deterministic evidence. GitHub branch, pull-request, and check state remain external repository evidence and are not hardcoded here.
+- The public `verifyRealProof()` API accepted the synthetic fixture after changing
+  `synthetic` and `participantConsent`; the CLI already held admission. Both now
+  deny real admission while core attestation is unintegrated.
+- Pack validation required a stale Worker source string (`missing_authority_receipt`)
+  although current behavior uses `invalid_authority_receipt`. Static configuration
+  checks no longer claim behavior; executable Worker tests cover receipt denial.
+- No scoped integrity manifest or CI integrity check existed in this successor.
+  The generator now covers Beauty files and seven explicit repository dependencies,
+  rejects symbolic links, and detects modified, added, or removed controlled files.
+  Unrelated repository files do not enter that manifest.
+- Two tests depended on the caller's working directory. They now resolve their
+  inputs relative to the test module and also run from the repository root.
 
-## Fresh local execution
+## Reproducible local checks
 
-```text
-npm test
-24 tests passed
-0 tests failed
+Run from `domains/beauty/` using Node 22 or 24:
+
+```sh
+npm run ci
+npm run proof:verify -- proof/synthetic-example.json
 ```
 
-Coverage includes:
+The second command must exit 1 with `core_attestation_not_integrated`. A missing
+file or command is not a successful negative admission test. `npm run ci` runs
+contracts, pack validation, synthetic machinery, and `manifest:check`.
+After an intentional controlled-file edit, review the diff and run `npm run manifest`.
+The manifest proves consistency, not publisher identity or approval.
 
-- explicit-choice and abstention behavior;
-- rejection of purchases and inferred satisfaction as outcomes;
-- deterministic, purpose-scoped recommendation ranking;
-- silence, rejection, stale revision, expiry, and cross-purpose Human Gate failures;
-- full synthetic chain execution;
-- rejection of synthetic proof as real proof;
-- Supabase lifecycle-authority denial;
-- composite actor/purpose/session scope constraints;
-- database option validation;
-- relational recommendation evidence;
-- explicit service-writer grants and absent anonymous access;
-- live-approval receipt requirements and `auto_apply=false`.
+Exact subject SHAs, runtime versions, successful command records, and path digests
+belong in the separate `.quirk/evidence/` receipt. Current PR head and hosted job
+readbacks belong in the PR description; local execution is not hosted CI evidence.
 
-```text
-npm run validate
-PACK VALID: 19 required files present; canon ceiling intact; source lineage bound; Cloudflare receipt gate fail-closed; boundary hash sha256:264c636c364db2caa08b2d4370eb10618c721d74f2588f8359546d8a9b45fb21.
-```
+## Remaining holds
 
-Boundary digest:
+- Detached Quirk-core signature and independently administered trust-policy integration.
+- Complete proof-chain binding, actor-bound consent, removal of candidate graph-application
+  and receipt-issuance APIs, and synthetic projection review requested on #67.
+- Independent review: CodeRabbit requires authenticated access; no review is claimed.
+- Hosted execution: retrieved jobs in `quirk-os` and `project-scaffold` have zero
+  executed steps and `runner_id=0`. Root cause and recovery require owner/provider evidence.
+- Cloudflare Workers-runtime execution, installed Wrangler schema validation, and live
+  compatibility with the candidate core-receipt URI contract.
+- Supabase migration/RLS execution, Airtable protection tests, real participant outcomes,
+  provider effects, deployment, and runtime admission.
 
-```text
-sha256:264c636c364db2caa08b2d4370eb10618c721d74f2588f8359546d8a9b45fb21
-```
-
-```text
-npm run proof:synthetic
-PASS: synthetic chain executed and receipt generated.
-BLOCKED: synthetic execution does not satisfy the required real-world proof.
-```
-
-## Negative proof gate
-
-The real-proof verifier was run against `proof/synthetic-example.json` and returned non-zero as required:
-
-```text
-proof.synthetic: Synthetic execution cannot satisfy the real-world proof.
-proof.consent: Participant consent is required.
-```
-
-## Supabase evidence
-
-Completed:
-
-- migration contract was written failing-first;
-- original SQL failed all six database contract groups;
-- hardened SQL passes all six groups;
-- transactional anonymous/two-user/service-writer proof is authored.
-
-Not completed:
-
-- migration execution on PostgreSQL/Supabase;
-- live RLS, trigger, foreign-key, and rollback output;
-- schema digest from an isolated branch;
-- branch deletion receipt.
-
-## Evidence not claimed
-
-- Node 24 GitHub Actions result;
-- merge or deployment;
-- Supabase main-project mutation;
-- OpenAI API request;
-- Hugging Face upload or benchmark;
-- real participant consent or real-world outcome;
-- passing real-world proof;
-- recommendation lift, commercial demand, or product-market fit.
-
-## Verdict
-
-**The admitted boundary is isolated. The candidate pack passes fresh local structural and adversarial verification. Database execution and one honest real-world proof remain blocking evidence, followed by a separate runtime-admission decision.**
+Passing local tests does not satisfy these holds or carry forward canon approval.

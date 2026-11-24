@@ -1,0 +1,146 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.beauty-loop.5f10d0accc7c",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "db2726830a26df40c696c148726e57e43a616d5f",
+    "commit": "5f10d0accc7ce8c9d0a691915a1132cd51bad241",
+    "changed_paths": [
+      ".github/workflows/quirk-beauty-domain-pack.yml",
+      "domains/beauty/MANIFEST.sha256",
+      "domains/beauty/VERIFICATION.md",
+      "domains/beauty/package.json",
+      "domains/beauty/scripts/generate-manifest.mjs",
+      "domains/beauty/scripts/validate-pack.mjs",
+      "domains/beauty/src/proof.mjs",
+      "domains/beauty/tests/manifest.test.mjs",
+      "domains/beauty/tests/pack-validation.test.mjs",
+      "domains/beauty/tests/proof-admission-hold.test.mjs",
+      "domains/beauty/tests/proof-verifier.test.mjs",
+      "domains/beauty/tests/supabase-migration-contract.test.mjs"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.beauty-loop.5f10d0accc7c",
+      "claim_type": "evidence",
+      "authority_effect": "none",
+      "statement": "Closes the public proof API attestation-hold bypass, corrects stale pack validation, enforces a scoped 99-file manifest, and makes test paths independent of caller cwd. Node 22.23.2 and 24.22.3 each pass 44 tests and local CI. Hosted execution, independent review, core attestation, provider integration, canon admission, and deployment remain unproven.",
+      "evidence_paths": [
+        ".github/workflows/quirk-beauty-domain-pack.yml",
+        "domains/beauty/MANIFEST.sha256",
+        "domains/beauty/VERIFICATION.md",
+        "domains/beauty/package.json",
+        "domains/beauty/scripts/generate-manifest.mjs",
+        "domains/beauty/scripts/validate-pack.mjs",
+        "domains/beauty/src/proof.mjs",
+        "domains/beauty/tests/manifest.test.mjs",
+        "domains/beauty/tests/pack-validation.test.mjs",
+        "domains/beauty/tests/proof-admission-hold.test.mjs",
+        "domains/beauty/tests/proof-verifier.test.mjs",
+        "domains/beauty/tests/supabase-migration-contract.test.mjs"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".github/workflows/quirk-beauty-domain-pack.yml",
+      "state": "present",
+      "git_blob": "5a89da18a6ed9c6115c97a0ce685ca2c229b4252",
+      "sha256": "sha256:ad6f89be4acb08b14706739b6572a6a721039567d2edf380f6d42df844735362"
+    },
+    {
+      "path": "domains/beauty/MANIFEST.sha256",
+      "state": "present",
+      "git_blob": "f76c26e2e0959e790fbb661e9dea3926c3ac3888",
+      "sha256": "sha256:64e78fa4ce367bcd9b3cd42bad74908e1f0e48d1ab07e0d1f993e0e6f47c6592"
+    },
+    {
+      "path": "domains/beauty/VERIFICATION.md",
+      "state": "present",
+      "git_blob": "ee510a1aa970d67a489bc9841a82ee571849c47f",
+      "sha256": "sha256:9297bd3d02f091fd3584491ed442949c4e6c9b76b6154052c308004b0f07e3a6"
+    },
+    {
+      "path": "domains/beauty/package.json",
+      "state": "present",
+      "git_blob": "9d425525809b6fb9f97a9f3a61579d731621c773",
+      "sha256": "sha256:91d1ca2ad84cf04198a48b3bfe6ca2ca1c40e3932e27164aeff2e0d8fb9e6ed7"
+    },
+    {
+      "path": "domains/beauty/scripts/generate-manifest.mjs",
+      "state": "present",
+      "git_blob": "50a678e3d3064f8513c2d9d785c2fa220172b0bf",
+      "sha256": "sha256:ad12cc3af1df5c17bd6190e40e1e6c2b200f1741a7d4a29ac25dc45330841c4b"
+    },
+    {
+      "path": "domains/beauty/scripts/validate-pack.mjs",
+      "state": "present",
+      "git_blob": "63ee747951c63115cc52284c22e3d1b39e454020",
+      "sha256": "sha256:338271e47afed4947134809d11204b338d4762648ae094b6a978f995b2a36cd8"
+    },
+    {
+      "path": "domains/beauty/src/proof.mjs",
+      "state": "present",
+      "git_blob": "6789a6fe071009484eff16be5883f878bd5c682c",
+      "sha256": "sha256:fd665a4ea37377c14ae8437e02d71525711cb978163b3a4eec9b1bda8ef29a55"
+    },
+    {
+      "path": "domains/beauty/tests/manifest.test.mjs",
+      "state": "present",
+      "git_blob": "343ed6d7b4bb2a2eab83917a5ce0113eaaa8671c",
+      "sha256": "sha256:1cc8cc5146512b2186f3a6baf69ef4d0ef12079b899d4a44c098b45a4031a52c"
+    },
+    {
+      "path": "domains/beauty/tests/pack-validation.test.mjs",
+      "state": "present",
+      "git_blob": "9862c4708806860aadc75ca03508fa32c147811c",
+      "sha256": "sha256:480e0e98bcac0b098c5d9117f89562fc1e6ffe81436cd075ceec9efc9017ded9"
+    },
+    {
+      "path": "domains/beauty/tests/proof-admission-hold.test.mjs",
+      "state": "present",
+      "git_blob": "5dd930e29bb164a2d9c334375f22157e0f017ba4",
+      "sha256": "sha256:5d5745de00e563e9b0c7e97a3d76d294a54f849da351a66d4df7306984ae493b"
+    },
+    {
+      "path": "domains/beauty/tests/proof-verifier.test.mjs",
+      "state": "present",
+      "git_blob": "3958067e16566378733dc9e59b11f600c8f19154",
+      "sha256": "sha256:89f964bdac2c82003384e1b6b71a798f39df06bc88089194e42a2c76e4db539a"
+    },
+    {
+      "path": "domains/beauty/tests/supabase-migration-contract.test.mjs",
+      "state": "present",
+      "git_blob": "73b05ea3b8a37a5aa8f2c1f2983ef57c6720c23a",
+      "sha256": "sha256:ddc2852d5711591dfa20fb51499d85340f32b4f66e3690e46a0fbe5510658b35"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "PATH=/Users/brain/.hermes/node/bin:/opt/homebrew/bin:/usr/bin:/bin npm --prefix domains/beauty run ci",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "PATH=/Users/brain/Documents/Codex/2026-11-24/referenced-chatgpt-conversation-this-is-an/work/node-v24.22.3-darwin-arm64/bin:/opt/homebrew/bin:/usr/bin:/bin npm --prefix domains/beauty run ci",
+        "result": "pass",
+        "exit_code": 0
+      },
+      {
+        "command": "/Users/brain/.local/bin/node --test domains/beauty/tests/*.test.mjs domains/beauty/cloudflare/test/*.test.mjs",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-11-24T16:50:21Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:d26185ce436efd2950fa1d99e5ce5f1771dbdaa19f035fea7a623ba5b950193f"
+}
