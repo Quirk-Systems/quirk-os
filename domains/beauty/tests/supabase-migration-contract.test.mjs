@@ -1,9 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 
-const migrationPath = resolve(process.cwd(), "../../supabase/migrations/20260821090000_quirk_beauty_taste_engine_candidate.sql");
+const migrationPath = new URL("../../../supabase/migrations/20260821090000_quirk_beauty_taste_engine_candidate.sql", import.meta.url);
 const sql = readFileSync(migrationPath, "utf8");
 
 test("authenticated clients cannot manufacture lifecycle approval", () => {
