@@ -1,0 +1,9 @@
+/* Apply .quirk-surface to opt into the Quirk Tailwind/shadcn bridge. */
+.quirk-surface {
+  --background: var(--quirk-surface-canvas); --foreground: var(--quirk-text-primary);
+  --card: var(--quirk-surface-elevated); --card-foreground: var(--quirk-text-primary);
+  --muted: var(--quirk-surface-muted); --muted-foreground: var(--quirk-text-secondary);
+  --primary: var(--quirk-accent-primary); --primary-foreground: var(--quirk-text-inverse);
+  --border: var(--quirk-border-subtle); --ring: var(--quirk-accent-interactive);
+  --radius: var(--quirk-radius-md);
+}

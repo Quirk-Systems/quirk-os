@@ -1,0 +1,47 @@
+{
+  "inspected_at": "2026-10-14",
+  "scope": "Installed-repository search returned 49 results; not an exhaustive organization inventory",
+  "visibility_counts": {
+    "private": 44,
+    "public": 5
+  },
+  "total": 49,
+  "repositories": [
+    {
+      "repository": "Quirk-Systems/quirk-feed",
+      "visibility": "public",
+      "reported_size": 361,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-core",
+      "visibility": "public",
+      "reported_size": 162,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-os",
+      "visibility": "public",
+      "reported_size": 3054,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/quirk-generator",
+      "visibility": "public",
+      "reported_size": 953,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    },
+    {
+      "repository": "Quirk-Systems/project-scaffold",
+      "visibility": "public",
+      "reported_size": 2921,
+      "inspection": "metadata_only",
+      "integration_status": "unregistered"
+    }
+  ],
+  "detail_scope": "Only entries public at inspection and at the November 24 recheck are listed individually."
+}

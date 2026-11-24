@@ -1,0 +1,120 @@
+{
+  "schema_version": "evidence-receipt.v1",
+  "receipt_id": "qreceipt.cross-repo-continuation-20261014",
+  "repository": "Quirk-Systems/quirk-os",
+  "status": "verified",
+  "subject": {
+    "base_commit": "b2e969b1e1c422f1f0e3decbef915860d2265a65",
+    "commit": "3ce3a34a32a5428c10b7a024655e0434f97e9ac5",
+    "changed_paths": [
+      "docs/cross-repo/CONTINUATION-REVIEW.md",
+      "docs/cross-repo/CONTINUATION.md",
+      "experiments/cross_repo/README.md",
+      "experiments/cross_repo/compiler.py",
+      "experiments/cross_repo/styles/framework-bridge.css",
+      "experiments/cross_repo/styles/quirk.css",
+      "experiments/cross_repo/styles/style-lock.json",
+      "experiments/cross_repo/styles/tokens.json",
+      "experiments/cross_repo/synchronize.py",
+      "experiments/cross_repo/test_sync.py"
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "qclaim.cross-repo-continuation-20261014",
+      "claim_type": "implementation",
+      "authority_effect": "none",
+      "statement": "Portable styled reports and bounded local snapshot refresh are present at exact subject bytes. Sixteen Python test methods pass at this subject. Live network sync, private-source transfer, independent human review and creative grade remain unverified.",
+      "evidence_paths": [
+        "docs/cross-repo/CONTINUATION-REVIEW.md",
+        "docs/cross-repo/CONTINUATION.md",
+        "experiments/cross_repo/README.md",
+        "experiments/cross_repo/compiler.py",
+        "experiments/cross_repo/styles/framework-bridge.css",
+        "experiments/cross_repo/styles/quirk.css",
+        "experiments/cross_repo/styles/style-lock.json",
+        "experiments/cross_repo/styles/tokens.json",
+        "experiments/cross_repo/synchronize.py",
+        "experiments/cross_repo/test_sync.py"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/cross-repo/CONTINUATION-REVIEW.md",
+      "state": "present",
+      "git_blob": "da904819f3f08f9549439065e9148e6bb55a597f",
+      "sha256": "sha256:adb4915fa98aa00f4ad755cf3281bd3c081e618f21d6fd225dc57fed33ab3688"
+    },
+    {
+      "path": "docs/cross-repo/CONTINUATION.md",
+      "state": "present",
+      "git_blob": "476e5212ab0b95b5c2e5d8bb7f470429e569d5b1",
+      "sha256": "sha256:3fb1023f775393b0ac71f450bbc9d09b27131187d7a4faae9a44b9965a9348b7"
+    },
+    {
+      "path": "experiments/cross_repo/README.md",
+      "state": "present",
+      "git_blob": "07594a8457d502dec6da64f8c57315f1454ac648",
+      "sha256": "sha256:c12dc0df5261e8f572f584f03b609bfeed61988b0c4fb3d45debdacdde11452f"
+    },
+    {
+      "path": "experiments/cross_repo/compiler.py",
+      "state": "present",
+      "git_blob": "e5292867b9bd255c1c4f20b90f2cd4e33446ac19",
+      "sha256": "sha256:e3ecdfe59cd096d8c49d3aeea61621be15db74bb72e76778ed036f0533c51bdf"
+    },
+    {
+      "path": "experiments/cross_repo/styles/framework-bridge.css",
+      "state": "present",
+      "git_blob": "909b9d3e8081c8d5c4d82606d6c28e4a06d39d52",
+      "sha256": "sha256:bbd0bad7e831fe4ec9b028fe235434ad8822aebc09a089c5974b08c898378e45"
+    },
+    {
+      "path": "experiments/cross_repo/styles/quirk.css",
+      "state": "present",
+      "git_blob": "d65034c3865d17dd201a327e8079fac719c0f47d",
+      "sha256": "sha256:9dbcfd6d6f5b9736837fba44c36e24acf395f3e7e96e0c2e0f2f7cad7e2f0b55"
+    },
+    {
+      "path": "experiments/cross_repo/styles/style-lock.json",
+      "state": "present",
+      "git_blob": "5c656cb646ce1131eb7cf40c52ec184cdd0769dc",
+      "sha256": "sha256:e8a24589c582f02b0396e66ed22bf71d464db47477d29b272eb401d7ff2f5a8c"
+    },
+    {
+      "path": "experiments/cross_repo/styles/tokens.json",
+      "state": "present",
+      "git_blob": "e0c7abd4126929dbcbe9ed36a9a472cf7a888cb4",
+      "sha256": "sha256:d0f0d424dd0f1d7e9e782813300b6b4187f549f3f0827475c6a449484b07ab49"
+    },
+    {
+      "path": "experiments/cross_repo/synchronize.py",
+      "state": "present",
+      "git_blob": "48ad22167d701f7b8d6493264f247af72ad0ce4a",
+      "sha256": "sha256:f4cf21747ec559787180c195c8b645c87b8a1d589ef1e05371e2dbe43eac14cc"
+    },
+    {
+      "path": "experiments/cross_repo/test_sync.py",
+      "state": "present",
+      "git_blob": "4a4cc8dd5eeb5f7cfe1b04d3f6ce4a00e78d47e1",
+      "sha256": "sha256:f88a10d435316471e8e1d8a1227e677c2e10264eb84c0840c34cb49185efe4d1"
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "python -m unittest discover -s experiments/cross_repo -p 'test_*.py' -v",
+        "result": "pass",
+        "exit_code": 0
+      }
+    ],
+    "verified_at": "2026-10-14T10:00:36.968396Z"
+  },
+  "authority": {
+    "admission_effect": "none",
+    "authority_ref": null
+  },
+  "correction": null,
+  "receipt_sha256": "sha256:2d536b5ab1a1a0d3132eb60ad3ad745686ffd3fdf92661832dc01ad9897ef91e"
+}
